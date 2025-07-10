@@ -1,10 +1,20 @@
-fetch('http://localhost:3000/api/test')
-  .then(res => res.json())
-  .then(data => {
-    console.log('Response from server:', data);
-    document.body.innerHTML += `<p>${data.message}</p>`;
-  })
-  .catch(err => {
-    console.error('Fetch error:', err);
-    document.body.innerHTML += `<p style="color:red;">Could not connect to server</p>`;
-  });
+function toggleShop() {
+  const shop = document.getElementById("shop");
+  shop.style.display = shop.style.display === "block" ? "none" : "block";
+}
+
+function signOut() {
+  localStorage.removeItem("loggedIn");
+  window.location.href = "login.html";
+}
+
+function toggleMailbox() {
+  const mailbox = document.getElementById("mailbox");
+  mailbox.style.display = mailbox.style.display === "block" ? "none" : "block";
+}
+
+function toggleVolume() {
+  const btn = document.getElementById("volumeBtn");
+  const isOn = btn.textContent === "🔊";
+  btn.textContent = isOn ? "🔇" : "🔊";
+}

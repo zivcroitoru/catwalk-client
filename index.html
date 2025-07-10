@@ -2,43 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
-  <script defer>
-    document.addEventListener("DOMContentLoaded", () => {
-      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-
-      const nav = document.querySelector("nav");
-      if (isLoggedIn) {
-        // Remove Login link
-        const loginLink = nav.querySelector('a[href="pages/login.html"]');
-        if (loginLink) loginLink.remove();
-
-        // Add Sign Out button
-        const signOut = document.createElement("button");
-        signOut.textContent = "Sign Out";
-        signOut.style.marginLeft = "1rem";
-        signOut.onclick = () => {
-          localStorage.removeItem("loggedIn");
-          location.reload();
-        };
-        nav.appendChild(signOut);
-      }
-    });
-  </script>
 </head>
 <body>
-<nav>
-  <a href="pages/login.html">Login</a>
-  <a href="pages/album.html">Album</a>
-  <a href="pages/fashion-show.html">Fashion Show</a>
-  <a href="pages/admin.html">Admin</a>
-</nav>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-button coin-count">💰 125</div>
+    <div class="topbar-button" onclick="toggleVolume()" id="volumeBtn">🔊</div>
+    <div class="topbar-button" onclick="toggleMailbox()">📬</div>
+  </div>
 
+  <!-- Layout Wrapper -->
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-icon coin"></div>
+      <div class="sidebar-icon sound"></div>
+      <div class="sidebar-icon mail" onclick="toggleMailbox()"></div>
+    </div>
 
-  <main>
-    <h1>Welcome to Cat Walk Game</h1>
-  </main>
+    <!-- Main Area -->
+    <div class="main-area">
+      <h1>MY CATS</h1>
+      <div class="main-cat"></div>
+
+      <div class="action-buttons">
+        <button onclick="window.location.href='fashion-show.html'">Fashion Show</button>
+        <button onclick="toggleShop()">Open Shop</button>
+        <button onclick="toggleMailbox()">Mailbox</button>
+        <button onclick="signOut()">Sign Out</button>
+      </div>
+
+      <div class="carousel">
+        <!-- Add as many cat cards as needed -->
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat1.png');"></div>
+          <span>name</span>
+        </div>
+        <!-- ... -->
+      </div>
+
+      <div>Inventory capacity: 8/25</div>
+    </div>
+
+    <!-- Cat Profile -->
+    <div class="cat-profile">
+      <div><strong>Mr. Not so fluffy bottom</strong></div>
+      <div>Breed: Sphynx</div>
+      <div>Variant: Solid</div>
+      <div>Palette: Classic Pink</div>
+      <div>Birthday: 19/05</div>
+      <div>Age: 01 days</div>
+      <div>Description:</div>
+      <textarea>Cute cuddly but also very energetic.
+She loves playing all day with her friends!</textarea>
+      <div>
+        <button>Save</button>
+        <button>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mailbox Popup -->
+  <div class="mailbox-modal" id="mailbox">
+    <h3>Mailbox</h3>
+    <p>You have 3 new messages.</p>
+    <ul>
+      <li>🎁 You won 50 coins in a fashion show!</li>
+      <li>📬 Your friend Fluffy sent you a gift!</li>
+      <li>📢 New item in the shop: Fancy Hat</li>
+    </ul>
+    <button onclick="toggleMailbox()">Close</button>
+  </div>
+
+  <!-- Shop Popup -->
+  <div class="shop-modal" id="shop">
+    <h3>Item Shop</h3>
+    <p>Buy cute clothes and accessories for your cats here!</p>
+    <ul>
+      <li>👗 Red Bow</li>
+      <li>🎩 Fancy Hat</li>
+      <li>🧣 Cozy Scarf</li>
+    </ul>
+    <button onclick="toggleShop()">Close</button>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>

@@ -4,225 +4,135 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Cats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Press Start 2P', monospace;
-      background: url('assets/bg.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: black;
-    }
-
-    .wrapper {
-      display: grid;
-      grid-template-columns: 60px 1fr 400px;
-      height: 100vh;
-    }
-
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem 0;
-      background-color: #f68b1f;
-      gap: 1rem;
-    }
-
-    .sidebar-icon {
-      width: 40px;
-      height: 40px;
-      background-size: cover;
-      background-repeat: no-repeat;
-      image-rendering: pixelated;
-      cursor: pointer;
-    }
-
-    .coin { background-image: url('assets/coin.png'); }
-    .sound { background-image: url('assets/sound.png'); }
-    .mail { background-image: url('assets/mail.png'); }
-
-    .main-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-    }
-
-    .main-area h1 {
-      margin-bottom: 1rem;
-      font-size: 16px;
-    }
-
-    .main-cat {
-      background-image: url('assets/cat-main.png');
-      width: 200px;
-      height: 200px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      image-rendering: pixelated;
-    }
-
-    .carousel {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding: 1rem;
-      background: #fce5b0;
-      border-top: 4px solid #a5793c;
-      border-bottom: 4px solid #a5793c;
-    }
-
-    .cat-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #cc5c57;
-      padding: 0.5rem;
-      border: 4px solid #000;
-      width: 80px;
-      height: 100px;
-      flex-shrink: 0;
-    }
-
-    .cat-thumbnail {
-      width: 48px;
-      height: 48px;
-      background-size: cover;
-      background-repeat: no-repeat;
-      image-rendering: pixelated;
-    }
-
-    .cat-profile {
-      background: #ffe7b2;
-      border: 4px solid #a5793c;
-      margin: 1rem;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .cat-profile textarea {
-      width: 100%;
-      height: 4rem;
-      font-family: inherit;
-      font-size: 8px;
-      padding: 4px;
-    }
-
-    .cat-profile button {
-      font-family: inherit;
-      font-size: 10px;
-      padding: 0.5rem;
-      margin-right: 0.5rem;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-
-    .action-buttons button {
-      font-family: inherit;
-      font-size: 10px;
-      padding: 0.5rem 1rem;
-      background-color: #0077cc;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    .action-buttons button:hover {
-      background-color: #005fa3;
-    }
-
-    .mailbox-modal, .shop-modal {
-      display: none;
-      position: fixed;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fffbea;
-      padding: 1rem;
-      border: 4px solid #000;
-      z-index: 2000;
-      width: 300px;
-      font-size: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="../css/cat-album.css" />
 </head>
 <body>
-  <div class="wrapper">
-    <div class="sidebar">
-      <div class="sidebar-icon coin"></div>
-      <div class="sidebar-icon sound"></div>
-      <div class="sidebar-icon mail" onclick="toggleMailbox()"></div>
-    </div>
+<!-- Overlay -->
+<div id="uploadOverlay" class="modal-overlay" onclick="toggleUploadCat()"></div>
 
+<!-- Modal (no onclick on the modal div!) -->
+<div class="upload-cat-modal" id="uploadCat">
+  <div class="upload-cat-inner" onclick="event.stopPropagation()">
+    <h3>Upload a Cat</h3>
+    <p>Coming soon: Scan or upload your cat to add it to your collection!</p>
+    <button onclick="toggleUploadCat()">Close</button>
+  </div>
+</div>
+
+  <!-- Centered Ellipse & Cat -->
+  <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+  <img id="carouselCat" src="../assets/cats/classic pink.png" alt="Cat" class="carousel-cat" />
+
+  <!-- Topbar Icons -->
+  <div class="topbar">
+    <div class="topbar-icon" title="Coins">
+      <img src="../assets/icons/coin.png" alt="Coins" />
+      <span class="coin-count">123</span>
+    </div>
+    <div class="topbar-icon" title="Sound">
+      <img src="../assets/icons/speakerON.png" alt="Sound" />
+    </div>
+    <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
+      <img src="../assets/icons/mail.png" alt="Mailbox" />
+    </div>
+  </div>
+
+  <!-- Page Title -->
+  <h1 class="cats-title">MY CATS</h1>
+
+  <!-- Main Wrapper -->
+  <div class="wrapper">
     <div class="main-area">
-      <h1>MY CATS</h1>
       <div class="main-cat"></div>
 
-      <div class="action-buttons">
-        <button onclick="window.location.href='fashion-show.html'">Fashion Show</button>
-        <button onclick="toggleShop()">Open Shop</button>
-        <button onclick="toggleMailbox()">Mailbox</button>
-        <button onclick="signOut()">Sign Out</button>
-      </div>
+      <!-- Carousel -->
+      <div class="carousel-wrapper">
+        <div class="carousel-background">
+          <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
 
-      <div class="carousel">
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/cat1.png');"></div>
-          <span>name</span>
-        </div>
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/cat2.png');"></div>
-          <span>name</span>
-        </div>
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/cat3.png');"></div>
-          <span>name</span>
-        </div>
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/cat4.png');"></div>
-          <span>name</span>
-        </div>
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/cat5.png');"></div>
-          <span>name</span>
-        </div>
-        <div class="cat-card">
-          <div class="cat-thumbnail" style="background-image: url('assets/plus.png');"></div>
-          <span>+</span>
-        </div>
-      </div>
-      <div>Inventory capacity: 8/25</div>
-    </div>
+          <div class="carousel-viewport">
+            <div class="carousel" id="catCarousel">
+              <!-- 20 cat cards -->
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cats/classic\ pink.svg');"></div><span>bruh</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 2</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 3</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 4</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 5</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 6</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 7</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 8</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 9</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 10</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 11</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 12</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 13</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 14</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 15</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 16</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 17</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 18</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 19</span></div>
+              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 20</span></div>
+            </div>
+          </div>
 
-    <div class="cat-profile">
-      <div><strong>Mr. Not so fluffy bottom</strong></div>
-      <div>Breed: Sphynx</div>
-      <div>Variant: Solid</div>
-      <div>Palette: Classic Pink</div>
-      <div>Birthday: 19/05</div>
-      <div>Age: 01 days</div>
-      <div>Description:</div>
-      <textarea>Cute cuddly but also very energetic.
-She loves playing all day with her friends!</textarea>
-      <div>
-        <button>Save</button>
-        <button>Cancel</button>
+<button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+
+<!-- Right-side Add Cat Button -->
+<div class="add-cat-button" onclick="toggleUploadCat()">
+  <img src="../assets/plus.png" alt="Add Cat" />
+</div>
+
+        </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Floating Action Buttons -->
+  <div class="floating-actions">
+    <button onclick="window.location.href='fashion-show.html'">Fashion Show</button>
+    <button onclick="toggleShop()">Open Shop</button>
+    <button onclick="signOut()">Sign Out</button>
+  </div>
+<div class="cat-profile-scroll">
+  <div class="scroll-inner">
+    <!-- Top Name Input -->
+    <input type="text" class="profile-name-input" value="Mr. Not so fluffy bottom" />
+
+    <!-- Left Info -->
+    <div class="profile-main">
+      <div class="profile-info">
+        <div class="profile-row"><strong>Breed:</strong> Sphynx</div>
+        <div class="profile-row"><strong>Variant:</strong> Solid</div>
+        <div class="profile-row"><strong>Palette:</strong> Classic Pink</div>
+        <div class="profile-row"><strong>Birthday:</strong> 19/05</div>
+        <div class="profile-row"><strong>Age:</strong> 01 days</div>
+      </div>
+
+      <!-- Right-side Icons & Buttons -->
+      <div class="profile-actions">
+        <div class="icon-row">
+          <img src="../assets/real-cats/placeholder.png" class="icon-button" alt="Upload" />
+          <img src="../assets/icons/delete_btn.svg" class="icon-button" alt="Delete" />
+        </div>
+        <button class="action-button">SAVE</button>
+        <button class="action-button">CANCEL</button>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="desc-block">
+      <label><strong>Description:</strong></label>
+      <textarea class="desc-input">CUTE CUDDLY BUT ALSO VERY ENERGETIC. 
+SHE LOVES PLAYING ALL DAY WITH HER FRIENDS!
+bah</textarea>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Mailbox Modal -->
   <div class="mailbox-modal" id="mailbox">
     <h3>Mailbox</h3>
     <p>You have 3 new messages.</p>
@@ -234,6 +144,7 @@ She loves playing all day with her friends!</textarea>
     <button onclick="toggleMailbox()">Close</button>
   </div>
 
+  <!-- Shop Modal -->
   <div class="shop-modal" id="shop">
     <h3>Item Shop</h3>
     <p>Buy cute clothes and accessories for your cats here!</p>
@@ -245,21 +156,15 @@ She loves playing all day with her friends!</textarea>
     <button onclick="toggleShop()">Close</button>
   </div>
 
-  <script>
-    function toggleShop() {
-      const shop = document.getElementById("shop");
-      shop.style.display = shop.style.display === "block" ? "none" : "block";
-    }
 
-    function signOut() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
-    }
+  <!-- External JS -->
+  <script src="../js/cat-album.js"></script>
+  <!-- Upload Cat Modal -->
+<div class="upload-cat-modal" id="uploadCat">
+  <h3>Upload a Cat</h3>
+  <p>Coming soon: Scan or upload your cat to add it to your collection!</p>
+  <button onclick="toggleUploadCat()">Close</button>
+</div>
 
-    function toggleMailbox() {
-      const mailbox = document.getElementById("mailbox");
-      mailbox.style.display = mailbox.style.display === "block" ? "none" : "block";
-    }
-  </script>
 </body>
 </html>
