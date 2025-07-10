@@ -2,73 +2,263 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Album</title>
-  <link rel="stylesheet" href="../css/styles.css" />
-  <script src="../js/main.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    /* Simple modal styling */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80%;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      border: 2px solid #aaa;
-      border-radius: 10px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
+    * {
+      box-sizing: border-box;
     }
 
-    .modal-overlay {
+    body {
+      margin: 0;
+      font-family: 'Press Start 2P', monospace;
+      background: url('assets/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: black;
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: 60px 1fr 400px;
+      height: 100vh;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      background-color: #f68b1f;
+      gap: 1rem;
+    }
+
+    .sidebar-icon {
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      cursor: pointer;
+    }
+
+    .coin { background-image: url('assets/coin.png'); }
+    .sound { background-image: url('assets/sound.png'); }
+    .mail { background-image: url('assets/mail.png'); }
+
+    .main-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .main-area h1 {
+      margin-bottom: 1rem;
+      font-size: 16px;
+    }
+
+    .main-cat {
+      background-image: url('assets/cat-main.png');
+      width: 200px;
+      height: 200px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+    }
+
+    .carousel {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding: 1rem;
+      background: #fce5b0;
+      border-top: 4px solid #a5793c;
+      border-bottom: 4px solid #a5793c;
+    }
+
+    .cat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #cc5c57;
+      padding: 0.5rem;
+      border: 4px solid #000;
+      width: 80px;
+      height: 100px;
+      flex-shrink: 0;
+    }
+
+    .cat-thumbnail {
+      width: 48px;
+      height: 48px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+    }
+
+    .cat-profile {
+      background: #ffe7b2;
+      border: 4px solid #a5793c;
+      margin: 1rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cat-profile textarea {
+      width: 100%;
+      height: 4rem;
+      font-family: inherit;
+      font-size: 8px;
+      padding: 4px;
+    }
+
+    .cat-profile button {
+      font-family: inherit;
+      font-size: 10px;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .action-buttons button {
+      font-family: inherit;
+      font-size: 10px;
+      padding: 0.5rem 1rem;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-buttons button:hover {
+      background-color: #005fa3;
+    }
+
+    .mailbox-modal, .shop-modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fffbea;
+      padding: 1rem;
+      border: 4px solid #000;
+      z-index: 2000;
+      width: 300px;
+      font-size: 10px;
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="../index.html">Home</a>
-    <a href="login.html">Login</a>
-    <a href="album.html">Album</a>
-    <a href="fashion-show.html">Fashion Show</a>
-    <a href="admin.html">Admin</a>
-  </nav>
+  <div class="wrapper">
+    <div class="sidebar">
+      <div class="sidebar-icon coin"></div>
+      <div class="sidebar-icon sound"></div>
+      <div class="sidebar-icon mail" onclick="toggleMailbox()"></div>
+    </div>
 
-  <main>
-    <h1>Cat Album</h1>
-    <button onclick="openShop()">Open Shop</button>
-  </main>
+    <div class="main-area">
+      <h1>MY CATS</h1>
+      <div class="main-cat"></div>
 
-  <!-- Modal Overlay -->
-  <div id="shopOverlay" class="modal-overlay" onclick="closeShop()"></div>
+      <div class="action-buttons">
+        <button onclick="window.location.href='fashion-show.html'">Fashion Show</button>
+        <button onclick="toggleShop()">Open Shop</button>
+        <button onclick="toggleMailbox()">Mailbox</button>
+        <button onclick="signOut()">Sign Out</button>
+      </div>
 
-  <!-- Shop Modal -->
-  <div id="shopModal" class="modal">
-    <h2>Item Shop</h2>
+      <div class="carousel">
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat1.png');"></div>
+          <span>name</span>
+        </div>
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat2.png');"></div>
+          <span>name</span>
+        </div>
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat3.png');"></div>
+          <span>name</span>
+        </div>
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat4.png');"></div>
+          <span>name</span>
+        </div>
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/cat5.png');"></div>
+          <span>name</span>
+        </div>
+        <div class="cat-card">
+          <div class="cat-thumbnail" style="background-image: url('assets/plus.png');"></div>
+          <span>+</span>
+        </div>
+      </div>
+      <div>Inventory capacity: 8/25</div>
+    </div>
+
+    <div class="cat-profile">
+      <div><strong>Mr. Not so fluffy bottom</strong></div>
+      <div>Breed: Sphynx</div>
+      <div>Variant: Solid</div>
+      <div>Palette: Classic Pink</div>
+      <div>Birthday: 19/05</div>
+      <div>Age: 01 days</div>
+      <div>Description:</div>
+      <textarea>Cute cuddly but also very energetic.
+She loves playing all day with her friends!</textarea>
+      <div>
+        <button>Save</button>
+        <button>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mailbox-modal" id="mailbox">
+    <h3>Mailbox</h3>
+    <p>You have 3 new messages.</p>
+    <ul>
+      <li>🎁 You won 50 coins in a fashion show!</li>
+      <li>📬 Your friend Fluffy sent you a gift!</li>
+      <li>📢 New item in the shop: Fancy Hat</li>
+    </ul>
+    <button onclick="toggleMailbox()">Close</button>
+  </div>
+
+  <div class="shop-modal" id="shop">
+    <h3>Item Shop</h3>
     <p>Buy cute clothes and accessories for your cats here!</p>
-    <button onclick="closeShop()">Close</button>
+    <ul>
+      <li>👗 Red Bow</li>
+      <li>🎩 Fancy Hat</li>
+      <li>🧣 Cozy Scarf</li>
+    </ul>
+    <button onclick="toggleShop()">Close</button>
   </div>
 
   <script>
-    function openShop() {
-      document.getElementById('shopModal').style.display = 'block';
-      document.getElementById('shopOverlay').style.display = 'block';
+    function toggleShop() {
+      const shop = document.getElementById("shop");
+      shop.style.display = shop.style.display === "block" ? "none" : "block";
     }
 
-    function closeShop() {
-      document.getElementById('shopModal').style.display = 'none';
-      document.getElementById('shopOverlay').style.display = 'none';
+    function signOut() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+
+    function toggleMailbox() {
+      const mailbox = document.getElementById("mailbox");
+      mailbox.style.display = mailbox.style.display === "block" ? "none" : "block";
     }
   </script>
 </body>

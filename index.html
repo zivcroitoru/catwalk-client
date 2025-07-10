@@ -5,17 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/main.js" defer></script>
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+
+      const nav = document.querySelector("nav");
+      if (isLoggedIn) {
+        // Remove Login link
+        const loginLink = nav.querySelector('a[href="pages/login.html"]');
+        if (loginLink) loginLink.remove();
+
+        // Add Sign Out button
+        const signOut = document.createElement("button");
+        signOut.textContent = "Sign Out";
+        signOut.style.marginLeft = "1rem";
+        signOut.onclick = () => {
+          localStorage.removeItem("loggedIn");
+          location.reload();
+        };
+        nav.appendChild(signOut);
+      }
+    });
+  </script>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="pages/login.html">Login</a>
-    <a href="pages/album.html">Album</a>
-    <a href="pages/shop.html">Shop</a>
-    <a href="pages/fashion-show.html">Fashion Show</a>
-    <a href="pages/admin.html">Admin</a>
-  </nav>
+<nav>
+  <a href="pages/login.html">Login</a>
+  <a href="pages/album.html">Album</a>
+  <a href="pages/fashion-show.html">Fashion Show</a>
+  <a href="pages/admin.html">Admin</a>
+</nav>
+
 
   <main>
     <h1>Welcome to Cat Walk Game</h1>
