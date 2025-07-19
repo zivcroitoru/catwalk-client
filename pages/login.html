@@ -1,48 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Album Login</title>
   <link rel="stylesheet" href="../css/login.css" />
-  <script>
-    function fakeLogin(event) {
-      event.preventDefault();
-
-      const usernameInput = document.getElementById("usernameInput");
-      const username = usernameInput.value.trim();
-
-      if (username.length === 0) {
-        alert("Please enter a username.");
-        return;
-      }
-
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("username", username);
-      window.location.href = "album.html";
-    }
-  </script>
+  <script defer src="../js/authentication.js"></script>
 </head>
+
 <body>
   <div class="login-container">
     <h1 class="logo-text">CAT WALK</h1>
 
-    <h2 class="login-title">LOG-IN</h2>
 
-    <form class="login-form" onsubmit="fakeLogin(event)">
+    <h2 class="login-title">LOG-IN</h2>
+    <form class="login-form" id="loginForm">
+
       <div class="input-row">
         <span class="input-label">USERNAME:</span>
+        <input id="usernameInput" type="text" placeholder="username" required />
         <input id="usernameInput" type="text" placeholder="username" required />
       </div>
       <div class="input-row">
         <span class="input-label">PASSWORD:</span>
-        <input type="password" placeholder="********" required />
+        <input id="passwordInput" type="password" placeholder="********" required />
       </div>
       <button type="submit" class="go-btn">GO!</button>
     </form>
-    
+
     <p class="register-line">
-      DON'T HAVE AN ACCOUNT?<br/>
+      DON'T HAVE AN ACCOUNT?<br />
       <span class="sub-line">
         Click here to <a href="signup.html" class="register-link">REGISTER!</a>
       </span>
@@ -51,8 +39,9 @@
     <img src="../assets/icons/cat_with_cafe_icon.png" class="login-cat" alt="Cat Icon" />
 
     <div class="warning-box">
-      WARNING<br/>MESSAGES<br/>WILL APPEAR<br/>HERE
+      WARNING<br />MESSAGES<br />WILL APPEAR<br />HERE
     </div>
   </div>
 </body>
+
 </html>

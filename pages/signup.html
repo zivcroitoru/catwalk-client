@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register - Cat Walk</title>
   <link rel="stylesheet" href="../css/login.css" />
-  <script>
-    function fakeRegister(event) {
-      event.preventDefault();
-      alert("Account created!");
-      window.location.href = "login.html";
-    }
-  </script>
+  <script src="../js/authentication.js" defer></script>
 </head>
+
 <body>
   <div class="login-container">
     <!-- Logo Text -->
@@ -20,7 +16,7 @@
     <h2 class="login-title">SIGN-UP</h2>
 
     <!-- Registration Form -->
-    <form class="login-form" onsubmit="fakeRegister(event)">
+    <form class="login-form" onsubmit="handleRegister(event)">
       <div class="input-row">
         <span class="input-label">USERNAME:</span>
         <input type="text" placeholder="username" required />
@@ -32,18 +28,19 @@
       <button type="submit" class="go-btn">CONFIRM</button>
     </form>
 
-<p class="register-line">
-  ALREADY HAVE AN ACCOUNT?<br/>
-  <a href="login.html" class="register-link">LOG IN!</a>
-</p>
+    <p class="register-line">
+      ALREADY HAVE AN ACCOUNT?<br />
+      <a href="login.html" class="register-link">LOG IN!</a>
+    </p>
 
     <!-- Cat Icon -->
     <img src="../assets/icons/2cats_drink.png" class="login-cat" alt="Cat Icon" />
 
     <!-- Warning Area -->
     <div class="warning-box">
-      WARNING<br/>MESSAGES<br/>WILL APPEAR<br/>HERE
+      WARNING<br />MESSAGES<br />WILL APPEAR<br />HERE
     </div>
   </div>
 </body>
+
 </html>
