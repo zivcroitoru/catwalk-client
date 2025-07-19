@@ -1,435 +1,594 @@
-/* === Import Font === */
+/* ---------- Global ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* === Reset & Global Styles === */
-* {
-  box-sizing: border-box;
+:root{
+  --cream: #fdf4d9;
+  --parchment: #fff2c7;
+  --border: #1b120d;
+  --accent: #c28d31;
+  --red: #d62828;
+  --btn: #ffcc66;
 }
 
-html, body {
-  overflow: hidden;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: 'Press Start 2P', monospace;
-  background-image: url('../assets/ui/bg.png');
-  background-size: cover;
-  color: rgb(0, 0, 0);
+*{box-sizing:border-box;image-rendering:pixelated;}
+body{
+  margin:0;
+  font-family:'Press Start 2P',sans-serif;
+   background:url('../assets/backgrounds/album_bg.png') center/cover no-repeat fixed var(--cream);
+  color:var(--border);
+  overflow:hidden;          /* prevent page scroll; game scrolls inside panes */
 }
-
-/* === Title === */
+.sign-out-btn {
+  position: absolute;
+  top: 20px;
+  right: 50px; /* 👈 This makes it top-right */
+  background: var(--btn);
+  border: 6px solid var(--border);
+  padding: 16px 24px;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 999;
+}
+/* ---------- Top section ---------- */
 .cats-title {
-  color: #ffb700;
-  font-size: 50px;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  color: #FFEEC3;
+  letter-spacing: 2px;
+  margin: 0;
   text-shadow:
-    -3px -3px 0 #000,
-     3px -3px 0 #000,
-    -3px  3px 0 #000,
-     3px  3px 0 #000;
-  text-align: center;
-  margin-bottom: 2rem;
+    -3px -3px #000,
+     3px -3px #000,
+    -3px  3px #000,
+     3px  3px #000,
+     0  -3px #000,
+     0   3px #000,
+    -3px  0   #000,
+     3px  0   #000;
 }
 
-/* === Layout === */
-.wrapper {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  height: 100vh;
-}
-
-.main-area {
+.topbar {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  height: 100%;
+  gap: 30px; /* more spacing */
+   top: 60px; /* 👈 move the whole block down */
+     position: absolute;
+
+}
+.topbar-icon {
+  
+  position: relative;
+  background: #f08632;
+  border: 4px solid black;
+  padding: 8px;
+  border-radius: 8px;
+  width: 85px;        /* or 72px for smaller icons */
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 👈 align icon to the left */
+  box-sizing: border-box;
+  transition: transform 0.2s ease; /* 👈 smooth motion */
+
+}
+.topbar-icon:hover {
+  transform: translateX(6px); /* 👈 slide slightly to the right */
+}
+.coin-icon {
+  width: 150px; /* 👈 wider only for the coin */
 }
 
-/* === Cat Center Display === */
-.center-ellipse {
-  position: fixed;
-  top: 70%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.75);
-  pointer-events: none;
-  z-index: 9998;
+.topbar-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 👈 keeps proportions */
 }
+.topbar-icon:active {
+  background: #ffce00; /* Yellow press color */
+  transform: translateX(6px) scale(0.95);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
+  transition: background 0.1s ease, transform 0.05s ease, box-shadow 0.05s ease;
+}
+.coin-count {
+  position: absolute;
+  left: 56px;
+  top: 62%; /* 👈 slightly lower than center */
+  transform: translateY(-50%);
+  color: #000000;
+  font-size: 22px;
+  pointer-events: none;
+}
+
+
+/* ---------- Center cat & podium ---------- */
+.center-ellipse {
+  display: block;
+  width: 200px;
+}
+.ellipse-podium {
+  position: relative;
+  width: fit-content;
+  transform: scale(3); /* 👈 Scale everything inside */
+  margin: 900px auto 0; /* 👈 Pushes it down */
+
+}
+
 
 .carousel-cat {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 320px;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-/* === Main Cat Placeholder (Optional) === */
-.main-area h1 {
-  margin-bottom: 1rem;
-  font-size: 16px;
-  text-align: center;
-}
-
-.main-cat {
-  background-image: url('assets/cat-main.png');
-  width: 200px;
-  height: 200px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  margin: 0 auto;
-}
-
-/* === Carousel Section === */
-.carousel-wrapper {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 900;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.carousel-background {
-  background: #FFEEC3;
-  border-top: 4px solid #DAAB6E;
-  border-bottom: 4px solid #DAAB6E;
-  padding: 1rem 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.carousel-viewport {
-  width: calc(96px * 5); /* show 5 cards */
-  overflow: hidden;
-}
-
-.carousel {
-  display: flex;
-  gap: 16px;
-  transition: transform 0.3s ease;
-  padding: 0 1rem;
-}
-
-.cat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #cc5c57;
-  padding: 0.5rem;
-  border: 4px solid #000;
-  width: 80px;
-  height: 100px;
-  flex-shrink: 0;
-}
-
-.cat-thumbnail {
-  width: 48px;
-  height: 48px;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-}
-
-/* === Carousel Buttons === */
-.scroll-btn {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 9999;
-  pointer-events: auto;
-  background-color: #c5690e;
-  color: black;
-  border: 4px solid black;
-  font-size: 16px;
-  font-family: 'Press Start 2P', monospace;
-  padding: 0.5rem;
-  cursor: pointer;
-  width: 40px;
-  height: 80px;
+  bottom: 20px; /* adjust to sit on ellipse */
+  left: 50%;
+  transform: translateX(-50%);
+  height: 200px;
+  pointer-events: none;
+}
+/* ---------- Carousel ---------- */
+.carousel-wrapper{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  align-items:flex-start;
 }
 
-.scroll-btn.left {
-  left: 28rem;
+.carousel-background{
+  background:var(--cream);
+  border:8px solid var(--border);
+  padding:18px 60px;
+  display:flex;align-items:center;
+  position:relative;
 }
-
-.scroll-btn.right {
-  right: 28rem;
+.carousel-viewport{
+  overflow:hidden;
+  flex:1;
 }
+.carousel{
+  display:flex;gap:20px;
+  transition:transform .4s ease;
+}
+.cat-card{
+  width:120px;
+  text-align:center;
+  cursor:pointer;
+}
+.cat-thumbnail{
+  width:120px;height:120px;
+  border:6px solid var(--border);
+  background-size:cover;background-position:center;
+  margin-bottom:6px;
+}
+.cat-card span{background:var(--accent);display:block;color:#fff;font-size:12px;padding:4px 0;}
+.scroll-btn{
+  width:42px;height:42px;
+  font-size:32px;
+  background:var(--btn);
+  border:6px solid var(--border);
+  cursor:pointer;
+  line-height:28px;
+  padding:0;
+}
+.scroll-btn.left{position:absolute;left:10px;}
+.scroll-btn.right{position:absolute;right:10px;}
 
-/* === Floating Action Buttons === */
+/* ---------- Add-cat button ---------- */
+.add-cat-button{
+  position:absolute;
+  right:10px;top:50%;
+  transform:translateY(-50%);
+  width:64px;height:64px;
+  border:4px solid var(--border);
+  background:var(--btn);
+  cursor:pointer;
+}
+.add-cat-button img{width:100%;height:100%;}
+/* ---------- Floating action buttons ---------- */
+
 .floating-actions {
-  position: fixed;
-  bottom: 8.5rem;
-  left: 5rem;
+  position: absolute;
+  top: -60px;
+  left: 20px;
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
-  z-index: 1000;
-  pointer-events: auto;
+  gap: 20px;
+  z-index: 10;
 }
 
+.floating-actions button,
+.inventory-box {
+  transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.1s ease;
+  background: var(--btn);
+  border: 6px solid var(--border);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* Hover glow */
+.floating-actions button:hover,
+.inventory-box:hover {
+  box-shadow: 0 0 12px 4px #ffd700;
+}
+
+/* Click effect */
+.floating-actions button:active,
+.inventory-box:active {
+  background: #ffce00; /* Click color */
+  box-shadow: inset 0 0 6px #000;
+  transform: scale(0.97); /* Slight press */
+}
+.floating-actions button.active,
+.inventory-box.active {
+  background: #ffce00; /* persistent active color */
+  box-shadow: inset 0 0 6px #000;
+  transform: scale(0.97);
+}
+/* Button specific size & layout */
 .floating-actions button {
-  background-color: #f68b1f;
-  border: 4px solid black;
-  font-size: 10px;
-  font-family: 'Press Start 2P', monospace;
-  padding: 0.25rem 0.5rem;
+  width: 180px;
+  padding: 16px 0;
   cursor: pointer;
-  width: auto;
-  height: 64px;
-  min-width: 120px;
+}
+
+/* Inventory box layout */
+.inventory-box {
+  width: 220px;
+  padding: 16px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  image-rendering: pixelated;
+  font-family: inherit;
 }
-
-.floating-actions button:hover {
-  background-color: #ffd179;
-}
-
-/* === Scroll-style Cat Profile === */
+/* ───────────────────────────────────────
+   PROFILE SCROLL (PARCHMENT CONTAINER)
+──────────────────────────────────────── */
 .cat-profile-scroll {
   position: absolute;
-  top: 5rem;
-  right: 2rem;
-  width: 700px;
-  background: url('../assets/ui/scroll.svg') no-repeat center center;
+  top: 40px; /* adjust this for how far down you want */
+  right: 0;
+  width: 1100px;
+  height: 850px;
+  background: url('../assets/ui/scroll.svg') no-repeat center;
   background-size: 100% 100%;
-  image-rendering: pixelated;
-  font-family: 'Press Start 2P', monospace;
-  color: #000;
-  z-index: 9999;
-  padding: 1.5rem 2rem;
+  padding: 220px 160px 160px 160px;
   box-sizing: border-box;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--border);
+  overflow: hidden;
 }
-
-.scroll-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center content horizontally */
-  gap: 1rem;
-  text-align: center; /* Center all text inside elements */
-}
-/* === Name Input === */
+/* ───────────────────────────────────────
+   PROFILE NAME (TOP CENTER)
+──────────────────────────────────────── */
 .profile-name-input {
-  font-family: inherit;
-  font-size: 14px;
-  padding: 0.3rem;
+  position: absolute;
+  top: 115px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  padding: 16px 0;
   text-align: center;
-  line-height: 1.5;
-  width: 60%;
   background: #fff;
-  border: 4px solid #000;
-  box-sizing: border-box;
-  color: #FFC20E;
-  text-shadow:
-    -1px -1px 0 #000,
-     1px -1px 0 #000,
-    -1px  1px 0 #000,
-     1px  1px 0 #000;
-
-  /* ⬆️ Move input slightly upward */
-  margin-top: -1rem;
+  border: 6px solid var(--border);
+  font-size: 24px;
+  z-index: 10;
 }
 
-
-
-
-/* === Profile Details Layout === */
+/* ───────────────────────────────────────
+   PROFILE BODY LAYOUT
+──────────────────────────────────────── */
 .profile-main {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: row;
+  gap: 24px;
 }
 .profile-info {
+  margin-top: 20px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex-grow: 1;
-  margin-top: 1rem; /* 👈 shifts all rows downward */
-}
-
-.profile-row {
-  font-weight: bold;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 0.3rem; /* 👈 adds space below each row */
+  gap: 10px;
+  font-size: 21px; /* 14px × 1.5 */
+  line-height: 1.5;
+}ile-row strong {
+  display: inline-block;
+  width: 120px;
 }
 
 .profile-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  width: 30%;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
-.icon-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.icon-button {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  image-rendering: pixelated;
-  border: 2px solid #000;
-  background-color: #fff;
-  cursor: pointer;
-}
-.desc-block {
-  margin-top: -1rem; /* 👈 adjust as needed to move it up */
-    text-align: left;
-
+/* ───────────────────────────────────────
+   DESCRIPTION FIELD
+──────────────────────────────────────── */
+.desc-block label {
+  margin-top: 2px; /* Adjust as needed */
+  display: block;
+  margin-bottom: 8px;
 }
 .desc-input {
+  font-size: 18px;
+  line-height: 1.6;
   width: 100%;
-  height: 100px;
-  padding: 0.5rem;
-  font-size: 10px;
-  background: #fff;
-  border: 4px solid #000;
+  height: 140px;        /* fixed height */
+  padding: 12px;
+  border: 6px solid var(--border);
+  background: #fff9e6;
   resize: none;
-  box-sizing: border-box;
-  text-transform: uppercase;
-
-  text-align: left;
-  display: block;
-  margin: 0 auto; /* center horizontally */
+  overflow-y: disabled;     /* scroll if needed */
 }
-/* === Save / Cancel Buttons === */
-.button-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.action-button {
+.word-count {
   font-size: 12px;
-  padding: 0.3rem 0.6rem;
-  background: #E4C28B;
-  border: 2px solid #000;
-  cursor: pointer;
-  width: 90px;
+  margin-top: 4px;
+  text-align: right;
+  color: var(--border);
 }
+/* ───────────────────────────────────────
+   ICONS – TOP RIGHT IMAGE + BUTTONS
+──────────────────────────────────────── */
 
-/* === Topbar (Coins, Sound, Mail) === */
-.topbar {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  z-index: 10;
-}
-
-.topbar-icon {
-  width: 120px;
-  height: 64px;
-  background-color: #f68b1f;
-  border: 4px solid #000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px;
+.top-right-icons img {
+  width: 150px; /* Set only width */
+  height: auto; /* Maintain aspect ratio */
   image-rendering: pixelated;
+  border: 2px solid var(--border);
+  margin-top: 30px;
+  margin-right: 45px; /* ⬅️ Move slightly left */
+}
+
+
+
+
+/* ───────────────────────────────────────
+   FOOTER BUTTONS (EDIT, DELETE, SAVE)
+──────────────────────────────────────── */
+.profile-footer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.profile-btn {
+  font-size: 12px;
+  padding: 10px 20px;
+  min-width: 100px;
+  text-align: center;
+  font-family: inherit;
+  border: 4px solid var(--border);
   cursor: pointer;
-  transform: translateX(-20%);
-  transition: transform 0.2s ease;
+  image-rendering: pixelated;
 }
 
-.topbar-icon:hover {
-  transform: translateX(0);
+.profile-btn.primary {
+  background: var(--btn);
+  color: black;
+}
+.profile-btn.secondary {
+  background: #e0e0e0;
+  color: black;
+}
+.profile-btn.danger {
+  background: var(--red);
+  color: white;
 }
 
-.topbar-icon img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
+/* ---------- Modals ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  z-index: 999;
 }
 
-.coin-count {
-  font-size: 10px;
-  color: #000;
-}
-
-/* === Modals === */
+/* ✅ Shared modal styles (excluding upload-cat) */
 .mailbox-modal,
 .shop-modal {
-  display: none;
   position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fffbea;
-  padding: 1rem;
-  border: 4px solid #000;
-  z-index: 2000;
-  width: 300px;
-  font-size: 10px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--parchment);
+  border: 10px solid var(--border);
+  padding: 40px 50px;
+  width: 380px;
+  text-align: center;
+  display: none;
 }
 
-/* === Add Cat Button === */
-.add-cat-button {
-  pointer-events: auto;
-  margin-left: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border: 4px solid black;
-  background-color: #FFD179;
-  cursor: pointer;
-  z-index: 9999;
-}
-
-.add-cat-button img {
-  width: 48px;
-  height: 48px;
-}
-
-/* === Upload Cat Modal === */
+/* ✅ Custom upload modal container */
 .upload-cat-modal {
   position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  
+}
+.upload-label {
+  border: none;
+  padding: 0;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: -120px; /* 👈 tweak this value to shift left */
+  margin-top: 30px;    /* 👈 move down */
+
+}
+
+.upload-label input {
+  display: none;
+}
+
+
+/* ✅ Popup layout split */
+.popup-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.speech-bubble {
+  background: url('../assets/icons/bubble.png') no-repeat center;
+  background-size: 100% 100%;
+  width: 500px;
+  height: 340px;
+  padding: 24px 30px 12px 30px; /* ↑ top padding adjusted */
+  display: flex;
+  padding-left: 30px; /* adjust this only */
+  flex-direction: column;
+  justify-content: flex-start;
+  color: black;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: left;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+/* ✅ Right side: image + text + cat */
+.popup-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 160px;
+}
+
+.upload-icon {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  cursor: pointer;
+}
+/* 🟡 Hover effect */
+.upload-icon:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* 🔴 Click (active) effect */
+.upload-icon:active {
+  transform: scale(0.95);
+  filter: brightness(0.9);
+}
+.loading-text {
+  font-size: 12px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.cat-sprite-foruploadscreen {
+  width: 120px;
+  image-rendering: pixelated;
+  align-self: flex-start;
+  margin-left: 1rem; /* optional spacing from the edge */
+    margin-left: -270px; /* shift more left */
+      margin-top: -8px; /* adjust as needed */
+
+
+}
+/* ✅ Close button in top corner */
+.popup-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: red;
+  color: black;
+  border: 4px solid black;
+  font-size: 20px;       /* ⬅️ doubled */
+  font-weight: bold;
+  line-height: 20px;     /* ⬅️ doubled */
+  padding: 0 8px;        /* ⬅️ doubled */
+  height: auto;
+  width: auto;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* ✅ Hidden file input with styled label */
+.file-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid #000;
+  background: #ffc96b;
+  cursor: pointer;
+}
+.file-label input {
+  display: none;
+}
+
+/* ✅ Image preview box */
+.preview {
+  width: 120px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border: 2px solid #000;
+  margin-bottom: 0.5rem;
+}
+.upload-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.upload-icon-btn {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  image-rendering: pixelated;
+  border: none;
+  background: none;
+  transition: transform 0.1s ease;
+}
+
+.upload-icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.upload-icon-btn:active {
+  transform: scale(0.95);
+}
+.upload-cat-inner.styled-popup {
+  background: #fce5b4;
+  border: 4px solid #000;
+  padding: 2rem;
+  width: 900px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #ffe7b2;
-  border: 4px solid #a5793c;
-  padding: 2rem;
-  z-index: 99999;
-  display: none;
   font-family: 'Press Start 2P', monospace;
-  text-align: center;
+}
+/* ✅ Shared button styles */
+.upload-cat-modal button:not(.popup-close),
+.mailbox-modal button,
+.shop-modal button {
+  margin-top: 28px;
+  width: 50px;
+  padding: 14px 0;
+  background: var(--btn);
+  border: 6px solid var(--border);
+  cursor: pointer;
 }
 
-.upload-cat-inner {
-  display: inline-block;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99998;
-  display: none;
-}
+/* ---------- Utility ---------- */
+button,img,input,textarea{outline:none;font-family:inherit;}
+button:active{transform:translateY(2px);}

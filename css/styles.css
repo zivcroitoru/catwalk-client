@@ -64,7 +64,6 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 button:hover {
