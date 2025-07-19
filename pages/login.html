@@ -8,22 +8,31 @@
   <script>
     function fakeLogin(event) {
       event.preventDefault();
+
+      const usernameInput = document.getElementById("usernameInput");
+      const username = usernameInput.value.trim();
+
+      if (username.length === 0) {
+        alert("Please enter a username.");
+        return;
+      }
+
       localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("username", username);
       window.location.href = "album.html";
     }
   </script>
 </head>
 <body>
   <div class="login-container">
-<h1 class="logo-text">CAT WALK</h1>
-
+    <h1 class="logo-text">CAT WALK</h1>
 
     <h2 class="login-title">LOG-IN</h2>
 
     <form class="login-form" onsubmit="fakeLogin(event)">
       <div class="input-row">
         <span class="input-label">USERNAME:</span>
-        <input type="text" placeholder="username" required />
+        <input id="usernameInput" type="text" placeholder="username" required />
       </div>
       <div class="input-row">
         <span class="input-label">PASSWORD:</span>
@@ -32,12 +41,12 @@
       <button type="submit" class="go-btn">GO!</button>
     </form>
     
-<p class="register-line">
-  DON'T HAVE AN ACCOUNT?<br/>
-  <span class="sub-line">
-    Click here to <a href="signup.html" class="register-link">REGISTER!</a>
-  </span>
-</p>
+    <p class="register-line">
+      DON'T HAVE AN ACCOUNT?<br/>
+      <span class="sub-line">
+        Click here to <a href="signup.html" class="register-link">REGISTER!</a>
+      </span>
+    </p>
 
     <img src="../assets/icons/cat_with_cafe_icon.png" class="login-cat" alt="Cat Icon" />
 

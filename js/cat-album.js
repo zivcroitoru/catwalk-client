@@ -17,12 +17,30 @@ function toggleSound() {
 
 function toggleShop() {
   const shop = document.getElementById("shop");
-  shop.style.display = shop.style.display === "block" ? "none" : "block";
+  const scroll = document.getElementById("catProfileScroll");
+  const mailbox = document.getElementById("mailbox");
+
+  const isOpen = shop.style.display === "block";
+  shop.style.display = isOpen ? "none" : "block";
+
+  if (!isOpen) {
+    scroll.style.display = "none";
+    mailbox.style.display = "none";
+  }
 }
 
 function toggleMailbox() {
   const mailbox = document.getElementById("mailbox");
-  mailbox.style.display = mailbox.style.display === "block" ? "none" : "block";
+  const shop = document.getElementById("shop");
+  const scroll = document.getElementById("catProfileScroll");
+
+  const isOpen = mailbox.style.display === "block";
+  mailbox.style.display = isOpen ? "none" : "block";
+
+  if (!isOpen) {
+    shop.style.display = "none";
+    scroll.style.display = "none";
+  }
 }
 
 function signOut() {
@@ -170,7 +188,20 @@ function updateDescMetrics() {
   updateDescMetrics();
 });
 function toggleDetails() {
-  const scroll = document.getElementById('catProfileScroll');
-  scroll.style.display = scroll.style.display === 'block' ? 'none' : 'block';
+  const scroll = document.getElementById("catProfileScroll");
+  const shop = document.getElementById("shop");
+  const mailbox = document.getElementById("mailbox");
+
+  const isOpen = scroll.style.display === "block";
+  scroll.style.display = isOpen ? "none" : "block";
+
+  if (!isOpen) {
+    shop.style.display = "none";
+    mailbox.style.display = "none";
+  }
 }
+window.addEventListener("DOMContentLoaded", () => {
+  const username = localStorage.getItem("username") || "Guest";
+  document.getElementById("welcomeMessage").textContent = `Welcome, ${username}`;
+});
 

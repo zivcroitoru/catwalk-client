@@ -9,6 +9,29 @@
   --red: #d62828;
   --btn: #ffcc66;
 }
+.welcome-message {
+  position: absolute;
+  top: 70px;
+  left: 200px; /* ⬅️ moved from 30px to 80px */
+  font-size: 28px;
+  font-family: 'Press Start 2P', monospace;
+  color: #fff2c7;
+  text-shadow:
+    -4px -4px #000,
+     4px -4px #000,
+    -4px  4px #000,
+     4px  4px #000,
+     0  -4px #000,
+     0   4px #000,
+    -4px  0  #000,
+     4px  0  #000;
+  z-index: 999;
+  background: none;
+  padding: 0;
+  border: none;
+  line-height: 1.5;
+  white-space: pre-line;
+}
 
 *{box-sizing:border-box;image-rendering:pixelated;}
 body{
@@ -21,8 +44,9 @@ body{
 .sign-out-btn {
   position: absolute;
   top: 20px;
-  right: 50px; /* 👈 This makes it top-right */
-  background: var(--btn);
+  right: 50px;
+  background: var(--red);       /* 🔴 red background */
+  color: white;                 /* ✅ readable text */
   border: 6px solid var(--border);
   padding: 16px 24px;
   font-size: 12px;
