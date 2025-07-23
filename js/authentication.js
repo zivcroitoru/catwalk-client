@@ -51,7 +51,11 @@ async function handleRegister(event) {
     }
 
     // ✅ Success: redirect user
-    window.location.href = "album.html";
+// Save username locally
+localStorage.setItem("username", username);
+// Redirect
+window.location.href = "album.html";
+
 
   } catch (err) {
     console.error(err);
@@ -63,4 +67,31 @@ function showError(msg) {
   const warningBox = document.querySelector(".warning-box");
   warningBox.textContent = msg;
   warningBox.style.color = "red";
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("username") || "Guest";
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    welcomeMessage.textContent = `Welcome, ${username}`;
+  });
+
+  function signOut() {
+  localStorage.removeItem("username");
+  localStorage.removeItem("loggedIn");
+  window.location.href = "login.html";
+}
+window.signOut = signOut;
+
+
+function showError(msg) {
+  const warningBox = document.querySelector(".warning-box");
+  if (!msg) {
+    warningBox.style.display = "none";
+    warningBox.textContent = "";
+    return;
+  }
+  warningBox.textContent = msg;
+  warningBox.style.color = "red";
+  warningBox.style.display = "block";
 }
