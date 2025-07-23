@@ -1,0 +1,232 @@
+/* Design System Variables */
+:root {
+  /* Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-cream: #FFEEC3;
+  --color-yellow: #FFDE8C;
+  --color-brown: #DAAB6E;
+  --color-red: #FB0B0B;
+  --color-salmon: #D06767;
+  --color-gold: #FFC20E;
+  --color-blue: #57B9FF;
+  --color-purple: #F8C4FF;
+  
+  /* Typography */
+  --font-main: 'Jersey 10', monospace;
+  
+/* Strokes */
+--stroke-very-thin: 2px;
+--stroke-thin: 4px;
+--stroke-thick: 7px;
+--stroke-xl: 12px;
+
+/* Spacing */
+--spacing-sm: 10px;
+--spacing-md: 30px;
+--spacing-lg: 100px;
+
+/* Font Sizes */
+--font-size-xl: 128px;
+--font-size-lg: 96px;
+--font-size-md: 64px;
+--font-size-sm: 48px;
+--font-size-xs: 36px;
+--font-size-xxs: 24px;
+}
+
+/* Fashion Show Styles */
+body {
+    background-color: var(--color-purple); /* Light pink/purple background */
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Full viewport height */
+    font-family: var(--font-main);
+}
+
+/* Main title styling */
+h1 {
+    font-family: var(--font-main);
+    font-size: var(--font-size-lg); /* 96px */
+    color: var(--color-cream); /* #FFEEC3 */
+    text-align: center;
+    margin: 0; /* Remove default margins */
+    padding: 0;
+    font-weight: normal;
+    
+    /* Position: center top, full viewport width, 128px height */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full viewport width instead of fixed 1920px */
+    height: 128px;
+    
+    /* Center the text vertically within the 128px height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Sharp pixel font rendering - no anti-aliasing */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    
+    /* Black stroke outside - using text-shadow for outside effect */
+    text-shadow: 
+        -7px -7px 0 var(--color-black),
+        7px -7px 0 var(--color-black),
+        -7px 7px 0 var(--color-black),
+        7px 7px 0 var(--color-black),
+        -7px 0 0 var(--color-black),
+        7px 0 0 var(--color-black),
+        0 -7px 0 var(--color-black),
+        0 7px 0 var(--color-black);
+}
+
+/* Waiting message in center */
+.waiting-message {
+    font-family: var(--font-main);
+    font-size: var(--font-size-md); /* 64px - smaller than title's 96px */
+    color: var(--color-black); /* Fill #000000 */
+    font-weight: normal;
+    
+    /* Position in center of screen */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Dimensions: w=1020, h=512 */
+    width: 1020px;
+    height: 512px;
+    
+    /* Center text alignment */
+    text-align: center;
+    line-height: 1.2; /* Adjust line spacing for readability */
+    
+    /* Center content within the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.album-button {
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    width: 98px;
+    height: 98px;
+    
+    /* Convert to block element for precise dimensions */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    text-decoration: none;
+    color: var(--color-black);
+    background-color: var(--color-brown); /* #DAAB6E */
+    font-family: Arial, sans-serif; /* Use simple font instead of Jersey 10 */
+    font-size: var(--font-size-md); /* Big arrow */
+    font-weight: bold; /* Bold for clean thickness */
+    
+    /* Inside border - 12px weight */
+    border: var(--stroke-xl) solid var(--color-black); /* 12px black border inside */
+    box-sizing: border-box; /* Include border in dimensions */
+}
+
+/* Timer Section */
+.timer-section {
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    width: 150px;
+    height: 60px;
+    
+    background-color: var(--color-salmon); /* #D06767 */
+    border: var(--stroke-thin) solid var(--color-black); /* 4px black border */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.timer-icon {
+    width: 32px;
+    height: 32px;
+}
+
+#timer-text {
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm); /* 48px */
+    color: var(--color-black);
+    font-weight: normal;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Voting Interface Styles */
+.cat-display {
+    position: absolute;
+    top: 150px; /* Below the title */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 1050px; /* Made a bit bigger */
+    height: 420px; /* Made a bit bigger */
+    background-color: var(--color-cream); /* #FFEEC3 */
+    /* Removed border completely */
+}
+
+.announcement-text {
+    position: absolute;
+    bottom: var(--spacing-md); /* Lower than before (was 100px) */
+    left: 50%;
+    transform: translateX(-50%);
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-md); /* 64px */
+    color: var(--color-black);
+    font-weight: normal;
+    
+    /* Add width to prevent text wrapping */
+    width: 1200px; /* Wide enough for "CALCULATING VOTES, PLEASE WAIT . . ." */
+    text-align: center; /* Keep text centered within the wider container */
+
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+.warning-message {
+    position: absolute;
+    right: var(--spacing-lg);
+    top: 250px;
+    width: 100px;
+    
+    font-family: var(--font-main); /* Changed to Jersey 10 */
+    font-size: var(--font-size-xxs); /* 36px */
+    color: var(--color-red); /* #FB0B0B */
+    text-align: center;
+    line-height: 1.4;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}

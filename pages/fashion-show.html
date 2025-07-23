@@ -4,17 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fashion Show</title>
-  <link rel="stylesheet" href="../css/styles.css" />
-  <script src="../js/main.js" defer></script>
+  
+  <!-- Google Fonts - Jersey 10 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../css/fashion-show.css" />
+<script src="../js/main.js" defer></script>
+<script src="../js/fashion-show.js" defer></script>
 </head>
 <body>
-  <nav>
-    <a href="login.html">Sign-Out</a>
-    <a href="album.html">Album</a>
-  </nav>
-
   <main>
-    <h1>Fashion Show Arena</h1>
+    <h1>FASHION SHOW!</h1>
+    
+    <!-- Waiting message in center -->
+    <div class="waiting-message">
+      WAITING FOR MORE<br>
+      PLAYERS TO JOIN<br>
+      <span id="player-counter">1/5</span>
+    </div>
+
+    <!-- Timer section (hidden initially) -->
+    <div class="timer-section" style="display: none;">
+      <img src="../assets/icons/timer.png" alt="Timer" class="timer-icon">
+      <span id="timer-text">60 s</span>
+    </div>
+
   </main>
+  
+  <a href="album.html" class="album-button">←</a>
 </body>
 </html>
