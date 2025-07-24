@@ -1,3 +1,15 @@
+let isInVotingPhase = false; // Track if we're in voting phase
+let exitDialogOpen = false; // Track if exit dialog is currently open
+
+// Placeholder data for cats and players (until database integration)
+const placeholderCats = [
+    { catName: "Mr. Grumpy Pants", username: "who_dis723" },
+    { catName: "Juliet", username: "strawberry_banana" },
+    { catName: "Smiley", username: "(:_smile_:)" },
+    { catName: "Cookie", username: "my_username_sucks" },
+    { catName: "Elvis", username: "the_king_91" }
+];
+
 // Fashion Show Counter System
 let playerCount = 1;
 const maxPlayers = 5;
@@ -52,6 +64,9 @@ function transitionToVotingPhase() {
 }
 
 function showVotingInterface() {
+    // SET VOTING PHASE FLAG
+    isInVotingPhase = true;
+
     // Remove the waiting message completely
     const waitingMessage = document.querySelector('.waiting-message');
     if (waitingMessage) {
@@ -72,6 +87,41 @@ function createVotingInterface() {
     const catDisplay = document.createElement('div');
     catDisplay.className = 'cat-display';
     
+    // Create 5 brown stage bases inside the cat display
+    for (let i = 0; i < 5; i++) {
+        const stageBase = document.createElement('div');
+        stageBase.className = 'stage-base';
+        stageBase.setAttribute('data-cat-index', i);
+        
+        // Add stage walkway image to top
+        const stageWalkway = document.createElement('img');
+        stageWalkway.src = '../assets/icons/stage-walkway.png';
+        stageWalkway.alt = 'Stage Walkway';
+        stageWalkway.className = 'stage-walkway';
+        stageBase.appendChild(stageWalkway);
+        
+        // Add cat sprite - positioned 30px above bottom of stage-walkway
+        const catSprite = document.createElement('img');
+        catSprite.src = '../assets/cats/classic pink.png';
+        catSprite.alt = placeholderCats[i].catName;
+        catSprite.className = 'cat-sprite';
+        stageBase.appendChild(catSprite);
+        
+        // Add cat name text
+        const catName = document.createElement('div');
+        catName.className = 'cat-name';
+        catName.textContent = placeholderCats[i].catName;
+        stageBase.appendChild(catName);
+        
+        // Add username text  
+        const username = document.createElement('div');
+        username.className = 'username';
+        username.textContent = placeholderCats[i].username;
+        stageBase.appendChild(username);
+        
+        catDisplay.appendChild(stageBase);
+    }
+
     // Create announcement text (starts with "HERE THEY COME!")
     const announcement = document.createElement('div');
     announcement.className = 'announcement-text';
@@ -206,6 +256,16 @@ function startEndSequence() {
                 console.log("Calculating votes message removed - sequence complete!");
             }
             
+            // WE'VE REACHED RESULTS PHASE - Album button should work normally now
+            isInVotingPhase = false;
+            console.log("Entered results phase - album button back to normal");
+            
+            // AUTO-CLOSE EXIT DIALOG IF OPEN (we've reached results phase)
+            if (exitDialogOpen) {
+                closeExitDialog();
+                console.log("Auto-closed exit dialog - reached results phase");
+            }
+
             // Wait 3 seconds then restart the entire sequence
             setTimeout(() => {
                 resetToWaitingRoom();
@@ -227,6 +287,14 @@ function hideTimer() {
 function resetToWaitingRoom() {
     console.log("Resetting to waiting room - starting new cycle...");
     
+    // RESET VOTING PHASE FLAG
+    isInVotingPhase = false;
+    
+    // Close any open exit dialog
+    if (exitDialogOpen) {
+        closeExitDialog();
+    }
+
     // Remove any remaining voting interface elements
     const catDisplay = document.querySelector('.cat-display');
     const warningMessage = document.querySelector('.warning-message');
@@ -267,8 +335,84 @@ function resetToWaitingRoom() {
     console.log("New cycle started!");
 }
 
-// Start the counter when page loads
+// Updated showExitDialog function with new text
+function showExitDialog() {
+    if (exitDialogOpen) return; // Prevent multiple dialogs
+    
+    exitDialogOpen = true;
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'exit-overlay';
+    overlay.id = 'exit-overlay';
+    
+    // Create dialog box
+    const dialog = document.createElement('div');
+    dialog.className = 'exit-dialog';
+    
+    // Create title text - UPDATED MESSAGE
+    const title = document.createElement('div');
+    title.className = 'exit-dialog-title';
+    title.innerHTML = 'Are you sure you want to exit this gameshow?<br>All potential rewards will be lost!';
+    
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'exit-dialog-buttons';
+    
+    // Create NO button
+    const noButton = document.createElement('button');
+    noButton.className = 'exit-dialog-button no-button';
+    noButton.textContent = 'NO, I changed my mind';
+    noButton.onclick = closeExitDialog;
+    
+    // Create YES button  
+    const yesButton = document.createElement('button');
+    yesButton.className = 'exit-dialog-button yes-button';
+    yesButton.textContent = "YES, I'm sure";
+    yesButton.onclick = () => {
+        window.location.href = 'album.html';
+    };
+    
+    // Assemble dialog
+    buttonsContainer.appendChild(noButton);
+    buttonsContainer.appendChild(yesButton);
+    dialog.appendChild(title);
+    dialog.appendChild(buttonsContainer);
+    overlay.appendChild(dialog);
+    
+    // Add to page
+    document.body.appendChild(overlay);
+    
+    console.log("Exit dialog shown");
+}
+
+function closeExitDialog() {
+    const overlay = document.getElementById('exit-overlay');
+    if (overlay) {
+        overlay.remove();
+        exitDialogOpen = false;
+        console.log("Exit dialog closed");
+    }
+}
+
+function handleAlbumButtonClick(event) {
+    if (isInVotingPhase) {
+        // During voting phase - show confirmation dialog
+        event.preventDefault(); // Prevent default navigation
+        showExitDialog();
+    }
+    // During waiting room - let default behavior happen (go to album.html)
+}
+
+// SINGLE EVENT LISTENER - FIXED!
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Fashion Show page loaded - starting counter");
     startCounter();
+    
+    // Add album button click handler
+    const albumButton = document.querySelector('.album-button');
+    if (albumButton) {
+        albumButton.addEventListener('click', handleAlbumButtonClick);
+        console.log("Album button click handler attached");
+    }
 });

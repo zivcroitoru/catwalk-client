@@ -22,7 +22,8 @@
 --stroke-xl: 12px;
 
 /* Spacing */
---spacing-sm: 10px;
+--spacing-xs: 10px;
+--spacing-sm: 20px;
 --spacing-md: 30px;
 --spacing-lg: 100px;
 
@@ -142,7 +143,7 @@ h1 {
     font-weight: bold; /* Bold for clean thickness */
     
     /* Inside border - 12px weight */
-    border: var(--stroke-xl) solid var(--color-black); /* 12px black border inside */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black border inside */
     box-sizing: border-box; /* Include border in dimensions */
 }
 
@@ -155,7 +156,7 @@ h1 {
     height: 60px;
     
     background-color: var(--color-salmon); /* #D06767 */
-    border: var(--stroke-thin) solid var(--color-black); /* 4px black border */
+    border: var(--stroke-thick) solid var(--color-black); /* 4px black border */
     
     display: flex;
     align-items: center;
@@ -164,11 +165,31 @@ h1 {
 }
 
 .timer-icon {
+    /* Fixed position within the salmon box */
+    position: absolute;
+    left: 15px; /* Fixed 15px from left edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
+    
     width: 32px;
     height: 32px;
+    
+    /* Prevent distortion - maintain aspect ratio */
+    object-fit: contain;
+    
+    /* Crisp pixel rendering */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }
 
 #timer-text {
+    /* Fixed position within the salmon box */
+    position: absolute;
+    right: 20px; /* Fixed 15px from right edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
+    
     font-family: var(--font-main);
     font-size: var(--font-size-sm); /* 48px */
     color: var(--color-black);
@@ -180,16 +201,107 @@ h1 {
     font-smooth: never;
 }
 
-/* Voting Interface Styles */
+/* Stage Base Styling - Add this to your css/fashion-show.css */
 .cat-display {
     position: absolute;
     top: 150px; /* Below the title */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Perfect centering */
-    width: 1050px; /* Made a bit bigger */
-    height: 420px; /* Made a bit bigger */
+    width: 1050px;
+    height: 420px;
     background-color: var(--color-cream); /* #FFEEC3 */
-    /* Removed border completely */
+    
+    /* Add flexbox for stage bases layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm); /* 20px padding on all sides */
+    box-sizing: border-box; /* Include padding in dimensions */
+}
+
+.stage-base {
+    width: 186px; /* Calculated: (1050 - 120) / 5 */
+    height: 380px; /* Calculated: 420 - 40 */
+    background-color: var(--color-brown); /* #DAAB6E */
+    position: relative; /* For positioning the walkway image */
+}
+
+.stage-walkway {
+    position: absolute;
+    top: 0; /* Stick to the top */
+    left: 0;
+    width: 100%; /* Full width of the stage base */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+}
+
+/* Cat sprite styling - add this to your css/fashion-show.css */
+.cat-sprite {
+    position: absolute;
+    top: 80px; /* Exactly 30px above bottom of stage-walkway */
+    left: 0;
+    width: 100%; /* Same width as stage-walkway (300px) */
+    height: auto; /* Maintain aspect ratio - never distorted */
+    display: block;
+    
+    /* Ensure crisp pixel rendering for sprite */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Cat name and username styling updates */
+.cat-name {
+    position: absolute;
+    top: 320px; /* Moved down 10px from 310px */
+    bottom: 90px; /* Moved down 10px from 80px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* Reduced from 100% to prevent overflow outside stage base */
+    
+    /* Center content vertically within the defined area */
+    display: flex;
+    align-items: center; /* Vertically center the text */
+    justify-content: center; /* Horizontally center the text */
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-xs); /* 36px - keeping the good size */
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    line-height: 1.1; /* Tighter line height for multi-line names */
+    
+    /* Handle text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+.username {
+    position: absolute;
+    bottom: 0px; /* Even closer to bottom - from 8px to 5px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* Reduced from 100% to prevent overflow outside stage base */
+    
+    font-family: var(--font-main);
+    font-size: 18px; /* Keeping the good size */
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    
+    /* Handle text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
 }
 
 .announcement-text {
@@ -230,3 +342,94 @@ h1 {
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
 }
+
+/* Add to your existing css/fashion-show.css - EXIT CONFIRMATION DIALOG STYLES */
+
+/* Overlay covering full screen */
+.exit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(217, 217, 217, 0.5); /* #D9D9D9 50% */
+    z-index: 1000; /* Above everything */
+    display: flex;
+    align-items: flex-start; /* Changed from center to flex-start */
+    justify-content: center;
+    padding-top: 120px; /* Add top padding to lower the dialog */
+
+}
+
+/* Cream dialog box */
+.exit-dialog {
+    width: 1100px;
+    height: 500px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black stroke */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 50px; /* Padding around edges */
+    box-sizing: border-box;
+}
+
+/* Dialog title text */
+.exit-dialog-title {
+    font-family: var(--font-main);
+    font-size: var(--font-size-md);
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    margin: 0;
+    
+    /* Changed positioning approach - closer to top */
+    margin-bottom: auto; /* Push buttons to bottom */
+    display: flex;
+    align-items: flex-start; /* Align to top instead of center */
+    justify-content: center;
+    line-height: 1.2; /* Better line spacing for multi-line text */
+
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Dialog buttons container */
+.exit-dialog-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 80px; /* Space for buttons at bottom */
+    margin: 0 20px; /* Extra margin to ensure buttons stay inside */
+}
+
+/* Dialog button styling - matches album button */
+.exit-dialog-button {
+    padding: 12px 20px; /* Slightly smaller padding */
+    background-color: var(--color-brown); /* #DAAB6E */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black border */
+    color: var(--color-black);
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm);
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: none;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    
+    /* Ensure proper sizing */
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+}
+
+.exit-dialog-button:hover {
+    opacity: 0.9;
+}
+
