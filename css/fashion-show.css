@@ -215,6 +215,14 @@ h1 {
 =======
     width: 32px;
     height: 32px;
+    
+    /* Prevent distortion - maintain aspect ratio */
+    object-fit: contain;
+    
+    /* Crisp pixel rendering */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }
 
 #timer-text {
@@ -488,8 +496,8 @@ h1 {
     top: 150px; /* Below the title */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Perfect centering */
-    width: 1050px; /* Made a bit bigger */
-    height: 420px; /* Made a bit bigger */
+    width: 1050px;
+    height: 420px;
     background-color: var(--color-cream); /* #FFEEC3 */
     /* Removed border completely */
 >>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
