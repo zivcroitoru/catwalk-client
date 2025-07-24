@@ -10,6 +10,9 @@ const placeholderCats = [
     { catName: "Elvis", username: "the_king_91" }
 ];
 
+// Placeholder coin rewards for results phase
+const placeholderRewards = [50, 75, 100, 25, 60];
+
 // Fashion Show Counter System
 let playerCount = 1;
 const maxPlayers = 5;
@@ -253,7 +256,7 @@ function startEndSequence() {
             // Step 9: "CALCULATING VOTES, PLEASE WAIT . . ." text disappears (3 seconds display)
             if (announcement) {
                 announcement.remove();
-                console.log("Calculating votes message removed - sequence complete!");
+                console.log("Calculating votes message removed - starting results phase!");
             }
             
             // WE'VE REACHED RESULTS PHASE - Album button should work normally now
@@ -266,14 +269,57 @@ function startEndSequence() {
                 console.log("Auto-closed exit dialog - reached results phase");
             }
 
-            // Wait 3 seconds then restart the entire sequence
-            setTimeout(() => {
-                resetToWaitingRoom();
-            }, 3000); // Wait 3 seconds after text disappears
+            // NEW: Show results phase before waiting
+            showResultsPhase();
             
         }, 3000); // 3 seconds for calculating votes message
         
     }, 1000); // 1 second for "TIME'S UP!"
+}
+
+function showResultsPhase() {
+    console.log("Showing results phase...");
+    
+    // Modify existing stage bases for results display
+    const stageBases = document.querySelectorAll('.stage-base');
+    
+    stageBases.forEach((stageBase, index) => {
+        // Make brown base 1/3 of original height (380px -> ~127px)
+        stageBase.classList.add('results-mode');
+        
+        // Remove stage-walkway image during results phase
+        const stageWalkway = stageBase.querySelector('.stage-walkway');
+        if (stageWalkway) {
+            stageWalkway.style.display = 'none';
+        }
+        
+        // Create gold base on top
+        const goldBase = document.createElement('div');
+        goldBase.className = 'gold-base';
+        stageBase.appendChild(goldBase);
+        
+        // Move cat sprite to top of gold base
+        const catSprite = stageBase.querySelector('.cat-sprite');
+        if (catSprite) {
+            catSprite.classList.add('results-cat');
+        }
+        
+        // Add reward text above cat name
+        const rewardText = document.createElement('div');
+        rewardText.className = 'reward-text';
+        rewardText.textContent = `${placeholderRewards[index]} coins`;
+        
+        // Insert reward text before cat name
+        const catName = stageBase.querySelector('.cat-name');
+        if (catName) {
+            stageBase.insertBefore(rewardText, catName);
+        }
+    });
+    
+    // Wait 3 minutes then restart entire sequence
+    setTimeout(() => {
+        resetToWaitingRoom();
+    }, 180000); // Wait 3 minutes (180,000ms) for results display
 }
 
 function hideTimer() {
