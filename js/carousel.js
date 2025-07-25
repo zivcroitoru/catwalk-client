@@ -1,0 +1,29 @@
+
+/*-----------------------------------------------------------------------------
+  carousel.js
+-----------------------------------------------------------------------------*/
+import { $, setDisplay } from './utils.js';
+import { state } from './state.js';
+import { CARD_WIDTH, CARDS_PER_PAGE } from './constants.js';
+
+export function scrollCarousel(direction) {
+  const carousel = $("catCarousel");
+  const totalCards = carousel.children.length;
+  const maxPage = Math.ceil(totalCards / CARDS_PER_PAGE) - 1;
+
+  state.currentPage = Math.max(0, Math.min(state.currentPage + direction, maxPage));
+  const offset = state.currentPage * CARD_WIDTH * CARDS_PER_PAGE;
+  carousel.style.transform = `translateX(-${offset}px)`;
+}
+
+export function addCatToCarousel(imgUrl, label) {
+  const card = document.createElement("div");
+  card.className = "cat-card";
+  card.innerHTML = `
+    <div class="cat-thumbnail" style="background-image:url('${imgUrl}');"></div>
+    <span>${label}</span>
+  `;
+  card.onclick = () => import("./profile.js").then(m => m.showCatProfile({ name: label, image: imgUrl }));
+  $("catCarousel").appendChild(card);
+  $("carouselCat").src = imgUrl;
+}

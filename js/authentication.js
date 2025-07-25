@@ -1,31 +1,36 @@
+// Register handler
 async function handleRegister(event) {
-      event.preventDefault();
+  event.preventDefault();
 
-      const username = document.querySelector('input[type="text"]').value;
-      const password = document.querySelector('input[type="password"]').value;
+  const username = document.querySelector('input[type="text"]').value;
+  const password = document.querySelector('input[type="password"]').value;
 
-      const response = await fetch("http://localhost:3000/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
-      });
+  try {
+    const response = await fetch("http://localhost:3000/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: 'include', // Include cookies for session
+      body: JSON.stringify({ username, password })
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok) {
-        alert("Account created successfully!");
-        console.log("u good");
-        // window.location.href = "login.html";
-      } else {
-        document.querySelector(".warning-box").innerText = result.error || "Signup failed";
-      }
+    if (response.ok) {
+      alert("Account created successfully!");
+      // Optionally redirect to login page
+      // window.location.href = "login.html";
+    } else {
+      showError(result.error || "Signup failed");
     }
+  } catch (error) {
+    showError("Network error. Please try again.");
+  }
+}
 
-
-//login     
- document.getElementById("loginForm").addEventListener("submit", async (e) => {
+// Login handler
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const username = document.getElementById("usernameInput").value;
@@ -35,22 +40,23 @@ async function handleRegister(event) {
     const res = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include', // Include cookies for session
       body: JSON.stringify({ username, password }),
     });
 
     let data;
     try {
       data = await res.json();
-    } catch (err) {
+    } catch {
       throw new Error("Invalid JSON response from server");
     }
 
     if (!res.ok) {
       showError(data?.error || "Login failed");
-      return; // stop here if login failed
+      return;
     }
 
-    // ✅ Success: redirect user
+    // Success: redirect user
     window.location.href = "album.html";
 
   } catch (err) {
@@ -64,3 +70,4 @@ function showError(msg) {
   warningBox.textContent = msg;
   warningBox.style.color = "red";
 }
+window.handleRegister = handleRegister;
