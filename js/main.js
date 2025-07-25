@@ -1,6 +1,8 @@
 console.log("🐱 MAIN.JS LOADED");
 
-import { toggleShop, renderShopItems } from './features/shop/shop.js';
+import { toggleShop } from './features/shop/shop.js'; // only toggleShop here
+import { shopItems } from './features/shop/shopItems.js'; // load the shop data
+import { renderShopItems } from './features/shop/shopItemsRenderer.js'; // render the data
 import { toggleMailbox } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
 import { signOut, fetchUser } from './core/auth/auth.js';

@@ -1,9 +1,17 @@
-import { shopItems } from './shopItems.js'; // JSON data
-import { renderShopItems } from './shopItemsRenderer.js'; // Renders items
+// shop.js
+import { shopItems } from './shopItems.js'; // 🧺 JSON data
+import { renderShopItems } from './shopItemsRenderer.js'; // 🎨 Renders items
 
-// ✅ Toggle the visibility of the shop overlay
+// ✅ Toggle the visibility of the shop overlay and render items
 export function toggleShop() {
+  console.log("🛒 toggleShop() called");
+
   const overlay = document.getElementById("shopOverlay");
+  if (!overlay) {
+    console.warn("❌ shopOverlay not found");
+    return;
+  }
+
   const isVisible = getComputedStyle(overlay).display === "block";
 
   if (isVisible) {
@@ -13,18 +21,25 @@ export function toggleShop() {
     overlay.style.display = "block";
     console.log("✅ Opened shop");
 
+    // 🧠 Render the shop items every time it's opened
+    renderShopItems(shopItems);
+
     const hatsTab = document.querySelector('.tab[data-category="hats"]');
-    if (hatsTab) hatsTab.click();
+    if (hatsTab) {
+      console.log("🎩 Clicking hats tab");
+      hatsTab.click();
+    } else {
+      console.warn("⚠️ Hats tab not found");
+    }
   }
 }
 
-// ✅ Optional scroll behavior
+// ✅ Optional: Scroll the shop items left/right
 export function scrollShop(direction) {
   const wrapper = document.querySelector(".shop-scroll-wrapper .items");
+  if (!wrapper) {
+    console.warn("❌ shop-scroll-wrapper not found");
+    return;
+  }
   wrapper.scrollBy({ left: direction * 200, behavior: "smooth" });
 }
-
-// ✅ Call once on load
-document.addEventListener("DOMContentLoaded", () => {
-  renderShopItems(shopItems);
-});

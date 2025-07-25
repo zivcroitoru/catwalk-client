@@ -1,0 +1,23 @@
+/* ---------- Base ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root{
+  --cream:#fdf4d9;
+  --parchment:#fff2c7;
+  --border:#1b120d;
+  --accent:#c28d31;
+  --red:#d62828;
+  --btn:#ffcc66;
+}
+
+/* reset & helpers */
+*{box-sizing:border-box;image-rendering:pixelated;}
+body{
+  margin:0;
+  font-family:'Press Start 2P',sans-serif;
+  background:url('/catwalk-client/assets/backgrounds/album_bg.png') center/cover no-repeat fixed var(--cream);
+  color:var(--border);
+  overflow:hidden;         /* game panes handle their own scroll */
+}
+button,img,input,textarea{outline:none;font-family:inherit;}
+button:active{transform:translateY(2px);}
