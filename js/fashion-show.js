@@ -301,6 +301,205 @@ function changeTimerToRed() {
     }
 }
 
+// CONFIGURABLE GAME SETTINGS
+const PIXELS_PER_VOTE = 50; // Easy to adjust - how many pixels each vote adds to gold base height
+const BASE_GOLD_HEIGHT = 20; // Minimum gold base height
+
+// Add after the existing placeholder data
+let voteResults = null; // Store calculated vote results for this round
+
+// VOTING CALCULATION SYSTEM - Placeholder for future matchmaking
+function simulateVotingResults() {
+    console.log("🗳️ SIMULATING VOTING RESULTS...");
+    
+    // Step 1: Generate votes for all 5 players (including real player's vote)
+    const allPlayerVotes = generateAllPlayerVotes();
+    
+    // Step 2: Count votes for each cat
+    const voteCounts = countVotes(allPlayerVotes);
+    
+    // Step 3: Calculate rewards (25 coins per vote as per GDD)
+    const coinRewards = calculateCoinRewards(voteCounts);
+    
+    // Step 4: Calculate gold base heights using configurable variable
+    const goldBaseHeights = calculateGoldBaseHeights(voteCounts);
+    
+    // Store results for use in showResultsPhase
+    voteResults = {
+        playerVotes: allPlayerVotes,
+        voteCounts: voteCounts,
+        coinRewards: coinRewards,
+        goldBaseHeights: goldBaseHeights
+    };
+    
+    // Log detailed results for debugging
+    logVotingResults();
+    
+    console.log("✅ VOTE CALCULATION COMPLETE!");
+    return voteResults;
+}
+
+function generateAllPlayerVotes() {
+    // Create array to store who each player voted for
+    const votes = new Array(5);
+    
+    // Player 0 (current player) - use their actual vote or assign random
+    if (selectedCatIndex !== null) {
+        votes[0] = selectedCatIndex;
+        console.log(`👤 Player 0 (YOU) voted for: ${placeholderCats[selectedCatIndex].catName}`);
+    } else {
+        // Player didn't vote - assign random vote (not themselves)
+        votes[0] = getRandomVoteExcluding(0);
+        console.log(`🎲 Player 0 (YOU) didn't vote - random assigned: ${placeholderCats[votes[0]].catName}`);
+    }
+    
+    // Other players (1-4) - generate realistic votes with some popularity bias
+    for (let playerIndex = 1; playerIndex < 5; playerIndex++) {
+        votes[playerIndex] = generateRealisticVote(playerIndex);
+        console.log(`🤖 Player ${playerIndex} voted for: ${placeholderCats[votes[playerIndex]].catName}`);
+    }
+    
+    return votes;
+}
+
+function getRandomVoteExcluding(excludeIndex) {
+    const possibleVotes = [];
+    for (let i = 0; i < 5; i++) {
+        if (i !== excludeIndex) {
+            possibleVotes.push(i);
+        }
+    }
+    return possibleVotes[Math.floor(Math.random() * possibleVotes.length)];
+}
+
+function generateRealisticVote(playerIndex) {
+    // Create weighted voting - some cats more popular than others
+    const popularityWeights = [1.2, 1.5, 1.0, 0.8, 1.1]; // Adjust these for different cats
+    const weightedChoices = [];
+    
+    for (let catIndex = 0; catIndex < 5; catIndex++) {
+        // Can't vote for themselves
+        if (catIndex === playerIndex) continue;
+        
+        // Add multiple entries based on popularity weight
+        const weight = Math.floor(popularityWeights[catIndex] * 10);
+        for (let w = 0; w < weight; w++) {
+            weightedChoices.push(catIndex);
+        }
+    }
+    
+    return weightedChoices[Math.floor(Math.random() * weightedChoices.length)];
+}
+
+function countVotes(allPlayerVotes) {
+    const counts = new Array(5).fill(0);
+    
+    allPlayerVotes.forEach(vote => {
+        counts[vote]++;
+    });
+    
+    return counts;
+}
+
+function calculateCoinRewards(voteCounts) {
+    // GDD: 25 coins per vote received
+    return voteCounts.map(votes => votes * 25);
+}
+
+function calculateGoldBaseHeights(voteCounts) {
+    // 🚀 NOW USES CONFIGURABLE VARIABLE
+    return voteCounts.map(votes => BASE_GOLD_HEIGHT + (votes * PIXELS_PER_VOTE));
+}
+
+function logVotingResults() {
+    console.log("\n📊 VOTING RESULTS SUMMARY:");
+    console.log("Cat Name | Votes | Coins | Gold Height");
+    console.log("---------|-------|-------|------------");
+    
+    for (let i = 0; i < 5; i++) {
+        const catName = placeholderCats[i].catName.padEnd(8);
+        const votes = voteResults.voteCounts[i];
+        const coins = voteResults.coinRewards[i];
+        const height = voteResults.goldBaseHeights[i];
+        console.log(`${catName} |   ${votes}   |  ${coins}  |    ${height}px`);
+    }
+    
+    console.log(`\nTotal votes: ${voteResults.voteCounts.reduce((a, b) => a + b, 0)}`);
+    console.log(`Total coins: ${voteResults.coinRewards.reduce((a, b) => a + b, 0)}`);
+    console.log(`\nUsing ${PIXELS_PER_VOTE}px per vote (configurable)`);
+}
+
+// UPDATED showResultsPhase with CORRECT positioning - Gold ON TOP of Brown
+function showResultsPhase() {
+    console.log("Showing results phase with calculated vote data...");
+    
+    // Clear the selection outline when showing results
+    clearCatSelection();
+    
+    // Modify existing stage bases for results display
+    const stageBases = document.querySelectorAll('.stage-base');
+    
+    stageBases.forEach((stageBase, index) => {
+        // Make brown base 1/3 of original height (380px -> ~127px)
+        stageBase.classList.add('results-mode');
+        
+        // Remove stage-walkway image during results phase
+        const stageWalkway = stageBase.querySelector('.stage-walkway');
+        if (stageWalkway) {
+            stageWalkway.style.display = 'none';
+        }
+        
+        // Create gold base with calculated height
+        const goldBase = document.createElement('div');
+        goldBase.className = 'gold-base';
+        
+        // 🚀 FIXED: Gold base sits ON TOP of brown base and extends UPWARD
+        if (voteResults) {
+            const calculatedHeight = voteResults.goldBaseHeights[index];
+            goldBase.style.height = `${calculatedHeight}px`;
+            goldBase.style.bottom = '100px'; // ON TOP of the 100px brown base
+            console.log(`Cat ${index} (${placeholderCats[index].catName}): ${voteResults.voteCounts[index]} votes = ${calculatedHeight}px gold base ON TOP of brown base`);
+        }
+        
+        stageBase.appendChild(goldBase);
+        
+        // Move cat sprite to top of gold base
+        const catSprite = stageBase.querySelector('.cat-sprite');
+        if (catSprite) {
+            catSprite.classList.add('results-cat');
+            
+            // 🚀 FIXED: Position cat on top of the gold base (which sits on top of brown base)
+            if (voteResults) {
+                const goldHeight = voteResults.goldBaseHeights[index];
+                // Cat sits on top of: brown base (100px) + gold base height
+                catSprite.style.bottom = `${100 + goldHeight}px`;
+                catSprite.style.top = 'auto'; // Reset any top positioning
+                console.log(`Cat ${index} positioned at ${100 + goldHeight}px from bottom (on top of gold base)`);
+            }
+        }
+        
+        // Add reward text with calculated coins
+        const rewardText = document.createElement('div');
+        rewardText.className = 'reward-text';
+        
+        // Use calculated coin rewards
+        const coinReward = voteResults ? voteResults.coinRewards[index] : placeholderRewards[index];
+        rewardText.textContent = `${coinReward} coins`;
+        
+        // Insert reward text before cat name
+        const catName = stageBase.querySelector('.cat-name');
+        if (catName) {
+            stageBase.insertBefore(rewardText, catName);
+        }
+    });
+    
+    // Wait 1 minute then restart entire sequence
+    setTimeout(() => {
+        resetToWaitingRoom();
+    }, 60000); // Wait 1 minute (60,000ms) for results display
+}
+
+// UPDATE THE startEndSequence FUNCTION
 function startEndSequence() {
     const announcement = document.querySelector('.announcement-text');
     
@@ -320,6 +519,9 @@ function startEndSequence() {
             console.log("Changed to calculating votes message");
         }
         
+        // 🚀 NEW: CALCULATE VOTING RESULTS during the 3-second wait
+        simulateVotingResults();
+        
         setTimeout(() => {
             // Step 9: "CALCULATING VOTES, PLEASE WAIT . . ." text disappears (3 seconds display)
             if (announcement) {
@@ -333,7 +535,7 @@ function startEndSequence() {
                 console.log("Auto-closed exit dialog - reached results phase");
             }
 
-            // Show results phase - THIS is where we clear the selection
+            // Show results phase with calculated data
             showResultsPhase();
             
         }, 3000); // 3 seconds for calculating votes message
@@ -341,53 +543,7 @@ function startEndSequence() {
     }, 1000); // 1 second for "TIME'S UP!"
 }
 
-function showResultsPhase() {
-    console.log("Showing results phase...");
-    
-    // NOW clear the selection outline when showing results
-    clearCatSelection();
-    
-    // Modify existing stage bases for results display
-    const stageBases = document.querySelectorAll('.stage-base');
-    
-    stageBases.forEach((stageBase, index) => {
-        // Make brown base 1/3 of original height (380px -> ~127px)
-        stageBase.classList.add('results-mode');
-        
-        // Remove stage-walkway image during results phase
-        const stageWalkway = stageBase.querySelector('.stage-walkway');
-        if (stageWalkway) {
-            stageWalkway.style.display = 'none';
-        }
-        
-        // Create gold base on top
-        const goldBase = document.createElement('div');
-        goldBase.className = 'gold-base';
-        stageBase.appendChild(goldBase);
-        
-        // Move cat sprite to top of gold base
-        const catSprite = stageBase.querySelector('.cat-sprite');
-        if (catSprite) {
-            catSprite.classList.add('results-cat');
-        }
-        
-        // Add reward text above cat name
-        const rewardText = document.createElement('div');
-        rewardText.className = 'reward-text';
-        rewardText.textContent = `${placeholderRewards[index]} coins`;
-        
-        // Insert reward text before cat name
-        const catName = stageBase.querySelector('.cat-name');
-        if (catName) {
-            stageBase.insertBefore(rewardText, catName);
-        }
-    });
-    
-    // Wait 1 minute then restart entire sequence
-    setTimeout(() => {
-        resetToWaitingRoom();
-    }, 60000); // Wait 1 minute (60,000ms) for results display
-}
+
 
 function hideTimer() {
     const timerSection = document.querySelector('.timer-section');
@@ -397,11 +553,16 @@ function hideTimer() {
     }
 }
 
+// UPDATE resetToWaitingRoom to clear vote results
 function resetToWaitingRoom() {
     console.log("Resetting to waiting room - starting new cycle...");
     
     // RESET VOTING PHASE FLAG
     isInVotingPhase = false;
+    
+    // Clear vote results for next round
+    voteResults = null;
+    selectedCatIndex = null; // Also reset selected cat
     
     // Clear selection and disable voting clicks
     clearCatSelection();

@@ -252,15 +252,16 @@ h1 {
     height: 100px; /* 380px / 3 ≈ 127px */
 }
 
-/* Gold base styling for results phase */
+/* Gold base styling for results phase - FIXED to sit ON TOP of brown base */
 .gold-base {
     position: absolute;
-    top: -20px; /* Position directly on top of brown base, no spacing */
+    bottom: 100px; /* Position ON TOP of the brown base (which is 100px tall) */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Perfect centering */
     width: 149px; /* 4/5 of brown base width (186px * 0.8 ≈ 149px) */
-    height: 20px; /* Reduced from 30px to 20px */
+    height: 20px; /* Default height - will be overridden by JavaScript based on votes */
     background-color: var(--color-gold); /* #FFC20E */
+    /* Gold base now sits ON TOP of brown base and extends UPWARD */
 }
 
 .stage-walkway {
@@ -287,12 +288,16 @@ h1 {
     image-rendering: crisp-edges;
 }
 
-/* Cat sprite in results mode - positioned just above gold base */
+/* Cat sprite in results mode - positioned on top of gold base */
 .cat-sprite.results-cat {
-    top: -169px; /* Position cat above gold base: -20px (gold base top) - 149px (cat height) = -169px */
+    position: absolute;
+    /* Position will be set dynamically by JavaScript to sit on top of gold base */
     left: 50%;
     transform: translateX(-50%);
-    width: 149px; /* Same width as gold base - makes height 149px too since image is square */
+    width: 149px; /* Same width as gold base */
+    height: 149px; /* Fixed height to match width for square sprite */
+    top: auto; /* Reset top positioning */
+    /* Cat sits on top of the gold base (which sits on top of brown base) */
 }
 
 /* Reward text styling for results phase */
