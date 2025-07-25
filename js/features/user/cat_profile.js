@@ -2,8 +2,8 @@
   profile.js
 -----------------------------------------------------------------------------*/
 
-import { $, setDisplay } from './utils.js';
-import { CHAR_LIMIT } from './constants.js';
+import { $, setDisplay } from '../../core/utils.js';
+import { CHAR_LIMIT } from '../../core/constants.js';
 
 export function showCatProfile(cat) {
   setDisplay("catProfile", true, "flex");

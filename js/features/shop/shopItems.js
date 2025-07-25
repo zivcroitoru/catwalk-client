@@ -1,6 +1,3 @@
-// shop.js
-
-// ✅ Shop items data
 export const shopItems = {
   hats: [
     { name: "Chef Hat", price: 25, img: "hats/chef_hat.png" },
@@ -38,52 +35,3 @@ export const shopItems = {
     { name: "Hat Pin", price: 45, img: "accessories/hat_pin.png" }
   ]
 };
-
-// ✅ Renders all shop items into the shopItems container
-export function renderShopItems() {
-  const container = document.getElementById("shopItems");
-  container.innerHTML = ""; // Clear existing
-
-  Object.entries(shopItems).forEach(([category, items]) => {
-    items.forEach(({ img, price }) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "item-wrapper";
-      wrapper.dataset.category = category;
-
-      wrapper.innerHTML = `
-        <div class="item">
-          <img src="../assets/shop_cosmetics/${img}" />
-          <div class="price">
-            <img src="../assets/icons/coin.png" /> ${price}
-          </div>
-        </div>
-      `;
-      container.appendChild(wrapper);
-    });
-  });
-}
-
-// ✅ Toggle the visibility of the shop (overlay includes the popup)
-export function toggleShop() {
-  const overlay = document.getElementById("shopOverlay");
-  const isVisible = getComputedStyle(overlay).display === "block";
-
-  if (isVisible) {
-    overlay.style.display = "none";
-    console.log("❌ Closed shop");
-  } else {
-    overlay.style.display = "block";
-    console.log("✅ Opened shop");
-
-    // Optional: activate default tab
-    const hatsTab = document.querySelector('.tab[data-category="hats"]');
-    if (hatsTab) hatsTab.click();
-  }
-}
-
-// ✅ Optional scroll handler (if needed)
-export function scrollShop(direction) {
-  const wrapper = document.querySelector(".shop-scroll-wrapper .items");
-  const scrollAmount = 200;
-  wrapper.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
-}

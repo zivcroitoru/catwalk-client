@@ -1,4 +1,4 @@
-import { $, setDisplay, $$ } from './utils.js';
+import { $, setDisplay, $$ } from '../../core/utils.js';
 
 export function closeAllPopups() {
   ["shop", "mailbox", "uploadCat", "catProfile", "catProfileScroll"].forEach(id => setDisplay(id, false));

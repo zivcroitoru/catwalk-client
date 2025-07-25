@@ -2,9 +2,9 @@
 /*-----------------------------------------------------------------------------
   upload.js
 -----------------------------------------------------------------------------*/
-import { $, setDisplay } from './utils.js';
-import { toggleUploadCat } from './popups.js';
-import { addCatToCarousel } from './carousel.js';
+import { $, setDisplay } from '../../core/utils.js';
+import { toggleUploadCat } from '../ui/popups.js';
+import { addCatToCarousel } from '../ui/carousel.js';
 
 export async function uploadCat() {
   const file = $("catFileInput").files[0];

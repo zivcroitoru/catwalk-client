@@ -1,16 +1,16 @@
 console.log("🐱 MAIN.JS LOADED");
 
-import { toggleShop, renderShopItems } from './shop.js';
-import { toggleMailbox } from './mailbox.js';
-import { toggleVolume } from './sound.js';
-import { signOut, fetchUser } from './auth.js';
-import { scrollCarousel } from './carousel.js';
-import { scrollShop, setupShopTabs } from './shopTabs.js';
-import { uploadCat, handleCatFileChange, triggerReupload } from './upload.js';
-import { showCatProfile, setupEditMode } from './profile.js';
-import { toggleUploadCat, toggleDetails } from './popups.js';
-import { userCats } from './usercats.js';
-import { $$ } from './utils.js';
+import { toggleShop, renderShopItems } from './features/shop/shop.js';
+import { toggleMailbox } from './features/mailbox/mailbox.js';
+import { toggleVolume } from './core/sound.js';
+import { signOut, fetchUser } from './core/auth/auth.js';
+import { scrollCarousel } from './features/ui/carousel.js';
+import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
+import { uploadCat, handleCatFileChange, triggerReupload } from './features/user/upload_cat.js';
+import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
+import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
+import { userCats } from './features/user/usercats.js';
+import { $$ } from './core/utils.js';
 
 // Expose for dev tools and other modules
 Object.assign(window, {

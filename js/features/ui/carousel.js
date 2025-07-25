@@ -2,9 +2,9 @@
 /*-----------------------------------------------------------------------------
   carousel.js
 -----------------------------------------------------------------------------*/
-import { $, setDisplay } from './utils.js';
-import { state } from './state.js';
-import { CARD_WIDTH, CARDS_PER_PAGE } from './constants.js';
+import { $, setDisplay } from '../../core/utils.js';
+import { state } from '../../core/state.js';
+import { CARD_WIDTH, CARDS_PER_PAGE } from '../../core/constants.js';
 
 export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
@@ -23,7 +23,7 @@ export function addCatToCarousel(imgUrl, label) {
     <div class="cat-thumbnail" style="background-image:url('${imgUrl}');"></div>
     <span>${label}</span>
   `;
-  card.onclick = () => import("./profile.js").then(m => m.showCatProfile({ name: label, image: imgUrl }));
+  card.onclick = () => import("../user/cat_profile.js").then(m => m.showCatProfile({ name: label, image: imgUrl }));
   $("catCarousel").appendChild(card);
   $("carouselCat").src = imgUrl;
 }
