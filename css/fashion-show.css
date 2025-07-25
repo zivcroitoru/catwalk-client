@@ -10,7 +10,8 @@
   --color-salmon: #D06767;
   --color-gold: #FFC20E;
   --color-blue: #57B9FF;
-  --color-purple: #F8C4FF;
+  --color-light-purple: #F8C4FF;
+  --color-purple: #B70EFF;
   
   /* Typography */
   --font-main: 'Jersey 10', monospace;
@@ -38,7 +39,7 @@
 
 /* Fashion Show Styles */
 body {
-    background-color: var(--color-purple); /* Light pink/purple background */
+    background-color: var(--color-light-purple); /* Light pink/purple background */
     margin: 0;
     padding: 0;
     height: 100vh; /* Full viewport height */
@@ -201,7 +202,7 @@ h1 {
     font-smooth: never;
 }
 
-/* Stage Base Styling - Add this to your css/fashion-show.css */
+/* Cat Display Area */
 .cat-display {
     position: absolute;
     top: 150px; /* Below the title */
@@ -219,11 +220,31 @@ h1 {
     box-sizing: border-box; /* Include padding in dimensions */
 }
 
+/* Stage Base - Basic Styling */
 .stage-base {
     width: 186px; /* Calculated: (1050 - 120) / 5 */
     height: 380px; /* Calculated: 420 - 40 */
     background-color: var(--color-brown); /* #DAAB6E */
     position: relative; /* For positioning the walkway image */
+    cursor: default; /* Default cursor when not clickable */
+}
+
+/* CLICKABLE FUNCTIONALITY - Only works during voting phase */
+.voting-active .stage-base {
+    cursor: pointer; /* Show pointer cursor during voting */
+    transition: all 0.2s ease; /* Smooth transition for visual feedback */
+}
+
+/* HOVER STATE - Purple outline when hovering (but NOT if already selected) */
+.voting-active .stage-base:hover:not(.selected) {
+    outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* SELECTED STATE - Purple outline when selected (works even when voting disabled) */
+.stage-base.selected {
+    outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
 }
 
 /* Results mode - make brown base 1/3 height */
@@ -251,7 +272,7 @@ h1 {
     display: block;
 }
 
-/* Cat sprite styling - add this to your css/fashion-show.css */
+/* Cat sprite styling */
 .cat-sprite {
     position: absolute;
     top: 80px; /* Exactly 30px above bottom of stage-walkway */
@@ -399,7 +420,7 @@ h1 {
     font-smooth: never;
 }
 
-/* Add to your existing css/fashion-show.css - EXIT CONFIRMATION DIALOG STYLES */
+/* EXIT CONFIRMATION DIALOG STYLES */
 
 /* Overlay covering full screen */
 .exit-overlay {
@@ -414,7 +435,6 @@ h1 {
     align-items: flex-start; /* Changed from center to flex-start */
     justify-content: center;
     padding-top: 120px; /* Add top padding to lower the dialog */
-
 }
 
 /* Cream dialog box */
@@ -445,7 +465,6 @@ h1 {
     align-items: flex-start; /* Align to top instead of center */
     justify-content: center;
     line-height: 1.2; /* Better line spacing for multi-line text */
-
     
     /* Sharp pixel font rendering */
     -webkit-font-smoothing: none;

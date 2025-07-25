@@ -1,5 +1,6 @@
 let isInVotingPhase = false; // Track if we're in voting phase
 let exitDialogOpen = false; // Track if exit dialog is currently open
+let selectedCatIndex = null; // Track which cat is currently selected for voting
 
 // Placeholder data for cats and players (until database integration)
 const placeholderCats = [
@@ -79,6 +80,9 @@ function showVotingInterface() {
     // Create voting interface elements
     createVotingInterface();
     
+    // Enable clickable stages for voting
+    enableVotingClicks();
+    
     // Start the detailed timing sequence
     startDetailedSequence();
 }
@@ -141,6 +145,65 @@ function createVotingInterface() {
     main.appendChild(warningMessage);
 }
 
+function enableVotingClicks() {
+    // Add voting-active class to enable clickable styles
+    const catDisplay = document.querySelector('.cat-display');
+    if (catDisplay) {
+        catDisplay.classList.add('voting-active');
+    }
+    
+    // Add click event listeners to all stage bases
+    const stageBases = document.querySelectorAll('.stage-base');
+    stageBases.forEach((stageBase, index) => {
+        stageBase.addEventListener('click', () => handleCatVote(index));
+    });
+    
+    console.log("Voting clicks enabled - cats are now clickable");
+}
+
+function disableVotingClicks() {
+    // Remove voting-active class to disable clickable styles but KEEP selection visible
+    const catDisplay = document.querySelector('.cat-display');
+    if (catDisplay) {
+        catDisplay.classList.remove('voting-active');
+    }
+    
+    // DON'T clear selection here - keep it visible during "CALCULATING..."
+    console.log("Voting clicks disabled but selection kept visible");
+}
+
+function handleCatVote(catIndex) {
+    // Only allow voting during voting phase
+    if (!isInVotingPhase) {
+        console.log("Voting not allowed - not in voting phase");
+        return;
+    }
+    
+    // Clear previous selection
+    clearCatSelection();
+    
+    // Set new selection
+    selectedCatIndex = catIndex;
+    
+    // Add visual selection to the clicked stage base
+    const stageBases = document.querySelectorAll('.stage-base');
+    if (stageBases[catIndex]) {
+        stageBases[catIndex].classList.add('selected');
+    }
+    
+    console.log(`Voted for cat ${catIndex}: ${placeholderCats[catIndex].catName}`);
+}
+
+function clearCatSelection() {
+    // Remove selected class from all stage bases
+    const stageBases = document.querySelectorAll('.stage-base');
+    stageBases.forEach(stageBase => {
+        stageBase.classList.remove('selected');
+    });
+    
+    selectedCatIndex = null;
+}
+
 function startDetailedSequence() {
     console.log("Starting detailed timing sequence...");
     
@@ -196,7 +259,7 @@ function moveAlbumButtonDown() {
 }
 
 function startVotingTimer() {
-    timeRemaining = 15; // 60 seconds for voting
+    timeRemaining = 15; // 15 seconds for voting
     updateTimerDisplay();
     
     votingTimer = setInterval(() => {
@@ -208,10 +271,15 @@ function startVotingTimer() {
             changeTimerToRed();
         }
         
-        // Step 7: Timer reaches 0s
+        // Step 7: Timer reaches 0s - IMMEDIATELY disable voting BUT keep selection visible
         if (timeRemaining <= 0) {
             clearInterval(votingTimer);
-            console.log("Voting time is up!");
+            
+            // IMMEDIATELY disable voting the moment timer hits 0
+            isInVotingPhase = false;
+            disableVotingClicks(); // This now keeps selection visible
+            
+            console.log("Voting time is up! Voting disabled, selection kept visible.");
             startEndSequence();
         }
     }, 1000); // Update every second
@@ -259,17 +327,13 @@ function startEndSequence() {
                 console.log("Calculating votes message removed - starting results phase!");
             }
             
-            // WE'VE REACHED RESULTS PHASE - Album button should work normally now
-            isInVotingPhase = false;
-            console.log("Entered results phase - album button back to normal");
-            
             // AUTO-CLOSE EXIT DIALOG IF OPEN (we've reached results phase)
             if (exitDialogOpen) {
                 closeExitDialog();
                 console.log("Auto-closed exit dialog - reached results phase");
             }
 
-            // NEW: Show results phase before waiting
+            // Show results phase - THIS is where we clear the selection
             showResultsPhase();
             
         }, 3000); // 3 seconds for calculating votes message
@@ -279,6 +343,9 @@ function startEndSequence() {
 
 function showResultsPhase() {
     console.log("Showing results phase...");
+    
+    // NOW clear the selection outline when showing results
+    clearCatSelection();
     
     // Modify existing stage bases for results display
     const stageBases = document.querySelectorAll('.stage-base');
@@ -316,10 +383,10 @@ function showResultsPhase() {
         }
     });
     
-    // Wait 3 minutes then restart entire sequence
+    // Wait 1 minute then restart entire sequence
     setTimeout(() => {
         resetToWaitingRoom();
-    }, 180000); // Wait 3 minutes (180,000ms) for results display
+    }, 60000); // Wait 1 minute (60,000ms) for results display
 }
 
 function hideTimer() {
@@ -335,6 +402,9 @@ function resetToWaitingRoom() {
     
     // RESET VOTING PHASE FLAG
     isInVotingPhase = false;
+    
+    // Clear selection and disable voting clicks
+    clearCatSelection();
     
     // Close any open exit dialog
     if (exitDialogOpen) {
