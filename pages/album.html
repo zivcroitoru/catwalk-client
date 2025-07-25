@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
+
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -82,10 +86,12 @@
 
 
 
-  <!-- Centered Ellipse & Cat -->
-<div class="ellipse-podium">
-  <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-  <img id="carouselCat" src="../assets/cats/classic pink.png" alt="Cat" class="carousel-cat" />
+<!-- Wrapper to center content -->
+<div class="cat-display-wrapper">
+  <div class="ellipse-podium">
+    <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+    <img id="carouselCat" src="../assets/cats/classic pink.png" alt="Cat" class="carousel-cat" />
+  </div>
 </div>
 
   <!-- Topbar Icons -->
@@ -109,107 +115,79 @@
   <div class="wrapper">
     <div class="main-area">
       <div class="main-cat"></div>
-
-      <!-- Carousel -->
-    <div class="carousel-wrapper">
-  <div class="carousel-background" style="position: relative;"> <!-- ✅ Keep only one -->
-    <div class="floating-actions">
-      <button onclick="window.location.href='fashion-show.html'">Fashion Show</button>
-      <button onclick="toggleShop()">Open Shop</button>
-      <button onclick="toggleDetails()">Open Details</button>
-  <div class="inventory-box">Inventory: 8/25</div> <!-- 👈 Styled like button -->
-
-    </div>
-
+<div class="carousel-wrapper">
+  <div class="carousel-background">
+    <!-- ⬅️ Scroll Button -->
     <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
 
-          <div class="carousel-viewport">
-            <div class="carousel" id="catCarousel">
-              <!-- 20 cat cards -->
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cats/classic pink.png');"></div><span>bruh</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 2</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 3</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 4</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 5</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 6</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 7</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 8</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 9</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 10</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 11</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 12</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 13</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 14</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 15</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat1.png');"></div><span>Cat 16</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat2.png');"></div><span>Cat 17</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat3.png');"></div><span>Cat 18</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat4.png');"></div><span>Cat 19</span></div>
-              <div class="cat-card"><div class="cat-thumbnail" style="background-image: url('../assets/cat5.png');"></div><span>Cat 20</span></div>
-            </div>
-          </div>
+    <!-- Viewport -->
+    <div class="carousel-viewport">
+      <!-- Carousel container: EMPTY, will be filled dynamically -->
+      <div class="carousel" id="catCarousel"></div>
+    </div>
 
-<button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+    <!-- ➡️ Scroll Button -->
+    <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+<div class="floating-actions">
+  <button id="openFashionShowBtn" onclick="window.location.href='fashion-show.html'">Fashion Show</button>
+  <button id="openShopBtn">Open Shop</button>
+  <div class="inventory-box">Inventory: 8/25</div>
+</div>
 
-<!-- Right-side Add Cat Button -->
+
+
+<!-- Add Cat Button -->
 <div class="add-cat-button" onclick="toggleUploadCat()">
   <img src="../assets/ui/plus.png" alt="Add Cat" />
 </div>
 
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div> <!-- closes main-area -->
+</div> <!-- closes wrapper -->
+</div> <!-- closes game -->
 
 <div id="catProfileScroll" class="cat-profile-scroll" style="display: none;">
-
   <div class="scroll-inner">
 
-
     <!-- 🔤 Name Input (Top Center) -->
-    <input type="text" id="catName" class="profile-name-input" value="Mr. Not so fluffy bottom" disabled />
-
+    <input type="text" id="catName" class="profile-name-input" value="" disabled />
     <!-- 🐾 Info + Image Row -->
     <div class="profile-main">
       <!-- 📋 Cat Info -->
       <div class="profile-info">
-        <div class="profile-row"><strong>Breed:</strong> Sphynx</div>
-        <div class="profile-row"><strong>Variant:</strong> Solid</div>
-        <div class="profile-row"><strong>Palette:</strong> Classic Pink</div>
-        <div class="profile-row"><strong>Birthday:</strong> 19/05</div>
-        <div class="profile-row"><strong>Age:</strong> 01 days</div>
+        <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
+        <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
+        <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
+        <div class="profile-row"><strong>Birthday:</strong> <span id="profileBirthday">-</span></div>
+        <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
       </div>
+
 
       <!-- 🖼 Cat Image -->
       <div class="top-right-icons">
         <img
+          id="profileImage"
           src="../assets/real-cats/placeholder.png"
           class="placeholder-uploadedcat-profile"
-          alt="Upload"
+          alt="Uploaded Cat"
         />
       </div>
     </div>
 <!-- 📝 Description -->
-<div class="desc-block">
-  <label><strong>Description:</strong></label>
-  <textarea id="catDesc" class="desc-input" disabled>
-CUTE CUDDLY BUT ALSO VERY ENERGETIC.
-SHE LOVES PLAYING ALL DAY WITH HER FRIENDS!
-
-  </textarea>
-  <p id="descCount" class="word-count"></p>
+<div class="desc-block" id="descBlock">
+  <label for="catDesc">Description:</label>
+  <div id="descDisplay" class="desc-output"></div>
+  <textarea id="catDesc" class="desc-input" maxlength="200"></textarea>
+  <div id="charCount" class="word-count">0 / 200 characters</div>
 </div>
 
-    <!-- ✅ Footer Buttons -->
-    <div class="profile-footer-buttons">
-      <button id="editBtn" class="profile-btn secondary">EDIT</button>
-      <button id="deleteBtn" class="profile-btn danger" style="display: none;">DELETE</button>
-      <button id="saveBtn" class="profile-btn primary" style="display: none;">SAVE</button>
-    </div>
+<!-- ✅ Footer Buttons -->
+<div class="profile-footer-buttons">
+  <button id="editBtn" class="profile-btn primary">Edit</button>
+  <button id="saveBtn" class="profile-btn primary" style="display: none;">Save</button>
+  <button id="cancelBtn" class="profile-btn secondary" style="display: none;">Cancel</button>
+  <button id="deleteBtn" class="profile-btn danger">Delete</button>
+</div>
 
-  </div> <!-- end scroll-inner -->
-</div> <!-- end cat-profile-scroll -->
 
   <!-- Mailbox Modal -->
   <div class="mailbox-modal" id="mailbox">
@@ -222,25 +200,76 @@ SHE LOVES PLAYING ALL DAY WITH HER FRIENDS!
     </ul>
     <button onclick="toggleMailbox()">Close</button>
   </div>
+<!-- ✅ Overlay wraps the popup -->
+<div id="shopOverlay" class="modal-overlay" style="display: none;">
 
-  <!-- Shop Modal -->
-  <div class="shop-modal" id="shop">
-    <h3>Item Shop</h3>
-    <p>Buy cute clothes and accessories for your cats here!</p>
-    <ul>
-      <li>👗 Red Bow</li>
-      <li>🎩 Fancy Hat</li>
-      <li>🧣 Cozy Scarf</li>
-    </ul>
-    <button onclick="toggleShop()">Close</button>
+  <div id="shopPopup" class="shop-popup" onclick="event.stopPropagation()">
+<button class="popup-close" id="shopCloseBtn">×</button>
+
+
+
+  <!-- Category Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-category="hats">HAT</button>
+    <button class="tab" data-category="shoes">SHOES</button>
+    <button class="tab" data-category="shirt">SHIRT</button>
+    <button class="tab" data-category="pants">PANTS</button>
+    <button class="tab" data-category="accessories">ACCESSORIES</button>
   </div>
 
+  <!-- Scrollable Content -->
+  <div class="shop-scroll-wrapper">
+    <button class="shop-scroll-btn left" onclick="scrollShop(-1)">‹</button>
 
-  <!-- External JS -->
-  <script src="../js/cat-album.js"></script>
+    <div class="items" id="shopItems">
+      <!-- 🧢 Hats -->
+      <div class="item-wrapper" data-category="hats"><div class="item"><img src="../assets/shop_cosmetics/hats/chef_hat.png" /><div class="price"><img src="../assets/icons/coin.png" /> 25</div></div></div>
+      <div class="item-wrapper" data-category="hats"><div class="item"><img src="../assets/shop_cosmetics/hats/cowboy_hat.png" /><div class="price"><img src="../assets/icons/coin.png" /> 25</div></div></div>
+      <div class="item-wrapper" data-category="hats"><div class="item"><img src="../assets/shop_cosmetics/hats/santa_hat.png" /><div class="price"><img src="../assets/icons/coin.png" /> 175</div></div></div>
+      <div class="item-wrapper" data-category="hats"><div class="item"><img src="../assets/shop_cosmetics/hats/wizard_hat.png" /><div class="price"><img src="../assets/icons/coin.png" /> 250</div></div></div>
+      <div class="item-wrapper" data-category="hats"><div class="item"><img src="../assets/shop_cosmetics/hats/party_hat.png" /><div class="price"><img src="../assets/icons/coin.png" /> 100</div></div></div>
+
+      <!-- 👟 Shoes -->
+      <div class="item-wrapper" data-category="shoes"><div class="item"><img src="../assets/shop_cosmetics/shoes/sneakers.png" /><div class="price"><img src="../assets/icons/coin.png" /> 150</div></div></div>
+      <div class="item-wrapper" data-category="shoes"><div class="item"><img src="../assets/shop_cosmetics/shoes/boots.png" /><div class="price"><img src="../assets/icons/coin.png" /> 200</div></div></div>
+      <div class="item-wrapper" data-category="shoes"><div class="item"><img src="../assets/shop_cosmetics/shoes/sandals.png" /><div class="price"><img src="../assets/icons/coin.png" /> 75</div></div></div>
+      <div class="item-wrapper" data-category="shoes"><div class="item"><img src="../assets/shop_cosmetics/shoes/formal_shoes.png" /><div class="price"><img src="../assets/icons/coin.png" /> 220</div></div></div>
+      <div class="item-wrapper" data-category="shoes"><div class="item"><img src="../assets/shop_cosmetics/shoes/running_shoes.png" /><div class="price"><img src="../assets/icons/coin.png" /> 180</div></div></div>
+
+      <!-- 👕 Shirts -->
+      <div class="item-wrapper" data-category="shirt"><div class="item"><img src="../assets/shop_cosmetics/shirt/tshirt.png" /><div class="price"><img src="../assets/icons/coin.png" /> 80</div></div></div>
+      <div class="item-wrapper" data-category="shirt"><div class="item"><img src="../assets/shop_cosmetics/shirt/hoodie.png" /><div class="price"><img src="../assets/icons/coin.png" /> 120</div></div></div>
+      <div class="item-wrapper" data-category="shirt"><div class="item"><img src="../assets/shop_cosmetics/shirt/button_up.png" /><div class="price"><img src="../assets/icons/coin.png" /> 150</div></div></div>
+      <div class="item-wrapper" data-category="shirt"><div class="item"><img src="../assets/shop_cosmetics/shirt/tank_top.png" /><div class="price"><img src="../assets/icons/coin.png" /> 90</div></div></div>
+      <div class="item-wrapper" data-category="shirt"><div class="item"><img src="../assets/shop_cosmetics/shirt/jacket.png" /><div class="price"><img src="../assets/icons/coin.png" /> 200</div></div></div>
+
+      <!-- 👖 Pants -->
+      <div class="item-wrapper" data-category="pants"><div class="item"><img src="../assets/shop_cosmetics/pants/jeans.png" /><div class="price"><img src="../assets/icons/coin.png" /> 130</div></div></div>
+      <div class="item-wrapper" data-category="pants"><div class="item"><img src="../assets/shop_cosmetics/pants/shorts.png" /><div class="price"><img src="../assets/icons/coin.png" /> 70</div></div></div>
+      <div class="item-wrapper" data-category="pants"><div class="item"><img src="../assets/shop_cosmetics/pants/cargo_pants.png" /><div class="price"><img src="../assets/icons/coin.png" /> 150</div></div></div>
+      <div class="item-wrapper" data-category="pants"><div class="item"><img src="../assets/shop_cosmetics/pants/dress_pants.png" /><div class="price"><img src="../assets/icons/coin.png" /> 180</div></div></div>
+      <div class="item-wrapper" data-category="pants"><div class="item"><img src="../assets/shop_cosmetics/pants/trousers.png" /><div class="price"><img src="../assets/icons/coin.png" /> 160</div></div></div>
+
+      <!-- 🧢 Accessories -->
+      <div class="item-wrapper" data-category="accessories"><div class="item"><img src="../assets/shop_cosmetics/accessories/glasses.png" /><div class="price"><img src="../assets/icons/coin.png" /> 60</div></div></div>
+      <div class="item-wrapper" data-category="accessories"><div class="item"><img src="../assets/shop_cosmetics/accessories/necklace.png" /><div class="price"><img src="../assets/icons/coin.png" /> 110</div></div></div>
+      <div class="item-wrapper" data-category="accessories"><div class="item"><img src="../assets/shop_cosmetics/accessories/bracelet.png" /><div class="price"><img src="../assets/icons/coin.png" /> 75</div></div></div>
+      <div class="item-wrapper" data-category="accessories"><div class="item"><img src="../assets/shop_cosmetics/accessories/earrings.png" /><div class="price"><img src="../assets/icons/coin.png" /> 90</div></div></div>
+      <div class="item-wrapper" data-category="accessories"><div class="item"><img src="../assets/shop_cosmetics/accessories/hat_pin.png" /><div class="price"><img src="../assets/icons/coin.png" /> 45</div></div></div>
+    </div>
+
+    <button class="shop-scroll-btn right" onclick="scrollShop(1)">›</button>
+  </div>
+</div>
+
+<!-- External JS -->
+<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
   <!-- Upload Cat Modal -->
 
-<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="module" src="../js/main.js"></script>
+
 
 </body>
 </html>
+
