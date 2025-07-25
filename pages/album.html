@@ -56,7 +56,7 @@
     <div class="cat-display-wrapper">
       <div class="ellipse-podium">
         <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-        <img id="carouselCat" src="../assets/cats/classic pink.png" alt="Cat" class="carousel-cat" />
+      <img id="carouselCat" src="" alt="Cat" class="carousel-cat" />
       </div>
     </div>
 
@@ -121,25 +121,29 @@
         </div>
       </div>
 
-      <!-- Description -->
-      <div class="desc-block" id="descBlock">
-        <label for="catDesc">Description:</label>
-        <div id="descDisplay" class="desc-output"></div>
-        <textarea id="catDesc" class="desc-input" maxlength="200"></textarea>
-        <div id="charCount" class="word-count">0 / 200 characters</div>
-      </div>
+<!-- Description -->
+<div class="desc-block" id="descBlock">
+  <label for="catDesc">Description:</label>
+
+  <!-- Display mode (hidden by default) -->
+  <div id="descDisplay" class="desc-output" style="display: none;"></div>
+
+  <!-- Edit mode -->
+  <textarea id="catDesc" class="desc-input" maxlength="200"></textarea>
+
+  <div id="charCount" class="word-count">0 / 200 characters</div>
+</div>
 
       <!-- Footer Buttons -->
-      <div class="profile-footer-buttons">
-        <button id="editBtn" class="profile-btn primary">Edit</button>
-        <button id="saveBtn" class="profile-btn primary" style="display: none;">Save</button>
-        <button id="cancelBtn" class="profile-btn secondary" style="display: none;">Cancel</button>
-        <button id="deleteBtn" class="profile-btn danger">Delete</button>
-        <button id="openShopBtn" class="profile-btn secondary">Customize</button>
-        <button id="openFashionShowBtn" class="profile-btn secondary" onclick="window.location.href='fashion-show.html'">Enter Fashion Show</button>
-      </div>
-    </div>
-  </div>
+<div class="profile-footer-buttons">
+  <button class="profile-btn primary" id="editBtn">Edit</button>
+  <button class="profile-btn danger" id="deleteBtn">Delete</button>
+  <button class="profile-btn secondary" id="customizeBtn">Customize</button>
+  <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
+
+  <button class="profile-btn primary save-cancel" id="saveBtn" style="display: none;">Save</button>
+  <button class="profile-btn secondary save-cancel" id="cancelBtn" style="display: none;">Cancel</button>
+</div>
 
   <!-- Mailbox Modal -->
   <div class="mailbox-modal" id="mailbox">

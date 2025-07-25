@@ -4,7 +4,21 @@
   text-align: center;
   cursor: pointer;
 }
+.cat-card:hover {
+  transform: translateY(-6px) scale(1.05);
+  z-index: 1;
+  transition: transform 0.15s ease;
+}
 
+.cat-card.selected {
+  transform: translateY(-30px) scale(1.3);
+  z-index: 9999;
+  position: relative;
+}
+.cat-card.selected .cat-thumbnail {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  border-color: var(--accent);
+}
 .cat-thumbnail {
   position: relative;
   width: 120px;
@@ -17,7 +31,7 @@
 .cat-bg {
   position: absolute;
   inset: 0;
-  background: url('/catwalk-client/assets/backgrounds/thumbnail_bg.png') center/cover no-repeat;
+  background: url('/assets/backgrounds/thumbnail_bg.png') center/cover no-repeat;
   z-index: 1;
 }
 
@@ -125,6 +139,30 @@
   border: 4px solid var(--border);
   cursor: pointer;
   image-rendering: pixelated;
+
+  /* 🎯 Add animation */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.profile-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.profile-btn:active {
+  transform: scale(0.95);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.4);
+}
+#profileImage {
+  width: 200px;
+  height: 200px;
+  border: 4px solid var(--border);
+  background: var(--cream);
+  image-rendering: pixelated;
+  margin-left: -100px;
+  box-shadow: 0 0 0 2px var(--accent);
+  display: block;
 }
 
 .profile-btn.primary { background: var(--btn); color: #000; }
@@ -301,4 +339,7 @@
 .profile-info .profile-row strong {
   display: inline-block;
   width: 120px;
+}
+.profile-row span {
+  margin-left: 70px;
 }

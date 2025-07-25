@@ -245,6 +245,11 @@ function toggleButtons({ edit, save, cancel }) {
   $("editBtn").style.display = edit ? "inline-block" : "none";
   $("saveBtn").style.display = save ? "inline-block" : "none";
   $("cancelBtn").style.display = cancel ? "inline-block" : "none";
+
+  // NEW: toggle extra buttons
+  $("deleteBtn").style.display = edit ? "inline-block" : "none";
+  $("customizeBtn").style.display = edit ? "inline-block" : "none";
+  $("fashionBtn").style.display = edit ? "inline-block" : "none";
 }
 
 // 🟧 Pixel-style toast

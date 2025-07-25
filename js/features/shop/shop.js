@@ -1,5 +1,4 @@
 // shop.js
-import { shopItems } from './shopItems.js'; // 🧺 JSON data
 import { renderShopItems } from './shopItemsRenderer.js'; // 🎨 Renders items
 
 // ✅ Toggle the visibility of the shop overlay and render items
@@ -21,8 +20,12 @@ export function toggleShop() {
     overlay.style.display = "block";
     console.log("✅ Opened shop");
 
-    // 🧠 Render the shop items every time it's opened
-    renderShopItems(shopItems);
+    // 🔁 Use global shopItems loaded from JSON
+    if (window.shopItems) {
+      renderShopItems(window.shopItems);
+    } else {
+      console.warn("⚠️ shopItems not loaded yet");
+    }
 
     const hatsTab = document.querySelector('.tab[data-category="hats"]');
     if (hatsTab) {

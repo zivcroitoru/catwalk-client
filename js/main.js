@@ -1,8 +1,7 @@
 console.log("🐱 MAIN.JS LOADED");
 
-import { toggleShop } from './features/shop/shop.js'; // only toggleShop here
-import { shopItems } from './features/shop/shopItems.js'; // load the shop data
-import { renderShopItems } from './features/shop/shopItemsRenderer.js'; // render the data
+import { toggleShop } from './features/shop/shop.js';
+import { renderShopItems } from './features/shop/shopItemsRenderer.js';
 import { toggleMailbox } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
 import { signOut, fetchUser } from './core/auth/auth.js';
@@ -11,10 +10,35 @@ import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
 import { uploadCat, handleCatFileChange, triggerReupload } from './features/user/upload_cat.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
-import { userCats } from './features/user/usercats.js';
 import { $$ } from './core/utils.js';
 
-// Expose for dev tools and other modules
+export let userCats = [];
+export let shopItems = [];
+
+// 🐾 Load user cats
+fetch("../data/usercats.json")
+  .then(res => res.json())
+  .then(data => {
+    userCats = data;
+    window.userCats = userCats;
+    renderCarousel();
+  })
+  .catch(err => console.error("❌ Failed to load usercats.json", err));
+
+// 🛍️ Load shop items
+fetch("../data/shopItems.json")
+  .then(res => res.json())
+  .then(data => {
+    shopItems = data;
+    window.shopItems = shopItems;
+    renderShopItems(); // ✅ Render after items are loaded
+  })
+  .catch(err => console.error("❌ Failed to load shopItems.json", err));
+
+// ─────────────────────────────────────
+// Global Exports
+// ─────────────────────────────────────
+
 Object.assign(window, {
   toggleShop,
   renderShopItems,
@@ -30,22 +54,24 @@ Object.assign(window, {
   toggleUploadCat,
   toggleDetails,
   userCats,
-  renderCarousel // exposed after definition
+  shopItems,
+  renderCarousel,
+  selectCatCard,
 });
+
+// ─────────────────────────────────────
+// Init
+// ─────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOMContentLoaded");
 
-  // Initialize systems
   fetchUser();
   setupShopTabs();
   setupEditMode();
-  renderCarousel();
-  renderShopItems();
 
   console.log("✅ Initialized systems");
 
-  // Bind UI event handlers
   bindFloatingActionButtons();
 
   bindButton("openShopBtn", () => toggleShop(), "🛒 Open Shop clicked");
@@ -67,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ─────────────────────────────────────
-// Utility Functions
+// UI Binding
 // ─────────────────────────────────────
 
 function bindButton(id, handler, logText = null) {
@@ -104,6 +130,10 @@ function bindFloatingActionButtons() {
   });
 }
 
+// ─────────────────────────────────────
+// Carousel
+// ─────────────────────────────────────
+
 function renderCarousel() {
   const container = document.getElementById("catCarousel");
   if (!container) {
@@ -111,43 +141,70 @@ function renderCarousel() {
     return;
   }
 
+  console.log("🔄 Rendering carousel with", window.userCats.length, "cats");
   container.innerHTML = "";
 
-  window.userCats.forEach(cat => {
+  window.userCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
-card.innerHTML = `
-  <div class="cat-thumbnail">
-    <div class="cat-bg"></div>
-    <div class="cat-sprite" style="background-image: url('${cat.image}')"></div>
-  </div>
-  <span>${cat.name}</span>
-`;
+    card.innerHTML = `
+      <div class="cat-thumbnail">
+        <div class="cat-bg"></div>
+        <div class="cat-sprite" style="background-image: url('${cat.image}')"></div>
+      </div>
+      <span>${cat.name}</span>
+    `;
 
     card.addEventListener("click", () => {
-      selectCatCard(card);
       console.log("🐾 Selected cat:", cat.name);
+      selectCatCard(card);
       showCatProfile(cat);
 
       const mainCatImg = document.getElementById("carouselCat");
       if (mainCatImg) {
         mainCatImg.src = cat.image;
+        mainCatImg.alt = cat.name || "Cat";
+        console.log("🎯 Podium cat updated to:", cat.name);
       }
     });
 
     container.appendChild(card);
   });
+
+  if (window.userCats.length > 0) {
+    const firstCat = window.userCats[0];
+    const mainCatImg = document.getElementById("carouselCat");
+
+    if (mainCatImg) {
+      mainCatImg.src = firstCat.image;
+      mainCatImg.alt = firstCat.name || "Cat";
+      console.log("🏁 Podium cat set to:", firstCat.name);
+    }
+
+    showCatProfile(firstCat);
+    const firstCard = document.querySelector(".cat-card");
+    if (firstCard) {
+      selectCatCard(firstCard);
+      console.log("✨ First cat card selected");
+    }
+
+    document.getElementById("catProfile").style.display = "flex";
+    document.getElementById("catProfileScroll").style.display = "block";
+    console.log("✅ Profile made visible");
+  } else {
+    console.log("⚠️ No cats to display");
+  }
 }
 
-// Highlight selected cat
+// ─────────────────────────────────────
+// Cat Card Selection
+// ─────────────────────────────────────
+
 function selectCatCard(selectedCard) {
   document.querySelectorAll('.cat-card').forEach(card =>
     card.classList.remove('selected')
   );
   selectedCard.classList.add('selected');
 }
-
-window.selectCatCard = selectCatCard;
-window.renderCarousel = renderCarousel;

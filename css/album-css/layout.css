@@ -104,7 +104,7 @@
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: scale(3);
+  transform: translateX(-650px) scale(5); /* ← shifted left */
   margin: 900px auto 0;
 }
 
@@ -134,10 +134,11 @@
   display: flex;
   align-items: center;
   position: relative;
+  overflow: visible; /* 🟢 allow popped sprites to show */
 }
 
 .carousel-viewport {
-  overflow: hidden;
+  overflow: visible;
   flex: 1;
 }
 
@@ -160,11 +161,11 @@
 /* ───────────── Layout: Cat Profile Scroll ───────────── */
 .cat-profile-scroll {
   position: absolute;
-  top: 40px;
-  right: 0;
+  top: 150px;
+  right: 200px;
   width: 1100px;
   height: 850px;
-  background: url('/catwalk-client/assets/ui/scroll.svg') center/100% 100% no-repeat;
+  background: url('/assets/ui/scroll.svg') center/100% 100% no-repeat;
   padding: 220px 160px 160px;
   box-sizing: border-box;
   font-size: 18px;
