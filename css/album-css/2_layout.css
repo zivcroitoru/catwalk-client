@@ -4,6 +4,21 @@
 .welcome-message {
   position: absolute; top: 70px; left: 200px; font-size: 28px; color: #fff2c7; text-shadow: -4px -4px #000, 4px -4px #000, -4px 4px #000, 4px 4px #000, 0 -4px #000, 0 4px #000, -4px 0 #000, 4px 0 #000; z-index: 999;
 }
+.cats-title {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 48px;
+  color: #fff2c7;
+  text-shadow:
+    -4px -4px #000,  4px -4px #000,
+    -4px  4px #000,  4px  4px #000,
+     0   -4px #000,  0    4px #000,
+    -4px  0   #000,  4px   0 #000;
+  z-index: 999;
+}
 
 .sign-out-btn {
   position: absolute; top: 20px; right: 50px; background: var(--red); color: #fff; border: 6px solid var(--border); padding: 16px 24px; font-size: 12px; cursor: pointer; z-index: 999;
@@ -47,9 +62,6 @@
   position: relative; width: fit-content; transform: translateX(-650px) scale(5); margin: 900px auto 0;
 }
 
-.carousel-cat {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); height: 200px; pointer-events: none;
-}
 
 /* ───────────── Layout: Carousel ───────────── */
 .carousel-wrapper {
@@ -70,4 +82,15 @@
 
 .floating-actions {
   position: absolute; top: -60px; left: 20px; display: flex; gap: 20px; z-index: 10;
+}
+#carouselCat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -90%);
+  width: 200px;
+  height: auto;
+  pointer-events: none;
+  object-fit: contain;
+  z-index: 2;
 }

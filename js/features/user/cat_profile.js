@@ -9,7 +9,6 @@ export function showCatProfile(cat) {
   setDisplay("catProfile", true, "flex");
   setDisplay("catProfileScroll", true);
 
-  // UI Elements
   const nameInput = $("catName");
   const descInput = $("catDesc");
   const descDisplay = $("descDisplay");
@@ -23,7 +22,6 @@ export function showCatProfile(cat) {
   $("profileAge").textContent = cat.age;
   $("profileImage").src = cat.image;
 
-  // Set fields
   nameInput.value = cat.name;
   nameInput.disabled = true;
 
@@ -55,13 +53,11 @@ export function setupEditMode() {
     return;
   }
 
-  // Live typing
   descInput.addEventListener("input", () => {
     resizeTextarea(descInput);
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
   });
 
-  // ✏️ Edit Mode
   editBtn.addEventListener("click", () => {
     nameInput.dataset.original = nameInput.value;
     descInput.dataset.original = descInput.value;
@@ -76,41 +72,37 @@ export function setupEditMode() {
     console.log("✏️ Edit mode enabled");
   });
 
-  // 💾 Save
-saveBtn.addEventListener("click", () => {
-  const name = nameInput.value.trim();
-  const desc = descInput.value.trim();
+  saveBtn.addEventListener("click", () => {
+    const name = nameInput.value.trim();
+    const desc = descInput.value.trim();
 
-  if (desc.length > CHAR_LIMIT) {
-    alert(`Description too long. Max: ${CHAR_LIMIT} characters.`);
-    return;
-  }
-
-  if (window.currentCat) {
-    window.currentCat.name = name;
-    window.currentCat.description = desc;
-
-    // Update carousel display name
-    const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
-    if (card) {
-      const nameSpan = card.querySelector("span");
-      if (nameSpan) nameSpan.textContent = name;
+    if (desc.length > CHAR_LIMIT) {
+      alert(`Description too long. Max: ${CHAR_LIMIT} characters.`);
+      return;
     }
-  }
 
-  nameInput.disabled = true;
-  descInput.disabled = true;
-  descDisplay.textContent = desc;
-  descBlock.classList.remove("editing");
+    if (window.currentCat) {
+      window.currentCat.name = name;
+      window.currentCat.description = desc;
 
-  toggleButtons({ edit: true, save: false, cancel: false });
-  showToast("Changes saved!", "#ffcc66");
+      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
+      if (card) {
+        const nameSpan = card.querySelector("span");
+        if (nameSpan) nameSpan.textContent = name;
+      }
+    }
 
-  console.log("💾 Saved changes:", { name, desc });
-});
+    nameInput.disabled = true;
+    descInput.disabled = true;
+    descDisplay.textContent = desc;
+    descBlock.classList.remove("editing");
 
+    toggleButtons({ edit: true, save: false, cancel: false });
+    showToast("Changes saved!", "#ffcc66");
 
-  // ↩️ Cancel
+    console.log("💾 Saved changes:", { name, desc });
+  });
+
   cancelBtn.addEventListener("click", () => {
     nameInput.value = nameInput.dataset.original;
     descInput.value = descInput.dataset.original;
@@ -125,7 +117,6 @@ saveBtn.addEventListener("click", () => {
     console.log("↩️ Edit canceled");
   });
 
-  // 🗑️ Delete
   deleteBtn.addEventListener("click", () => {
     console.log("🟡 Delete button clicked");
 
@@ -134,92 +125,87 @@ saveBtn.addEventListener("click", () => {
       return;
     }
 
-    console.log(`🟠 Preparing Toastify confirm for "${window.currentCat.name}"`);
-
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = `
-      <div style="font-family: 'Press Start 2P', monospace; font-size: 10px;">
-        Delete "${window.currentCat.name}"?<br><br>
-        <button id="confirmDelete" style="margin-right:10px;">Yes</button>
-        <button id="cancelDelete">Cancel</button>
-      </div>
-    `;
-
-    const toast = window.Toastify({
-      node: wrapper,
-      duration: -1,
-      gravity: "top",
-      position: "right",
-      close: true,
-      style: {
-        background: "#d62828",
-        border: "3px solid black",
-        color: "white",
-        padding: "12px",
-        zIndex: 999999,
-      },
-      callback: () => {
-        console.log("🔁 Toast closed");
-        $("#confirmDelete")?.removeEventListener("click", handleConfirm);
-        $("#cancelDelete")?.removeEventListener("click", handleCancel);
-      }
-    });
+const wrapper = document.createElement("div");
+wrapper.innerHTML = `
+  <div style="
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    text-align: center;
+  ">
+    <img src="${window.currentCat.image}" alt="Cat Image"
+      style="width: 96px; height: 96px; object-fit: contain; margin-bottom: 16px;" />
+    <div style="margin-bottom: 16px;">Delete "<b>${window.currentCat.name}</b>"?</div>
+    <button id="confirmDelete" style="margin-right:16px; font-size: 12px;">Yes</button>
+    <button id="cancelDelete" style="font-size: 12px;">Cancel</button>
+  </div>
+`;
+const toast = window.Toastify({
+  node: wrapper,
+  duration: -1,
+  gravity: "top", // required by Toastify
+  position: "center", // overridden below
+  style: {
+    background: "#d62828",
+    border: "4px solid black",
+    color: "white",
+    padding: "32px",
+    width: "420px",
+    maxWidth: "90vw",
+    fontSize: "16px",
+    fontFamily: "'Press Start 2P', monospace",
+    boxShadow: "8px 8px #000",
+    textAlign: "center",
+    zIndex: 999999,
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
+  callback: () => {
+    $("#confirmDelete")?.removeEventListener("click", handleConfirm);
+    $("#cancelDelete")?.removeEventListener("click", handleCancel);
+  }
+});
 
     toast.showToast();
-    console.log("✅ Toastify confirm shown");
-function handleConfirm() {
-  toast.hideToast();
 
-  const deletedIndex = window.userCats.findIndex(c => c.id === window.currentCat.id);
-  if (deletedIndex === -1) return;
+    function handleConfirm() {
+      toast.hideToast();
 
-  // Remove cat from array
-  window.userCats.splice(deletedIndex, 1);
+      const deletedIndex = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (deletedIndex === -1) return;
 
-  // Hide profile UI
-  setDisplay("catProfile", false);
-  setDisplay("catProfileScroll", false);
+      window.userCats.splice(deletedIndex, 1);
 
-  // Rerender carousel
-  window.renderCarousel();
+      setDisplay("catProfile", false);
+      setDisplay("catProfileScroll", false);
 
-  // Select previous cat or first cat after deletion
-  let newIndex = deletedIndex - 1;
-  if (newIndex < 0) newIndex = 0;
+      window.renderCarousel();
 
-  const newCat = window.userCats[newIndex];
-  if (newCat) {
-    showCatProfile(newCat);
+      let newIndex = deletedIndex - 1;
+      if (newIndex < 0) newIndex = 0;
 
-    // Update big carousel image
-    const mainCatImg = document.getElementById("carouselCat");
-    if (mainCatImg) {
-      mainCatImg.src = newCat.image;
+      const newCat = window.userCats[newIndex];
+      const mainCatImg = document.getElementById("carouselCat");
+
+      if (newCat) {
+        showCatProfile(newCat);
+        if (mainCatImg) mainCatImg.src = newCat.image;
+        setDisplay("catProfile", true);
+        setDisplay("catProfileScroll", true);
+      } else {
+        if (mainCatImg) mainCatImg.src = "../assets/cats/placeholder.png";
+      }
+
+      showToast("Cat deleted!", "#ffcc66");
     }
-
-    // Make sure profile UI is visible
-    setDisplay("catProfile", true);
-    setDisplay("catProfileScroll", true);
-  } else {
-    // No cats left - clear main image
-    const mainCatImg = document.getElementById("carouselCat");
-    if (mainCatImg) {
-      mainCatImg.src = "../assets/cats/placeholder.png"; // fallback image
-    }
-  }
-
-  showToast("Cat deleted!", "#ffcc66");
-}
-
 
     function handleCancel() {
       console.log("❌ Cancel button clicked");
       toast.hideToast();
     }
 
-    // 👇 Delay binding until Toast DOM is ready
     requestAnimationFrame(() => {
-      console.log("⏳ Binding delete toast buttons...");
       const confirmBtn = document.getElementById("confirmDelete");
       const cancelBtn = document.getElementById("cancelDelete");
 
@@ -234,25 +220,21 @@ function handleConfirm() {
   });
 }
 
-// 🟨 Resize textarea to fit content
 function resizeTextarea(textarea) {
   textarea.style.height = "auto";
   textarea.style.height = textarea.scrollHeight + "px";
 }
 
-// 🎛️ Button visibility toggle
 function toggleButtons({ edit, save, cancel }) {
   $("editBtn").style.display = edit ? "inline-block" : "none";
   $("saveBtn").style.display = save ? "inline-block" : "none";
   $("cancelBtn").style.display = cancel ? "inline-block" : "none";
 
-  // NEW: toggle extra buttons
   $("deleteBtn").style.display = edit ? "inline-block" : "none";
   $("customizeBtn").style.display = edit ? "inline-block" : "none";
   $("fashionBtn").style.display = edit ? "inline-block" : "none";
 }
 
-// 🟧 Pixel-style toast
 function showToast(text, background) {
   window.Toastify({
     text,

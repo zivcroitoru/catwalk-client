@@ -13,6 +13,7 @@ import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
 import { bindShopBtn, bindCustomizeBtn, bindFashionBtn } from './features/ui/bindings.js';
 import { $$ } from './core/utils.js';
+import { updateCatPreview } from './features/catPreviewRenderer.js';
 
 // ───────────── Globals ─────────────
 export let userCats = [];
@@ -33,7 +34,7 @@ fetch("../data/shopItems.json")
   .then(data => {
     shopItems = data;
     window.shopItems = shopItems;
-    renderShopItems(shopItems);
+    renderShopItems(shopItems, "hats");
   })
   .catch(err => console.error("❌ Failed to load shopItems.json", err));
 
@@ -61,10 +62,13 @@ Object.assign(window, {
 // ───────────── Init ─────────────
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOMContentLoaded");
+
   fetchUser();
   setupShopTabs();
   setupEditMode();
   bindUI();
+  updateCoinCount(); // 🪙 Update coin UI from localStorage
+
   console.log("✅ Initialized systems");
 });
 
@@ -115,19 +119,15 @@ function renderCarousel() {
       <span>${cat.name}</span>
     `;
 
-    card.addEventListener("click", () => {
-      console.log("🐾 Selected cat:", cat.name);
-      selectCatCard(card);
-      showCatProfile(cat);
-      window.selectedCat = cat;
+card.addEventListener("click", () => {
+  console.log("🐾 Selected cat:", cat.name);
+  selectCatCard(card);
+  showCatProfile(cat);
+  window.selectedCat = cat;
 
-      const mainCatImg = document.getElementById("carouselCat");
-      if (mainCatImg) {
-        mainCatImg.src = cat.image;
-        mainCatImg.alt = cat.name || "Cat";
-        console.log("🎯 Podium cat updated to:", cat.name);
-      }
-    });
+  // ✅ Update center podium layers
+  updateCatPreview(cat);
+});
 
     container.appendChild(card);
   });
@@ -137,7 +137,8 @@ function renderCarousel() {
     return;
   }
 
-  const firstCat = window.userCats[0];
+const firstCat = window.userCats[0];
+updateCatPreview(firstCat); // 🧩 Add this
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
     mainCatImg.src = firstCat.image;
@@ -164,4 +165,21 @@ function selectCatCard(selectedCard) {
     card.classList.remove('selected')
   );
   selectedCard.classList.add('selected');
+}
+
+// ───────────── Coin Count Update ─────────────
+function updateCoinCount() {
+  const userItems = JSON.parse(localStorage.getItem("userItems"));
+  if (!userItems) {
+    console.warn("❌ No userItems in storage");
+    return;
+  }
+
+  const coinEl = document.querySelector(".coin-count");
+  if (coinEl) {
+    coinEl.textContent = userItems.coins;
+    console.log(`🪙 Coin count updated to ${userItems.coins}`);
+  } else {
+    console.warn("❌ .coin-count element not found");
+  }
 }

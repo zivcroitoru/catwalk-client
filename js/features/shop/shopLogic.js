@@ -1,20 +1,36 @@
 export function getItemState(itemId, category, userItems) {
-  if (!userItems.ownedItems.includes(itemId)) return "buy";
-  if (userItems.equippedItems[category] === itemId) return "unequip";
-  return "equip";
+  const owned = userItems.ownedItems.map(String);
+  const id = String(itemId);
+
+  return !owned.includes(id)
+    ? "buy"
+    : userItems.equippedItems[category] === itemId
+    ? "unequip"
+    : "equip";
 }
 
 export function handleShopClick(item, userItems) {
   const state = getItemState(item.id, item.category, userItems);
 
-  if (state === "buy" && userItems.coins >= item.price) {
-    userItems.ownedItems.push(item.id);
-    userItems.coins -= item.price;
-  } else if (state === "equip") {
-    userItems.equippedItems[item.category] = item.id;
-  } else if (state === "unequip") {
-    delete userItems.equippedItems[item.category];
+  if (state === "buy") {
+    if (userItems.coins >= item.price) {
+      userItems.ownedItems.push(String(item.id));
+      userItems.coins -= item.price;
+      return "bought";
+    } else {
+      return "not_enough";
+    }
   }
 
-  localStorage.setItem("userItems", JSON.stringify(userItems));
+  if (state === "equip") {
+    userItems.equippedItems[item.category] = item.id;
+    return "equipped";
+  }
+
+  if (state === "unequip") {
+    delete userItems.equippedItems[item.category];
+    return "unequipped";
+  }
+
+  return "noop";
 }

@@ -2,27 +2,26 @@
   shopTabs.js
 -----------------------------------------------------------------------------*/
 import { $$ } from '../../core/utils.js';
+import { renderShopItems } from './shopItemsRenderer.js';
 
 export function setupShopTabs() {
   const tabs = $$(".tab");
 
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
+      // 🔄 Update active tab
       tabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
 
+      // 🛍️ Render selected category
       const selected = tab.dataset.category.toLowerCase();
-      const items = $$("#shopItems .shop-card"); // ✅ updated selector
-
-      items.forEach(i => {
-        i.style.display = i.dataset.category?.toLowerCase() === selected ? "flex" : "none";
-      });
+      renderShopItems(window.shopItems, selected);
     });
   });
 
-  if (tabs[0]) tabs[0].click(); // auto-activate first tab
+  // ✅ Auto-activate first tab
+  if (tabs[0]) tabs[0].click();
 }
-
 
 export function scrollShop(direction) {
   const container = document.getElementById("shopItems");

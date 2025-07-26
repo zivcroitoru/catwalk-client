@@ -18,3 +18,11 @@ export function loadUserItems() {
 export function saveUserItems(userItems) {
   localStorage.setItem("userItems", JSON.stringify(userItems));
 }
+
+export function updateCoinUI(coins) {
+  const coinEl = document.querySelector(".coin-count");
+  if (coinEl) coinEl.textContent = coins;
+}
+
+// ✅ Make coin UI update available in DevTools
+window.updateCoinUI = updateCoinUI;

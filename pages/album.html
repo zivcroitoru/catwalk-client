@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="../css/album-css/8_profile.css">
 <link rel="stylesheet" href="../css/album-css/9_modals.css">
 <link rel="stylesheet" href="../css/album-css/10_utilities.css">
+<link rel="stylesheet" href="../css/album-css/11_cat_render">
+
 
 </head>
 <body>
@@ -59,19 +61,26 @@
       </div>
     </div>
 
-    <!-- Center Podium -->
-    <div class="cat-display-wrapper">
-      <div class="ellipse-podium">
-        <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-      <img id="carouselCat" src="" alt="Cat" class="carousel-cat" />
-      </div>
+<!-- Center Podium -->
+<div class="cat-display-wrapper">
+  <div class="ellipse-podium">
+    <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+
+    <div class="carousel-cat" id="carouselCatWrapper" style="position: relative; width: 200px; height: auto;">
+      <img id="carouselBase" src="" alt="Base Cat" class="cat-layer" />
+      <img id="carouselHat" src="" alt="Hat" class="cat-layer" />
+      <img id="carouselShirt" src="" alt="Shirt" class="cat-layer" />
+      <img id="carouselPants" src="" alt="Pants" class="cat-layer" />
+      <img id="carouselAccessories" src="" alt="Accessories" class="cat-layer" />
     </div>
+  </div>
+</div>
 
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
         <img src="../assets/icons/coin.png" alt="Coins" />
-        <span class="coin-count">123</span>
+        <span class="coin-count">500</span>
       </div>
       <div class="topbar-icon" id="soundToggle" title="Sound" onclick="toggleSound()">
         <img id="soundIcon" src="../assets/icons/speakerON.png" alt="Sound" />
