@@ -9,10 +9,6 @@ import { renderShopItems } from '../shop/shopItemsRenderer.js';
 export function bindShopBtn(bindButton) {
   bindButton("shopCloseBtn", toggleShop, "🧼 Close Shop clicked");
 }
-
-/**
- * Binds the customize button to force open the shop
- */
 export function bindCustomizeBtn(bindButton) {
   bindButton("customizeBtn", () => {
     const cat = window.selectedCat;
@@ -31,14 +27,16 @@ export function bindCustomizeBtn(bindButton) {
       console.log("🛒 Shop popup forced open");
     }
 
-    const hatsTab = document.querySelector('.tab[data-category="hats"]');
-    if (hatsTab) hatsTab.click();
-
-    if (window.shopItems) {
-      renderShopItems(window.shopItems);
-    } else {
-      console.warn("⚠️ shopItems not loaded yet");
-    }
+    // ✅ Let tab logic do the filtering and render
+    setTimeout(() => {
+      const hatsTab = document.querySelector('.tab[data-category="hats"]');
+      if (hatsTab) {
+        console.log("🎩 Clicking hats tab (via tab logic)");
+        hatsTab.click();
+      } else {
+        console.warn("⚠️ Hats tab not found");
+      }
+    }, 0);
   });
 }
 

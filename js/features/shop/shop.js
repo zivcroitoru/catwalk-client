@@ -23,17 +23,19 @@ export function toggleShop() {
   // ✅ Load shop items
   if (window.shopItems) {
     renderShopItems(window.shopItems);
+
+    // ✅ Auto-select hats tab AFTER rendering
+    setTimeout(() => {
+      const hatsTab = document.querySelector('.tab[data-category="hats"]');
+      if (hatsTab) {
+        console.log("🎩 Clicking hats tab (delayed)");
+        hatsTab.click();
+      } else {
+        console.warn("⚠️ Hats tab not found");
+      }
+    }, 50); // Slight delay to let DOM update
   } else {
     console.warn("⚠️ shopItems not loaded yet");
-  }
-
-  // ✅ Auto-select hats tab
-  const hatsTab = document.querySelector('.tab[data-category="hats"]');
-  if (hatsTab) {
-    console.log("🎩 Clicking hats tab");
-    hatsTab.click();
-  } else {
-    console.warn("⚠️ Hats tab not found");
   }
 }
 
