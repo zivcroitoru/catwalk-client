@@ -205,7 +205,7 @@ h1 {
 /* Cat Display Area */
 .cat-display {
     position: absolute;
-    top: 150px; /* Below the title */
+    top: 200px; /* Below the title */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Perfect centering */
     width: 1050px;
@@ -235,9 +235,21 @@ h1 {
     transition: all 0.2s ease; /* Smooth transition for visual feedback */
 }
 
-/* HOVER STATE - Purple outline when hovering (but NOT if already selected) */
-.voting-active .stage-base:hover:not(.selected) {
+/* HOVER STATE - Purple outline when hovering (but NOT if already selected OR if it's own cat) */
+.voting-active .stage-base:hover:not(.selected):not(.own-cat-hover) {
     outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* OWN CAT HOVER STATE - Red outline when hovering over owned cat */
+.stage-base.own-cat-hover {
+    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* OWN CAT SELECTED STATE - Red outline when clicked on owned cat (with warning) */
+.stage-base.own-cat-selected {
+    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
     outline-offset: 0; /* No gap between outline and element */
 }
 
@@ -318,12 +330,23 @@ h1 {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+
+    /* Black stroke outside - using text-shadow for outside effect */
+    text-shadow: 
+    -2px -2px 0 var(--color-black),
+    2px -2px 0 var(--color-black),
+    -2px 2px 0 var(--color-black),
+    2px 2px 0 var(--color-black),
+    -2px 0 0 var(--color-black),
+    2px 0 0 var(--color-black),
+    0 -2px 0 var(--color-black),
+    0 2px 0 var(--color-black);
 }
 
 /* Cat name and username styling updates */
 .cat-name {
     position: absolute;
-    top: 260px; /* Adjusted for better positioning with stage walkway */
+    top: 280px; /* Adjusted for better positioning with stage walkway */
     left: 50%;
     transform: translateX(-50%);
     width: 90%; /* Reduced from 100% to prevent overflow outside stage base */
@@ -386,6 +409,51 @@ h1 {
     bottom: 5px; /* Maintain bottom position in shorter base */
 }
 
+/* RESULTS BUTTONS STYLING */
+
+/* Results buttons container */
+.results-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px; /* Wide enough to space buttons apart */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100; /* Above other elements */
+}
+
+/* Results button styling - matches exit dialog buttons */
+.results-button {
+    padding: 12px 20px;
+    background-color: var(--color-brown); /* #DAAB6E */
+    border: var(--stroke-thick) solid var(--color-black); /* 7px black border */
+    color: var(--color-black);
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm); /* 48px */
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: none;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    
+    /* Ensure proper sizing */
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    
+    /* Minimum width for consistent button sizes */
+    min-width: 200px;
+}
+
+.results-button:hover {
+    opacity: 0.9;
+}
+
 .announcement-text {
     position: absolute;
     bottom: var(--spacing-md); /* Lower than before (was 100px) */
@@ -414,7 +482,7 @@ h1 {
     width: 100px;
     
     font-family: var(--font-main); /* Changed to Jersey 10 */
-    font-size: var(--font-size-xxs); /* 36px */
+    font-size: var(--font-size-xxs); /* 24px */
     color: var(--color-red); /* #FB0B0B */
     text-align: center;
     line-height: 1.4;

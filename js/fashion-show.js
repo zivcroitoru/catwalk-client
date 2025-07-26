@@ -1,6 +1,11 @@
 let isInVotingPhase = false; // Track if we're in voting phase
 let exitDialogOpen = false; // Track if exit dialog is currently open
 let selectedCatIndex = null; // Track which cat is currently selected for voting
+let playerOwnedCatIndex = 0; // Placeholder: Player owns cat at index 0 (Mr. Grumpy Pants)
+let warningTimeout = null; // Track warning message timeout
+
+// Add timeout variable for 5-minute auto-navigation
+let resultsTimeout = null;
 
 // Placeholder data for cats and players (until database integration)
 const placeholderCats = [
@@ -19,7 +24,7 @@ let playerCount = 1;
 const maxPlayers = 5;
 let counterInterval;
 let votingTimer;
-let timeRemaining = 15;
+let timeRemaining = 30;
 
 function startCounter() {
     // Update counter every second
@@ -79,10 +84,7 @@ function showVotingInterface() {
     
     // Create voting interface elements
     createVotingInterface();
-    
-    // Enable clickable stages for voting
-    enableVotingClicks();
-    
+        
     // Start the detailed timing sequence
     startDetailedSequence();
 }
@@ -134,10 +136,11 @@ function createVotingInterface() {
     announcement.className = 'announcement-text';
     announcement.textContent = 'HERE THEY COME!';
     
-    // Create red warning message
+    // Create red warning message (hidden by default)
     const warningMessage = document.createElement('div');
     warningMessage.className = 'warning-message';
     warningMessage.textContent = "You can't vote for your own cat, please vote for another cat";
+    warningMessage.style.display = 'none'; // Hidden by default
     
     // Add all elements to main
     main.appendChild(catDisplay);
@@ -152,13 +155,15 @@ function enableVotingClicks() {
         catDisplay.classList.add('voting-active');
     }
     
-    // Add click event listeners to all stage bases
+    // Add click and hover event listeners to all stage bases
     const stageBases = document.querySelectorAll('.stage-base');
     stageBases.forEach((stageBase, index) => {
         stageBase.addEventListener('click', () => handleCatVote(index));
+        stageBase.addEventListener('mouseenter', () => handleCatHover(index));
+        stageBase.addEventListener('mouseleave', () => handleCatHoverEnd(index));
     });
     
-    console.log("Voting clicks enabled - cats are now clickable");
+    console.log("Voting clicks and hover enabled - cats are now interactive");
 }
 
 function disableVotingClicks() {
@@ -167,6 +172,9 @@ function disableVotingClicks() {
     if (catDisplay) {
         catDisplay.classList.remove('voting-active');
     }
+    
+    // Hide warning message when voting ends
+    hideWarningMessage();
     
     // DON'T clear selection here - keep it visible during "CALCULATING..."
     console.log("Voting clicks disabled but selection kept visible");
@@ -178,6 +186,15 @@ function handleCatVote(catIndex) {
         console.log("Voting not allowed - not in voting phase");
         return;
     }
+    
+    // Check if player is trying to vote for their own cat
+    if (catIndex === playerOwnedCatIndex) {
+        showOwnCatWarning(catIndex);
+        return;
+    }
+    
+    // Hide warning message if it was showing (player clicked another cat)
+    hideWarningMessage();
     
     // Clear previous selection
     clearCatSelection();
@@ -192,6 +209,76 @@ function handleCatVote(catIndex) {
     }
     
     console.log(`Voted for cat ${catIndex}: ${placeholderCats[catIndex].catName}`);
+}
+
+function handleCatHover(catIndex) {
+    // Only show hover effects during voting phase
+    if (!isInVotingPhase) return;
+    
+    // If it's the player's own cat, show red outline on hover
+    if (catIndex === playerOwnedCatIndex) {
+        const stageBases = document.querySelectorAll('.stage-base');
+        if (stageBases[catIndex]) {
+            stageBases[catIndex].classList.add('own-cat-hover');
+        }
+    }
+}
+
+function handleCatHoverEnd(catIndex) {
+    // Remove hover effect when mouse leaves
+    const stageBases = document.querySelectorAll('.stage-base');
+    if (stageBases[catIndex]) {
+        stageBases[catIndex].classList.remove('own-cat-hover');
+    }
+}
+
+function showOwnCatWarning(catIndex) {
+    // CLEAR ANY EXISTING SELECTION FIRST - this cancels previous votes
+    clearCatSelection();
+
+    // Add red outline to own cat
+    const stageBases = document.querySelectorAll('.stage-base');
+    if (stageBases[catIndex]) {
+        stageBases[catIndex].classList.add('own-cat-selected');
+    }
+    
+    // Show warning message
+    const warningMessage = document.querySelector('.warning-message');
+    if (warningMessage) {
+        warningMessage.style.display = 'block';
+    }
+    
+    // Clear any existing timeout
+    if (warningTimeout) {
+        clearTimeout(warningTimeout);
+    }
+    
+    // Set timeout to hide warning after 3 seconds
+    warningTimeout = setTimeout(() => {
+        hideWarningMessage();
+    }, 3000);
+    
+    console.log("Player tried to vote for their own cat - showing warning");
+}
+
+function hideWarningMessage() {
+    // Hide warning message
+    const warningMessage = document.querySelector('.warning-message');
+    if (warningMessage) {
+        warningMessage.style.display = 'none';
+    }
+    
+    // Remove red outline from own cat
+    const stageBases = document.querySelectorAll('.stage-base');
+    if (stageBases[playerOwnedCatIndex]) {
+        stageBases[playerOwnedCatIndex].classList.remove('own-cat-selected');
+    }
+    
+    // Clear timeout
+    if (warningTimeout) {
+        clearTimeout(warningTimeout);
+        warningTimeout = null;
+    }
 }
 
 function clearCatSelection() {
@@ -226,6 +313,9 @@ function startDetailedSequence() {
                 console.log("Changed to waiting message and started timer");
             }
             
+            // Enable clickable stages for voting
+            enableVotingClicks();
+
             startVotingTimer();
             
         }, 1000); // 1 second after showing "VOTE!"
@@ -259,7 +349,7 @@ function moveAlbumButtonDown() {
 }
 
 function startVotingTimer() {
-    timeRemaining = 15; // 15 seconds for voting
+    timeRemaining = 30; // 30 seconds for voting
     updateTimerDisplay();
     
     votingTimer = setInterval(() => {
@@ -429,12 +519,18 @@ function logVotingResults() {
     console.log(`\nUsing ${PIXELS_PER_VOTE}px per vote (configurable)`);
 }
 
-// UPDATED showResultsPhase with CORRECT positioning - Gold ON TOP of Brown
+// UPDATED showResultsPhase with buttons instead of auto-restart
 function showResultsPhase() {
     console.log("Showing results phase with calculated vote data...");
     
     // Clear the selection outline when showing results
     clearCatSelection();
+    
+    // Hide the album button during results phase
+    const albumButton = document.querySelector('.album-button');
+    if (albumButton) {
+        albumButton.style.display = 'none';
+    }
     
     // Modify existing stage bases for results display
     const stageBases = document.querySelectorAll('.stage-base');
@@ -453,7 +549,7 @@ function showResultsPhase() {
         const goldBase = document.createElement('div');
         goldBase.className = 'gold-base';
         
-        // 🚀 FIXED: Gold base sits ON TOP of brown base and extends UPWARD
+        // Gold base sits ON TOP of brown base and extends UPWARD
         if (voteResults) {
             const calculatedHeight = voteResults.goldBaseHeights[index];
             goldBase.style.height = `${calculatedHeight}px`;
@@ -468,7 +564,7 @@ function showResultsPhase() {
         if (catSprite) {
             catSprite.classList.add('results-cat');
             
-            // 🚀 FIXED: Position cat on top of the gold base (which sits on top of brown base)
+            // Position cat on top of the gold base (which sits on top of brown base)
             if (voteResults) {
                 const goldHeight = voteResults.goldBaseHeights[index];
                 // Cat sits on top of: brown base (100px) + gold base height
@@ -493,10 +589,79 @@ function showResultsPhase() {
         }
     });
     
-    // Wait 1 minute then restart entire sequence
-    setTimeout(() => {
-        resetToWaitingRoom();
-    }, 60000); // Wait 1 minute (60,000ms) for results display
+    // Create and show the results buttons
+    createResultsButtons();
+    
+    // Set 5-minute timeout to automatically go to album
+    resultsTimeout = setTimeout(() => {
+        console.log("5 minutes passed - automatically going to album");
+        handleGoHome();
+    }, 300000); // 5 minutes = 300,000ms
+}
+
+function createResultsButtons() {
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'results-buttons';
+    
+    // Create GO HOME button (left)
+    const goHomeButton = document.createElement('button');
+    goHomeButton.className = 'results-button';
+    goHomeButton.textContent = 'GO HOME';
+    goHomeButton.onclick = handleGoHome;
+    
+    // Create PLAY AGAIN button (right)
+    const playAgainButton = document.createElement('button');
+    playAgainButton.className = 'results-button';
+    playAgainButton.textContent = 'PLAY AGAIN';
+    playAgainButton.onclick = handlePlayAgain;
+    
+    // Add buttons to container
+    buttonsContainer.appendChild(goHomeButton);
+    buttonsContainer.appendChild(playAgainButton);
+    
+    // Add to page
+    document.querySelector('main').appendChild(buttonsContainer);
+    
+    console.log("Results buttons created and displayed");
+}
+
+function handleGoHome() {
+    console.log("GO HOME button clicked - navigating to album");
+    
+    // Clear the 5-minute timeout
+    if (resultsTimeout) {
+        clearTimeout(resultsTimeout);
+        resultsTimeout = null;
+    }
+    
+    // Navigate to album
+    window.location.href = 'album.html';
+}
+
+function handlePlayAgain() {
+    console.log("PLAY AGAIN button clicked - restarting cycle");
+    
+    // Clear the 5-minute timeout
+    if (resultsTimeout) {
+        clearTimeout(resultsTimeout);
+        resultsTimeout = null;
+    }
+    
+    // Remove results buttons
+    const buttonsContainer = document.querySelector('.results-buttons');
+    if (buttonsContainer) {
+        buttonsContainer.remove();
+    }
+    
+    // Show album button again
+    const albumButton = document.querySelector('.album-button');
+    if (albumButton) {
+        albumButton.style.display = 'flex';
+    }
+    
+    // Restart the cycle
+    resetToWaitingRoom();
 }
 
 // UPDATE THE startEndSequence FUNCTION
@@ -564,8 +729,17 @@ function resetToWaitingRoom() {
     voteResults = null;
     selectedCatIndex = null; // Also reset selected cat
     
+    // Clear the 5-minute results timeout
+    if (resultsTimeout) {
+        clearTimeout(resultsTimeout);
+        resultsTimeout = null;
+    }
+
     // Clear selection and disable voting clicks
     clearCatSelection();
+    
+    // Hide warning message and clear timeout
+    hideWarningMessage();
     
     // Close any open exit dialog
     if (exitDialogOpen) {
@@ -576,11 +750,19 @@ function resetToWaitingRoom() {
     const catDisplay = document.querySelector('.cat-display');
     const warningMessage = document.querySelector('.warning-message');
     const existingAnnouncement = document.querySelector('.announcement-text');
+    const buttonsContainer = document.querySelector('.results-buttons');
     
     if (catDisplay) catDisplay.remove();
     if (warningMessage) warningMessage.remove();
     if (existingAnnouncement) existingAnnouncement.remove();
+    if (buttonsContainer) buttonsContainer.remove(); // Clean up results buttons
     
+    // Show album button again (in case it was hidden during results)
+    const albumButton = document.querySelector('.album-button');
+    if (albumButton) {
+        albumButton.style.display = 'flex';
+    }
+
     // Reset timer styling back to defaults
     const timerText = document.getElementById('timer-text');
     if (timerText) {
