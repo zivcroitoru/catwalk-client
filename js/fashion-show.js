@@ -111,7 +111,7 @@ function createVotingInterface() {
         
         // Add cat sprite - positioned 30px above bottom of stage-walkway
         const catSprite = document.createElement('img');
-        catSprite.src = '../assets/cats/classic pink.png';
+        catSprite.src = '../assets/cats/placeholder-fashion-show-cat.png';
         catSprite.alt = placeholderCats[i].catName;
         catSprite.className = 'cat-sprite';
         stageBase.appendChild(catSprite);
