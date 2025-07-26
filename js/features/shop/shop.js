@@ -39,13 +39,13 @@ export function toggleShop() {
   }
 }
 
-// ✅ Optional: Scroll the shop items left/right
+// ✅ Vertical scroll logic for up/down buttons
 export function scrollShop(direction) {
-  const wrapper = document.querySelector(".shop-scroll-wrapper .items");
+  const wrapper = document.querySelector(".shop-scroll-wrapper");
   if (!wrapper) {
-    console.warn("❌ shop-scroll-wrapper not found");
+    console.warn("❌ .shop-scroll-wrapper not found");
     return;
   }
 
-  wrapper.scrollBy({ left: direction * 200, behavior: "smooth" });
+  wrapper.scrollBy({ top: direction * 120, behavior: "smooth" });
 }

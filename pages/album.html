@@ -167,6 +167,7 @@
 <div id="shopPopup" class="shop-popup" style="display: none;" onclick="event.stopPropagation()">
   <button class="popup-close" id="shopCloseBtn">×</button>
 
+  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" data-category="hats">HAT</button>
     <button class="tab" data-category="shoes">SHOES</button>
@@ -175,14 +176,15 @@
     <button class="tab" data-category="accessories">ACCESSORIES</button>
   </div>
 
+  <!-- Scrollable Items + Vertical Scroll Buttons -->
   <div class="shop-scroll-wrapper">
-    <button class="shop-scroll-btn left" onclick="scrollShop(-1)">‹</button>
-    <div class="items" id="shopItems"></div>
-    <button class="shop-scroll-btn right" onclick="scrollShop(1)">›</button>
+    <button class="scroll-btn-up" onclick="scrollShop(-1)">↑</button>
+    <div id="shopItems"></div>
+    <button class="scroll-btn-down" onclick="scrollShop(1)">↓</button>
   </div>
 </div>
 
-<!-- Audio + Scripts -->
+<!-- ✅ Audio + Scripts -->
 <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script type="module" src="../js/main.js"></script>
