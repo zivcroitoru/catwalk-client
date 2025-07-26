@@ -6,10 +6,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Cats</title>
-<link rel="stylesheet" href="../css/album-css/base.css">
-<link rel="stylesheet" href="../css/album-css/layout.css">
-<link rel="stylesheet" href="../css/album-css/components.css">
-<link rel="stylesheet" href="../css/album-css/cat-album.css">
+<!-- ✅ Import all 10 CSS files -->
+<link rel="stylesheet" href="../css/album-css/1_base.css">
+<link rel="stylesheet" href="../css/album-css/2_layout.css">
+<link rel="stylesheet" href="../css/album-css/3_components.css">
+<link rel="stylesheet" href="../css/album-css/4_cat-cards.css">
+<link rel="stylesheet" href="../css/album-css/5_carousel.css">
+<link rel="stylesheet" href="../css/album-css/6_cat-album.css">
+<link rel="stylesheet" href="../css/album-css/7_shop.css">
+<link rel="stylesheet" href="../css/album-css/8_profile.css">
+<link rel="stylesheet" href="../css/album-css/9_modals.css">
+<link rel="stylesheet" href="../css/album-css/10_utilities.css">
 
 </head>
 <body>
@@ -133,8 +140,7 @@
 
   <div id="charCount" class="word-count">0 / 200 characters</div>
 </div>
-
-      <!-- Footer Buttons -->
+<!-- Footer Buttons -->
 <div class="profile-footer-buttons">
   <button class="profile-btn primary" id="editBtn">Edit</button>
   <button class="profile-btn danger" id="deleteBtn">Delete</button>
@@ -145,38 +151,40 @@
   <button class="profile-btn secondary save-cancel" id="cancelBtn" style="display: none;">Cancel</button>
 </div>
 
-  <!-- Mailbox Modal -->
-  <div class="mailbox-modal" id="mailbox">
-    <h3>Mailbox</h3>
-    <p>You have 3 new messages.</p>
-    <ul>
-      <li>🎁 You won 50 coins in a fashion show!</li>
-    </ul>
-    <button onclick="toggleMailbox()">Close</button>
+</div> <!-- ✅ Close #catProfileScroll -->
+
+<!-- Mailbox Modal -->
+<div class="mailbox-modal" id="mailbox">
+  <h3>Mailbox</h3>
+  <p>You have 3 new messages.</p>
+  <ul>
+    <li>🎁 You won 50 coins in a fashion show!</li>
+  </ul>
+  <button onclick="toggleMailbox()">Close</button>
+</div>
+
+<!-- ✅ Shop Popup (no overlay) -->
+<div id="shopPopup" class="shop-popup" style="display: none;" onclick="event.stopPropagation()">
+  <button class="popup-close" id="shopCloseBtn">×</button>
+
+  <div class="tabs">
+    <button class="tab active" data-category="hats">HAT</button>
+    <button class="tab" data-category="shoes">SHOES</button>
+    <button class="tab" data-category="shirt">SHIRT</button>
+    <button class="tab" data-category="pants">PANTS</button>
+    <button class="tab" data-category="accessories">ACCESSORIES</button>
   </div>
 
-  <!-- Shop Overlay -->
-  <div id="shopOverlay" class="modal-overlay" style="display: none;">
-    <div id="shopPopup" class="shop-popup" onclick="event.stopPropagation()">
-      <button class="popup-close" id="shopCloseBtn">×</button>
-      <div class="tabs">
-        <button class="tab active" data-category="hats">HAT</button>
-        <button class="tab" data-category="shoes">SHOES</button>
-        <button class="tab" data-category="shirt">SHIRT</button>
-        <button class="tab" data-category="pants">PANTS</button>
-        <button class="tab" data-category="accessories">ACCESSORIES</button>
-      </div>
-      <div class="shop-scroll-wrapper">
-        <button class="shop-scroll-btn left" onclick="scrollShop(-1)">‹</button>
-        <div class="items" id="shopItems"></div>
-        <button class="shop-scroll-btn right" onclick="scrollShop(1)">›</button>
-      </div>
-    </div>
+  <div class="shop-scroll-wrapper">
+    <button class="shop-scroll-btn left" onclick="scrollShop(-1)">‹</button>
+    <div class="items" id="shopItems"></div>
+    <button class="shop-scroll-btn right" onclick="scrollShop(1)">›</button>
   </div>
+</div>
 
-  <!-- Audio + Scripts -->
-  <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script type="module" src="../js/main.js"></script>
+<!-- Audio + Scripts -->
+<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="module" src="../js/main.js"></script>
 </body>
 </html>

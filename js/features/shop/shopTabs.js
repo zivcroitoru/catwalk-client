@@ -12,16 +12,17 @@ export function setupShopTabs() {
       tab.classList.add("active");
 
       const selected = tab.dataset.category.toLowerCase();
-      const items = $$("#shopItems .item-wrapper"); // 🔄 fresh query every time
+      const items = $$("#shopItems .shop-card"); // ✅ updated selector
 
       items.forEach(i => {
-        i.style.display = i.dataset.category?.toLowerCase() === selected ? "block" : "none";
+        i.style.display = i.dataset.category?.toLowerCase() === selected ? "flex" : "none";
       });
     });
   });
 
   if (tabs[0]) tabs[0].click(); // auto-activate first tab
 }
+
 
 export function scrollShop(direction) {
   const container = document.getElementById("shopItems");

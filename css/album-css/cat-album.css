@@ -1,7 +1,0 @@
-/* ---------- Cat‑Album page‑specific tweaks ---------- */
-
-/* one‑off offsets – adjust freely without touching shared files */
-.upload-label{margin-left:-120px;margin-top:30px;}
-.cat-sprite-foruploadscreen{margin-left:-270px;margin-top:-8px;}
-
-/* quick experiments & future overrides live here */

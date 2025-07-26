@@ -1,39 +1,39 @@
-// shop.js
 import { renderShopItems } from './shopItemsRenderer.js'; // 🎨 Renders items
 
-// ✅ Toggle the visibility of the shop overlay and render items
 export function toggleShop() {
-  console.log("🛒 toggleShop() called");
+  console.log("🛒 toggleShop() FORCE OPEN");
 
-  const overlay = document.getElementById("shopOverlay");
-  if (!overlay) {
-    console.warn("❌ shopOverlay not found");
+  const popup = document.getElementById("shopPopup");
+  const profileScroll = document.getElementById("catProfileScroll");
+
+  if (!popup) {
+    console.warn("❌ shopPopup not found");
     return;
   }
 
-  const isVisible = getComputedStyle(overlay).display === "block";
+  // 🛑 DO NOT close the profile scroll (disabled for now)
+  // if (profileScroll) {
+  //   profileScroll.style.display = "none";
+  // }
 
-  if (isVisible) {
-    overlay.style.display = "none";
-    console.log("❌ Closed shop");
+  // ✅ Force display of shop
+  popup.style.display = "block";
+  console.log("✅ Forced shop popup open");
+
+  // ✅ Load shop items
+  if (window.shopItems) {
+    renderShopItems(window.shopItems);
   } else {
-    overlay.style.display = "block";
-    console.log("✅ Opened shop");
+    console.warn("⚠️ shopItems not loaded yet");
+  }
 
-    // 🔁 Use global shopItems loaded from JSON
-    if (window.shopItems) {
-      renderShopItems(window.shopItems);
-    } else {
-      console.warn("⚠️ shopItems not loaded yet");
-    }
-
-    const hatsTab = document.querySelector('.tab[data-category="hats"]');
-    if (hatsTab) {
-      console.log("🎩 Clicking hats tab");
-      hatsTab.click();
-    } else {
-      console.warn("⚠️ Hats tab not found");
-    }
+  // ✅ Auto-select hats tab
+  const hatsTab = document.querySelector('.tab[data-category="hats"]');
+  if (hatsTab) {
+    console.log("🎩 Clicking hats tab");
+    hatsTab.click();
+  } else {
+    console.warn("⚠️ Hats tab not found");
   }
 }
 
@@ -44,5 +44,6 @@ export function scrollShop(direction) {
     console.warn("❌ shop-scroll-wrapper not found");
     return;
   }
+
   wrapper.scrollBy({ left: direction * 200, behavior: "smooth" });
 }
