@@ -184,4 +184,13 @@
   font-size: 0.625rem;
 }
 
-/* rest left as-is if layout-specific logic isn’t broken */
+/* ───────────── Button Visibility Toggle ───────────── */
+.profile-btn {
+  min-width: 5.2vw; /* ensures layout consistency */
+  visibility: visible;
+}
+
+.profile-btn.hidden {
+  visibility: hidden; /* hide visually but keep space */
+}
+

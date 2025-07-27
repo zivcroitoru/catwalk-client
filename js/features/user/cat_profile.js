@@ -11,7 +11,6 @@ export function showCatProfile(cat) {
 
   const nameInput = $("catName");
   const descInput = $("catDesc");
-  const descDisplay = $("descDisplay");
   const charCount = $("charCount");
   const descBlock = $("descBlock");
 
@@ -26,10 +25,10 @@ export function showCatProfile(cat) {
   nameInput.disabled = true;
 
   descInput.value = cat.description;
-  descInput.disabled = true;
+  descInput.readOnly = true;
+  descInput.classList.remove("editing");
   resizeTextarea(descInput);
 
-  descDisplay.textContent = cat.description;
   charCount.textContent = `${cat.description.length} / ${CHAR_LIMIT} characters`;
   descBlock.classList.remove("editing");
 
@@ -44,11 +43,10 @@ export function setupEditMode() {
 
   const nameInput = $("catName");
   const descInput = $("catDesc");
-  const descDisplay = $("descDisplay");
   const descBlock = $("descBlock");
   const charCount = $("charCount");
 
-  if (![editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descDisplay, descBlock, charCount].every(Boolean)) {
+  if (![editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descBlock, charCount].every(Boolean)) {
     console.warn("⚠️ setupEditMode aborted — missing elements");
     return;
   }
@@ -63,7 +61,8 @@ export function setupEditMode() {
     descInput.dataset.original = descInput.value;
 
     nameInput.disabled = false;
-    descInput.disabled = false;
+    descInput.readOnly = false;
+    descInput.classList.add("editing");
     descBlock.classList.add("editing");
 
     toggleButtons({ edit: false, save: true, cancel: true });
@@ -93,8 +92,8 @@ export function setupEditMode() {
     }
 
     nameInput.disabled = true;
-    descInput.disabled = true;
-    descDisplay.textContent = desc;
+    descInput.readOnly = true;
+    descInput.classList.remove("editing");
     descBlock.classList.remove("editing");
 
     toggleButtons({ edit: true, save: false, cancel: false });
@@ -108,8 +107,8 @@ export function setupEditMode() {
     descInput.value = descInput.dataset.original;
 
     nameInput.disabled = true;
-    descInput.disabled = true;
-    descDisplay.textContent = descInput.dataset.original;
+    descInput.readOnly = true;
+    descInput.classList.remove("editing");
     descBlock.classList.remove("editing");
 
     toggleButtons({ edit: true, save: false, cancel: false });
@@ -125,47 +124,47 @@ export function setupEditMode() {
       return;
     }
 
-const wrapper = document.createElement("div");
-wrapper.innerHTML = `
-  <div style="
-    font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
-    text-align: center;
-  ">
-    <img src="${window.currentCat.image}" alt="Cat Image"
-      style="width: 96px; height: 96px; object-fit: contain; margin-bottom: 16px;" />
-    <div style="margin-bottom: 16px;">Delete "<b>${window.currentCat.name}</b>"?</div>
-    <button id="confirmDelete" style="margin-right:16px; font-size: 12px;">Yes</button>
-    <button id="cancelDelete" style="font-size: 12px;">Cancel</button>
-  </div>
-`;
-const toast = window.Toastify({
-  node: wrapper,
-  duration: -1,
-  gravity: "top", // required by Toastify
-  position: "center", // overridden below
-  style: {
-    background: "#d62828",
-    border: "4px solid black",
-    color: "white",
-    padding: "32px",
-    width: "420px",
-    maxWidth: "90vw",
-    fontSize: "16px",
-    fontFamily: "'Press Start 2P', monospace",
-    boxShadow: "8px 8px #000",
-    textAlign: "center",
-    zIndex: 999999,
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-  },
-  callback: () => {
-    $("#confirmDelete")?.removeEventListener("click", handleConfirm);
-    $("#cancelDelete")?.removeEventListener("click", handleCancel);
-  }
-});
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <div style="
+        font-family: 'Press Start 2P', monospace;
+        font-size: 14px;
+        text-align: center;
+      ">
+        <img src="${window.currentCat.image}" alt="Cat Image"
+          style="width: 96px; height: 96px; object-fit: contain; margin-bottom: 16px;" />
+        <div style="margin-bottom: 16px;">Delete "<b>${window.currentCat.name}</b>"?</div>
+        <button id="confirmDelete" style="margin-right:16px; font-size: 12px;">Yes</button>
+        <button id="cancelDelete" style="font-size: 12px;">Cancel</button>
+      </div>
+    `;
+    const toast = window.Toastify({
+      node: wrapper,
+      duration: -1,
+      gravity: "top",
+      position: "center",
+      style: {
+        background: "#d62828",
+        border: "4px solid black",
+        color: "white",
+        padding: "32px",
+        width: "420px",
+        maxWidth: "90vw",
+        fontSize: "16px",
+        fontFamily: "'Press Start 2P', monospace",
+        boxShadow: "8px 8px #000",
+        textAlign: "center",
+        zIndex: 999999,
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+      },
+      callback: () => {
+        $("#confirmDelete")?.removeEventListener("click", handleConfirm);
+        $("#cancelDelete")?.removeEventListener("click", handleCancel);
+      }
+    });
 
     toast.showToast();
 
@@ -226,13 +225,13 @@ function resizeTextarea(textarea) {
 }
 
 function toggleButtons({ edit, save, cancel }) {
-  $("editBtn").style.display = edit ? "inline-block" : "none";
-  $("saveBtn").style.display = save ? "inline-block" : "none";
-  $("cancelBtn").style.display = cancel ? "inline-block" : "none";
+  $("editBtn").style.visibility = edit ? "visible" : "hidden";
+  $("saveBtn").style.visibility = save ? "visible" : "hidden";
+  $("cancelBtn").style.visibility = cancel ? "visible" : "hidden";
 
-  $("deleteBtn").style.display = edit ? "inline-block" : "none";
-  $("customizeBtn").style.display = edit ? "inline-block" : "none";
-  $("fashionBtn").style.display = edit ? "inline-block" : "none";
+  $("deleteBtn").style.visibility = edit ? "visible" : "hidden";
+  $("customizeBtn").style.visibility = edit ? "visible" : "hidden";
+  $("fashionBtn").style.visibility = edit ? "visible" : "hidden";
 }
 
 function showToast(text, background) {

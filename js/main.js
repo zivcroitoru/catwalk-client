@@ -66,8 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   setupShopTabs();
   setupEditMode();
+
+  // 👇 FIX BUTTON STATE ON FIRST LOAD
+  toggleButtons({ edit: true, save: false, cancel: false });
+
   bindUI();
-  updateCoinCount(); // 🪙 Update coin UI from localStorage
+  updateCoinCount();
 
   console.log("✅ Initialized systems");
 });
