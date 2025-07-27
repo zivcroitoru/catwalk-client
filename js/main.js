@@ -158,6 +158,11 @@ updateCatPreview(firstCat); // 🧩 Add this
   if (profile) profile.style.display = "flex";
   if (scroll) scroll.style.display = "block";
   console.log("✅ Profile made visible");
+  const inventoryUI = document.getElementById("inventoryCount");
+if (inventoryUI) {
+  inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
+  console.log("📦 Inventory updated:", window.userCats.length);
+}
 }
 
 function selectCatCard(selectedCard) {

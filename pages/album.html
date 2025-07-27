@@ -1,80 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Cats</title>
-<!-- ✅ Import all 10 CSS files -->
-<link rel="stylesheet" href="../css/album-css/1_base.css">
-<link rel="stylesheet" href="../css/album-css/2_layout.css">
-<link rel="stylesheet" href="../css/album-css/3_components.css">
-<link rel="stylesheet" href="../css/album-css/4_cat-cards.css">
-<link rel="stylesheet" href="../css/album-css/5_carousel.css">
-<link rel="stylesheet" href="../css/album-css/6_cat-album.css">
-<link rel="stylesheet" href="../css/album-css/7_shop.css">
-<link rel="stylesheet" href="../css/album-css/8_profile.css">
-<link rel="stylesheet" href="../css/album-css/9_modals.css">
-<link rel="stylesheet" href="../css/album-css/10_utilities.css">
-<link rel="stylesheet" href="../css/album-css/11_cat_render">
+  <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
 
-
+  <!-- ✅ Import all 11 CSS files -->
+  <link rel="stylesheet" href="../css/album-css/1_base.css">
+  <link rel="stylesheet" href="../css/album-css/2_layout.css">
+  <link rel="stylesheet" href="../css/album-css/3_components.css">
+  <link rel="stylesheet" href="../css/album-css/4_cat-cards.css">
+  <link rel="stylesheet" href="../css/album-css/5_carousel.css">
+  <link rel="stylesheet" href="../css/album-css/6_cat-album.css">
+  <link rel="stylesheet" href="../css/album-css/7_shop.css">
+  <link rel="stylesheet" href="../css/album-css/8_profile.css">
+  <link rel="stylesheet" href="../css/album-css/9_modals.css">
+  <link rel="stylesheet" href="../css/album-css/10_utilities.css">
+  <link rel="stylesheet" href="../css/album-css/11_cat_render.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body>
   <div class="welcome-message" id="welcomeMessage">Welcome, Guest</div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
 
   <div id="game">
-    <!-- Upload Overlay -->
-    <div id="uploadOverlay" class="modal-overlay" style="display: none;" onclick="toggleUploadCat()"></div>
-
-    <!-- Upload Modal -->
-    <div class="upload-cat-modal" id="uploadCat" style="display: none;">
-      <div class="upload-cat-inner styled-popup" onclick="event.stopPropagation()">
-        <button class="popup-close" onclick="toggleUploadCat()">×</button>
-        <div class="popup-content">
-          <div class="popup-left">
-            <div class="speech-bubble">
-              <h2>UPLOAD A CAT PHOTO</h2>
-              <p>Our AI will analyze it and generate:</p>
-              <ul>
-                <li>A unique name</li>
-                <li>A quirky personality</li>
-                <li>A matching in-game sprite</li>
-              </ul>
-              <p>It’s all yours to collect, love, and dress up! 🐾</p>
-            </div>
-          </div>
-          <div class="popup-right">
-            <label class="upload-label">
-              <input type="file" id="catFileInput" accept="image/*" onchange="handleCatFileChange(event)" />
-              <img id="uploadPreview" src="../assets/icons/upload-preview.png" class="upload-icon" alt="Upload Cat" />
-            </label>
-            <div id="uploadActions" class="upload-actions" style="display: none;">
-              <img src="../assets/btns/v_btn.png" alt="Next" class="upload-icon-btn" onclick="handleNextClick()" />
-              <img src="../assets/btns/x_btn.png" alt="Reupload" class="upload-icon-btn" onclick="triggerReupload()" />
-            </div>
-            <img src="../assets/icons/cat_with_cafe_icon.png" class="cat-sprite-foruploadscreen" alt="Cat sprite" />
-          </div>
+    <!-- Cat Display -->
+    <div class="cat-display-wrapper">
+      <div class="ellipse-podium">
+        <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+        <div class="carousel-cat" id="carouselCatWrapper">
+          <img id="carouselBase" class="cat-layer" alt="Base Cat" />
+          <img id="carouselHat" class="cat-layer" alt="Hat" />
+          <img id="carouselShirt" class="cat-layer" alt="Shirt" />
+          <img id="carouselPants" class="cat-layer" alt="Pants" />
+          <img id="carouselAccessories" class="cat-layer" alt="Accessories" />
         </div>
       </div>
     </div>
-
-<!-- Center Podium -->
-<div class="cat-display-wrapper">
-  <div class="ellipse-podium">
-    <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-
-    <div class="carousel-cat" id="carouselCatWrapper" style="position: relative; width: 200px; height: auto;">
-      <img id="carouselBase" src="" alt="Base Cat" class="cat-layer" />
-      <img id="carouselHat" src="" alt="Hat" class="cat-layer" />
-      <img id="carouselShirt" src="" alt="Shirt" class="cat-layer" />
-      <img id="carouselPants" src="" alt="Pants" class="cat-layer" />
-      <img id="carouselAccessories" src="" alt="Accessories" class="cat-layer" />
-    </div>
-  </div>
-</div>
 
     <!-- Topbar -->
     <div class="topbar">
@@ -90,10 +54,10 @@
       </div>
     </div>
 
-    <!-- Page Title -->
+    <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
 
-    <!-- Carousel -->
+    <!-- Carousel Area -->
     <div class="wrapper">
       <div class="main-area">
         <div class="carousel-wrapper">
@@ -105,24 +69,19 @@
             <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
           </div>
 
-          <!-- Floating Actions -->
+          <!-- Floating UI -->
           <div class="floating-actions">
-            <div class="inventory-box">Inventory: 8/25</div>
-          </div>
-
-          <!-- Add Cat -->
-          <div class="add-cat-button" onclick="toggleUploadCat()">
-            <img src="../assets/ui/plus.png" alt="Add Cat" />
+<div class="inventory-box" id="inventoryCount">Inventory: 0/25</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Cat Profile Scroll -->
-  <div id="catProfileScroll" class="cat-profile-scroll" style="display: none;">
+  <!-- Cat Profile Panel -->
+  <div id="catProfileScroll" class="cat-profile-scroll hidden">
     <div class="scroll-inner">
-      <input type="text" id="catName" class="profile-name-input" value="" disabled />
+      <input type="text" id="catName" class="profile-name-input" disabled />
 
       <div class="profile-main">
         <div class="profile-info">
@@ -137,65 +96,29 @@
         </div>
       </div>
 
-<!-- Description -->
-<div class="desc-block" id="descBlock">
-  <label for="catDesc">Description:</label>
+      <!-- Description -->
+      <div class="desc-block" id="descBlock">
+        <label for="catDesc">Description:</label>
+        <div id="descDisplay" class="desc-output hidden"></div>
+        <textarea id="catDesc" class="desc-input" maxlength="200"></textarea>
+        <div id="charCount" class="word-count">0 / 200 characters</div>
+      </div>
 
-  <!-- Display mode (hidden by default) -->
-  <div id="descDisplay" class="desc-output" style="display: none;"></div>
-
-  <!-- Edit mode -->
-  <textarea id="catDesc" class="desc-input" maxlength="200"></textarea>
-
-  <div id="charCount" class="word-count">0 / 200 characters</div>
-</div>
-<!-- Footer Buttons -->
-<div class="profile-footer-buttons">
-  <button class="profile-btn primary" id="editBtn">Edit</button>
-  <button class="profile-btn danger" id="deleteBtn">Delete</button>
-  <button class="profile-btn secondary" id="customizeBtn">Customize</button>
-  <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
-
-  <button class="profile-btn primary save-cancel" id="saveBtn" style="display: none;">Save</button>
-  <button class="profile-btn secondary save-cancel" id="cancelBtn" style="display: none;">Cancel</button>
-</div>
-
-</div> <!-- ✅ Close #catProfileScroll -->
-
-<!-- Mailbox Modal -->
-<div class="mailbox-modal" id="mailbox">
-  <h3>Mailbox</h3>
-  <p>You have 3 new messages.</p>
-  <ul>
-    <li>🎁 You won 50 coins in a fashion show!</li>
-  </ul>
-  <button onclick="toggleMailbox()">Close</button>
-</div>
-
-<!-- ✅ Shop Popup (no overlay) -->
-<div id="shopPopup" class="shop-popup" style="display: none;" onclick="event.stopPropagation()">
-  <button class="popup-close" id="shopCloseBtn">×</button>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" data-category="hats">HAT</button>
-    <button class="tab" data-category="shoes">SHOES</button>
-    <button class="tab" data-category="shirt">SHIRT</button>
-    <button class="tab" data-category="pants">PANTS</button>
-    <button class="tab" data-category="accessories">ACCESSORIES</button>
+      <!-- Footer Buttons -->
+      <div class="profile-footer-buttons">
+        <button class="profile-btn primary" id="editBtn">Edit</button>
+        <button class="profile-btn danger" id="deleteBtn">Delete</button>
+        <button class="profile-btn secondary" id="customizeBtn">Customize</button>
+        <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
+        <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
+        <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Scrollable Items + Vertical Scroll Buttons -->
-  <div class="shop-scroll-wrapper">
-    <button class="scroll-btn-up" onclick="scrollShop(-1)">↑</button>
-    <div id="shopItems"></div>
-    <button class="scroll-btn-down" onclick="scrollShop(1)">↓</button>
-  </div>
-</div>
-
-<!-- ✅ Audio + Scripts -->
-<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script type="module" src="../js/main.js"></script>
+  <!-- Scripts & Audio -->
+  <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script type="module" src="../js/main.js"></script>
 </body>
 </html>

@@ -1,9 +1,7 @@
-/* 7_shop.css - Shop Layout with Tab Navigation and Scroll Buttons */
-
 .tabs {
   display: flex;
   background: var(--border);
-  margin-bottom: 16px;
+  margin-bottom: 0.83vw;
 }
 
 .tab {
@@ -11,10 +9,10 @@
   background: #ffe08a;
   color: #000;
   border: none;
-  padding: 10px 0;
-  font-size: 12px;
+  padding: 0.52vw 0;
+  font-size: 0.625rem;
   text-align: center;
-  border-right: 2px solid var(--border);
+  border-right: 0.1vw solid var(--border);
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -38,37 +36,33 @@
   position: relative;
 }
 
-/* Grid layout */
 #shopItems {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(8.33vw, 1fr));
+  gap: 0.83vw;
   justify-items: center;
-  padding: 12px 4px;
+  padding: 0.625vw 0.2vw;
 }
 
-/* Shop Card Base */
 .shop-card {
-  background: #ffffff; /* Not owned = white */
-  border: 4px solid #000;
-  width: 128px;
-  height: 160px;
+  background: #ffffff;
+  border: 0.21vw solid #000;
+  width: 6.67vw;
+  height: 8.33vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding: 6px;
+  padding: 0.31vw;
   position: relative;
   overflow: hidden;
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
-/* Owned = brown */
 .shop-card.owned {
   background: #d3b08a;
 }
 
-/* Equipped = black overlay */
 .shop-card.equipped::after {
   content: "";
   background: rgba(0, 0, 0, 0.5);
@@ -77,48 +71,44 @@
   pointer-events: none;
 }
 
-/* Hover effects */
 .shop-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 6px 6px 0 var(--border);
+  transform: translateY(-0.31vw);
+  box-shadow: 0.31vw 0.31vw 0 var(--border);
 }
 
 .shop-card:active {
   transform: scale(0.97);
-  box-shadow: 2px 2px 0 var(--border) inset;
+  box-shadow: 0.1vw 0.1vw 0 var(--border) inset;
 }
 
-/* Item image */
 .shop-img {
-  width: 64px;
-  height: 64px;
+  width: 3.33vw;
+  height: 3.33vw;
   image-rendering: pixelated;
-  margin: 8px 0 0 0;
+  margin: 0.42vw 0 0 0;
   background: none;
   border: none;
   flex-shrink: 0;
 }
 
-/* Bottom bar (coin or button) */
 .shop-price-bar,
 .shop-btn-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  border-top: 4px solid #000;
-  padding: 6px 0;
+  border-top: 0.21vw solid #000;
+  padding: 0.31vw 0;
   text-align: center;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 0.625rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 0.31vw;
   font-family: var(--pixel-font);
 }
 
-/* Default bar bg */
 .shop-price-bar {
   background: #fce88d;
   cursor: pointer;
@@ -129,27 +119,24 @@
 }
 
 .shop-price-bar .coin-icon {
-  width: 20px;
-  height: 20px;
+  width: 1.04vw;
+  height: 1.04vw;
 }
 
-/* Button wrapper */
 .shop-btn-bar {
   background: #ffe08a;
 }
 
-/* Actual button */
 .shop-btn-bar button.shop-btn {
   all: unset;
   font-weight: bold;
   font-family: var(--pixel-font);
   cursor: pointer;
-  font-size: 12px;
-  padding: 2px 6px;
+  font-size: 0.625rem;
+  padding: 0.1vw 0.31vw;
   transition: background 0.2s ease, transform 0.1s ease;
 }
 
-/* Button interaction */
 .shop-btn-bar button.shop-btn:hover {
   background: #ffcc66;
 }
@@ -160,7 +147,6 @@
   transform: scale(0.96);
 }
 
-/* Dark bar overrides for equipped */
 .shop-card.equipped .shop-price-bar,
 .shop-card.equipped .shop-btn-bar {
   background: #222;
@@ -168,14 +154,13 @@
   color: #fff;
 }
 
-/* Scroll buttons */
 .scroll-btn-up,
 .scroll-btn-down {
-  width: 32px;
-  height: 32px;
+  width: 1.67vw;
+  height: 1.67vw;
   background: var(--btn);
-  border: 4px solid var(--border);
-  font-size: 20px;
+  border: 0.21vw solid var(--border);
+  font-size: 1.04vw;
   font-weight: bold;
   color: #000;
   cursor: pointer;
@@ -183,14 +168,14 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: -42px;
+  right: -2.2vw;
   z-index: 10;
 }
 
 .scroll-btn-up {
-  top: 8px;
+  top: 0.42vw;
 }
 
 .scroll-btn-down {
-  bottom: 8px;
+  bottom: 0.42vw;
 }
