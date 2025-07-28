@@ -204,12 +204,19 @@
 }
 
 
-.shop-popup.fade-hidden {
-  opacity: 0;
-  pointer-events: none;
+.right-pane {
+  position: relative;
 }
 
-.force-hide {
-  display: none !important;
+.shop-blocker {
+  position: absolute;
+  inset: 0;
+  background: transparent; /* Or rgba(0, 0, 0, 0.2) for dimming */
+  z-index: 998;
+  pointer-events: all;
+}
+
+.shop-popup {
+  z-index: 999;
 }
 

@@ -1,30 +1,44 @@
 import { renderShopItems } from './shopItemsRenderer.js'; // 🎨 Renders items
+
 export function toggleShop() {
   console.log("🛒 toggleShop() FORCE OPEN");
 
   const popup = document.getElementById("shopPopup");
   const profileScroll = document.getElementById("catProfileScroll");
+  const blocker = document.getElementById("shopOverlayBlocker");
 
   if (!popup) {
     console.warn("❌ shopPopup not found");
     return;
   }
 
-  // 🛑 DO NOT close the profile scroll (disabled for now)
-  // if (profileScroll) {
-  //   profileScroll.style.display = "none";
-  // }
+  // ✅ Hide the profile scroll
+  if (profileScroll) {
+    profileScroll.style.display = "none";
+    profileScroll.classList.add("hidden");
+    console.log("📜 Profile scroll hidden");
+  }
 
-  // ✅ Force display of shop
+  // ✅ Show blocker behind shop
+  if (blocker) {
+    blocker.classList.remove("hidden");
+    blocker.style.display = "block";
+    console.log("🛡️ Blocker enabled");
+  }
+
+  // ✅ Show the shop popup
   popup.style.display = "block";
   popup.classList.remove("hidden");
-  console.log("✅ Forced shop popup open");
+  console.log("✅ Shop popup shown");
 
-  // ✅ Load shop items (default to current tab)
+  // ✅ Apply global lock class
+  document.body.classList.add("shop-lock");
+
+  // ✅ Load current tab items
   if (window.shopItems) {
-const activeTab = document.querySelector(".tab.active");
-const category = activeTab?.dataset.category?.toLowerCase() || "hats";
-renderShopItems(window.shopItems, category);
+    const activeTab = document.querySelector(".tab.active");
+    const category = activeTab?.dataset.category?.toLowerCase() || "hats";
+    renderShopItems(window.shopItems, category);
   } else {
     console.warn("⚠️ shopItems not loaded yet");
   }
@@ -40,11 +54,29 @@ export function scrollShop(direction) {
   wrapper.scrollBy({ top: direction * 120, behavior: "smooth" });
 }
 
-// ✅ Add this function
 export function closeShop() {
   const popup = document.getElementById("shopPopup");
+  const profileScroll = document.getElementById("catProfileScroll");
+  const blocker = document.getElementById("shopOverlayBlocker");
+
   if (popup) {
-    popup.style.display = "none"; // ← direct hide
+    popup.style.display = "none";
+    popup.classList.add("hidden");
     console.log("🛑 Shop closed");
   }
+
+  if (profileScroll) {
+    profileScroll.style.display = "block";
+    profileScroll.classList.remove("hidden");
+    console.log("📜 Profile scroll re-opened");
+  }
+
+  if (blocker) {
+    blocker.classList.add("hidden");
+    blocker.style.display = "none";
+    console.log("🧼 Blocker disabled");
+  }
+
+  // ✅ Remove global lock
+  document.body.classList.remove("shop-lock");
 }

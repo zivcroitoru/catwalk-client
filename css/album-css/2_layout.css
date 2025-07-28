@@ -94,14 +94,14 @@
 /* ───────────── Layout: Main Cat Display ───────────── */
 .center-ellipse {
   display: block;
-  width: 6vw; /* smaller podium */
+  width: 6vw;
   margin-top: 6rem;
 }
 
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: translate(-200px, 600px) scale(5); /* moved up by 300px */
+  transform: translate(-200px, 600px) scale(5);
   margin: 0 auto;
 }
 
@@ -162,8 +162,33 @@
   gap: 20px;
   z-index: 10;
 }
+
+/* ───────────── Responsive ───────────── */
 @media (max-width: 768px), (orientation: portrait) {
   .welcome-message {
     display: none;
   }
+}
+
+/* ───────────── Shop Lock Interaction Control ───────────── */
+body.shop-lock #game > *:not(.wrapper) {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(1px); /* Optional visual feedback */
+}
+
+body.shop-lock .right-pane,
+body.shop-lock .shop-popup,
+body.shop-lock .shop-blocker {
+  pointer-events: auto;
+  filter: none;
+}
+
+body.shop-lock .topbar,
+body.shop-lock .sign-out-btn,
+body.shop-lock .welcome-message,
+body.shop-lock .cats-title,
+body.shop-lock .carousel-wrapper,
+body.shop-lock .floating-actions {
+  pointer-events: none;
 }
