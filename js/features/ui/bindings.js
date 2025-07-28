@@ -36,7 +36,14 @@ export function bindCustomizeBtn(bindButton) {
  */
 export function bindFashionBtn(bindButton) {
   bindButton("fashionBtn", () => {
-    console.log("🎭 Enter Fashion Show clicked");
-    // TODO: Add fashion show join logic
+    const cat = window.selectedCat;
+    if (!cat || !cat.id) {
+      console.warn("❌ No selected cat to enter fashion show");
+      return;
+    }
+
+    console.log(`🎭 Entering Fashion Show with cat ID ${cat.id}`);
+    window.location.href = `fashion-show.html?catId=${cat.id}`;
+
   });
 }
