@@ -1,4 +1,4 @@
-import { APP_URL } from "../../js/main";
+import { APP_URL } from "../../js/main.js";
 
 const designWidth = 1920;
     const designHeight = 1080;

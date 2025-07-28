@@ -1,4 +1,4 @@
-import { APP_URL } from "../../js/main";
+import { APP_URL } from "../../js/main.js";
 
 // Register handler
 async function handleRegister(event) {

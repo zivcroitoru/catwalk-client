@@ -1,4 +1,4 @@
-import { APP_URL } from "../../js/main";
+import { APP_URL } from "../../js/main.js";
 
 async function handleRegister(event) {
       event.preventDefault();
@@ -64,13 +64,6 @@ window.location.href = "album.html";
     showError("Something went wrong. Please try again.");
   }
 });
-
-function showError(msg) {
-  const warningBox = document.querySelector(".warning-box");
-  warningBox.textContent = msg;
-  warningBox.style.color = "red";
-}
-
 
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username") || "Guest";

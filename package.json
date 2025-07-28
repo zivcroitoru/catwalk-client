@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/zivcroitoru/catwalk-client#readme",
   "dependencies": {
+    "dotenv": "^17.2.1",
     "vite": "^7.0.5"
   }
 }
