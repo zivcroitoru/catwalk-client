@@ -34,7 +34,8 @@ fetch("../data/shopItems.json")
   .then(data => {
     shopItems = data;
     window.shopItems = shopItems;
-    renderShopItems(shopItems, "hats");
+    console.log("🛒 Shop items loaded");
+    // Shop stays hidden until user opens it
   })
   .catch(err => console.error("❌ Failed to load shopItems.json", err));
 

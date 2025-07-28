@@ -225,14 +225,21 @@ function resizeTextarea(textarea) {
 }
 
 function toggleButtons({ edit, save, cancel }) {
-  $("editBtn").style.visibility = edit ? "visible" : "hidden";
-  $("saveBtn").style.visibility = save ? "visible" : "hidden";
-  $("cancelBtn").style.visibility = cancel ? "visible" : "hidden";
+  const toggle = (id, show) => {
+    const el = $(id);
+    if (!el) return;
+    el.style.visibility = "visible"; // fallback
+    el.classList.toggle("hidden", !show);
+  };
 
-  $("deleteBtn").style.visibility = edit ? "visible" : "hidden";
-  $("customizeBtn").style.visibility = edit ? "visible" : "hidden";
-  $("fashionBtn").style.visibility = edit ? "visible" : "hidden";
+  toggle("editBtn", edit);
+  toggle("saveBtn", save);
+  toggle("cancelBtn", cancel);
+  toggle("deleteBtn", edit);
+  toggle("customizeBtn", edit);
+  toggle("fashionBtn", edit);
 }
+
 
 function showToast(text, background) {
   window.Toastify({

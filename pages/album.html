@@ -116,26 +116,26 @@
               </div>
             </div>
           </div>
+<!-- ✅ Right Pane: profile + shop stack here -->
+<div class="right-pane">
+  ...
+</div>
 
-          <!-- Shop Popup -->
-          <div id="shopPopup" class="shop-popup hidden">
-            <div class="tabs">
-              <div class="tab active" data-category="hats">Hats</div>
-              <div class="tab" data-category="tops">Tops</div>
-              <div class="tab" data-category="accessories">Accessories</div>
-              <div class="tab" data-category="eyes">Eyes</div>
-            </div>
-
-            <div class="shop-scroll-wrapper">
-              <div id="shopItems"></div>
-            </div>
-
-            <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- ✅ Move shopPopup here -->
+<div id="shopPopup" class="shop-popup hidden">
+  <div class="tabs">
+    <div class="tab active" data-category="hats">Hats</div>
+    <div class="tab" data-category="tops">Tops</div>
+    <div class="tab" data-category="accessories">Accessories</div>
+    <div class="tab" data-category="eyes">Eyes</div>
   </div>
+
+  <div class="shop-scroll-wrapper">
+    <div id="shopItems"></div>
+  </div>
+
+  <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
+</div>
 
   <!-- Audio + Scripts -->
   <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>

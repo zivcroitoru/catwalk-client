@@ -1,6 +1,6 @@
 .cat-profile-scroll {
   position: absolute;
-  top: 3vw;
+  top: -8vw;
   right: 5vw;
   transform: scale(0.8);
   transform-origin: top right;
@@ -12,7 +12,9 @@
   font-size: 1rem;
   line-height: 1.5;
   color: var(--border);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 .profile-name-input {
@@ -63,13 +65,14 @@
 /* ───────────── Footer Buttons ───────────── */
 .profile-footer-buttons {
   display: flex;
-  justify-content: center;     /* center as a group */
+  justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;           /* keep in one row */
+  flex-wrap: nowrap;
   gap: 0.5vw;
-  margin: 1.25vw auto 0;       /* center the container */
-  width: fit-content;          /* shrink to fit buttons */
+  margin-top: auto;
+  width: fit-content;
   max-width: 100%;
+  align-self: center;
 }
 
 .profile-btn {
@@ -82,7 +85,6 @@
   overflow: hidden;
   box-sizing: border-box;
 }
-
 
 .profile-btn:hover {
   transform: translateY(-0.1vw);
@@ -154,14 +156,11 @@
 #customizeBtn:active {
   background-color: #d966ff;
 }
+
 .desc-input {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.desc-input.editing {
-  background-color: #fffce6; /* subtle yellowish background */
-  color: #222; /* darker text */
-}
 .desc-input.editing {
   background-color: #fffce6;
   color: #222;
@@ -191,4 +190,3 @@
     padding: 0.4rem 0.5rem;
   }
 }
-

@@ -83,5 +83,22 @@
       "accessories": null,
       "eyes": null
     }
+  },
+    {
+    "id": 6,
+    "name": "BRUHHH",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAHZ2if+cs////0RNzF8AAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABiSURBVCjP5Y/RDcAgCERlA+824DZo9x+uqDXQn3aAXpToC/pCa7+L9VFRgO+ywQmARwWKVDDuKk8oKlZ/A0LsB/D4JFQ3wASeTYYZJVha5ycwpCa0SK2RLtbxNUAdf2nn+QLoKA33Gj1NfAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg==",
+    "breed": "Maine Coon",
+    "variant": "Majestic",
+    "palette": "Gray",
+    "birthday": "2021-09-22",
+    "age": 4,
+    "description": "Queen of naps.",
+    "equipment": {
+      "hat": null,
+      "tops": null,
+      "accessories": null,
+      "eyes": null
+    }
   }
 ]

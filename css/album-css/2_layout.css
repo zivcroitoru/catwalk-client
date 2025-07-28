@@ -174,7 +174,7 @@
 body.shop-lock #game > *:not(.wrapper) {
   pointer-events: none;
   user-select: none;
-  filter: blur(1px); /* Optional visual feedback */
+  filter: blur(0px); /* Optional visual feedback */
 }
 
 body.shop-lock .right-pane,
@@ -191,4 +191,12 @@ body.shop-lock .cats-title,
 body.shop-lock .carousel-wrapper,
 body.shop-lock .floating-actions {
   pointer-events: none;
+}
+.right-pane {
+  position: absolute; /* or relative */
+  right: 2vw;
+  top: 6vw; /* adjust as needed */
+}
+.hidden {
+  display: none !important;
 }

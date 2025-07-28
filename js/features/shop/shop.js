@@ -80,3 +80,4 @@ export function closeShop() {
   // ✅ Remove global lock
   document.body.classList.remove("shop-lock");
 }
+ 
