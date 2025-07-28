@@ -1,4 +1,4 @@
-import { APP_URL } from "../../js/main.js";
+import { APP_URL } from "../../main.js";
 
 /*-----------------------------------------------------------------------------
   upload.js

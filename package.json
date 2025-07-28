@@ -5,6 +5,9 @@
   "description": "The front-end of the Catwalk project. Built with HTML, CSS, and JavaScript, featuring a dynamic UI, 3D assets, and connection to a multiplayer game backend via REST API or WebSocket.",
   "main": "main.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,7 +22,7 @@
   },
   "homepage": "https://github.com/zivcroitoru/catwalk-client#readme",
   "dependencies": {
-    "dotenv": "^17.2.1",
     "vite": "^7.0.5"
   }
 }
+
