@@ -1,4 +1,6 @@
 console.log("🐱 MAIN.JS LOADED");
+import { configDotenv } from 'dotenv';
+configDotenv()
 
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
@@ -18,6 +20,7 @@ import { updateCatPreview } from './features/catPreviewRenderer.js';
 // ───────────── Globals ─────────────
 export let userCats = [];
 export let shopItems = [];
+export const APP_URL = process.env.APP_URL;
 
 // ───────────── Data Load ─────────────
 fetch("../data/usercats.json")

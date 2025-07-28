@@ -1,3 +1,5 @@
+import { APP_URL } from "../../js/main.js";
+
 const designWidth = 1920;
     const designHeight = 1080;
 
@@ -40,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('https://catwalk-server.onrender.com/api/admins/login', {
+      const response = await fetch(`${APP_URL}/api/admins/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
