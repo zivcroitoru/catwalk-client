@@ -11,16 +11,15 @@
     "description": "Cool cat!",
     "equipment": {
       "hat": null,
-      "shirt": null,
-      "pants": null,
-      "shoes": null,
-      "accessories": []
+      "tops": null,
+      "accessories": null,
+      "eyes": null
     }
   },
   {
     "id": 2,
     "name": "Mochi",
-    "image": "../assets/cats/mochi.png",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAEZGRv+cs////9XksJIAAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABiSURBVCjP5Y/RDcAgCERlA+824DZo9x+uqDXQn3aAXpToC/pCa7+L9VFRgO+ywQmARwWKVDDuKk8oKlZ/A0LsB/D4JFQ3wASeTYYZJVha5ycwpCa0SK2RLtbxNUAdf2nn+QLoKA33Gj1NfAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg==",
     "breed": "Persian",
     "variant": "Fluffy",
     "palette": "White",
@@ -29,16 +28,15 @@
     "description": "Sweet and soft.",
     "equipment": {
       "hat": null,
-      "shirt": null,
-      "pants": null,
-      "shoes": null,
-      "accessories": []
+      "tops": null,
+      "accessories": null,
+      "eyes": null
     }
   },
   {
     "id": 3,
     "name": "Luna",
-    "image": "../assets/cats/luna.png",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAHZ2if+cs////0RNzF8AAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABiSURBVCjP5Y/RDcAgCERlA+824DZo9x+uqDXQn3aAXpToC/pCa7+L9VFRgO+ywQmARwWKVDDuKk8oKlZ/A0LsB/D4JFQ3wASeTYYZJVha5ycwpCa0SK2RLtbxNUAdf2nn+QLoKA33Gj1NfAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg==",
     "breed": "Maine Coon",
     "variant": "Majestic",
     "palette": "Gray",
@@ -47,16 +45,15 @@
     "description": "Queen of naps.",
     "equipment": {
       "hat": null,
-      "shirt": null,
-      "pants": null,
-      "shoes": null,
-      "accessories": []
+      "tops": null,
+      "accessories": null,
+      "eyes": null
     }
   },
   {
     "id": 4,
     "name": "Pickles",
-    "image": "../assets/cats/pickles.png",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAPDKov+cs////x3hGxQAAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABiSURBVCjP5Y/RDcAgCERlA+824DZo9x+uqDXQn3aAXpToC/pCa7+L9VFRgO+ywQmARwWKVDDuKk8oKlZ/A0LsB/D4JFQ3wASeTYYZJVha5ycwpCa0SK2RLtbxNUAdf2nn+QLoKA33Gj1NfAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg==",
     "breed": "Tabby",
     "variant": "Spotted",
     "palette": "Orange",
@@ -65,16 +62,15 @@
     "description": "Chaos in fur form.",
     "equipment": {
       "hat": null,
-      "shirt": null,
-      "pants": null,
-      "shoes": null,
-      "accessories": []
+      "tops": null,
+      "accessories": null,
+      "eyes": null
     }
   },
   {
     "id": 5,
     "name": "Neko",
-    "image": "../assets/cats/neko.png",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAKthMP+cs////2KWWHAAAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABiSURBVCjP5Y/RDcAgCERlA+824DZo9x+uqDXQn3aAXpToC/pCa7+L9VFRgO+ywQmARwWKVDDuKk8oKlZ/A0LsB/D4JFQ3wASeTYYZJVha5ycwpCa0SK2RLtbxNUAdf2nn+QLoKA33Gj1NfAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg==",
     "breed": "Scottish Fold",
     "variant": "Round",
     "palette": "Brown",
@@ -83,10 +79,9 @@
     "description": "Just vibing.",
     "equipment": {
       "hat": null,
-      "shirt": null,
-      "pants": null,
-      "shoes": null,
-      "accessories": []
+      "tops": null,
+      "accessories": null,
+      "eyes": null
     }
   }
 ]

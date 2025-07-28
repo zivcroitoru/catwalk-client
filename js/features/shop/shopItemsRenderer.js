@@ -66,7 +66,7 @@ export function renderShopItems(data, activeCategory) {
             duration: 2000,
             gravity: "bottom",
             position: "center",
-            backgroundColor: "#2196f3",
+            style: { background: "#2196f3" },
           }).showToast();
           renderShopItems(data, activeCategory);
         }
@@ -100,7 +100,7 @@ function showBuyConfirmation(item, userItems, data, activeCategory) {
         duration: 2000,
         gravity: "bottom",
         position: "center",
-        backgroundColor: "#4caf50",
+        style: { background: "#4caf50" },
       }).showToast();
       renderShopItems(data, activeCategory);
     } else if (result === "not_enough") {
@@ -109,7 +109,7 @@ function showBuyConfirmation(item, userItems, data, activeCategory) {
         duration: 2000,
         gravity: "bottom",
         position: "center",
-        backgroundColor: "#d32f2f",
+        style: { background: "#d32f2f" },
       }).showToast();
     }
 
@@ -122,7 +122,7 @@ function showBuyConfirmation(item, userItems, data, activeCategory) {
       duration: 1500,
       gravity: "bottom",
       position: "center",
-      backgroundColor: "#999",
+      style: { background: "#999" },
     }).showToast();
     confirmBox.remove();
   };

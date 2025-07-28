@@ -6,5 +6,5 @@
   height: auto;
   object-fit: contain;
   pointer-events: none;
-  display: none;
+  display: block;
 }
