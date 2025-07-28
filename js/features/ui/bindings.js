@@ -22,10 +22,11 @@ export function bindCustomizeBtn(bindButton) {
 
     // Make sure the selected cat is updated visually
     const card = document.querySelector(`.cat-card[data-cat-id="${cat?.id}"]`);
-    if (card) {
-      card.classList.remove("selected");
-      card.click();
-    }
+if (card) {
+  const allCards = document.querySelectorAll('.cat-card');
+  allCards.forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
 
     toggleShop(); // 👈 cleaner way to open the shop
   });

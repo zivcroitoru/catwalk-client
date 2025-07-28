@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +19,7 @@
   <link rel="stylesheet" href="../css/album-css/8_profile.css">
   <link rel="stylesheet" href="../css/album-css/9_modals.css">
   <link rel="stylesheet" href="../css/album-css/10_utilities.css">
-  <link rel="stylesheet" href="../css/album-css/11_cat_render.css">
+  <link rel="stylesheet" href="../css/album-css/11_cat_render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 
@@ -36,9 +35,9 @@
         <div class="carousel-cat" id="carouselCatWrapper">
           <img id="carouselBase" class="cat-layer" alt="Base Cat" />
           <img id="carouselHat" class="cat-layer" alt="Hat" />
-          <img id="carouselShirt" class="cat-layer" alt="Shirt" />
-          <img id="carouselPants" class="cat-layer" alt="Pants" />
-          <img id="carouselAccessories" class="cat-layer" alt="Accessories" />
+          <img id="carouselTop" class="cat-layer" alt="Top" />
+          <img id="carouselEyes" class="cat-layer" alt="Eyes" />
+          <img id="carouselAccessory" class="cat-layer" alt="Accessory" />
         </div>
       </div>
     </div>
@@ -77,73 +76,72 @@
             <div class="inventory-box" id="inventoryCount">Inventory: 0/25</div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Cat Profile Panel -->
-  <div id="catProfileScroll" class="cat-profile-scroll hidden">
-    <div class="scroll-inner">
-      <input type="text" id="catName" class="profile-name-input" disabled />
+        <!-- ✅ Right Pane: profile + shop stack here -->
+        <div class="right-pane">
+          <!-- ✅ Overlay blocker goes first -->
+          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
 
-      <div class="profile-main">
-        <div class="profile-info">
-          <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
-          <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
-          <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
-          <div class="profile-row"><strong>Birthday:</strong> <span id="profileBirthday">-</span></div>
-          <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
+          <!-- Profile Panel -->
+          <div id="catProfileScroll" class="cat-profile-scroll">
+            <div class="scroll-inner">
+              <input type="text" id="catName" class="profile-name-input" disabled />
+
+              <div class="profile-main">
+                <div class="profile-info">
+                  <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
+                  <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
+                  <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
+                  <div class="profile-row"><strong>Birthday:</strong> <span id="profileBirthday">-</span></div>
+                  <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
+                </div>
+                <div class="top-right-icons">
+                  <img id="profileImage" src="../assets/real-cats/placeholder.png" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="desc-block" id="descBlock">
+                <label for="catDesc">Description:</label>
+                <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
+                <div id="charCount" class="word-count">0 / 200 characters</div>
+              </div>
+
+              <!-- Footer Buttons -->
+              <div class="profile-footer-buttons">
+                <button class="profile-btn primary" id="editBtn">Edit</button>
+                <button class="profile-btn danger" id="deleteBtn">Delete</button>
+                <button class="profile-btn secondary" id="customizeBtn">Customize</button>
+                <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
+                <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
+                <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shop Popup -->
+          <div id="shopPopup" class="shop-popup hidden">
+            <div class="tabs">
+              <div class="tab active" data-category="hats">Hats</div>
+              <div class="tab" data-category="tops">Tops</div>
+              <div class="tab" data-category="accessories">Accessories</div>
+              <div class="tab" data-category="eyes">Eyes</div>
+            </div>
+
+            <div class="shop-scroll-wrapper">
+              <div id="shopItems"></div>
+            </div>
+
+            <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
+          </div>
         </div>
-        <div class="top-right-icons">
-          <img id="profileImage" src="../assets/real-cats/placeholder.png" class="placeholder-uploadedcat-profile"
-            alt="Uploaded Cat" />
-        </div>
-      </div>
-
-      <!-- Description -->
-      <div class="desc-block" id="descBlock">
-        <label for="catDesc">Description:</label>
-        <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
-        <div id="charCount" class="word-count">0 / 200 characters</div>
-      </div>
-
-
-      <!-- Footer Buttons -->
-      <div class="profile-footer-buttons">
-        <button class="profile-btn primary" id="editBtn">Edit</button>
-        <button class="profile-btn danger" id="deleteBtn">Delete</button>
-        <button class="profile-btn secondary" id="customizeBtn">Customize</button>
-        <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
-        <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
-        <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Scripts & Audio -->
-  <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script type="module" src="../js/main.js"></script>
-  <!-- Shop Popup -->
-  <div id="shopPopup" class="shop-popup hidden">
-    <div class="tabs">
-      <div class="tab active" data-category="hats">Hats</div>
-      <div class="tab" data-category="tops">Tops</div>
-      <div class="tab" data-category="accessories">Accessories</div>
-      <div class="tab" data-category="eyes">Eyes</div>
-    </div>
-
-    <div class="shop-scroll-wrapper">
-      <div id="shopItems"></div>
-    </div>
-
-    <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
-  </div>
-
-  <!-- Scripts & Audio -->
+  <!-- Audio + Scripts -->
   <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script type="module" src="../js/main.js"></script>
 </body>
-
 </html>

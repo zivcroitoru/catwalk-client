@@ -1,3 +1,5 @@
+import { APP_URL } from "../../js/main.js";
+
 // Register handler
 async function handleRegister(event) {
   event.preventDefault();
@@ -6,7 +8,7 @@ async function handleRegister(event) {
   const password = document.querySelector('input[type="password"]').value;
 
   try {
-    const response = await fetch("http://localhost:3000/auth/signup", {
+    const response = await fetch(`${APP_URL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -37,7 +39,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const password = document.getElementById("passwordInput").value;
 
   try {
-    const res = await fetch("http://localhost:3000/auth/login", {
+    const res = await fetch(`${APP_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: 'include', // Include cookies for session

@@ -1,3 +1,5 @@
+import { APP_URL } from "../../js/main.js";
+
 /*-----------------------------------------------------------------------------
   auth.js
 -----------------------------------------------------------------------------*/
@@ -8,8 +10,9 @@ export function signOut() {
 
 export async function fetchUser() {
   try {
-    const username = localStorage.getItem("username");
-    document.getElementById("welcomeMessage").textContent = `Welcome, ${username || 'Guest'}`;
+    const res = await fetch(`${APP_URL}/api/user`, { credentials: 'include' });
+    const data = await res.json();
+    document.getElementById("welcomeMessage").textContent = `Welcome, ${data.username || 'Guest'}`;
   } catch {
     document.getElementById("welcomeMessage").textContent = 'Welcome, Guest';
   }

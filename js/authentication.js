@@ -1,10 +1,12 @@
+import { APP_URL } from "../../js/main.js";
+
 async function handleRegister(event) {
       event.preventDefault();
 
       const username = document.querySelector('input[type="text"]').value;
       const password = document.querySelector('input[type="password"]').value;
 
-      const response = await fetch("https://catwalk-server.onrender.com/auth/signup", {
+      const response = await fetch(`${APP_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -32,7 +34,7 @@ async function handleRegister(event) {
   const password = document.getElementById("passwordInput").value;
 
   try {
-    const res = await fetch("https://catwalk-server.onrender.com/auth/login", {
+    const res = await fetch(`${APP_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -63,13 +65,6 @@ window.location.href = "album.html";
   }
 });
 
-function showError(msg) {
-  const warningBox = document.querySelector(".warning-box");
-  warningBox.textContent = msg;
-  warningBox.style.color = "red";
-}
-
-/////
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("username") || "Guest";
     console.log(username);

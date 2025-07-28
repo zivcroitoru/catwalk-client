@@ -1,4 +1,6 @@
 console.log("🐱 MAIN.JS LOADED");
+import { configDotenv } from 'dotenv';
+configDotenv()
 
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
@@ -18,6 +20,7 @@ import { updateCatPreview } from './features/catPreviewRenderer.js';
 // ───────────── Globals ─────────────
 export let userCats = [];
 export let shopItems = [];
+export const APP_URL = process.env.APP_URL;
 
 // ───────────── Data Load ─────────────
 fetch("../data/usercats.json")
@@ -123,13 +126,16 @@ function renderCarousel() {
     `;
 
 card.addEventListener("click", () => {
-  console.log("🐾 Selected cat:", cat.name);
-  selectCatCard(card);
-  showCatProfile(cat);
+  const isSame = window.selectedCat?.id === cat.id;
   window.selectedCat = cat;
 
-  // ✅ Update center podium layers
-  updateCatPreview(cat);
+  selectCatCard(card);
+  showCatProfile(cat);
+  console.log("🐾 Selected cat:", cat.name);
+
+  if (!isSame) {
+    updateCatPreview(cat); // ✅ only if new cat was selected
+  }
 });
 
     container.appendChild(card);
@@ -140,8 +146,10 @@ card.addEventListener("click", () => {
     return;
   }
 
-const firstCat = window.userCats[0];
-updateCatPreview(firstCat); // 🧩 Add this
+  const firstCat = window.userCats[0];
+  window.selectedCat = firstCat;
+  updateCatPreview(firstCat); // ✅ First time only
+
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
     mainCatImg.src = firstCat.image;
@@ -150,7 +158,6 @@ updateCatPreview(firstCat); // 🧩 Add this
   }
 
   showCatProfile(firstCat);
-  window.selectedCat = firstCat;
 
   const firstCard = document.querySelector(".cat-card");
   if (firstCard) {
@@ -161,12 +168,14 @@ updateCatPreview(firstCat); // 🧩 Add this
   if (profile) profile.style.display = "flex";
   if (scroll) scroll.style.display = "block";
   console.log("✅ Profile made visible");
+
   const inventoryUI = document.getElementById("inventoryCount");
-if (inventoryUI) {
-  inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
-  console.log("📦 Inventory updated:", window.userCats.length);
+  if (inventoryUI) {
+    inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
+    console.log("📦 Inventory updated:", window.userCats.length);
+  }
 }
-}
+
 
 function selectCatCard(selectedCard) {
   document.querySelectorAll('.cat-card').forEach(card =>
