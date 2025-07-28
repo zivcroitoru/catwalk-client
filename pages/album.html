@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
-      <script defer src="/js/authentication.js"></script>
+  <script src="../js/authentication.js" defer></script>
 
 
   <!-- ✅ Import all 11 CSS files -->
@@ -74,7 +74,7 @@
 
           <!-- Floating UI -->
           <div class="floating-actions">
-<div class="inventory-box" id="inventoryCount">Inventory: 0/25</div>
+            <div class="inventory-box" id="inventoryCount">Inventory: 0/25</div>
           </div>
         </div>
       </div>
@@ -95,16 +95,17 @@
           <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
         </div>
         <div class="top-right-icons">
-          <img id="profileImage" src="../assets/real-cats/placeholder.png" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
+          <img id="profileImage" src="../assets/real-cats/placeholder.png" class="placeholder-uploadedcat-profile"
+            alt="Uploaded Cat" />
         </div>
       </div>
 
-<!-- Description -->
-<div class="desc-block" id="descBlock">
-  <label for="catDesc">Description:</label>
-  <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
-  <div id="charCount" class="word-count">0 / 200 characters</div>
-</div>
+      <!-- Description -->
+      <div class="desc-block" id="descBlock">
+        <label for="catDesc">Description:</label>
+        <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
+        <div id="charCount" class="word-count">0 / 200 characters</div>
+      </div>
 
 
       <!-- Footer Buttons -->
@@ -113,8 +114,8 @@
         <button class="profile-btn danger" id="deleteBtn">Delete</button>
         <button class="profile-btn secondary" id="customizeBtn">Customize</button>
         <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
-<button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
-<button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
+        <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
+        <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
       </div>
     </div>
   </div>
@@ -123,27 +124,26 @@
   <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script type="module" src="../js/main.js"></script>
-<!-- Shop Popup -->
-<div id="shopPopup" class="shop-popup hidden">
-<div class="tabs">
-  <div class="tab active" data-category="hats">Hats</div>
-  <div class="tab" data-category="tops">Tops</div>
-  <div class="tab" data-category="accessories">Accessories</div>
-  <div class="tab" data-category="eyes">Eyes</div>
-</div>
+  <!-- Shop Popup -->
+  <div id="shopPopup" class="shop-popup hidden">
+    <div class="tabs">
+      <div class="tab active" data-category="hats">Hats</div>
+      <div class="tab" data-category="tops">Tops</div>
+      <div class="tab" data-category="accessories">Accessories</div>
+      <div class="tab" data-category="eyes">Eyes</div>
+    </div>
 
-  <div class="shop-scroll-wrapper">
-    <div id="shopItems"></div>
+    <div class="shop-scroll-wrapper">
+      <div id="shopItems"></div>
+    </div>
+
+    <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
   </div>
 
-  <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
-</div>
-
-<!-- Scripts & Audio -->
-<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script type="module" src="../js/main.js"></script>
+  <!-- Scripts & Audio -->
+  <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script type="module" src="../js/main.js"></script>
 </body>
 
 </html>
-

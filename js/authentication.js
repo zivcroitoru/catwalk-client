@@ -69,21 +69,14 @@ function showError(msg) {
   warningBox.style.color = "red";
 }
 
-
+/////
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("loololololo");
-  const username = localStorage.getItem("username");
-  console.log("USERNAME FROM LOCALSTORAGE:", username);
-
-  const welcomeBox = document.getElementById("welcomeMessage");
-  if (welcomeBox) {
-    welcomeBox.textContent = username
-      ? `Welcome, ${username}`
-      : "Welcome, Guest";
-  }
-});
-
-
+    const username = localStorage.getItem("username") || "Guest";
+    console.log(username);
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    welcomeMessage.textContent = `Welcome, ${username}`;
+  });
+/////
 
   function signOut() {
   localStorage.removeItem("username");
