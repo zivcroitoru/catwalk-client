@@ -123,12 +123,16 @@ function renderCarousel() {
     `;
 
 card.addEventListener("click", () => {
-  if (window.selectedCat?.id === cat.id) return; // already selected, skip
-  console.log("🐾 Selected cat:", cat.name);
+  const isSame = window.selectedCat?.id === cat.id;
+  window.selectedCat = cat;
+
   selectCatCard(card);
   showCatProfile(cat);
-  window.selectedCat = cat;
-  // ❌ Don't call updateCatPreview here
+  console.log("🐾 Selected cat:", cat.name);
+
+  if (!isSame) {
+    updateCatPreview(cat); // ✅ only if new cat was selected
+  }
 });
 
     container.appendChild(card);

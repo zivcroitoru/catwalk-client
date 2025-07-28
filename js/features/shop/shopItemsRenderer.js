@@ -12,7 +12,7 @@ export function renderShopItems(data, activeCategory) {
 
   container.innerHTML = "";
 
-  items.forEach(({ name, sprite_url_preview, price }) => {
+  items.forEach(({ name, sprite_url_preview, price, template }) => {
     const img = sprite_url_preview;
     const id = `${activeCategory}_${name.toLowerCase().replaceAll(" ", "_")}`;
     const state = getItemState(id, activeCategory, userItems);
@@ -40,10 +40,12 @@ export function renderShopItems(data, activeCategory) {
       : card.querySelector(".shop-btn");
 
     clickTarget.onclick = () => {
+      const item = { id, name, img, price, category: activeCategory, template };
+
       if (isBuy) {
-        showBuyConfirmation({ id, name, img, price, category: activeCategory }, userItems, data, activeCategory);
+        showBuyConfirmation(item, userItems, data, activeCategory);
       } else {
-        const result = handleShopClick({ id, name, img, price, category: activeCategory }, userItems);
+        const result = handleShopClick(item, userItems);
         saveUserItems(userItems);
         updateCoinUI(userItems.coins);
 
