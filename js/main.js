@@ -1,5 +1,6 @@
 console.log("🐱 MAIN.JS LOADED");
-require("dotenv").config();
+import dotenv from 'dotenv'
+dotenv.config()
 
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
