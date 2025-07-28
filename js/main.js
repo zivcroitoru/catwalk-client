@@ -58,7 +58,6 @@ Object.assign(window, {
   renderCarousel,
   selectCatCard,
 });
-
 // ───────────── Init ─────────────
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOMContentLoaded");
@@ -66,18 +65,22 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchUser();
   setupShopTabs();
   setupEditMode();
-  bindUI();
-  updateCoinCount(); // 🪙 Update coin UI from localStorage
 
+  bindUI();
+  updateCoinCount();
+
+  // ✅ Bind close shop button
   console.log("✅ Initialized systems");
 });
 
 // ───────────── UI Bindings ─────────────
 function bindUI() {
-  bindShopBtn(bindButton);
-  bindCustomizeBtn(bindButton);
-  bindFashionBtn(bindButton);
-  console.log("✅ Event listeners bound");
+  requestAnimationFrame(() => {
+    bindShopBtn(bindButton);
+    bindCustomizeBtn(bindButton);
+    bindFashionBtn(bindButton);
+    console.log("✅ Event listeners bound");
+  });
 }
 
 function bindButton(id, handler, logText = null) {
@@ -158,6 +161,11 @@ updateCatPreview(firstCat); // 🧩 Add this
   if (profile) profile.style.display = "flex";
   if (scroll) scroll.style.display = "block";
   console.log("✅ Profile made visible");
+  const inventoryUI = document.getElementById("inventoryCount");
+if (inventoryUI) {
+  inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
+  console.log("📦 Inventory updated:", window.userCats.length);
+}
 }
 
 function selectCatCard(selectedCard) {

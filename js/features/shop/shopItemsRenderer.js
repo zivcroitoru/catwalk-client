@@ -12,7 +12,8 @@ export function renderShopItems(data, activeCategory) {
 
   container.innerHTML = "";
 
-  items.forEach(({ name, img, price }) => {
+  items.forEach(({ name, sprite_url_preview, price }) => {
+    const img = sprite_url_preview;
     const id = `${activeCategory}_${name.toLowerCase().replaceAll(" ", "_")}`;
     const state = getItemState(id, activeCategory, userItems);
     const isBuy = state === "buy";
@@ -25,7 +26,7 @@ export function renderShopItems(data, activeCategory) {
     else if (ownedSet.has(id)) card.classList.add("owned");
 
     card.innerHTML = `
-      <img src="../assets/shop_cosmetics/${img}" class="shop-img" alt="${name}" />
+      <img src="${img}" class="shop-img" alt="${name}" />
       <div class="${isBuy ? "shop-price-bar" : "shop-btn-bar"}">
         ${isBuy
           ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin" />
@@ -46,7 +47,6 @@ export function renderShopItems(data, activeCategory) {
         saveUserItems(userItems);
         updateCoinUI(userItems.coins);
 
-        // 🐱 Update selected cat’s equipment in usercats
         const selectedCat = window.selectedCat;
         if (selectedCat) {
           const userCats = JSON.parse(localStorage.getItem("usercats") || "[]");

@@ -15,6 +15,12 @@ export function scrollCarousel(direction) {
   carousel.style.transform = `translateX(-${offset}px)`;
 }
 
+export function updateInventoryCount() {
+  const count = state.userCats?.length || 0;
+  const inventoryUI = document.getElementById("inventoryCount");
+  if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
+}
+
 export function addCatToCarousel(imgUrl, label) {
   const card = document.createElement("div");
   card.className = "cat-card";
@@ -32,8 +38,9 @@ export function addCatToCarousel(imgUrl, label) {
   // 🎯 Set and animate the cat image directly
   const catImg = $("carouselCat");
   catImg.src = imgUrl;
-
   catImg.classList.remove("bounce-in");
   void catImg.offsetWidth;
   catImg.classList.add("bounce-in");
+
+  updateInventoryCount(); // ✅ based on state.userCats
 }
