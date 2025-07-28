@@ -1,3 +1,5 @@
+import { APP_URL } from "../../js/main";
+
 /*-----------------------------------------------------------------------------
   auth.js
 -----------------------------------------------------------------------------*/
@@ -8,7 +10,7 @@ export function signOut() {
 
 export async function fetchUser() {
   try {
-    const res = await fetch('http://localhost:3000/api/user', { credentials: 'include' });
+    const res = await fetch(`${APP_URL}/api/user`, { credentials: 'include' });
     const data = await res.json();
     document.getElementById("welcomeMessage").textContent = `Welcome, ${data.username || 'Guest'}`;
   } catch {

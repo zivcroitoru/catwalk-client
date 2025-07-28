@@ -470,6 +470,8 @@ h1 {
 
 .results-button:hover {
     opacity: 0.9;
+}
+
 /* Voting Interface Styles */
 .cat-display {
     position: absolute;
