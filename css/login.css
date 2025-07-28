@@ -141,6 +141,8 @@ body {
   color: red;
   text-align: center;
   line-height: 1.4;
+    display: none;
+
 }
 
 /* 11 — Optional Corner Icons */

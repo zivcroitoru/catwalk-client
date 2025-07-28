@@ -10,8 +10,12 @@
   --color-salmon: #D06767;
   --color-gold: #FFC20E;
   --color-blue: #57B9FF;
+<<<<<<< HEAD
   --color-light-purple: #F8C4FF;
   --color-purple: #B70EFF;
+=======
+  --color-purple: #F8C4FF;
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
   
   /* Typography */
   --font-main: 'Jersey 10', monospace;
@@ -23,8 +27,12 @@
 --stroke-xl: 12px;
 
 /* Spacing */
+<<<<<<< HEAD
 --spacing-xs: 10px;
 --spacing-sm: 20px;
+=======
+--spacing-sm: 10px;
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
 --spacing-md: 30px;
 --spacing-lg: 100px;
 
@@ -39,7 +47,11 @@
 
 /* Fashion Show Styles */
 body {
+<<<<<<< HEAD
     background-color: var(--color-light-purple); /* Light pink/purple background */
+=======
+    background-color: var(--color-purple); /* Light pink/purple background */
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
     margin: 0;
     padding: 0;
     height: 100vh; /* Full viewport height */
@@ -144,7 +156,11 @@ h1 {
     font-weight: bold; /* Bold for clean thickness */
     
     /* Inside border - 12px weight */
+<<<<<<< HEAD
     border: var(--stroke-thick) solid var(--color-black); /* 12px black border inside */
+=======
+    border: var(--stroke-xl) solid var(--color-black); /* 12px black border inside */
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
     box-sizing: border-box; /* Include border in dimensions */
 }
 
@@ -157,7 +173,11 @@ h1 {
     height: 60px;
     
     background-color: var(--color-salmon); /* #D06767 */
+<<<<<<< HEAD
     border: var(--stroke-thick) solid var(--color-black); /* 4px black border */
+=======
+    border: var(--stroke-thin) solid var(--color-black); /* 4px black border */
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
     
     display: flex;
     align-items: center;
@@ -166,6 +186,7 @@ h1 {
 }
 
 .timer-icon {
+<<<<<<< HEAD
     /* Fixed position within the salmon box */
     position: absolute;
     left: 15px; /* Fixed 15px from left edge */
@@ -191,6 +212,21 @@ h1 {
     top: 50%; /* Center vertically */
     transform: translateY(-50%); /* Perfect vertical centering */
     
+=======
+    width: 32px;
+    height: 32px;
+    
+    /* Prevent distortion - maintain aspect ratio */
+    object-fit: contain;
+    
+    /* Crisp pixel rendering */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+#timer-text {
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
     font-family: var(--font-main);
     font-size: var(--font-size-sm); /* 48px */
     color: var(--color-black);
@@ -202,6 +238,7 @@ h1 {
     font-smooth: never;
 }
 
+<<<<<<< HEAD
 /* Cat Display Area */
 .cat-display {
     position: absolute;
@@ -452,6 +489,18 @@ h1 {
 
 .results-button:hover {
     opacity: 0.9;
+=======
+/* Voting Interface Styles */
+.cat-display {
+    position: absolute;
+    top: 150px; /* Below the title */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 1050px;
+    height: 420px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    /* Removed border completely */
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
 }
 
 .announcement-text {
@@ -482,7 +531,11 @@ h1 {
     width: 100px;
     
     font-family: var(--font-main); /* Changed to Jersey 10 */
+<<<<<<< HEAD
     font-size: var(--font-size-xxs); /* 24px */
+=======
+    font-size: var(--font-size-xxs); /* 36px */
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
     color: var(--color-red); /* #FB0B0B */
     text-align: center;
     line-height: 1.4;
@@ -491,6 +544,7 @@ h1 {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+<<<<<<< HEAD
 }
 
 /* EXIT CONFIRMATION DIALOG STYLES */
@@ -579,4 +633,6 @@ h1 {
 
 .exit-dialog-button:hover {
     opacity: 0.9;
+=======
+>>>>>>> 18119a7 (Complete Fashion Show timing sequence with looping functionality)
 }
