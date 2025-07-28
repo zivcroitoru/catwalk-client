@@ -115,26 +115,34 @@ function renderCarousel() {
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
+    // ✅ Use class names instead of duplicate IDs
     card.innerHTML = `
-      <div class="cat-thumbnail">
+      <div class="cat-thumbnail" id="cardPreview_${cat.id}">
         <div class="cat-bg"></div>
-        <div class="cat-sprite" style="background-image: url('${cat.image}')"></div>
+        <img class="cat-layer carouselBase" />
+        <img class="cat-layer carouselHat" />
+        <img class="cat-layer carouselTop" />
+        <img class="cat-layer carouselEyes" />
+        <img class="cat-layer carouselAccessory" />
       </div>
       <span>${cat.name}</span>
     `;
 
-card.addEventListener("click", () => {
-  const isSame = window.selectedCat?.id === cat.id;
-  window.selectedCat = cat;
+    const previewContainer = card.querySelector(`#cardPreview_${cat.id}`);
+    updateCatPreview(cat, previewContainer); // ✅ Update cat layers inside this card
 
-  selectCatCard(card);
-  showCatProfile(cat);
-  console.log("🐾 Selected cat:", cat.name);
+    card.addEventListener("click", () => {
+      const isSame = window.selectedCat?.id === cat.id;
+      window.selectedCat = cat;
 
-  if (!isSame) {
-    updateCatPreview(cat); // ✅ only if new cat was selected
-  }
-});
+      selectCatCard(card);
+      showCatProfile(cat);
+      console.log("🐾 Selected cat:", cat.name);
+
+      if (!isSame) {
+        updateCatPreview(cat); // ✅ Update main podium preview
+      }
+    });
 
     container.appendChild(card);
   });
@@ -146,7 +154,7 @@ card.addEventListener("click", () => {
 
   const firstCat = window.userCats[0];
   window.selectedCat = firstCat;
-  updateCatPreview(firstCat); // ✅ First time only
+  updateCatPreview(firstCat); // ✅ Podium preview
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {

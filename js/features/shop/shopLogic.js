@@ -50,7 +50,11 @@ export function handleShopClick(item, userItems) {
     }
 
     console.log("🐱 Updated selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
-    updateCatPreview(window.selectedCat);
+    updateCatPreview(window.selectedCat); // podium
+    const thumb = document.querySelector(
+      `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
+    );
+    if (thumb) updateCatPreview(window.selectedCat, thumb); // thumbnail
     return "equipped";
   }
 
@@ -67,7 +71,11 @@ export function handleShopClick(item, userItems) {
     }
 
     console.log("🐱 After unequip, selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
-    updateCatPreview(window.selectedCat);
+    updateCatPreview(window.selectedCat); // podium
+    const thumb = document.querySelector(
+      `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
+    );
+    if (thumb) updateCatPreview(window.selectedCat, thumb); // thumbnail
     return "unequipped";
   }
 
