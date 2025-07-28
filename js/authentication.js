@@ -32,7 +32,7 @@ async function handleRegister(event) {
   const password = document.getElementById("passwordInput").value;
 
   try {
-    const res = await fetch("http://localhost:3000/auth/login", {
+    const res = await fetch("https://catwalk-server.onrender.com/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -71,10 +71,19 @@ function showError(msg) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const username = localStorage.getItem("username") || "Guest";
-    const welcomeMessage = document.getElementById("welcomeMessage");
-    welcomeMessage.textContent = `Welcome, ${username}`;
-  });
+  console.log("loololololo");
+  const username = localStorage.getItem("username");
+  console.log("USERNAME FROM LOCALSTORAGE:", username);
+
+  const welcomeBox = document.getElementById("welcomeMessage");
+  if (welcomeBox) {
+    welcomeBox.textContent = username
+      ? `Welcome, ${username}`
+      : "Welcome, Guest";
+  }
+});
+
+
 
   function signOut() {
   localStorage.removeItem("username");
