@@ -3,6 +3,29 @@
   background: var(--border);
   margin-bottom: 0.83vw;
 }
+.shop-popup {
+  position: fixed;
+  top: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 960px;
+  max-height: 85vh;
+  background: #fffdf3;
+  border: 0.42vw solid var(--border);
+  padding: 1.25vw;
+  z-index: 999;
+  overflow: hidden;
+  box-shadow: 0 0 2vw rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+}
+
+.hidden {
+  display: none;
+}
+
 
 .tab {
   flex: 1;
@@ -179,3 +202,14 @@
 .scroll-btn-down {
   bottom: 0.42vw;
 }
+
+
+.shop-popup.fade-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.force-hide {
+  display: none !important;
+}
+

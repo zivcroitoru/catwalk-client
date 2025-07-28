@@ -58,7 +58,6 @@ Object.assign(window, {
   renderCarousel,
   selectCatCard,
 });
-
 // ───────────── Init ─────────────
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOMContentLoaded");
@@ -67,21 +66,21 @@ document.addEventListener("DOMContentLoaded", () => {
   setupShopTabs();
   setupEditMode();
 
-  // 👇 FIX BUTTON STATE ON FIRST LOAD
-  toggleButtons({ edit: true, save: false, cancel: false });
-
   bindUI();
   updateCoinCount();
 
+  // ✅ Bind close shop button
   console.log("✅ Initialized systems");
 });
 
 // ───────────── UI Bindings ─────────────
 function bindUI() {
-  bindShopBtn(bindButton);
-  bindCustomizeBtn(bindButton);
-  bindFashionBtn(bindButton);
-  console.log("✅ Event listeners bound");
+  requestAnimationFrame(() => {
+    bindShopBtn(bindButton);
+    bindCustomizeBtn(bindButton);
+    bindFashionBtn(bindButton);
+    console.log("✅ Event listeners bound");
+  });
 }
 
 function bindButton(id, handler, logText = null) {

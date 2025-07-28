@@ -1,5 +1,4 @@
 import { renderShopItems } from './shopItemsRenderer.js'; // 🎨 Renders items
-
 export function toggleShop() {
   console.log("🛒 toggleShop() FORCE OPEN");
 
@@ -18,28 +17,19 @@ export function toggleShop() {
 
   // ✅ Force display of shop
   popup.style.display = "block";
+  popup.classList.remove("hidden");
   console.log("✅ Forced shop popup open");
 
-  // ✅ Load shop items
+  // ✅ Load shop items (default to current tab)
   if (window.shopItems) {
-    renderShopItems(window.shopItems);
-
-    // ✅ Auto-select hats tab AFTER rendering
-    setTimeout(() => {
-      const hatsTab = document.querySelector('.tab[data-category="hats"]');
-      if (hatsTab) {
-        console.log("🎩 Clicking hats tab (delayed)");
-        hatsTab.click();
-      } else {
-        console.warn("⚠️ Hats tab not found");
-      }
-    }, 50); // Slight delay to let DOM update
+const activeTab = document.querySelector(".tab.active");
+const category = activeTab?.dataset.category?.toLowerCase() || "hats";
+renderShopItems(window.shopItems, category);
   } else {
     console.warn("⚠️ shopItems not loaded yet");
   }
 }
 
-// ✅ Vertical scroll logic for up/down buttons
 export function scrollShop(direction) {
   const wrapper = document.querySelector(".shop-scroll-wrapper");
   if (!wrapper) {
@@ -48,4 +38,13 @@ export function scrollShop(direction) {
   }
 
   wrapper.scrollBy({ top: direction * 120, behavior: "smooth" });
+}
+
+// ✅ Add this function
+export function closeShop() {
+  const popup = document.getElementById("shopPopup");
+  if (popup) {
+    popup.style.display = "none"; // ← direct hide
+    console.log("🛑 Shop closed");
+  }
 }

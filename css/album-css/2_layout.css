@@ -94,14 +94,14 @@
 /* ───────────── Layout: Main Cat Display ───────────── */
 .center-ellipse {
   display: block;
-  width: 10.42vw;
-  margin-top: 5rem;
+  width: 6vw; /* smaller podium */
+  margin-top: 6rem;
 }
 
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: translate(-500px, 1200px) scale(5); /* consider responsive tweak */
+  transform: translate(-200px, 600px) scale(5); /* moved up by 300px */
   margin: 0 auto;
 }
 
@@ -113,9 +113,9 @@
 
 .cat-layer {
   position: absolute;
-  top: -10%;
-  left: 50%;
-  transform: translate(-50%, -100%);
+  top: 100%;
+  left: 30%;
+  transform: translate(-50%, -105%);
   width: 10.42vw;
   height: auto;
   object-fit: contain;

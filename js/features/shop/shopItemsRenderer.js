@@ -24,15 +24,16 @@ export function renderShopItems(data, activeCategory) {
     if (equipped === id) card.classList.add("equipped");
     else if (ownedSet.has(id)) card.classList.add("owned");
 
-    card.innerHTML = `
-      <img src="../assets/shop_cosmetics/${img}" class="shop-img" alt="${name}" />
-      <div class="${isBuy ? "shop-price-bar" : "shop-btn-bar"}">
-        ${isBuy
-          ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin" />
-             <span>${price}</span>`
-          : `<button class="shop-btn">${state.toUpperCase()}</button>`}
-      </div>
-    `;
+card.innerHTML = `
+  <img src="${img}" class="shop-img" alt="${name}" />
+  <div class="${isBuy ? "shop-price-bar" : "shop-btn-bar"}">
+    ${isBuy
+      ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin" />
+         <span>${price}</span>`
+      : `<button class="shop-btn">${state.toUpperCase()}</button>`}
+  </div>
+`;
+
 
     const clickTarget = isBuy
       ? card.querySelector(".shop-price-bar")
