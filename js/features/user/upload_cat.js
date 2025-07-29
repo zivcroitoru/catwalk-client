@@ -1,4 +1,3 @@
-import { APP_URL } from "../../main.js";
 
 /*-----------------------------------------------------------------------------
   upload.js
@@ -13,7 +12,7 @@ export async function uploadCat() {
 
   const form = new FormData();
   form.append("catImage", file);
-  const res = await fetch(`${APP_URL}/api/cats`, { method: "POST", body: form });
+  const res = await fetch("/api/cats", { method: "POST", body: form });
   if (!res.ok) return alert("Upload failed");
   const { url, name } = await res.json();
   addCatToCarousel(url, name || "New Cat");

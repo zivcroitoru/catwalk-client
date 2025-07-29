@@ -1,6 +1,5 @@
 console.log("🐱 MAIN.JS LOADED");
 
-
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
@@ -19,7 +18,6 @@ import { updateCatPreview } from './features/catPreviewRenderer.js';
 // ───────────── Globals ─────────────
 export let userCats = [];
 export let shopItems = [];
-export const APP_URL = import.meta.env.VITE_APP_URL;
 
 // ───────────── Data Load ─────────────
 fetch("../data/usercats.json")
