@@ -1,6 +1,4 @@
 console.log("🐱 MAIN.JS LOADED");
-// console.log('Backend URL is:', import.meta.env.VITE_APP_URL);
-
 
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
@@ -13,14 +11,15 @@ import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
 import { uploadCat, handleCatFileChange, triggerReupload } from './features/user/upload_cat.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
-import { bindShopBtn, bindCustomizeBtn, bindFashionBtn } from './features/ui/bindings.js';
+import { bindShopBtn, bindCustomizeBtn, bindFashionBtn, bindAddCatBtn } from './features/ui/bindings.js';
 import { $$ } from './core/utils.js';
 import { updateCatPreview } from './features/catPreviewRenderer.js';
+import { toggleAddCat } from './features/addCat/addCat.js';
 
 // ───────────── Globals ─────────────
 export let userCats = [];
 export let shopItems = [];
-export const APP_URL = "http://localhost:3000"; // or your backend URL
+export const APP_URL = "http://localhost:3000";
 
 // ───────────── Data Load ─────────────
 fetch("../data/usercats.json")
@@ -38,11 +37,18 @@ fetch("../data/shopItems.json")
     shopItems = data;
     window.shopItems = shopItems;
     console.log("🛒 Shop items loaded");
-    // Shop stays hidden until user opens it
   })
   .catch(err => console.error("❌ Failed to load shopItems.json", err));
 
-// ───────────── Exports to Window ─────────────
+fetch("../data/breeds.json")
+  .then(res => res.json())
+  .then(data => {
+    window.breedItems = data;
+    console.log("🐾 Breed data loaded");
+  })
+  .catch(err => console.error("❌ Failed to load breeds.json", err));
+
+// ───────────── Expose to Window ─────────────
 Object.assign(window, {
   toggleShop,
   renderShopItems,
@@ -61,7 +67,9 @@ Object.assign(window, {
   shopItems,
   renderCarousel,
   selectCatCard,
+  toggleAddCat, // ✅ AddCat exposed
 });
+
 // ───────────── Init ─────────────
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOMContentLoaded");
@@ -73,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
   bindUI();
   updateCoinCount();
 
-  // ✅ Bind close shop button
   console.log("✅ Initialized systems");
 });
 
@@ -83,6 +90,9 @@ function bindUI() {
     bindShopBtn(bindButton);
     bindCustomizeBtn(bindButton);
     bindFashionBtn(bindButton);
+    bindAddCatBtn(bindButton); // ✅ Handles both open and close buttons
+    bindButton("addCatBtn", toggleAddCat, "➕ Add Cat clicked");
+
     console.log("✅ Event listeners bound");
   });
 }
@@ -118,7 +128,6 @@ function renderCarousel() {
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
-    // ✅ Use class names instead of duplicate IDs
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">
         <div class="cat-bg"></div>
@@ -132,7 +141,7 @@ function renderCarousel() {
     `;
 
     const previewContainer = card.querySelector(`#cardPreview_${cat.id}`);
-    updateCatPreview(cat, previewContainer); // ✅ Update cat layers inside this card
+    updateCatPreview(cat, previewContainer);
 
     card.addEventListener("click", () => {
       const isSame = window.selectedCat?.id === cat.id;
@@ -142,9 +151,7 @@ function renderCarousel() {
       showCatProfile(cat);
       console.log("🐾 Selected cat:", cat.name);
 
-      if (!isSame) {
-        updateCatPreview(cat); // ✅ Update main podium preview
-      }
+      if (!isSame) updateCatPreview(cat);
     });
 
     container.appendChild(card);
@@ -157,7 +164,7 @@ function renderCarousel() {
 
   const firstCat = window.userCats[0];
   window.selectedCat = firstCat;
-  updateCatPreview(firstCat); // ✅ Podium preview
+  updateCatPreview(firstCat);
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
@@ -176,15 +183,15 @@ function renderCarousel() {
 
   if (profile) profile.style.display = "flex";
   if (scroll) scroll.style.display = "block";
-  console.log("✅ Profile made visible");
 
   const inventoryUI = document.getElementById("inventoryCount");
   if (inventoryUI) {
     inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
     console.log("📦 Inventory updated:", window.userCats.length);
   }
-}
 
+  console.log("✅ Profile made visible");
+}
 
 function selectCatCard(selectedCard) {
   document.querySelectorAll('.cat-card').forEach(card =>
