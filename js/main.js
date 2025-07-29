@@ -15,7 +15,8 @@ import { toggleAddCat } from './features/addCat/addCat.js';
 
 import { bindUI } from './features/ui/uiBinder.js';
 import { loadAllData } from './core/init/dataLoader.js';
-import { updateCoinCount } from './features/ui/coinUpdater.js';
+import { updateCoinCount } from './core/storage.js';
+
 
 // ───────────── Globals ─────────────
 export const APP_URL = "http://localhost:3000";

@@ -1,3 +1,4 @@
+// /js/core/toast.js
 
 export function toastCatAdded({ breed, name, sprite }) {
   Toastify({
@@ -41,5 +42,37 @@ export function toastCancelled() {
     gravity: "bottom",
     position: "center",
     style: { background: "#999" }
+  }).showToast();
+}
+
+export function toastBought(name) {
+  Toastify({
+    text: `✅ Bought "${name}"!`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#4caf50" }
+  }).showToast();
+}
+
+export function toastNotEnough() {
+  Toastify({
+    text: `❌ Not enough coins`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#d32f2f" }
+  }).showToast();
+}
+
+export function toastEquipResult(name, result) {
+  Toastify({
+    text: result === "equipped"
+      ? `Equipped "${name}"`
+      : `Unequipped "${name}"`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#2196f3" }
   }).showToast();
 }

@@ -1,3 +1,5 @@
+// /features/addCat/breedItemsRenderer.js
+
 import { toastCatAdded, toastCancelled } from '../../core/toast.js';
 
 export function renderBreedItems(breed) {
@@ -66,6 +68,15 @@ function showAddCatConfirmation(breed, name, sprite) {
     cats.push(newCat);
     localStorage.setItem("usercats", JSON.stringify(cats));
     window.userCats = cats;
+
+    // ✅ Debug log
+    console.log("🐱 Cat added:", {
+      id: newCat.id,
+      name: newCat.name,
+      breed: newCat.breed,
+      sprite: newCat.image.slice(0, 30) + "...",
+    });
+    console.log(`📦 Total cats: ${cats.length}`);
 
     window.renderCarousel?.();
     toastCatAdded({ breed, name, sprite });
