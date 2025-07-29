@@ -155,8 +155,13 @@
 
 
   <!-- Audio + Scripts -->
-  <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script type="module" src="../js/main.js"></script>
+<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+
+<!-- ✅ Toastify FIRST -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<!-- ✅ Your modules LAST -->
+<script type="module" src="../js/main.js"></script>
+
 </body>
 </html>
