@@ -62,7 +62,8 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     }
 
     // Success: store username and redirect
-    localStorage.setItem("username", username);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("userId", data.userId);
     window.location.href = "album.html";
   } catch (err) {
     console.error(err);
@@ -80,9 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Sign out
-function signOut() {
+export function signOut() {
   localStorage.removeItem("username");
-  localStorage.removeItem("loggedIn");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userItems");
   window.location.href = "login.html";
 }
 window.signOut = signOut;
