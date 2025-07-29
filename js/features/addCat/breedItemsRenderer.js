@@ -1,6 +1,4 @@
-/*-----------------------------------------------------------------------------
-  breedItemsRenderer.js – shows cat color options for a given breed
------------------------------------------------------------------------------*/
+import { toastCatAdded, toastCancelled } from '../../core/toast.js';
 
 export function renderBreedItems(breed) {
   const container = document.getElementById("breedItems");
@@ -10,7 +8,7 @@ export function renderBreedItems(breed) {
   let selectedCard = null;
 
   variants.forEach(({ name, sprite }) => {
-    if (!sprite || sprite === "null") return; // Skip invalid entries
+    if (!sprite || sprite === "null") return;
 
     const card = document.createElement("div");
     card.className = "shop-card";
@@ -69,62 +67,15 @@ function showAddCatConfirmation(breed, name, sprite) {
     localStorage.setItem("usercats", JSON.stringify(cats));
     window.userCats = cats;
 
-    if (typeof window.renderCarousel === "function") {
-      window.renderCarousel();
-    }
-
-    Toastify({
-      node: (() => {
-        const wrapper = document.createElement("div");
-        wrapper.style.cssText = `
-          font-family: 'Press Start 2P', monospace;
-          font-size: 10px;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        `;
-        wrapper.innerHTML = `
-          <img src="${sprite}" alt="Cat"
-            style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
-          <div><b>${breed} (${name})</b> added!</div>
-        `;
-        return wrapper;
-      })(),
-      duration: 1800,
-      gravity: "top",
-      position: "center",
-      style: {
-        background: "#4caf50",
-        border: "2px solid black",
-        padding: "8px",
-        width: "180px",
-        maxWidth: "80vw",
-        color: "black",
-        boxShadow: "4px 4px #000",
-        zIndex: 999999
-      }
-    }).showToast();
-
-    if (typeof window.closeAddCat === "function") {
-      window.closeAddCat();
-    }
-
+    window.renderCarousel?.();
+    toastCatAdded({ breed, name, sprite });
+    window.closeAddCat?.();
     confirmBox.remove();
   };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
-    const selected = document.querySelector(".shop-card.selected");
-    if (selected) selected.classList.remove("selected");
-
-    Toastify({
-      text: "❌ Cancelled",
-      duration: 1500,
-      gravity: "bottom",
-      position: "center",
-      style: { background: "#999" }
-    }).showToast();
-
+    document.querySelector(".shop-card.selected")?.classList.remove("selected");
+    toastCancelled();
     confirmBox.remove();
   };
 }
