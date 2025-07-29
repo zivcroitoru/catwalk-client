@@ -19,8 +19,20 @@ export function showCatProfile(cat) {
   $("profileVariant").textContent = cat.variant;
   $("profilePalette").textContent = cat.palette;
   $("profileBirthday").textContent = cat.birthday;
-  $("profileAge").textContent = cat.age;
   $("profileImage").src = cat.image;
+
+  // ✅ Calculate age in days
+  const birthDate = new Date(cat.birthday);
+  const today = new Date();
+  const ageInDays = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+  $("profileAge").textContent = `${ageInDays} days`;
+
+  // ✅ Optionally store new age
+  const index = window.userCats.findIndex(c => c.id === cat.id);
+  if (index !== -1) {
+    window.userCats[index].age = ageInDays;
+    localStorage.setItem("usercats", JSON.stringify(window.userCats));
+  }
 
   nameInput.value = cat.name;
   nameInput.disabled = true;
@@ -82,25 +94,24 @@ export function setupEditMode() {
       return;
     }
 
-if (window.currentCat) {
-  window.currentCat.name = name;
-  window.currentCat.description = desc;
+    if (window.currentCat) {
+      window.currentCat.name = name;
+      window.currentCat.description = desc;
 
-  const index = window.userCats.findIndex(c => c.id === window.currentCat.id);
-  if (index !== -1) {
-    window.userCats[index].name = name;
-    window.userCats[index].description = desc;
-    localStorage.setItem("usercats", JSON.stringify(window.userCats));
-    console.log("💾 Name & description saved to localStorage");
-  }
+      const index = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (index !== -1) {
+        window.userCats[index].name = name;
+        window.userCats[index].description = desc;
+        localStorage.setItem("usercats", JSON.stringify(window.userCats));
+        console.log("💾 Name & description saved to localStorage");
+      }
 
-  const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
-  if (card) {
-    const nameSpan = card.querySelector("span");
-    if (nameSpan) nameSpan.textContent = name;
-  }
-}
-
+      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
+      if (card) {
+        const nameSpan = card.querySelector("span");
+        if (nameSpan) nameSpan.textContent = name;
+      }
+    }
 
     nameInput.disabled = true;
     descInput.readOnly = true;

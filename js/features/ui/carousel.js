@@ -138,7 +138,10 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
   const card = document.createElement("div");
   card.className = "cat-card";
 
+  const today = new Date().toISOString().split("T")[0];
+
   const fullCat = {
+    id: Date.now(),
     name: label,
     image: imgUrl,
     equipment: {
@@ -150,8 +153,8 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     breed: "-",
     variant: "-",
     palette: "-",
-    birthday: "-",
-    age: "-",
+    birthday: today,
+    age: 0,
     description: ""
   };
 
