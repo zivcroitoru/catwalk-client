@@ -2,6 +2,7 @@
 
 import { toggleShop, closeShop } from '../shop/shop.js';
 import { renderShopItems } from '../shop/shopItemsRenderer.js';
+import { closeAddCat } from '../addCat/addCat.js'; // adjust path if needed
 
 /**
  * Binds the shop close button
@@ -9,6 +10,9 @@ import { renderShopItems } from '../shop/shopItemsRenderer.js';
 export function bindShopBtn(bindButton) {
   // ✅ Now actually closes the shop
   bindButton("shopCloseBtn", closeShop, "🧼 Close Shop clicked");
+}
+export function bindAddCatBtn(bindButton) {
+  bindButton("addCatCloseBtn", closeAddCat, "🚪 Close Add Cat clicked");
 }
 
 /**

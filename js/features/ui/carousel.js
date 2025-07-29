@@ -3,16 +3,23 @@
 -----------------------------------------------------------------------------*/
 import { $, setDisplay } from '../../core/utils.js';
 import { state } from '../../core/state.js';
-import { CARD_WIDTH, CARDS_PER_PAGE } from '../../core/constants.js';
+import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 
 export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
   const totalCards = carousel.children.length;
-  const maxPage = Math.ceil(totalCards / CARDS_PER_PAGE) - 1;
+  const maxPage = Math.max(0, Math.ceil(totalCards / CARDS_PER_PAGE) - 1);
 
   state.currentPage = Math.max(0, Math.min(state.currentPage + direction, maxPage));
-  const offset = state.currentPage * CARD_WIDTH * CARDS_PER_PAGE;
+
+  // 🧠 Calculate offset based on real card width + CSS gap
+  const card = carousel.querySelector(".cat-card");
+  const gap = 20; // matches .carousel { gap: 20px }
+  const cardWidth = card?.offsetWidth || 0;
+  const totalWidth = (cardWidth + gap) * CARDS_PER_PAGE;
+
+  const offset = state.currentPage * totalWidth;
   carousel.style.transform = `translateX(-${offset}px)`;
 }
 
@@ -38,7 +45,6 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     <span>${label}</span>
   `;
 
-  // Render the cat with equipment using the preview renderer
   updateCatPreview(
     {
       name: label,
@@ -48,7 +54,6 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     card
   );
 
-  // Click to show profile
   card.onclick = () =>
     import("../user/cat_profile.js").then((m) =>
       m.showCatProfile({
@@ -66,7 +71,6 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
 
   $("catCarousel").appendChild(card);
 
-  // 🎯 Animate podium cat
   const catImg = $("carouselCat");
   catImg.src = imgUrl;
   catImg.classList.remove("bounce-in");

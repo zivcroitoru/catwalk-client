@@ -8,10 +8,11 @@
   <script type="module" src="../js/core/auth/authentication.js"></script>
 
 
-  <!-- ✅ Import all 11 CSS files -->
+  <!-- ✅ Import all CSS files -->
   <link rel="stylesheet" href="../css/album-css/1_base.css">
   <link rel="stylesheet" href="../css/album-css/2_layout.css">
   <link rel="stylesheet" href="../css/album-css/3_components.css">
+  <link rel="stylesheet" href="../css/album-css/4_add_cat.css">
   <link rel="stylesheet" href="../css/album-css/5_carousel.css">
   <link rel="stylesheet" href="../css/album-css/6_cat-album.css">
   <link rel="stylesheet" href="../css/album-css/7_shop.css">
@@ -74,6 +75,9 @@
               <div class="carousel" id="catCarousel"></div>
             </div>
             <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+<button id="addCatBtn" class="add-cat-btn">
+  <img src="../assets/ui/plus.png" alt="Add Cat" />
+</button>
           </div>
 
           <!-- Floating UI -->
@@ -123,7 +127,7 @@
               </div>
             </div>
           </div>
-<!-- ✅ Move shopPopup here -->
+<!-- ✅ Shop Popup -->
 <div id="shopPopup" class="shop-popup hidden">
   <div class="tabs">
     <div class="tab active" data-category="hats">Hats</div>
@@ -131,13 +135,24 @@
     <div class="tab" data-category="accessories">Accessories</div>
     <div class="tab" data-category="eyes">Eyes</div>
   </div>
-
   <div class="shop-scroll-wrapper">
     <div id="shopItems"></div>
   </div>
-
   <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
 </div>
+
+<!-- ✅ Add Cat Popup (matches Shop style) -->
+<div id="addCatPopup" class="shop-popup hidden">
+  <div class="tabs" id="breedTabs"></div>
+  <div class="shop-scroll-wrapper">
+    <div id="breedItems" class="shop-items"></div>
+  </div>
+  <button class="profile-btn danger" style="align-self: flex-end;" onclick="closeAddCat()">✕</button>
+</div>
+
+<!-- ✅ Add Cat Overlay -->
+<div id="addCatOverlayBlocker" class="overlay hidden"></div>
+
 
   <!-- Audio + Scripts -->
   <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>

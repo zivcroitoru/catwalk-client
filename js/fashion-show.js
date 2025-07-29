@@ -1,3 +1,6 @@
+import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+import { getLoggedInUserInfo } from "./core/utils.js";
+
 let isInVotingPhase = false;
 let exitDialogOpen = false;
 let selectedCatIndex = null;
@@ -8,14 +11,104 @@ let resultsTimeout = null;
 let catId = null;
 let selectedCat = null;
 let userCats = [];
+let socket = null;
+let participants = [];
+let playerId = getLoggedInUserInfo().userId; // This should be set from your authentication system
+let votingTimer = null;
+let timeRemaining = 60;
+const PARTICIPANTS_IN_ROOM = 5;
+const VOTING_TIMER = 60;
 
-const placeholderCats = [
-  { catName: "Mr. Grumpy Pants", username: "who_dis723" },
-  { catName: "Juliet", username: "strawberry_banana" },
-  { catName: "Smiley", username: "(:_smile_:)" },
-  { catName: "Cookie", username: "my_username_sucks" },
-  { catName: "Elvis", username: "the_king_91" }
-];
+// Initialize socket connection
+function initializeSocket() {
+  socket = io("http://localhost:3000"); // Assumes socket.io server is on same domain
+  
+  socket.on('connect', () => {
+    console.log('🔌 Connected to fashion show server');
+    // Send join message once connected and we have the cat data
+    if (!selectedCat || !playerId) {
+      throw new Error('WS is created - but player-id or cat-id are missing')
+    }
+    joinFashionShow();
+  });
+
+  socket.on('disconnect', () => {
+    console.log('🔌 Disconnected from fashion show server');
+    // TODO: Return to main page
+  });
+
+  socket.on('participant_update', (message) => {
+    console.log('👥 Participant update:', message);
+    handleParticipantUpdate(message);
+  });
+
+  socket.on('voting_phase', (message) => {
+    console.log('🗳️ Voting phase started:', message);
+    handleVotingPhase(message);
+  });
+
+  socket.on('voting_update', (message) => {
+    console.log('🗳️ Voting update:', message);
+    handleVotingUpdate(message);
+  });
+
+  socket.on('results', (message) => {
+    console.log('🏆 Results:', message);
+    handleResults(message);
+  });
+}
+
+function joinFashionShow() {
+  const joinMessage = {
+    playerId: playerId,
+    catId: selectedCat.id
+  };
+  console.log('📤 Sending join message:', joinMessage);
+  socket.emit('join', joinMessage);
+}
+
+function handleParticipantUpdate(message) {
+  participants = message.participants;
+  updateCounterDisplay(participants.length, message.maxCount);
+  
+  // Find our own cat's position in the participants array
+  const ourParticipant = participants.find(p => p.playerId === playerId);
+  if (ourParticipant) {
+    playerOwnedCatIndex = participants.indexOf(ourParticipant);
+  }
+}
+
+function handleVotingPhase(message) {
+  participants = message.participants;
+  timeRemaining = message.timerSeconds;
+  transitionToVotingPhase();
+}
+
+function handleVotingUpdate(message) {
+  participants = message.participants;
+  updateVotingProgress();
+}
+
+function handleResults(message) {
+  participants = message.participants;
+  isInVotingPhase = false;
+  disableVotingClicks();
+  if (votingTimer) {
+    clearInterval(votingTimer);
+    votingTimer = null;
+  }
+  showResults();
+}
+
+function sendVote(catId) {
+  if (socket && socket.connected) {
+    const voteMessage = {
+      votedCatId: catId
+    };
+    console.log('📤 Sending vote:', voteMessage);
+    socket.emit('vote', voteMessage);
+  }
+}
 
 // Fetch user cats and initialize
 fetch("../data/usercats.json")
@@ -24,19 +117,14 @@ fetch("../data/usercats.json")
     userCats = data;
     window.userCats = userCats;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    catId = urlParams.get("catId");
-    selectedCat = userCats.find(c => c.id == catId);
+    // TODO: The cat should be selected by the user in the UI
+    selectedCat = userCats[Math.floor(Math.random() * userCats.length)];
+    console.warn('Using stub cat-id ' + selectedCat.id);
+    console.log("🐾 Selected cat from album is:", selectedCat);
 
-    if (selectedCat) {
-      console.log("🐾 Selected cat from album is:", selectedCat);
-      placeholderCats[0] = {
-        catName: selectedCat.name,
-        username: "You"
-      };
-    } else {
-      console.warn("❌ No matching cat found for ID:", catId);
-    }
+    // TODO: Get playerId from your authentication system
+    playerId = "player_" + Math.random().toString(36).substr(2, 9); // Temporary random ID
+    console.warn('Using stub player-id ' + playerId);
 
     document.dispatchEvent(new Event("CatsReady"));
   })
@@ -44,30 +132,9 @@ fetch("../data/usercats.json")
     console.error("❌ Failed to load usercats.json", err);
   });
 
-let playerCount = 1;
-const maxPlayers = 5;
-let counterInterval;
-let votingTimer;
-let timeRemaining = 30;
-
-function startCounter() {
-  counterInterval = setInterval(() => {
-    if (playerCount < maxPlayers) {
-      playerCount++;
-      updateCounterDisplay();
-      if (playerCount === maxPlayers) {
-        clearInterval(counterInterval);
-        setTimeout(() => {
-          transitionToVotingPhase();
-        }, 2000);
-      }
-    }
-  }, 1000);
-}
-
-function updateCounterDisplay() {
+function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
   const counterElement = document.getElementById('player-counter');
-  if (counterElement) counterElement.textContent = `${playerCount}/5`;
+  if (counterElement) counterElement.textContent = `${currentCount}/${maxCount}`;
 }
 
 function transitionToVotingPhase() {
@@ -92,10 +159,12 @@ function createVotingInterface() {
   const catDisplay = document.createElement('div');
   catDisplay.className = 'cat-display';
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < PARTICIPANTS_IN_ROOM; i++) {
+    const participant = participants[i];
     const stageBase = document.createElement('div');
     stageBase.className = 'stage-base';
     stageBase.setAttribute('data-cat-index', i);
+    stageBase.setAttribute('data-cat-id', participant.catId);
 
     const stageWalkway = document.createElement('img');
     stageWalkway.src = '../assets/icons/stage-walkway.png';
@@ -105,19 +174,24 @@ function createVotingInterface() {
 
     const catSprite = document.createElement('img');
     catSprite.className = 'cat-sprite';
-    catSprite.alt = placeholderCats[i].catName;
-    catSprite.src =
-      i === 0 && selectedCat ? selectedCat.image : '../assets/cats/placeholder-fashion-show-cat.png';
+    catSprite.alt = `Cat ${participant.catId}`;
+    
+    // Use selected cat image if it's our cat, otherwise placeholder
+    if (participant.playerId === playerId && selectedCat) {
+      catSprite.src = selectedCat.image;
+    } else {
+      catSprite.src = '../assets/cats/placeholder-fashion-show-cat.png';
+    }
     stageBase.appendChild(catSprite);
 
     const catName = document.createElement('div');
     catName.className = 'cat-name';
-    catName.textContent = placeholderCats[i].catName;
+    catName.textContent = `Cat ${participant.catId}`;
     stageBase.appendChild(catName);
 
     const username = document.createElement('div');
     username.className = 'username';
-    username.textContent = placeholderCats[i].username;
+    username.textContent = participant.playerId === playerId ? 'You' : participant.playerId;
     stageBase.appendChild(username);
 
     catDisplay.appendChild(stageBase);
@@ -154,7 +228,7 @@ function disableVotingClicks() {
 }
 
 function handleCatVote(catIndex) {
-  if (!isInVotingPhase) return;
+  if (!isInVotingPhase || !participants[catIndex]) return;
 
   if (catIndex === playerOwnedCatIndex) {
     showOwnCatWarning(catIndex);
@@ -167,6 +241,10 @@ function handleCatVote(catIndex) {
 
   const stageBases = document.querySelectorAll('.stage-base');
   stageBases[catIndex]?.classList.add('selected');
+
+  // Send vote to server
+  const votedCatId = participants[catIndex].catId;
+  sendVote(votedCatId);
 }
 
 function handleCatHover(catIndex) {
@@ -203,6 +281,14 @@ function clearCatSelection() {
   selectedCatIndex = null;
 }
 
+function updateVotingProgress() {
+  const votedCount = participants.filter(p => p.votedCatId).length;
+  const announcement = document.querySelector('.announcement-text');
+  if (announcement) {
+    announcement.textContent = `Waiting for all players to vote (${votedCount}/${PARTICIPANTS_IN_ROOM})...`;
+  }
+}
+
 function startDetailedSequence() {
   const announcement = document.querySelector('.announcement-text');
 
@@ -212,7 +298,7 @@ function startDetailedSequence() {
     setTimeout(() => {
       showTimer();
       moveAlbumButtonUp();
-      if (announcement) announcement.textContent = 'Waiting for all players to vote . . .';
+      if (announcement) announcement.textContent = `Waiting for all players to vote (0/${PARTICIPANTS_IN_ROOM})...`;
       enableVotingClicks();
       startVotingTimer();
     }, 1000);
@@ -228,7 +314,6 @@ function moveAlbumButtonUp() {
 }
 
 function startVotingTimer() {
-  timeRemaining = 30;
   updateTimerDisplay();
 
   votingTimer = setInterval(() => {
@@ -238,8 +323,8 @@ function startVotingTimer() {
     if (timeRemaining === 10) changeTimerToRed();
     if (timeRemaining <= 0) {
       clearInterval(votingTimer);
-      isInVotingPhase = false;
-      disableVotingClicks();
+      votingTimer = null;
+      // Server will handle timeout, we just stop the timer
       console.log("Voting time is up.");
     }
   }, 1000);
@@ -258,9 +343,66 @@ function changeTimerToRed() {
   }
 }
 
+function showResults() {
+  const announcement = document.querySelector('.announcement-text');
+  if (announcement) {
+    announcement.textContent = 'RESULTS!';
+  }
+
+  // Hide timer
+  const timerSection = document.querySelector('.timer-section');
+  if (timerSection) {
+    timerSection.style.display = 'none';
+  }
+
+  // Show results for each participant
+  const stageBases = document.querySelectorAll('.stage-base');
+  participants.forEach((participant, index) => {
+    const stageBase = stageBases[index];
+    if (stageBase) {
+      // Add results display
+      const resultsDiv = document.createElement('div');
+      resultsDiv.className = 'cat-results';
+      resultsDiv.innerHTML = `
+        <div class="votes-received">${participant.votesReceived} votes</div>
+        <div class="coins-earned">+${participant.coinsEarned} coins</div>
+      `;
+      stageBase.appendChild(resultsDiv);
+    }
+  });
+
+  // Show play again options after a delay
+  setTimeout(() => {
+    showPlayAgainOptions();
+  }, 3000);
+}
+
+function showPlayAgainOptions() {
+  const main = document.querySelector('main');
+  const playAgainDiv = document.createElement('div');
+  playAgainDiv.className = 'play-again-options';
+  playAgainDiv.innerHTML = `
+    <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+    <button class="go-home-btn" onclick="goHome()">Go Home</button>
+  `;
+  main.appendChild(playAgainDiv);
+}
+
+function playAgain() {
+  // Reset the page state and rejoin
+  location.reload();
+}
+
+function goHome() {
+  // Navigate back to album
+  window.location.href = '../album/';
+}
+
 document.addEventListener('CatsReady', () => {
   console.log("Fashion Show page ready with selected cat");
-  startCounter();
+  
+  // Initialize socket connection
+  initializeSocket();
 
   const albumButton = document.querySelector('.album-button');
   if (albumButton) {
@@ -270,5 +412,12 @@ document.addEventListener('CatsReady', () => {
         showExitDialog();
       }
     });
+  }
+});
+
+// Handle page unload - disconnect from socket
+window.addEventListener('beforeunload', () => {
+  if (socket) {
+    socket.disconnect();
   }
 });
