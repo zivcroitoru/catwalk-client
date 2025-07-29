@@ -9,7 +9,6 @@ import { signOut } from './core/auth/authentication.js';
 
 import { renderCarousel, scrollCarousel } from './features/ui/carousel.js'; // ✅ updated
 import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
-import { uploadCat, handleCatFileChange, triggerReupload } from './features/user/upload_cat.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
 import { toggleAddCat } from './features/addCat/addCat.js';
