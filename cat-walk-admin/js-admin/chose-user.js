@@ -1,25 +1,35 @@
 const APP_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3000'
   : 'https://catwalk-server.onrender.com';
+
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
 
-// 1. Get ID from URL
+// Get player ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get('id');
 
 if (!playerId) {
   alert('No player ID provided.');
-} else {
-  // 2. Fetch player data
+}
+
+const rectangle = document.querySelector('.rectangle');
+const catImage = document.querySelector('.category .cats');
+const clothesImage = document.querySelector('.category .clothes');
+const catCountElement = document.querySelector('.cat-count');
+const clothesCountElement = document.querySelector('.clothes-count');
+const catImagesContainer = document.getElementById('cat-images');
+
+const catColor = '#ffffffff';     // white background for cats
+const clothesColor = '#838e84';   // green background for clothes
+
+// Show player info
+if (playerId) {
   fetch(`${APP_URL}/api/players/${playerId}`)
     .then(response => {
-      if (!response.ok) {
-        throw new Error('Player not found');
-      }
+      if (!response.ok) throw new Error('Player not found');
       return response.json();
     })
     .then(player => {
-      // 3. Show player info on page
       const container = document.getElementById('player-info');
       container.innerHTML = `
         <p>USERNAME: ${player.username}</p>
@@ -30,88 +40,87 @@ if (!playerId) {
       `;
     })
     .catch(error => {
-      console.error('Error:', error);
-      //   console.log(playerId, player.username, player.coins, player.cat_count);
+      console.error('Error fetching player info:', error);
       alert('Failed to fetch player info.');
     });
 }
 
-//////////////////After showing player info:
+// Helper to show images in the container
+let currentView = 'cats'; // Add this at the top of your script, before any function
 
+function showImages(items) {
+  catImagesContainer.innerHTML = '';
 
+  if (items.length === 0) {
+    catImagesContainer.innerHTML = '<p>No items found.</p>';
+    return;
+  }
 
-fetch(`${APP_URL}/api/players/${playerId}/cats`)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Failed to fetch cat images');
-    }
-    return response.json();
-  })
-  .then(catSprites => {
-    const catImagesContainer = document.getElementById('cat-images');
-    catImagesContainer.innerHTML = ''; // Clear existing content
+  items.forEach((item, index) => {
+    const img = document.createElement('img');
+    img.src = item.sprite_url;
+    img.className = 'users-stuff';
+    img.width = 224;
+    img.height = 224;
+    img.alt = 'Item image';
 
-    if (catSprites.length === 0) {
-      catImagesContainer.innerHTML = '<p>No cats found.</p>';
-    } else {
-      catSprites.forEach(cat => {
-        const img = document.createElement('img');
-        img.src = cat.sprite_url;
-        img.className = 'users-stuff';
-        img.width = 224;
-        img.height = 224;
-        catImagesContainer.appendChild(img);
+    if (currentView === 'cats') {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        window.location.href = `/cat-walk-admin/htmls/user-cat-data.html?player_id=${playerId}&cat_index=${index}`;
       });
     }
-    const catCountElement = document.querySelector('.cat-count');
-    catCountElement.textContent = `CATS: ${catSprites.length}`;
 
-  })
-  .catch(error => {
-    console.error('Error loading cat images:', error);
+    catImagesContainer.appendChild(img);
   });
+}
 
 
+// Fetch and show cats
+function fetchAndShowCats() {
+  if (!playerId) return;
+  fetch(`${APP_URL}/api/players/${playerId}/cats`)
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch cats');
+      return res.json();
+    })
+    .then(data => {
+      rectangle.style.backgroundColor = catColor;
+      catCountElement.textContent = `CATS: ${data.length}`;
+      showImages(data);
+    })
+    .catch(error => {
+      console.error(error);
+      catImagesContainer.innerHTML = '<p>Error loading cats.</p>';
+    });
+}
 
+// Fetch and show clothes
+function fetchAndShowClothes() {
+  if (!playerId) return;
+  fetch(`${APP_URL}/api/players/${playerId}/items`)
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch clothes');
+      return res.json();
+    })
+    .then(data => {
+      rectangle.style.backgroundColor = clothesColor;
+      clothesCountElement.textContent = `CLOTHES: ${data.length}`;
+      showImages(data);
+    })
+    .catch(error => {
+      console.error(error);
+      catImagesContainer.innerHTML = '<p>Error loading clothes.</p>';
+    });
+}
 
-/////table change
+// Initial load - show cats by default
+if (playerId) {
+  fetchAndShowCats();
+}
 
-const rectangle = document.querySelector('.rectangle');
-
-// Select cat and clothes images inside .category
-const catImage = document.querySelector('.category .cats');
-const clothesImage = document.querySelector('.category .clothes');
-const catCount = document.querySelector('.category .cat-count');
-const clothesCount = document.querySelector('.category .clothes-count');
-
-// Define colors to toggle (you can customize these)
-const catColor = '#ffffffff';      // pinkish for cat
-const clothesColor = '#838e84';  // greenish for clothes
-const defaultColor = '#ffffff';  // original white
-
-// When clicking the cat image
-catImage.addEventListener('click', () => {
-  rectangle.style.backgroundColor = catColor;
-  console.log("cat");
-});
-
-// When clicking the clothes image
-clothesImage.addEventListener('click', () => {
-  rectangle.style.backgroundColor = clothesColor;
-  console.log("clothes");
-
-});
-
-clothesCount.addEventListener('click', () => {
-  rectangle.style.backgroundColor = clothesColor;
-  console.log("clothes");
-
-});
-
-catCount.addEventListener('click', () => {
-  rectangle.style.backgroundColor = catColor;
-  console.log("cat");
-
-});
-
-
+// Event listeners for toggling cats/clothes
+catImage.addEventListener('click', fetchAndShowCats);
+catCountElement.addEventListener('click', fetchAndShowCats);
+clothesImage.addEventListener('click', fetchAndShowClothes);
+clothesCountElement.addEventListener('click', fetchAndShowClothes);

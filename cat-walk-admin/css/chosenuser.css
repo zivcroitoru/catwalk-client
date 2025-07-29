@@ -162,12 +162,11 @@ header {
 .grid-wrapper-cats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    justify-items: center;
-    align-items: center;
+    /* justify-items: center;
+    align-items: center; */
     padding: 20px;
     position: absolute;
-    top: 0;
+    top: -10px;
     left: 0;
     width: 100%;
     height: 100%;
@@ -175,10 +174,21 @@ header {
 }
 
 .users-stuff {
-    object-fit: cover;
+  width: 100%;        /* Make image fill its grid cell */
+  height: auto;
+  image-rendering: pixelated;
 }
 
 
+#cat-images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(3, 1fr);   /* 3 rows */
+  gap: 30px;                            /* space between images */;
+column-gap: 20px;
+  width: 700px;                        /* or whatever fits your layout */
+  margin-left:10px;
+}
 
 /*--------------list----------------*/
 .data-list {
