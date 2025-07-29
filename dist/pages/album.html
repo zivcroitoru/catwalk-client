@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cats</title>
+  <link rel="icon" type="image/png" href="/assets/cat_browser_icon.png" />
+  <script src="../js/authentication.js" defer></script>
+
+
+  <!-- ✅ Import all 11 CSS files -->
+  <link rel="stylesheet" href="../css/album-css/4_cat-cards.css">
+  <link rel="stylesheet" href="../css/album-css/11_cat_render">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script type="module" crossorigin src="/js/modulepreload-polyfill.js"></script>
+  <script type="module" crossorigin src="/js/main2.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/album.css">
+</head>
+
+<body>
+  <div class="welcome-message" id="welcomeMessage">Welcome, Guest</div>
+  <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+
+  <div id="game">
+    <!-- Cat Display -->
+    <div class="cat-display-wrapper">
+      <div class="ellipse-podium">
+        <img src="data:image/svg+xml,%3csvg%20width='459'%20height='175'%20viewBox='0%200%20459%20175'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20filter='url(%23filter0_d_2217_497)'%3e%3cellipse%20cx='229.5'%20cy='83.5'%20rx='225.5'%20ry='83.5'%20fill='%23FFEEC3'/%3e%3cpath%20d='M229.5%206C291.248%206%20346.886%2015.2776%20386.869%2030.083C406.884%2037.4943%20422.662%2046.1761%20433.327%2055.5127C444.004%2064.8596%20449%2074.3336%20449%2083.5C449%2092.6664%20444.004%20102.14%20433.327%20111.487C422.662%20120.824%20406.884%20129.506%20386.869%20136.917C346.886%20151.722%20291.248%20161%20229.5%20161C167.752%20161%20112.114%20151.722%2072.1309%20136.917C52.1159%20129.506%2036.3376%20120.824%2025.6729%20111.487C14.9964%20102.14%2010%2092.6664%2010%2083.5C10%2074.3336%2014.9964%2064.8596%2025.6729%2055.5127C36.3376%2046.1761%2052.1159%2037.4943%2072.1309%2030.083C112.114%2015.2776%20167.752%206%20229.5%206Z'%20stroke='%23DAAB6E'%20stroke-width='12'/%3e%3c/g%3e%3cdefs%3e%3cfilter%20id='filter0_d_2217_497'%20x='0'%20y='0'%20width='459'%20height='175'%20filterUnits='userSpaceOnUse'%20color-interpolation-filters='sRGB'%3e%3cfeFlood%20flood-opacity='0'%20result='BackgroundImageFix'/%3e%3cfeColorMatrix%20in='SourceAlpha'%20type='matrix'%20values='0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%20127%200'%20result='hardAlpha'/%3e%3cfeOffset%20dy='4'/%3e%3cfeGaussianBlur%20stdDeviation='2'/%3e%3cfeComposite%20in2='hardAlpha'%20operator='out'/%3e%3cfeColorMatrix%20type='matrix'%20values='0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.25%200'/%3e%3cfeBlend%20mode='normal'%20in2='BackgroundImageFix'%20result='effect1_dropShadow_2217_497'/%3e%3cfeBlend%20mode='normal'%20in='SourceGraphic'%20in2='effect1_dropShadow_2217_497'%20result='shape'/%3e%3c/filter%3e%3c/defs%3e%3c/svg%3e" alt="Ellipse" class="center-ellipse" />
+        <!-- <div class="carousel-cat" id="carouselCatWrapper">
+          <img id="carouselBase" class="cat-layer" alt="Base Cat" />
+          <img id="carouselHat" class="cat-layer" alt="Hat" />
+          <img id="carouselTop" class="cat-layer" alt="Top" />
+          <img id="carouselEyes" class="cat-layer" alt="Eyes" />
+          <img id="carouselAccessory" class="cat-layer" alt="Accessory" />
+        </div> -->
+        <div class="carousel-cat">
+  <img class="cat-layer carouselBase" alt="Base" />
+  <img class="cat-layer carouselHat" alt="Hat" />
+  <img class="cat-layer carouselTop" alt="Top" />
+  <img class="cat-layer carouselEyes" alt="Eyes" />
+  <img class="cat-layer carouselAccessory" alt="Accessory" />
+</div>
+      </div>
+    </div>
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-icon coin-icon" title="Coins">
+        <img src="data:image/png;base64,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" alt="Coins" />
+        <span class="coin-count">500</span>
+      </div>
+      <div class="topbar-icon" id="soundToggle" title="Sound" onclick="toggleSound()">
+        <img id="soundIcon" src="data:image/png;base64,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" alt="Sound" />
+      </div>
+      <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
+        <img src="/assets/mail.png" alt="Mailbox" />
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="cats-title">MY CATS</h1>
+
+    <!-- Carousel Area -->
+    <div class="wrapper">
+      <div class="main-area">
+        <div class="carousel-wrapper">
+          <div class="carousel-background">
+            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
+            <div class="carousel-viewport">
+              <div class="carousel" id="catCarousel"></div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+          </div>
+
+          <!-- Floating UI -->
+          <div class="floating-actions">
+            <div class="inventory-box" id="inventoryCount">Inventory: 0/25</div>
+          </div>
+        </div>
+
+        <!-- ✅ Right Pane: profile + shop stack here -->
+        <div class="right-pane">
+          <!-- ✅ Overlay blocker goes first -->
+          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+
+          <!-- Profile Panel -->
+          <div id="catProfileScroll" class="cat-profile-scroll">
+            <div class="scroll-inner">
+              <input type="text" id="catName" class="profile-name-input" disabled />
+
+              <div class="profile-main">
+                <div class="profile-info">
+                  <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
+                  <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
+                  <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
+                  <div class="profile-row"><strong>Birthday:</strong> <span id="profileBirthday">-</span></div>
+                  <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
+                </div>
+                <div class="top-right-icons">
+                  <img id="profileImage" src="../assets/real-cats/placeholder.png" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="desc-block" id="descBlock">
+                <label for="catDesc">Description:</label>
+                <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
+                <div id="charCount" class="word-count">0 / 200 characters</div>
+              </div>
+
+              <!-- Footer Buttons -->
+              <div class="profile-footer-buttons">
+                <button class="profile-btn primary" id="editBtn">Edit</button>
+                <button class="profile-btn danger" id="deleteBtn">Delete</button>
+                <button class="profile-btn secondary" id="customizeBtn">Customize</button>
+                <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
+                <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
+                <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
+              </div>
+            </div>
+          </div>
+<!-- ✅ Move shopPopup here -->
+<div id="shopPopup" class="shop-popup hidden">
+  <div class="tabs">
+    <div class="tab active" data-category="hats">Hats</div>
+    <div class="tab" data-category="tops">Tops</div>
+    <div class="tab" data-category="accessories">Accessories</div>
+    <div class="tab" data-category="eyes">Eyes</div>
+  </div>
+
+  <div class="shop-scroll-wrapper">
+    <div id="shopItems"></div>
+  </div>
+
+  <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
+</div>
+
+  <!-- Audio + Scripts -->
+  <audio src="/assets/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</body>
+</html>
