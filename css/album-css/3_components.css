@@ -33,7 +33,7 @@
 .cat-bg {
   position: absolute;
   inset: 0;
-background: url('../assets/backgrounds/thumbnail_bg.png') center/cover no-repeat;
+background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-repeat;
   z-index: 1;
 }
 
