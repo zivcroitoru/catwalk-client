@@ -5,13 +5,13 @@ import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
 import { toggleMailbox } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
-import { signOut, fetchUser } from './core/auth/auth.js';
+import { signOut } from './core/auth/authentication.js';
 import { scrollCarousel } from './features/ui/carousel.js';
 import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
 import { uploadCat, handleCatFileChange, triggerReupload } from './features/user/upload_cat.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
-import { bindShopBtn, bindCustomizeBtn, bindFashionBtn, bindAddCatBtn } from './features/ui/bindings.js';
+import { bindShopBtn, bindCustomizeBtn, bindFashionBtn } from './features/ui/bindings.js';
 import { $$ } from './core/utils.js';
 import { updateCatPreview } from './features/catPreviewRenderer.js';
 import { toggleAddCat } from './features/addCat/addCat.js';
@@ -71,10 +71,15 @@ Object.assign(window, {
 });
 
 // ───────────── Init ─────────────
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOMContentLoaded");
 
-  fetchUser();
+  const userData = await fetchLoggedInUserFullInfo();
+  const welcomeMessage = document.getElementById("welcomeMessage");
+  if (welcomeMessage) {
+    welcomeMessage.textContent = `Welcome, ${data?.username || 'Guest'}`;
+  }
+
   setupShopTabs();
   setupEditMode();
 
