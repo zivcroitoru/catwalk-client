@@ -14,17 +14,27 @@ const catCount = document.querySelector('.category .cat-count');
   // When clicking the cat image
   catImage.addEventListener('click', () => {
     rectangle.style.backgroundColor = catColor;
+    console.log("cat");
   });
 
   // When clicking the clothes image
   clothesImage.addEventListener('click', () => {
     rectangle.style.backgroundColor = clothesColor;
+            console.log("clothes");
+
   });
 
     clothesCount.addEventListener('click', () => {
     rectangle.style.backgroundColor = clothesColor;
+        console.log("clothes");
+
   });
 
     catCount.addEventListener('click', () => {
     rectangle.style.backgroundColor = catColor;
+        console.log("cat");
+
   });
+
+
+  /////////////////////////////////

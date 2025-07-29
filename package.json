@@ -1,9 +1,13 @@
 {
   "name": "catwalk-client",
+  "type": "module",
   "version": "1.0.0",
   "description": "The front-end of the Catwalk project. Built with HTML, CSS, and JavaScript, featuring a dynamic UI, 3D assets, and connection to a multiplayer game backend via REST API or WebSocket.",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
     
   },
@@ -22,3 +26,4 @@
     "vite": "^7.0.5"
   }
 }
+
