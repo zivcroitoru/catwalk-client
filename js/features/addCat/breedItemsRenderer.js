@@ -10,6 +10,8 @@ export function renderBreedItems(breed) {
   let selectedCard = null;
 
   variants.forEach(({ name, sprite }) => {
+    if (!sprite || sprite === "null") return; // Skip invalid entries
+
     const card = document.createElement("div");
     card.className = "shop-card";
     card.innerHTML = `
@@ -32,23 +34,24 @@ export function renderBreedItems(breed) {
 
   console.log(`🎨 Rendered ${variants.length} variants for ${breed}`);
 }
+
 function showAddCatConfirmation(breed, name, sprite) {
   const confirmBox = document.createElement("div");
   confirmBox.className = "confirm-toast";
-confirmBox.innerHTML = `
-  <div style="text-align: center; font-family: 'Press Start 2P', monospace;">
-    <div style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">ADD</div>
-<img src="${sprite}" alt="Cat" style="width: 64px; height: 64px; transform: scale(1.5); transform-origin: center; image-rendering: pixelated; margin-bottom: 4px; margin-top: -16px;" />
-    <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">${breed} (${name})</div>
-    <div style="font-size: 10px; margin-bottom: 12px;">to your cats?</div>
-    <div class="confirm-buttons">
-      <button class="yes-btn">Yes</button>
-      <button class="no-btn">No</button>
+  confirmBox.innerHTML = `
+    <div style="text-align: center; font-family: 'Press Start 2P', monospace;">
+      <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">ADD</div>
+      <img src="${sprite}" alt="Cat"
+        style="width: 64px; height: 64px; transform: scale(1.5); transform-origin: center;
+               image-rendering: pixelated; margin-top: -20px; margin-bottom: 6px;" />
+      <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">${breed} (${name})</div>
+      <div style="font-size: 10px; margin-bottom: 12px;">to your cats?</div>
+      <div class="confirm-buttons">
+        <button class="yes-btn">Yes</button>
+        <button class="no-btn">No</button>
+      </div>
     </div>
-  </div>
-`;
-
-
+  `;
 
   document.body.appendChild(confirmBox);
 
@@ -82,7 +85,8 @@ confirmBox.innerHTML = `
           align-items: center;
         `;
         wrapper.innerHTML = `
-          <img src="${sprite}" alt="Cat" style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
+          <img src="${sprite}" alt="Cat"
+            style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
           <div><b>${breed} (${name})</b> added!</div>
         `;
         return wrapper;
@@ -109,18 +113,18 @@ confirmBox.innerHTML = `
     confirmBox.remove();
   };
 
-confirmBox.querySelector(".no-btn").onclick = () => {
-  const selected = document.querySelector(".shop-card.selected");
-  if (selected) selected.classList.remove("selected");
+  confirmBox.querySelector(".no-btn").onclick = () => {
+    const selected = document.querySelector(".shop-card.selected");
+    if (selected) selected.classList.remove("selected");
 
-  Toastify({
-    text: "❌ Cancelled",
-    duration: 1500,
-    gravity: "bottom",
-    position: "center",
-    style: { background: "#999" }
-  }).showToast();
+    Toastify({
+      text: "❌ Cancelled",
+      duration: 1500,
+      gravity: "bottom",
+      position: "center",
+      style: { background: "#999" }
+    }).showToast();
 
-  confirmBox.remove();
-};
+    confirmBox.remove();
+  };
 }

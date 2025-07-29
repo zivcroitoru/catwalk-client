@@ -74,11 +74,11 @@ Object.assign(window, {
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOMContentLoaded");
 
-  const userData = await fetchLoggedInUserFullInfo();
-  const welcomeMessage = document.getElementById("welcomeMessage");
-  if (welcomeMessage) {
-    welcomeMessage.textContent = `Welcome, ${data?.username || 'Guest'}`;
-  }
+  // // const userData = await fetchLoggedInUserFullInfo();
+  // const welcomeMessage = document.getElementById("welcomeMessage");
+  // if (welcomeMessage) {
+  //   welcomeMessage.textContent = `Welcome, ${data?.username || 'Guest'}`;
+  // }
 
   setupShopTabs();
   setupEditMode();
@@ -95,8 +95,8 @@ function bindUI() {
     bindShopBtn(bindButton);
     bindCustomizeBtn(bindButton);
     bindFashionBtn(bindButton);
-    bindAddCatBtn(bindButton); // ✅ Handles both open and close buttons
-    bindButton("addCatBtn", toggleAddCat, "➕ Add Cat clicked");
+bindButton("addCatBtn", toggleAddCat, "➕ Add Cat clicked");
+
 
     console.log("✅ Event listeners bound");
   });
