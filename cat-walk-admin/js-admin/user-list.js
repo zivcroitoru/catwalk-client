@@ -1,13 +1,21 @@
+// Determine the backend URL based on the environment
+const APP_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://catwalk-server.onrender.com';
+
+console.log(window.location.hostname, 'using backend URL:', APP_URL);
+
 document.addEventListener('DOMContentLoaded', () => {
   const tableContainer = document.querySelector('.table');
 
   const table = document.createElement('table');
   table.style.width = '100%';
   table.style.borderCollapse = 'collapse';
+  table.style.backgroundColor = 'white'; // <-- Set table background to white
 
   // Create header row based on your columns
   const headerRow = document.createElement('tr');
-  const columns = ['ID', 'Username', 'Coins', 'Cat Count', 'Last Login'];
+  const columns = ['ID', 'Username', 'Coins', 'Cat Count', 'Last Login', 'GO']; // <-- Added 'Action' column
   columns.forEach(colName => {
     const th = document.createElement('th');
     th.textContent = colName;
@@ -19,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   table.appendChild(headerRow);
 
   // Fetch players from the API
-  fetch('/api/players')
+  fetch(`${APP_URL}/api/players`)
     .then(response => response.json())
     .then(players => {
       players.forEach(player => {
@@ -39,6 +47,26 @@ document.addEventListener('DOMContentLoaded', () => {
           td.style.textAlign = 'center';
           tr.appendChild(td);
         });
+
+        // Add action button in new column
+        const actionTd = document.createElement('td');
+        actionTd.style.border = '1px solid #ccc';
+        actionTd.style.padding = '8px';
+        actionTd.style.textAlign = 'center';
+
+        const button = document.createElement('button');
+        button.textContent = 'Go to page';
+        button.style.padding = '6px 10px';
+        button.style.cursor = 'pointer';
+
+        // Navigate to chose-user.html with the player's ID
+        button.addEventListener('click', () => {
+           window.location.href = `chose-user.html?id=${player.id}` 
+        });
+
+        actionTd.appendChild(button);
+        tr.appendChild(actionTd);
+
         table.appendChild(tr);
       });
     })
