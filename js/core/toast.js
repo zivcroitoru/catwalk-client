@@ -1,3 +1,4 @@
+// /js/core/toast.js
 
 export function toastCatAdded({ breed, name, sprite }) {
   Toastify({
@@ -29,7 +30,7 @@ export function toastCatAdded({ breed, name, sprite }) {
       maxWidth: "80vw",
       color: "black",
       boxShadow: "4px 4px #000",
-      zIndex: 999999
+      zIndex: 999999,
     }
   }).showToast();
 }
@@ -42,4 +43,125 @@ export function toastCancelled() {
     position: "center",
     style: { background: "#999" }
   }).showToast();
+}
+
+export function toastBought(name) {
+  Toastify({
+    text: `✅ Bought "${name}"!`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#4caf50" }
+  }).showToast();
+}
+
+export function toastNotEnough() {
+  Toastify({
+    text: `❌ Not enough coins`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#d32f2f" }
+  }).showToast();
+}
+
+export function toastEquipResult(name, result) {
+  Toastify({
+    text: result === "equipped"
+      ? `Equipped "${name}"`
+      : `Unequipped "${name}"`,
+    duration: 2000,
+    gravity: "bottom",
+    position: "center",
+    style: { background: "#2196f3" }
+  }).showToast();
+}
+
+export function toastInfo(text, background = "#ffcc66") {
+  Toastify({
+    text,
+    duration: 2000,
+    gravity: "top",
+    position: "right",
+    style: {
+      background,
+      border: "3px solid black",
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "12px",
+      color: "black",
+      padding: "10px",
+      zIndex: 999999,
+    }
+  }).showToast();
+}
+
+export function toastSimple(text, background = "#4caf50") {
+  Toastify({
+    text,
+    duration: 2000,
+    gravity: "top",
+    position: "right",
+    style: {
+      background,
+      border: "3px solid black",
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "12px",
+      color: "black",
+      padding: "10px",
+      zIndex: 999999,
+    }
+  }).showToast();
+}
+
+export function toastConfirmDelete(cat, onConfirm, onCancel) {
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
+      <img src="${cat.image}" alt="Cat" style="width:96px; height:96px; object-fit:contain; margin-bottom:16px;" />
+      <div style="margin-bottom:16px;">Delete "<b>${cat.name}</b>"?</div>
+      <button id="confirmDelete" style="margin-right:16px; font-size:12px;">Yes</button>
+      <button id="cancelDelete" style="font-size:12px;">Cancel</button>
+    </div>
+  `;
+
+  const toast = Toastify({
+    node: wrapper,
+    duration: -1,
+    gravity: "top",
+    position: "center",
+    style: {
+      background: "#d62828",
+      border: "4px solid black",
+      color: "white",
+      padding: "32px",
+      width: "420px",
+      maxWidth: "90vw",
+      fontSize: "16px",
+      fontFamily: "'Press Start 2P', monospace",
+      boxShadow: "8px 8px #000",
+      textAlign: "center",
+      zIndex: 999999,
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+    callback: () => {
+      document.getElementById("confirmDelete")?.removeEventListener("click", onConfirm);
+      document.getElementById("cancelDelete")?.removeEventListener("click", onCancel);
+    }
+  });
+
+  toast.showToast();
+
+  requestAnimationFrame(() => {
+    document.getElementById("confirmDelete")?.addEventListener("click", () => {
+      toast.hideToast();
+      onConfirm?.();
+    });
+    document.getElementById("cancelDelete")?.addEventListener("click", () => {
+      toast.hideToast();
+      onCancel?.();
+    });
+  });
 }

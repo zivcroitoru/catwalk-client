@@ -6,13 +6,16 @@ import { $$ } from "../../core/utils.js";
 
 export function initBreedTabs() {
   const bar = document.getElementById("breedTabs");
-  if (!bar || bar.children.length > 0) return; // Already initialized or missing
+  if (!bar) return; // Missing container
 
   const breeds = Object.keys(window.breedItems || {});
   if (!breeds.length) {
     console.warn("⚠️ No breeds to initialize");
     return;
   }
+
+  // Clear and rebuild tabs each time
+  bar.innerHTML = "";
 
   breeds.forEach((breed, i) => {
     const tab = document.createElement("div");
@@ -34,6 +37,10 @@ export function initBreedTabs() {
       renderBreedItems(breed);
     });
   });
+
+  // ✅ Always open the first tab
+  const firstTab = tabs[0];
+  if (firstTab) firstTab.click();
 
   console.log("✅ Breed tabs initialized");
 }

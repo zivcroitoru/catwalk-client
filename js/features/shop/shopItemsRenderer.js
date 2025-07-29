@@ -1,5 +1,15 @@
 import { getItemState, handleShopClick } from './shopLogic.js';
-import { loadUserItems, saveUserItems, updateCoinUI } from '../../core/storage.js';
+import {
+  loadUserItems,
+  saveUserItems,
+  updateCoinCount
+} from '../../core/storage.js';
+import {
+  toastBought,
+  toastCancelled,
+  toastEquipResult,
+  toastNotEnough
+} from '../../core/toast.js';
 
 export function renderShopItems(data, activeCategory) {
   const container = document.getElementById("shopItems");
@@ -47,7 +57,7 @@ export function renderShopItems(data, activeCategory) {
       } else {
         const result = handleShopClick(item, userItems);
         saveUserItems(userItems);
-        updateCoinUI(userItems.coins);
+        updateCoinCount();
 
         const selectedCat = window.selectedCat;
         if (selectedCat) {
@@ -61,15 +71,7 @@ export function renderShopItems(data, activeCategory) {
         }
 
         if (result === "equipped" || result === "unequipped") {
-          Toastify({
-            text: result === "equipped"
-              ? `Equipped "${name}"`
-              : `Unequipped "${name}"`,
-            duration: 2000,
-            gravity: "bottom",
-            position: "center",
-            style: { background: "#2196f3" },
-          }).showToast();
+          toastEquipResult(name, result);
           renderShopItems(data, activeCategory);
         }
       }
@@ -94,38 +96,20 @@ function showBuyConfirmation(item, userItems, data, activeCategory) {
   confirmBox.querySelector(".yes-btn").onclick = () => {
     const result = handleShopClick(item, userItems);
     saveUserItems(userItems);
-    updateCoinUI(userItems.coins);
+    updateCoinCount();
 
     if (result === "bought") {
-      Toastify({
-        text: `✅ Bought "${item.name}"!`,
-        duration: 2000,
-        gravity: "bottom",
-        position: "center",
-        style: { background: "#4caf50" },
-      }).showToast();
+      toastBought(item.name);
       renderShopItems(data, activeCategory);
     } else if (result === "not_enough") {
-      Toastify({
-        text: `❌ Not enough coins`,
-        duration: 2000,
-        gravity: "bottom",
-        position: "center",
-        style: { background: "#d32f2f" },
-      }).showToast();
+      toastNotEnough();
     }
 
     confirmBox.remove();
   };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
-    Toastify({
-      text: `❌ Cancelled`,
-      duration: 1500,
-      gravity: "bottom",
-      position: "center",
-      style: { background: "#999" },
-    }).showToast();
+    toastCancelled();
     confirmBox.remove();
   };
 }
