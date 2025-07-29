@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tr.appendChild(td);
         });
 
+        
         // Add action button in new column
         const actionTd = document.createElement('td');
         actionTd.style.border = '1px solid #ccc';

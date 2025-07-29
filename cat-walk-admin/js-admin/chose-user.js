@@ -31,46 +31,46 @@ if (!playerId) {
     })
     .catch(error => {
       console.error('Error:', error);
-    //   console.log(playerId, player.username, player.coins, player.cat_count);
+      //   console.log(playerId, player.username, player.coins, player.cat_count);
       alert('Failed to fetch player info.');
     });
 }
 
-// After showing player info:
-document.addEventListener("DOMContentLoaded", async () => {
-  const playerId = sessionStorage.getItem("selectedPlayerId");
+//////////////////After showing player info:
 
-  if (!playerId) {
-    console.error("No player ID found in sessionStorage.");
-    return;
-  }
 
-  try {
-    const response = await fetch(`https://catwalk-server.onrender.com/api/cats/${playerId}`);
-    
+
+fetch(`${APP_URL}/api/players/${playerId}/cats`)
+  .then(response => {
     if (!response.ok) {
-      throw new Error(`Server returned ${response.status}`);
+      throw new Error('Failed to fetch cat images');
     }
+    return response.json();
+  })
+  .then(catSprites => {
+    const catImagesContainer = document.getElementById('cat-images');
+    catImagesContainer.innerHTML = ''; // Clear existing content
 
-    const cats = await response.json();
+    if (catSprites.length === 0) {
+      catImagesContainer.innerHTML = '<p>No cats found.</p>';
+    } else {
+      catSprites.forEach(cat => {
+        const img = document.createElement('img');
+        img.src = cat.sprite_url;
+        img.className = 'users-stuff';
+        img.width = 224;
+        img.height = 224;
+        catImagesContainer.appendChild(img);
+      });
+    }
+    const catCountElement = document.querySelector('.cat-count');
+    catCountElement.textContent = `CATS: ${catSprites.length}`;
 
-    const wrapper = document.querySelector(".grid-wrapper-cats");
-    wrapper.innerHTML = ""; // Clear any existing content
+  })
+  .catch(error => {
+    console.error('Error loading cat images:', error);
+  });
 
-    cats.forEach(cat => {
-      const img = document.createElement("img");
-      img.src = cat.image_url; // use correct property name
-      img.alt = cat.name || "Cat";
-      img.classList.add("users-stuff");
-      img.width = 224;
-      img.height = 224;
-      wrapper.appendChild(img);
-    });
-
-  } catch (err) {
-    console.error("Error loading cat images:", err);
-  }
-});
 
 
 
@@ -78,40 +78,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const rectangle = document.querySelector('.rectangle');
 
-  // Select cat and clothes images inside .category
-  const catImage = document.querySelector('.category .cats');
-  const clothesImage = document.querySelector('.category .clothes');
+// Select cat and clothes images inside .category
+const catImage = document.querySelector('.category .cats');
+const clothesImage = document.querySelector('.category .clothes');
 const catCount = document.querySelector('.category .cat-count');
-  const clothesCount = document.querySelector('.category .clothes-count');
+const clothesCount = document.querySelector('.category .clothes-count');
 
-  // Define colors to toggle (you can customize these)
-  const catColor = '#ffffffff';      // pinkish for cat
-  const clothesColor = '#838e84';  // greenish for clothes
-  const defaultColor = '#ffffff';  // original white
+// Define colors to toggle (you can customize these)
+const catColor = '#ffffffff';      // pinkish for cat
+const clothesColor = '#838e84';  // greenish for clothes
+const defaultColor = '#ffffff';  // original white
 
-  // When clicking the cat image
-  catImage.addEventListener('click', () => {
-    rectangle.style.backgroundColor = catColor;
-    console.log("cat");
-  });
+// When clicking the cat image
+catImage.addEventListener('click', () => {
+  rectangle.style.backgroundColor = catColor;
+  console.log("cat");
+});
 
-  // When clicking the clothes image
-  clothesImage.addEventListener('click', () => {
-    rectangle.style.backgroundColor = clothesColor;
-            console.log("clothes");
+// When clicking the clothes image
+clothesImage.addEventListener('click', () => {
+  rectangle.style.backgroundColor = clothesColor;
+  console.log("clothes");
 
-  });
+});
 
-    clothesCount.addEventListener('click', () => {
-    rectangle.style.backgroundColor = clothesColor;
-        console.log("clothes");
+clothesCount.addEventListener('click', () => {
+  rectangle.style.backgroundColor = clothesColor;
+  console.log("clothes");
 
-  });
+});
 
-    catCount.addEventListener('click', () => {
-    rectangle.style.backgroundColor = catColor;
-        console.log("cat");
+catCount.addEventListener('click', () => {
+  rectangle.style.backgroundColor = catColor;
+  console.log("cat");
 
-  });
+});
 
 
