@@ -13,8 +13,13 @@ export function renderCarousel() {
 
   if (!container) return console.warn("❌ catCarousel not found");
 
-  console.log("🔄 Rendering carousel with", window.userCats.length, "cats");
+  console.log("🔄 Rendering carousel with", window.userCats?.length || 0, "cats");
   container.innerHTML = "";
+
+  if (!Array.isArray(window.userCats) || window.userCats.length === 0) {
+    console.warn("⚠️ No cats to display");
+    return;
+  }
 
   window.userCats.forEach((cat) => {
     const card = document.createElement("div");
@@ -41,15 +46,13 @@ export function renderCarousel() {
       selectCatCard(card);
       showCatProfile(cat);
       console.log("🐾 Selected cat:", cat.name);
-
       if (!isSame) updateCatPreview(cat);
     });
 
     container.appendChild(card);
   });
 
-  if (!window.userCats.length) return console.log("⚠️ No cats to display");
-
+  // Select and preview first cat
   const firstCat = window.userCats[0];
   window.selectedCat = firstCat;
   updateCatPreview(firstCat);
@@ -74,6 +77,7 @@ export function renderCarousel() {
   console.log("✅ Profile made visible");
 }
 
+// ───────────── Card Select Highlight ─────────────
 function selectCatCard(selectedCard) {
   document.querySelectorAll('.cat-card').forEach(card =>
     card.classList.remove('selected')
@@ -84,13 +88,17 @@ function selectCatCard(selectedCard) {
 // ───────────── Scroll Carousel ─────────────
 export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
+  if (!carousel) {
+    console.warn("❌ catCarousel not found for scrolling");
+    return;
+  }
+
   const totalCards = carousel.children.length;
   const maxPage = Math.max(0, Math.ceil(totalCards / CARDS_PER_PAGE) - 1);
-
   state.currentPage = Math.max(0, Math.min(state.currentPage + direction, maxPage));
 
   const card = carousel.querySelector(".cat-card");
-  const gap = 20; // same as CSS gap
+  const gap = 20; // CSS gap
   const cardWidth = card?.offsetWidth || 0;
   const totalWidth = (cardWidth + gap) * CARDS_PER_PAGE;
   const offset = state.currentPage * totalWidth;
@@ -139,13 +147,16 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
       })
     );
 
-  $("catCarousel").appendChild(card);
+  const carousel = $("catCarousel");
+  if (carousel) carousel.appendChild(card);
 
   const catImg = $("carouselCat");
-  catImg.src = imgUrl;
-  catImg.classList.remove("bounce-in");
-  void catImg.offsetWidth;
-  catImg.classList.add("bounce-in");
+  if (catImg) {
+    catImg.src = imgUrl;
+    catImg.classList.remove("bounce-in");
+    void catImg.offsetWidth;
+    catImg.classList.add("bounce-in");
+  }
 
   updateInventoryCount();
 }

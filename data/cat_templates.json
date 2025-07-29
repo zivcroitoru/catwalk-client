@@ -195,12 +195,6 @@
     {
       "name": "tuxedo",
       "variant": "tuxedo",
-      "palette": "seal",
-      "sprite": null
-    },
-    {
-      "name": "tuxedo",
-      "variant": "tuxedo",
       "palette": "silver",
       "sprite": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAALy8vP+cs////3iZlIMAAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwkPCqA7IjoAAABxSURBVCjP5c+LCcAgDATQukEvuIBHF2g3UG7/mRr7wZRCF2gIIg/14jT9rtLcVwQo93LDBsDWCFzICKQawxWjqRnnLxBye0L1RzzqAshBNUvXoYSjNIB9jlJygD7HGxJGDLxHbDIrtPh95eod4Iw99jsu0xJRhlDJCwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QwOToxNDoxNyswMDowMGITOYkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMDk6MTQ6MTcrMDA6MDATToE1AAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDA5OjE1OjEwKzAwOjAwbj71WgAAAABJRU5ErkJggg=="
     },
@@ -463,12 +457,6 @@
       "variant": "tuxedo",
       "palette": "red",
       "sprite": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAPUExURQAAAAAAAOaOP/+cs////+Hz+wQAAAABdFJOUwBA5thmAAAAAWJLR0QEj2jZUQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwwKGV85VUoAAAB0SURBVCjP5Y+BDYAwCARlA590AT4uoBto2H8maa0pjSNICWkufP5Zlt+VrHUiAXvHCw4AumfAjcyA9ItJohYScB2ACtUJ+BmaCaBcDFkHiIV4xb0vCVr5AKw5zEoCNccXCIYNooetqFpkS7d4OaMTeGzb/waSUhGEUWcTygAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QxMjoxMDoyMSswMDowMPxh9f8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMTI6MTA6MjErMDA6MDCNPE1DAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDEyOjEwOjI1KzAwOjAwLmZIjwAAAABJRU5ErkJggg=="
-    },
-    {
-      "name": "tuxedo",
-      "variant": "tuxedo",
-      "palette": "seal",
-      "sprite": null
     },
     {
       "name": "tuxedo",
@@ -917,12 +905,6 @@
       "variant": "tuxedo",
       "palette": "red",
       "sprite": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAMUExURQAAAAAAAOaOP////1PUDx8AAAABdFJOUwBA5thmAAAAAWJLR0QDEQxM8gAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+kHGwwRBeIOwp8AAABZSURBVBjTYwgNDXVgAIG0dcsgDKn9K8E0Q+b+WQ6ojKyrryCM+u//Idriv//NvwBisIaGrQYzpNatnH4Bas5EByhjAsTkqSsh2iOXzYQwar/fhzDgzhhkAAAyMSJvsPiPgAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNS0wNy0yN1QxMjoxNjoyMyswMDowMGbglJEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjUtMDctMjdUMTI6MTY6MjMrMDA6MDAXvSwtAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI1LTA3LTI3VDEyOjE3OjA1KzAwOjAwjp9UiwAAAABJRU5ErkJggg=="
-    },
-    {
-      "name": "tuxedo",
-      "variant": "tuxedo",
-      "palette": "seal",
-      "sprite": null
     },
     {
       "name": "tuxedo",
