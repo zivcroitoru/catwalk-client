@@ -6,7 +6,7 @@
   transform-origin: top right;
   width: 45vw;
   height: 35vw;
-  background: url('/assets/ui/scroll.svg') center / 100% 100% no-repeat;
+  background: url('/catwalk-client/assets/ui/scroll.svg') center / 100% 100% no-repeat;
   padding: 8vw 6vw 6vw;
   box-sizing: border-box;
   font-size: 1rem;

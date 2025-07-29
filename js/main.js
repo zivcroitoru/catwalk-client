@@ -20,7 +20,7 @@ import { updateCatPreview } from './features/catPreviewRenderer.js';
 // ───────────── Globals ─────────────
 export let userCats = [];
 export let shopItems = [];
-export const APP_URL = import.meta.env.VITE_APP_URL;
+export const APP_URL = "http://localhost:3000"; // or your backend URL
 
 // ───────────── Data Load ─────────────
 fetch("../data/usercats.json")
