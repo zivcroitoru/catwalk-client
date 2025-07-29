@@ -50,6 +50,10 @@ export function handleShopClick(item, userItems) {
     }
 
     console.log("🐱 Updated selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
+
+    // ✅ Sync to userCats and localStorage
+    syncCatEquipment();
+
     updateCatPreview(window.selectedCat); // podium
     const thumb = document.querySelector(
       `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
@@ -71,6 +75,10 @@ export function handleShopClick(item, userItems) {
     }
 
     console.log("🐱 After unequip, selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
+
+    // ✅ Sync to userCats and localStorage
+    syncCatEquipment();
+
     updateCatPreview(window.selectedCat); // podium
     const thumb = document.querySelector(
       `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
@@ -80,4 +88,16 @@ export function handleShopClick(item, userItems) {
   }
 
   return "noop";
+}
+
+// 🔁 Equipment persistence helper
+function syncCatEquipment() {
+  const index = window.userCats.findIndex(c => c.id === window.selectedCat.id);
+  if (index !== -1) {
+    window.userCats[index].equipment = structuredClone(window.selectedCat.equipment);
+    localStorage.setItem("usercats", JSON.stringify(window.userCats));
+    console.log("💾 Equipment synced to localStorage");
+  } else {
+    console.warn("❗ selectedCat not found in userCats");
+  }
 }

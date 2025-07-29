@@ -11,7 +11,16 @@ export async function loadAllData() {
       fetch("../data/cat_templates.json")
     ]);
 
+    // Load default user cats from JSON
     userCats = await catsRes.json();
+
+    // Override with localStorage if it exists
+    const localCats = localStorage.getItem("usercats");
+    if (localCats) {
+      userCats = JSON.parse(localCats);
+      console.log("📦 Loaded userCats from localStorage");
+    }
+
     shopItems = await shopRes.json();
     const templates = await templatesRes.json(); // breed → [cats]
 
@@ -46,6 +55,9 @@ export async function loadAllData() {
     window.userCats = userCats;
     window.shopItems = shopItems;
     window.breedItems = breedItems;
+
+    // Keep localStorage in sync
+    localStorage.setItem("usercats", JSON.stringify(userCats));
 
     console.log("✅ All data loaded");
   } catch (err) {

@@ -1,4 +1,5 @@
 // /features/ui/carousel.js
+
 import { $, setDisplay } from '../../core/utils.js';
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
@@ -32,6 +33,14 @@ export function renderCarousel() {
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
+    // 🛡 Ensure equipment is defined
+    cat.equipment ||= {
+      hat: null,
+      top: null,
+      eyes: null,
+      accessories: []
+    };
+
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">
         <div class="cat-bg"></div>
@@ -60,6 +69,12 @@ export function renderCarousel() {
 
   // Select and preview first cat
   const firstCat = window.userCats[0];
+  firstCat.equipment ||= {
+    hat: null,
+    top: null,
+    eyes: null,
+    accessories: []
+  };
   window.selectedCat = firstCat;
   updateCatPreview(firstCat);
 
@@ -76,6 +91,9 @@ export function renderCarousel() {
   if (scroll) scroll.style.display = "block";
 
   updateInventoryCount();
+
+  // 📝 Sync latest state
+  localStorage.setItem("usercats", JSON.stringify(window.userCats));
   console.log("✅ Profile made visible");
 }
 
@@ -120,6 +138,23 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
   const card = document.createElement("div");
   card.className = "cat-card";
 
+  const fullCat = {
+    name: label,
+    image: imgUrl,
+    equipment: {
+      hat: equipment.hat || null,
+      top: equipment.top || null,
+      eyes: equipment.eyes || null,
+      accessories: equipment.accessories || []
+    },
+    breed: "-",
+    variant: "-",
+    palette: "-",
+    birthday: "-",
+    age: "-",
+    description: ""
+  };
+
   card.innerHTML = `
     <div class="cat-thumbnail">
       <div class="cat-bg"></div>
@@ -132,22 +167,10 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     <span>${label}</span>
   `;
 
-  updateCatPreview({ name: label, image: imgUrl, equipment }, card);
+  updateCatPreview(fullCat, card);
 
   card.onclick = () =>
-    import("../user/cat_profile.js").then((m) =>
-      m.showCatProfile({
-        name: label,
-        image: imgUrl,
-        equipment,
-        breed: "-",
-        variant: "-",
-        palette: "-",
-        birthday: "-",
-        age: "-",
-        description: "",
-      })
-    );
+    import("../user/cat_profile.js").then((m) => m.showCatProfile(fullCat));
 
   const carousel = $("catCarousel");
   if (carousel) carousel.appendChild(card);
@@ -160,5 +183,7 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     catImg.classList.add("bounce-in");
   }
 
+  window.userCats.push(fullCat);
+  localStorage.setItem("usercats", JSON.stringify(window.userCats));
   updateInventoryCount();
 }

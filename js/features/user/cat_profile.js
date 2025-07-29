@@ -82,16 +82,25 @@ export function setupEditMode() {
       return;
     }
 
-    if (window.currentCat) {
-      window.currentCat.name = name;
-      window.currentCat.description = desc;
+if (window.currentCat) {
+  window.currentCat.name = name;
+  window.currentCat.description = desc;
 
-      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
-      if (card) {
-        const nameSpan = card.querySelector("span");
-        if (nameSpan) nameSpan.textContent = name;
-      }
-    }
+  const index = window.userCats.findIndex(c => c.id === window.currentCat.id);
+  if (index !== -1) {
+    window.userCats[index].name = name;
+    window.userCats[index].description = desc;
+    localStorage.setItem("usercats", JSON.stringify(window.userCats));
+    console.log("💾 Name & description saved to localStorage");
+  }
+
+  const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
+  if (card) {
+    const nameSpan = card.querySelector("span");
+    if (nameSpan) nameSpan.textContent = name;
+  }
+}
+
 
     nameInput.disabled = true;
     descInput.readOnly = true;
