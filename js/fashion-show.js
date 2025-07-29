@@ -13,50 +13,104 @@ let selectedCat = null;
 let userCats = [];
 let socket = null;
 let participants = [];
-let playerId = getLoggedInUserInfo().userId; // This should be set from your authentication system
+let playerId = null; // Will be set from authentication
+//let playerId = getLoggedInUserInfo().userId; // This should be set from your authentication system
 let votingTimer = null;
 let timeRemaining = 60;
 const PARTICIPANTS_IN_ROOM = 5;
 const VOTING_TIMER = 60;
 
+// Utility function to update counter display
+function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
+  const counterElement = document.getElementById('player-counter');
+  if (counterElement) counterElement.textContent = `${currentCount}/${maxCount}`;
+}
+
 // Initialize socket connection
 function initializeSocket() {
+  console.log('🔧 Initializing socket connection...');
   socket = io("http://localhost:3000"); // Assumes socket.io server is on same domain
   
   socket.on('connect', () => {
-    console.log('🔌 Connected to fashion show server');
-    // Send join message once connected and we have the cat data
+    console.log('✅ Connected to fashion show server');
+    console.log('🔧 Socket ID:', socket.id);
+
+    // Ensure we have both cat and player data before joining
     if (!selectedCat || !playerId) {
+      console.error('❌ Missing data - selectedCat:', selectedCat, 'playerId:', playerId);
       throw new Error('WS is created - but player-id or cat-id are missing')
     }
+
+    console.log('🔧 About to join fashion show...');
     joinFashionShow();
   });
 
-  socket.on('disconnect', () => {
+    socket.on('disconnect', () => {
     console.log('🔌 Disconnected from fashion show server');
+
+  // socket.on('disconnect', (reason) => {
+  //   console.log('❌ Disconnected from fashion show server. Reason:', reason);
+  //   console.log('🔧 Socket ID was:', socket.id);
     // TODO: Return to main page
   });
 
+  //   socket.on('connect_error', (error) => {
+  //   console.error('❌ Connection error:', error);
+  // });
+
+    // Event handlers with better error handling
   socket.on('participant_update', (message) => {
-    console.log('👥 Participant update:', message);
-    handleParticipantUpdate(message);
+    console.log('🔧 Received event: participant_update', message);
+    try {
+      console.log('👥 Participant update received:', message);
+      handleParticipantUpdate(message);
+      console.log('✅ Participant update handled successfully');
+    } catch (error) {
+      console.log('❌ Error handling participant update:', error);
+    }
   });
 
   socket.on('voting_phase', (message) => {
-    console.log('🗳️ Voting phase started:', message);
-    handleVotingPhase(message);
+    console.log('🔧 Received event: voting_phase', message);
+    try {
+      console.log('🗳️ Voting phase message received:', message);
+      handleVotingPhase(message);
+      console.log('✅ Voting phase handled successfully');
+    } catch (error) {
+      console.log('❌ Error handling voting phase:', error);
+      // Don't disconnect on error, just log it
+    }
   });
 
   socket.on('voting_update', (message) => {
-    console.log('🗳️ Voting update:', message);
-    handleVotingUpdate(message);
+    console.log('🔧 Received event: voting_update', message);
+    try {
+      console.log('🗳️ Voting update received:', message);
+      handleVotingUpdate(message);
+      console.log('✅ Voting update handled successfully');
+    } catch (error) {
+      console.log('❌ Error handling voting update:', error);
+    }
   });
 
   socket.on('results', (message) => {
-    console.log('🏆 Results:', message);
-    handleResults(message);
+    console.log('🔧 Received event: results', message);
+    try {
+      console.log('🏆 Results received:', message);
+      handleResults(message);
+      console.log('✅ Results handled successfully');
+    } catch (error) {
+      console.log('❌ Error handling results:', error);
+    }
   });
 }
+
+
+//   // Add error handling for any unhandled events
+//   socket.onAny((eventName, ...args) => {
+//     console.log('🔧 Received event:', eventName, args);
+//   });
+// }
 
 function joinFashionShow() {
   const joinMessage = {
@@ -64,7 +118,13 @@ function joinFashionShow() {
     catId: selectedCat.id
   };
   console.log('📤 Sending join message:', joinMessage);
-  socket.emit('join', joinMessage);
+
+    // try {
+    socket.emit('join', joinMessage);
+    console.log('✅ Join message sent successfully');
+  // } catch (error) {
+  //   console.error('❌ Error sending join message:', error);
+  // }
 }
 
 function handleParticipantUpdate(message) {
@@ -110,32 +170,82 @@ function sendVote(catId) {
   }
 }
 
-// Fetch user cats and initialize
-fetch("../data/usercats.json")
-  .then(res => res.json())
-  .then(data => {
-    userCats = data;
-    window.userCats = userCats;
+// // Get URL parameters
+// function getUrlParameter(name) {
+//   const urlParams = new URLSearchParams(window.location.search);
+//   return urlParams.get(name);
+// }
 
-    // TODO: The cat should be selected by the user in the UI
-    selectedCat = userCats[Math.floor(Math.random() * userCats.length)];
-    console.warn('Using stub cat-id ' + selectedCat.id);
-    console.log("🐾 Selected cat from album is:", selectedCat);
+// // Fetch user cats and initialize
+// fetch("../data/usercats.json")
+//   .then(res => res.json())
+//   .then(data => {
+//     userCats = data;
+//     window.userCats = userCats;
 
-    // TODO: Get playerId from your authentication system
-    playerId = "player_" + Math.random().toString(36).substr(2, 9); // Temporary random ID
-    console.warn('Using stub player-id ' + playerId);
+//     // Get the cat ID from URL parameter (passed from bindings.js)
+//     const catIdFromUrl = getUrlParameter('catId');
+//     if (!catIdFromUrl) {
+//       console.error("❌ No catId provided in URL");
+//       // Redirect back to album or show error
+//       window.location.href = '../album/';
+//       return;
+//     }
 
-    document.dispatchEvent(new Event("CatsReady"));
-  })
-  .catch(err => {
-    console.error("❌ Failed to load usercats.json", err);
-  });
+//     // Find the selected cat in our user cats array
+//     selectedCat = userCats.find(cat => cat.id == catIdFromUrl);
+//     if (!selectedCat) {
+//       console.error("❌ Selected cat not found in user cats");
+//       // Fallback: redirect back to album
+//       window.location.href = '../album/';
+//       return;
+//     }
 
-function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
-  const counterElement = document.getElementById('player-counter');
-  if (counterElement) counterElement.textContent = `${currentCount}/${maxCount}`;
-}
+//     console.log("🐾 Selected cat from URL parameter:", selectedCat);
+
+//     // Get the real player ID from authentication system
+//     try {
+//       const playerInfo = getLoggedInUserInfo();
+//       playerId = playerInfo.userId;
+//       console.log("🎭 Using authenticated player ID:", playerId);
+//     } catch (error) {
+//       console.error("❌ Failed to get player info:", error);
+//       // The getLoggedInUserInfo function will redirect to login if needed
+//       return;
+//     }
+
+//     document.dispatchEvent(new Event("CatsReady"));
+//   })
+//   .catch(err => {
+//     console.error("❌ Failed to load usercats.json", err);
+//   });
+
+// // // Fetch user cats and initialize
+// // fetch("../data/usercats.json")
+// //   .then(res => res.json())
+// //   .then(data => {
+// //     userCats = data;
+// //     window.userCats = userCats;
+
+// //     // TODO: The cat should be selected by the user in the UI
+// //     selectedCat = userCats[Math.floor(Math.random() * userCats.length)];
+// //     console.warn('Using stub cat-id ' + selectedCat.id);
+// //     console.log("🐾 Selected cat from album is:", selectedCat);
+
+// //     // TODO: Get playerId from your authentication system
+// //     playerId = "player_" + Math.random().toString(36).substr(2, 9); // Temporary random ID
+// //     console.warn('Using stub player-id ' + playerId);
+
+// //     document.dispatchEvent(new Event("CatsReady"));
+// //   })
+// //   .catch(err => {
+// //     console.error("❌ Failed to load usercats.json", err);
+// //   });
+
+// // function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
+// //   const counterElement = document.getElementById('player-counter');
+// //   if (counterElement) counterElement.textContent = `${currentCount}/${maxCount}`;
+// // }
 
 function transitionToVotingPhase() {
   const waitingMessage = document.querySelector('.waiting-message');
@@ -180,7 +290,12 @@ function createVotingInterface() {
     if (participant.playerId === playerId && selectedCat) {
       catSprite.src = selectedCat.image;
     } else {
-      catSprite.src = '../assets/cats/placeholder-fashion-show-cat.png';
+      // Use a fallback image path that exists
+      catSprite.src = '../assets/cats/cat-placeholder.png';
+      // If that doesn't exist, use a data URL as fallback
+      catSprite.onerror = function() {
+        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjOTk5Ii8+Cjx0ZXh0IHg9IjE2IiB5PSIyMCIgZmlsbD0iIzMzMyIgZm9udC1zaXplPSI4IiBmb250LWZhbWlseT0iQXJpYWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhdDwvdGV4dD4KPC9zdmc+';
+      };
     }
     stageBase.appendChild(catSprite);
 
@@ -398,12 +513,64 @@ function goHome() {
   window.location.href = '../album/';
 }
 
-document.addEventListener('CatsReady', () => {
-  console.log("Fashion Show page ready with selected cat");
+// Initialize page when ready
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🎭 Fashion Show page DOM loaded');
   
-  // Initialize socket connection
-  initializeSocket();
+  // Get URL parameters to extract cat ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const catIdFromUrl = urlParams.get('catId');
+  
+  if (catIdFromUrl) {
+    catId = parseInt(catIdFromUrl);
+    console.log('🐾 Cat ID from URL:', catId);
+  }
 
+  // Get authenticated player ID
+  try {
+    const userInfo = getLoggedInUserInfo();
+    playerId = userInfo.userId;
+    console.log('🎭 Using authenticated player ID:', playerId);
+  } catch (error) {
+    console.error('❌ Failed to get user info:', error);
+    // Fallback to development player ID
+    playerId = 19;
+    console.warn('🎭 Using fallback player ID:', playerId);
+  }
+
+  // Load user cats and find selected cat
+  fetch("../data/usercats.json")
+    .then(res => res.json())
+    .then(data => {
+      userCats = data;
+      window.userCats = userCats;
+
+      // Find the selected cat by ID from URL parameter
+      if (catId) {
+        selectedCat = userCats.find(cat => cat.id === catId);
+      }
+      
+      // Fallback if no cat found
+      if (!selectedCat && userCats.length > 0) {
+        selectedCat = userCats[0];
+        console.warn('🐾 Cat not found by ID, using first cat:', selectedCat);
+      }
+
+      if (selectedCat) {
+        console.log("🐾 Selected cat from URL parameter:", selectedCat);
+        
+        // Initialize socket connection now that we have all required data
+        initializeSocket();
+      } else {
+        console.error("❌ No cats available");
+        throw new Error('No cats available for fashion show');
+      }
+    })
+    .catch(err => {
+      console.error("❌ Failed to load usercats.json", err);
+    });
+
+  // Handle exit dialog for album button
   const albumButton = document.querySelector('.album-button');
   if (albumButton) {
     albumButton.addEventListener('click', event => {
@@ -421,3 +588,7 @@ window.addEventListener('beforeunload', () => {
     socket.disconnect();
   }
 });
+
+// Make functions available globally for HTML onclick handlers
+window.playAgain = playAgain;
+window.goHome = goHome;
