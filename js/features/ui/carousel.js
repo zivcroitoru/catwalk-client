@@ -13,11 +13,17 @@ export function renderCarousel() {
 
   if (!container) return console.warn("❌ catCarousel not found");
 
+  // 🧼 Clean boot userCats if missing
+  if (!Array.isArray(window.userCats)) {
+    window.userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
+  }
+
   console.log("🔄 Rendering carousel with", window.userCats?.length || 0, "cats");
   container.innerHTML = "";
 
-  if (!Array.isArray(window.userCats) || window.userCats.length === 0) {
+  if (!window.userCats.length) {
     console.warn("⚠️ No cats to display");
+    updateInventoryCount();
     return;
   }
 
@@ -69,11 +75,7 @@ export function renderCarousel() {
   if (profile) profile.style.display = "flex";
   if (scroll) scroll.style.display = "block";
 
-  const inventoryUI = document.getElementById("inventoryCount");
-  if (inventoryUI) {
-    inventoryUI.textContent = `Inventory: ${window.userCats.length}/25`;
-  }
-
+  updateInventoryCount();
   console.log("✅ Profile made visible");
 }
 
@@ -108,7 +110,7 @@ export function scrollCarousel(direction) {
 
 // ───────────── Inventory Counter ─────────────
 export function updateInventoryCount() {
-  const count = state.userCats?.length || 0;
+  const count = window.userCats?.length || 0;
   const inventoryUI = document.getElementById("inventoryCount");
   if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
 }

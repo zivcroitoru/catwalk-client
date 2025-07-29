@@ -9,7 +9,8 @@ export function renderBreedItems(breed) {
   container.innerHTML = "";
   let selectedCard = null;
 
-  variants.forEach(({ name, sprite }) => {
+  variants.forEach(variantData => {
+    const { name, sprite } = variantData;
     if (!sprite || sprite === "null") return;
 
     const card = document.createElement("div");
@@ -26,7 +27,7 @@ export function renderBreedItems(breed) {
       selectedCard = card;
       card.classList.add("selected");
 
-      showAddCatConfirmation(breed, name, sprite);
+      showAddCatConfirmation(breed, variantData);
     });
 
     container.appendChild(card);
@@ -35,7 +36,9 @@ export function renderBreedItems(breed) {
   console.log(`🎨 Rendered ${variants.length} variants for ${breed}`);
 }
 
-function showAddCatConfirmation(breed, name, sprite) {
+function showAddCatConfirmation(breed, variantData) {
+  const { name, variant, palette, sprite } = variantData;
+
   const confirmBox = document.createElement("div");
   confirmBox.className = "confirm-toast";
   confirmBox.innerHTML = `
@@ -56,11 +59,17 @@ function showAddCatConfirmation(breed, name, sprite) {
   document.body.appendChild(confirmBox);
 
   confirmBox.querySelector(".yes-btn").onclick = () => {
+    if (window.catAdded) return;
+    window.catAdded = true;
+
     const cats = JSON.parse(localStorage.getItem("usercats") || "[]");
+
     const newCat = {
       id: Date.now(),
       name: `${breed} (${name})`,
       breed,
+      variant,
+      palette,
       image: sprite,
       equipment: {},
     };
@@ -69,19 +78,16 @@ function showAddCatConfirmation(breed, name, sprite) {
     localStorage.setItem("usercats", JSON.stringify(cats));
     window.userCats = cats;
 
-    // ✅ Debug log
-    console.log("🐱 Cat added:", {
-      id: newCat.id,
-      name: newCat.name,
-      breed: newCat.breed,
-      sprite: newCat.image.slice(0, 30) + "...",
-    });
-    console.log(`📦 Total cats: ${cats.length}`);
+    console.log("🐱 Cat added:", newCat);
+console.log(`📦 Total cats: ${window.userCats?.length}`);
 
-    window.renderCarousel?.();
+
+    updateUIAfterCatAddition(cats.length);
     toastCatAdded({ breed, name, sprite });
     window.closeAddCat?.();
     confirmBox.remove();
+
+    setTimeout(() => (window.catAdded = false), 300);
   };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
@@ -89,4 +95,16 @@ function showAddCatConfirmation(breed, name, sprite) {
     toastCancelled();
     confirmBox.remove();
   };
+}
+
+function updateUIAfterCatAddition(catCount) {
+  window.renderCarousel?.();
+  updateInventoryCount(catCount);
+}
+
+function updateInventoryCount(count) {
+  const inventoryCount = document.getElementById("inventoryCount");
+  if (inventoryCount) {
+    inventoryCount.textContent = `Inventory: ${count}/25`;
+  }
 }

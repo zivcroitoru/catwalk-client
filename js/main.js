@@ -26,6 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOMContentLoaded");
 
   await loadAllData();
+
+  // ✅ Load only manually added cats
+  window.userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
+
   renderCarousel();
 
   setupShopTabs();
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   console.log("✅ Initialized systems");
 });
+
 
 // ───────────── Expose to Window (for debugging/dev) ─────────────
 Object.assign(window, {
