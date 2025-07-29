@@ -1,5 +1,5 @@
 console.log("🐱 MAIN.JS LOADED");
-console.log('Backend URL is:', import.meta.env.VITE_APP_URL);
+// console.log('Backend URL is:', import.meta.env.VITE_APP_URL);
 
 
 // ───────────── Imports ─────────────
