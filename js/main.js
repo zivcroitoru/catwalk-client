@@ -63,10 +63,10 @@ Object.assign(window, {
   selectCatCard,
 });
 // ───────────── Init ─────────────
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOMContentLoaded");
 
-  const userData = fetchLoggedInUserFullInfo();
+  const userData = await fetchLoggedInUserFullInfo();
   const welcomeMessage = document.getElementById("welcomeMessage");
   if (welcomeMessage) {
     welcomeMessage.textContent = `Welcome, ${data?.username || 'Guest'}`;
