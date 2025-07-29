@@ -13,7 +13,11 @@
 }
 
 body {
-  margin:0; font-family:'Press Start 2P',sans-serif; background:url('/catwalk-client/assets/backgrounds/album_bg.png') center/cover no-repeat fixed var(--cream); color:var(--border); overflow:hidden; /* game panes handle their own scroll */
+  margin: 0;
+  font-family: 'Press Start 2P', sans-serif;
+  background: url('../assets/backgrounds/album_bg.png') center / cover no-repeat fixed var(--cream);
+  color: var(--border);
+  overflow: hidden; /* game panes handle their own scroll */
 }
 
 button,img,input,textarea {
