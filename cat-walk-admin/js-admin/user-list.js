@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Navigate to chose-user.html with the player's ID
         button.addEventListener('click', () => {
-           window.location.href = `chose-user.html?id=${player.id}` 
+            sessionStorage.setItem("selectedPlayerId", player.id);
+           window.location.href = `chose-user.html?id=${player.id}`
         });
 
         actionTd.appendChild(button);

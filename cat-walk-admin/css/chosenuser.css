@@ -189,6 +189,7 @@ header {
     align-self: flex-start;
     width: 728px;
     margin-top: 200px;
+    margin-left: 100px;
 }
 
 .data-list li {
