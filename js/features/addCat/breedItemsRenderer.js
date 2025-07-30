@@ -1,6 +1,5 @@
-// /features/addCat/breedItemsRenderer.js
-
 import { toastCatAdded, toastCancelled } from '../../core/toast.js';
+import { addCatToUser } from '../../core/storage.js';
 
 export function renderBreedItems(breed) {
   const container = document.getElementById("breedItems");
@@ -62,27 +61,33 @@ function showAddCatConfirmation(breed, variantData) {
     if (window.catAdded) return;
     window.catAdded = true;
 
-    const cats = JSON.parse(localStorage.getItem("usercats") || "[]");
-
     const newCat = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       name: `${breed} (${name})`,
       breed,
       variant,
       palette,
+      sprite,
       image: sprite,
-      equipment: {},
+      birthday: new Date().toISOString().split("T")[0],
+      age: 0,
+      description: "",
+      equipment: {
+        hat: null,
+        shirt: null,
+        pants: null,
+        shoes: null,
+        accessories: []
+      }
     };
 
-    cats.push(newCat);
-    localStorage.setItem("usercats", JSON.stringify(cats));
-    window.userCats = cats;
+    addCatToUser(newCat);
+    window.userCats.push(newCat);
 
     console.log("🐱 Cat added:", newCat);
-console.log(`📦 Total cats: ${window.userCats?.length}`);
+    console.log(`📦 Total cats: ${window.userCats?.length}`);
 
-
-    updateUIAfterCatAddition(cats.length);
+    updateUIAfterCatAddition(window.userCats.length);
     toastCatAdded({ breed, name, sprite });
     window.closeAddCat?.();
     confirmBox.remove();

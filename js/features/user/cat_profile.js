@@ -5,6 +5,7 @@
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
+import { saveUserItems, loadUserItems } from '../../core/storage.js';
 
 export function showCatProfile(cat) {
   setDisplay("catProfile", true, "flex");
@@ -27,11 +28,13 @@ export function showCatProfile(cat) {
   const ageInDays = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
   $("profileAge").textContent = `${ageInDays} days`;
 
-  // ✅ Optionally store new age
+  // ✅ Store updated age
   const index = window.userCats.findIndex(c => c.id === cat.id);
   if (index !== -1) {
     window.userCats[index].age = ageInDays;
-    localStorage.setItem("usercats", JSON.stringify(window.userCats));
+    const userItems = loadUserItems();
+    userItems.userCats = window.userCats;
+    saveUserItems(userItems);
   }
 
   nameInput.value = cat.name;
@@ -102,8 +105,12 @@ export function setupEditMode() {
       if (index !== -1) {
         window.userCats[index].name = name;
         window.userCats[index].description = desc;
-        localStorage.setItem("usercats", JSON.stringify(window.userCats));
-        console.log("💾 Name & description saved to localStorage");
+
+        const userItems = loadUserItems();
+        userItems.userCats = window.userCats;
+        saveUserItems(userItems);
+
+        console.log("💾 Name & description saved to userItems");
       }
 
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
@@ -147,6 +154,11 @@ export function setupEditMode() {
       if (deletedIndex === -1) return;
 
       window.userCats.splice(deletedIndex, 1);
+
+      // 🔐 Sync to localStorage
+      const userItems = loadUserItems();
+      userItems.userCats = window.userCats;
+      saveUserItems(userItems);
 
       setDisplay("catProfile", false);
       setDisplay("catProfileScroll", false);

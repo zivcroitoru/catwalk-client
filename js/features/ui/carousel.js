@@ -5,6 +5,7 @@ import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
+import { loadUserItems, addCatToUser } from '../../core/storage.js';
 
 // ───────────── Full Render ─────────────
 export function renderCarousel() {
@@ -16,7 +17,7 @@ export function renderCarousel() {
 
   // 🧼 Clean boot userCats if missing
   if (!Array.isArray(window.userCats)) {
-    window.userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
+    window.userCats = loadUserItems().userCats || [];
   }
 
   console.log("🔄 Rendering carousel with", window.userCats?.length || 0, "cats");
@@ -91,9 +92,6 @@ export function renderCarousel() {
   if (scroll) scroll.style.display = "block";
 
   updateInventoryCount();
-
-  // 📝 Sync latest state
-  localStorage.setItem("usercats", JSON.stringify(window.userCats));
   console.log("✅ Profile made visible");
 }
 
@@ -135,13 +133,10 @@ export function updateInventoryCount() {
 
 // ───────────── Dynamic Add ─────────────
 export function addCatToCarousel(imgUrl, label, equipment = {}) {
-  const card = document.createElement("div");
-  card.className = "cat-card";
-
   const today = new Date().toISOString().split("T")[0];
 
   const fullCat = {
-    id: Date.now(),
+    id: crypto.randomUUID(),
     name: label,
     image: imgUrl,
     equipment: {
@@ -157,6 +152,16 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     age: 0,
     description: ""
   };
+
+  // Save to storage
+  addCatToUser(fullCat);
+
+  // Update runtime state
+  window.userCats.push(fullCat);
+
+  // Add to DOM
+  const card = document.createElement("div");
+  card.className = "cat-card";
 
   card.innerHTML = `
     <div class="cat-thumbnail">
@@ -186,7 +191,5 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     catImg.classList.add("bounce-in");
   }
 
-  window.userCats.push(fullCat);
-  localStorage.setItem("usercats", JSON.stringify(window.userCats));
   updateInventoryCount();
 }
