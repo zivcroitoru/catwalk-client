@@ -12,6 +12,7 @@
   --color-blue: #57B9FF;
   --color-light-purple: #F8C4FF;
   --color-purple: #B70EFF;
+  --color-grey: #CCCCCC;
   
   /* Typography */
   --font-main: 'Jersey 10', monospace;
@@ -21,13 +22,11 @@
   --stroke-thin: 4px;
   --stroke-thick: 7px;
   --stroke-xl: 12px;
-
   /* Spacing */
   --spacing-xs: 10px;
   --spacing-sm: 20px;
   --spacing-md: 30px;
   --spacing-lg: 100px;
-
   /* Font Sizes */
   --font-size-xl: 128px;
   --font-size-lg: 96px;
@@ -40,18 +39,19 @@
 /* Mailbox Display Area */
 .mailbox-display {
     position: absolute;
-    top: 200px; /* Below the title */
+    top: 100px; /* Below the title */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Perfect centering */
     width: 1050px;
     height: 420px;
     background-color: var(--color-cream); /* #FFEEC3 */
     
-    /* Add flexbox for future content layout */
+    /* Change to column layout for buttons and content */
     display: flex;
-    align-items: flex-end; /* Align content to bottom */
-    justify-content: space-between;
-    padding: var(--spacing-sm); /* 20px padding on all sides */
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
     box-sizing: border-box; /* Include padding in dimensions */
     
     /* Initially hidden */
@@ -66,10 +66,418 @@
     
     /* Ensure it appears above other content */
     z-index: 1000;
+    
+    /* Optional: Add subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Visible state - add this class to show the mailbox */
 .mailbox-display.show {
     opacity: 1;
     visibility: visible;
+}
+
+/* Mailbox Navigation Buttons Container */
+.mailbox-nav {
+    display: flex;
+    width: 100%;
+    height: 60px;
+    background-color: var(--color-cream);
+    border-bottom: var(--stroke-thin) solid var(--color-black);
+}
+
+/* Individual Mailbox Buttons */
+.mailbox-btn {
+    flex: 1; /* Equal width buttons */
+    height: 100%;
+    background-color: var(--color-yellow);
+    border: var(--stroke-thin) solid var(--color-black);
+    border-bottom: none; /* Remove bottom border since nav has it */
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs); /* 24px */
+    font-weight: bold;
+    color: var(--color-black);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    /* Remove default button styling */
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    /* Center text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Remove border between adjacent buttons */
+.mailbox-btn:not(:first-child) {
+    border-left: none;
+}
+
+/* Hover effect */
+.mailbox-btn:hover {
+    background-color: var(--color-brown);
+}
+
+/* Active/Clicked state - turns brown when clicked */
+.mailbox-btn.active,
+.mailbox-btn:active {
+    background-color: var(--color-brown);
+}
+
+/* Mailbox Content Area */
+.mailbox-content {
+    flex: 1; /* Takes remaining space */
+    overflow-y: auto;
+    padding: var(--spacing-sm); /* 20px padding */
+    box-sizing: border-box;
+    gap: var(--spacing-xs);
+    
+    /* Future content styling */
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-main);
+}
+
+/* Message List */
+.message-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+/* Individual Message Box */
+.message-box {
+    background-color: var(--color-brown);
+    border: var(--stroke-thin) solid var(--color-black);
+    padding: var(--spacing-xs);
+    display: flex;
+    gap: var(--spacing-xs);
+    min-height: 40px;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover effect for message boxes */
+.message-box:hover {
+    background-color: var(--color-salmon);
+}
+
+/* Message Title (Left Rectangle) */
+.message-title {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    flex: 1;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    box-sizing: border-box;
+}
+
+/* Message Title when marked as read (grey background) */
+.message-box.read .message-title {
+    background-color: var(--color-grey);
+}
+
+/* Message Date (Right Rectangle) */
+.message-date {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    width: 160px;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Message Date when marked as read (grey background) */
+.message-box.read .message-date {
+    background-color: var(--color-grey);
+}
+
+/* Message View Container */
+.message-view {
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background-color: var(--color-brown);
+    border: var(--stroke-thin) solid var(--color-black);
+    padding: var(--spacing-xs);
+    gap: var(--spacing-sm);
+}
+
+/* Message View Header (Title and Date) */
+.message-view-header {
+    display: flex;
+    gap: var(--spacing-xs);
+    min-height: 40px;
+    align-items: center;
+}
+
+/* Message View Title */
+.message-view-title {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    flex: 1;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    box-sizing: border-box;
+}
+
+/* Message View Date */
+.message-view-date {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    width: 160px;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Message Body */
+.message-body {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    flex: 1;
+    padding: var(--spacing-sm);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    overflow-y: auto;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Message View Controls */
+.message-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Back Button */
+.back-btn {
+    background-color: var(--color-yellow);
+    border: var(--stroke-thin) solid var(--color-black);
+    width: 60px;
+    height: 40px;
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    font-weight: bold;
+    color: var(--color-black);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn:hover {
+    background-color: var(--color-brown);
+}
+
+/* Mark as Unread Button */
+.mark-unread-btn {
+    background-color: var(--color-yellow);
+    border: var(--stroke-thin) solid var(--color-black);
+    height: 40px;
+    padding: 0 var(--spacing-sm);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    font-weight: bold;
+    color: var(--color-black);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mark-unread-btn:hover {
+    background-color: var(--color-brown);
+}
+
+/* Contact Us View Container */
+.contact-view {
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background-color: var(--color-brown);
+    border: var(--stroke-thin) solid var(--color-black);
+    padding: var(--spacing-xs);
+    gap: var(--spacing-sm);
+}
+
+/* Contact Us Header (Title and Date) */
+.contact-view-header {
+    display: flex;
+    gap: var(--spacing-xs);
+    min-height: 40px;
+    align-items: center;
+}
+
+/* Contact Us Title Input Field */
+.contact-view-title {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    flex: 1;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    box-sizing: border-box;
+    outline: none; /* Remove default input outline */
+    resize: none; /* Prevent resizing if browser tries to make it a textarea */
+}
+
+/* Contact Us Title Placeholder Styling */
+.contact-view-title::placeholder {
+    color: var(--color-grey);
+    opacity: 0.7;
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+}
+
+/* Focus state for Contact Us Title */
+.contact-view-title:focus {
+    background-color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+/* Contact Us Date */
+.contact-view-date {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    width: 160px;
+    padding: 8px var(--spacing-xs);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Contact Us Input Area */
+.contact-input-area {
+    background-color: var(--color-white);
+    border: var(--stroke-thin) solid var(--color-black);
+    border-radius: 30px;
+    width: 75%; /* 3/4 width */
+    flex: 1;
+    padding: var(--spacing-sm);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    color: var(--color-black);
+    resize: none;
+    outline: none;
+    margin-bottom: var(--spacing-sm);
+    align-self: flex-start; /* Stick to left side */
+    box-sizing: border-box;
+}
+
+.contact-input-area::placeholder {
+    color: var(--color-grey);
+    opacity: 0.7;
+}
+
+/* Contact Us Controls */
+.contact-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Send Button */
+.send-btn {
+    background-color: var(--color-yellow);
+    border: var(--stroke-thin) solid var(--color-black);
+    height: 40px;
+    padding: 0 var(--spacing-md);
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+    font-weight: bold;
+    color: var(--color-black);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-btn:hover {
+    background-color: var(--color-brown);
+}
+
+/* Scrollbar Styling */
+.mailbox-content::-webkit-scrollbar,
+.message-body::-webkit-scrollbar,
+.contact-input-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mailbox-content::-webkit-scrollbar-track,
+.message-body::-webkit-scrollbar-track,
+.contact-input-area::-webkit-scrollbar-track {
+    background: var(--color-cream);
+}
+
+.mailbox-content::-webkit-scrollbar-thumb,
+.message-body::-webkit-scrollbar-thumb,
+.contact-input-area::-webkit-scrollbar-thumb {
+    background: var(--color-brown);
+    border-radius: 4px;
+}
+
+.mailbox-content::-webkit-scrollbar-thumb:hover,
+.message-body::-webkit-scrollbar-thumb:hover,
+.contact-input-area::-webkit-scrollbar-thumb:hover {
+    background: var(--color-salmon);
 }

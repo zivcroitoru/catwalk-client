@@ -6,8 +6,6 @@
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
-
-
   <!-- ✅ Import all CSS files -->
   <link rel="stylesheet" href="../css/album-css/1_base.css">
   <link rel="stylesheet" href="../css/album-css/2_layout.css">
@@ -22,10 +20,10 @@
   <link rel="stylesheet" href="../css/mailbox.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
-
 <body>
   <div class="welcome-message" id="welcomeMessage">Welcome, </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+<<<<<<< HEAD
 <div id="game">
   <!-- ✅ CAT AREA WRAPPER -->
 <!-- CAT AREA WRAPPER -->
@@ -60,6 +58,29 @@
 
 
 
+=======
+  <div id="game">
+    <!-- Cat Display -->
+    <div class="cat-display-wrapper">
+      <div class="ellipse-podium">
+        <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+        <!-- <div class="carousel-cat" id="carouselCatWrapper">
+          <img id="carouselBase" class="cat-layer" alt="Base Cat" />
+          <img id="carouselHat" class="cat-layer" alt="Hat" />
+          <img id="carouselTop" class="cat-layer" alt="Top" />
+          <img id="carouselEyes" class="cat-layer" alt="Eyes" />
+          <img id="carouselAccessory" class="cat-layer" alt="Accessory" />
+        </div> -->
+        <div class="carousel-cat">
+  <img class="cat-layer carouselBase" alt="Base" />
+  <img class="cat-layer carouselHat" alt="Hat" />
+  <img class="cat-layer carouselTop" alt="Top" />
+  <img class="cat-layer carouselEyes" alt="Eyes" />
+  <img class="cat-layer carouselAccessory" alt="Accessory" />
+</div>
+      </div>
+    </div>
+>>>>>>> 31bd583 (Finished working on ALL MESSAGES and CONTACT US visual placeholders - for mailbox)
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
@@ -73,17 +94,111 @@
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
     </div>
-
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
-
-    <!-- ✅ Mailbox Display -->
-    <div class="mailbox-display" id="mailboxDisplay">
-      <!-- Placeholder content - will be filled later -->
+    <!-- Complete Mailbox Display -->
+<div class="mailbox-display" id="mailboxDisplay">
+  <!-- Mailbox Navigation Buttons -->
+  <div class="mailbox-nav">
+    <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
+    <button class="mailbox-btn" data-tab="unread">UNREAD</button>
+    <button class="mailbox-btn" data-tab="sent">SENT</button>
+    <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
+  </div>
+  
+  <!-- Mailbox Content Area -->
+  <div class="mailbox-content">
+    <!-- Message List View -->
+    <div class="message-list" id="allMessagesList">
+      <!-- Message Box 1 -->
+      <div class="message-box" data-message-id="1">
+        <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
+        <div class="message-date">12/06/2025</div>
+      </div>
+      
+      <!-- Message Box 2 -->
+      <div class="message-box" data-message-id="2">
+        <div class="message-title">New outfit collection available in the shop!</div>
+        <div class="message-date">12/05/2025</div>
+      </div>
+      
+      <!-- Message Box 3 -->
+      <div class="message-box" data-message-id="3">
+        <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
+        <div class="message-date">12/04/2025</div>
+      </div>
+      
+      <!-- Message Box 4 -->
+      <div class="message-box" data-message-id="4">
+        <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
+        <div class="message-date">12/03/2025</div>
+      </div>
+      
+      <!-- Message Box 5 -->
+      <div class="message-box" data-message-id="5">
+        <div class="message-title">System maintenance scheduled for tonight.</div>
+        <div class="message-date">12/02/2025</div>
+      </div>
+      
+      <!-- Message Box 6 -->
+      <div class="message-box" data-message-id="6">
+        <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
+        <div class="message-date">12/01/2025</div>
+      </div>
+      
+      <!-- Message Box 7 -->
+      <div class="message-box" data-message-id="7">
+        <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
+        <div class="message-date">11/30/2025</div>
+      </div>
+      
+      <!-- Message Box 8 -->
+      <div class="message-box" data-message-id="8">
+        <div class="message-title">Recent outfit loading bugs have been fixed.</div>
+        <div class="message-date">11/29/2025</div>
+      </div>
     </div>
-
+    <!-- Message Detail View -->
+    <div class="message-view" id="messageView">
+      <!-- Message Header (Title and Date) -->
+      <div class="message-view-header">
+        <div class="message-view-title" id="messageViewTitle">Message Title</div>
+        <div class="message-view-date" id="messageViewDate">12/06/2025</div>
+      </div>
+      
+      <!-- Message Body -->
+      <div class="message-body" id="messageViewBody">
+        <p>Message content will appear here...</p>
+      </div>
+      
+      <!-- Message Controls -->
+      <div class="message-controls">
+        <button class="back-btn" id="backToListBtn">←</button>
+        <button class="mark-unread-btn" id="markUnreadBtn">MARK AS UNREAD</button>
+      </div>
+    </div>
+    <!-- Contact Us View -->
+    <div class="contact-view" id="contactView">
+      <!-- Contact Header (Title and Date) -->
+      <div class="contact-view-header">
+        <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
+        <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
+      </div>
+      
+      <!-- Contact Input Area -->
+      <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
+      
+      <!-- Contact Controls -->
+      <div class="contact-controls">
+        <button class="send-btn" id="sendBtn">SEND</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
     <!-- Carousel Area -->
     <div class="wrapper">
+<<<<<<< HEAD
   <div class="main-area">
   <!-- 🎠 Carousel Display -->
   <div class="carousel-wrapper">
@@ -120,8 +235,33 @@
     <!-- 🧑‍💻 Profile Panel -->
     <div id="catProfileScroll" class="cat-profile-scroll hidden">
       <div class="scroll-inner">
+=======
+      <div class="main-area">
+        <div class="carousel-wrapper">
+          <div class="carousel-background">
+            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
+            <div class="carousel-viewport">
+              <div class="carousel" id="catCarousel"></div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+<button id="addCatBtn" class="add-cat-btn">
+  <img src="../assets/ui/plus.png" alt="Add Cat" />
+</button>
+          </div>
+          <!-- Floating UI -->
+          <div class="floating-actions">
+            <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+          </div>
+        </div>
+        <!-- ✅ Right Pane: profile + shop stack here -->
+        <div class="right-pane">
+          <!-- ✅ Overlay blocker goes first -->
+          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+          <!-- Profile Panel -->
+          <div id="catProfileScroll" class="cat-profile-scroll">
+            <div class="scroll-inner">
+>>>>>>> 31bd583 (Finished working on ALL MESSAGES and CONTACT US visual placeholders - for mailbox)
               <input type="text" id="catName" class="profile-name-input" disabled />
-
               <div class="profile-main">
                 <div class="profile-info">
                   <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
@@ -134,14 +274,12 @@
 <img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
                 </div>
               </div>
-
               <!-- Description -->
               <div class="desc-block" id="descBlock">
                 <label for="catDesc">Description:</label>
                 <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
                 <div id="charCount" class="word-count">0 / 200 characters</div>
               </div>
-
               <!-- Footer Buttons -->
               <div class="profile-footer-buttons">
                 <button class="profile-btn primary" id="editBtn">Edit</button>
@@ -166,7 +304,6 @@
   </div>
   <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
 </div>
-
 <!-- ✅ Add Cat Popup (matches Shop style) -->
 <div id="addCatPopup" class="shop-popup hidden">
   <div class="tabs" id="breedTabs"></div>
@@ -175,20 +312,13 @@
   </div>
   <button class="profile-btn danger" style="align-self: flex-end;" onclick="closeAddCat()">✕</button>
 </div>
-
 <!-- ✅ Add Cat Overlay -->
 <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-
-
   <!-- Audio + Scripts -->
 <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
 <!-- ✅ Your modules LAST -->
 <script type="module" src="../js/main.js"></script>
-
-
 </body>
 </html>
