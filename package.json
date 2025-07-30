@@ -23,6 +23,7 @@
   "homepage": "https://github.com/zivcroitoru/catwalk-client#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
     "vite": "^7.0.5"
   }
 }
