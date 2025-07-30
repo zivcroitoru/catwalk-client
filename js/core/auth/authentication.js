@@ -1,23 +1,56 @@
 /*-----------------------------------------------------------------------------
-  authentication.js – session‑cookie version (with logs)
+  authentication.js – JWT version (with logs)
 -----------------------------------------------------------------------------*/
 import { APP_URL } from '../../core/config.js';
 console.log('APP_URL:', APP_URL);
 
-// ───────────── helpers ─────────────
+// ───────────── Token Management ─────────────
+let authToken = localStorage.getItem('token');
+
+export function getAuthToken() {
+  return authToken;
+}
+
+function setAuthToken(token) {
+  authToken = token;
+  if (token) {
+    localStorage.setItem('token', token);
+  } else {
+    localStorage.removeItem('token');
+  }
+}
+
+// ───────────── API Helpers ─────────────
 async function postJSON(url, body) {
   console.log('📤 POST to:', url, '| Body:', body);
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken && !url.endsWith('/login') && !url.endsWith('/signup')) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    headers,
     body: JSON.stringify(body)
   });
 
   const data = await res.json().catch(() => ({}));
   console.log('📥 Response:', res.status, '| Data:', data);
 
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  if (!res.ok) {
+    if (res.status === 401) {
+      setAuthToken(null); // Clear invalid token
+      window.location.href = 'login.html';
+      throw new Error('Session expired. Please log in again.');
+    }
+    throw new Error(data.error || 'Request failed');
+  }
+  
+  // Save token if it's returned from login/signup
+  if (data.token) {
+    setAuthToken(data.token);
+  }
+  
   return data;
 }
 
@@ -69,16 +102,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const banner = document.getElementById('welcomeMessage');
   if (!banner) return;
 
-  console.log('🔎 Checking session status...');
+  console.log('🔎 Checking auth status...');
   try {
-    const { username } = await fetch(`${APP_URL}/auth/me`, {
-      credentials: 'include'
+    const response = await fetch(`${APP_URL}/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
     }).then(r => r.json());
-    banner.textContent = `Welcome, ${username || 'Guest'}`;
-    console.log('👋 Welcome user:', username);
+    banner.textContent = `Welcome, ${response.user.username || 'Guest'}`;
+    console.log('👋 Welcome user:', response.user.username);
   } catch (err) {
     banner.textContent = 'Welcome, Guest';
-    console.warn('🕵️ No session found');
+    console.warn('🕵️ No auth token or invalid token');
+    setAuthToken(null); // Clear invalid token
   }
 });
 
@@ -86,11 +122,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 export async function signOut() {
   console.log('🚪 Signing out...');
   try {
-    await fetch(`${APP_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+    await fetch(`${APP_URL}/auth/logout`, { 
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
     console.log('✅ Logged out');
   } catch (err) {
     console.error('❌ Logout error:', err);
   } finally {
+    setAuthToken(null);
     window.location.href = 'login.html';
   }
 }

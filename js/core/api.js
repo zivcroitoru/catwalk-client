@@ -4,10 +4,13 @@
 import { APP_URL } from '../core/config.js'
 
 export async function updateCat(catId, patch) {
+  const token = localStorage.getItem('token');
   const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(patch)
   });
   if (!res.ok) throw new Error('Failed to update cat');

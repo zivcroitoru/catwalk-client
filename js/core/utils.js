@@ -15,22 +15,32 @@ export function setDisplay(el, visible, type = 'block') {
 ─────────────────────────────────────────────────────────────────────────────*/
 let _userCache = null;
 
-/** Get current user (username, userId) via session cookie */
+/** Get current user (username, userId) via JWT */
 export async function getLoggedInUserInfo() {
   if (_userCache) return _userCache;              // use cached copy
 
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    throw new Error('No auth token found');
+  }
+
   const res = await fetch(`${APP_URL}/auth/me`, {
-    credentials: 'include'
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
   });
 
-  if (res.status === 401) {                       // not logged‑in
+  if (res.status === 401) {                       // token invalid/expired
+    localStorage.removeItem('token');
     window.location.href = 'login.html';
-    throw new Error('Redirecting to login…');
+    throw new Error('Auth token expired');
   }
 
   if (!res.ok) throw new Error('Failed /auth/me');
 
-  _userCache = await res.json();                  // { username, userId }
+  const data = await res.json();
+  _userCache = data.user;                         // { username, userId }
   return _userCache;
 }
 window.getLoggedInUserInfo = getLoggedInUserInfo;
