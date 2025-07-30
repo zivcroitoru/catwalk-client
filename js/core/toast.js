@@ -165,3 +165,60 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
     });
   });
 }
+export function toastNoCats() {
+  Toastify({
+    node: (() => {
+      const wrapper = document.createElement("div");
+      wrapper.style.cssText = `
+        font-family: 'Press Start 2P', monospace;
+        font-size: 16px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 32px;
+        color: #333;
+      `;
+      wrapper.innerHTML = `
+        <div style="font-size: 2rem; font-weight: bold; color: #555; margin-bottom: 0.7rem;">No cats :(</div>
+        <div style="margin-bottom: 1rem; font-size: 1.2rem; color: #666;">Press the plus to add one!</div>
+        <button id="addCatBtnToast" style="
+          background: #ffcc66; 
+          border: 2px solid #222; 
+          border-radius: 0.5rem;
+          font-family: 'Press Start 2P', monospace;
+          font-size: 1rem;
+          padding: 8px 16px;
+          cursor: pointer;
+          margin-top: 8px;
+        ">
+          <img src="../assets/ui/plus.png" alt="Add Cat" style="width: 22px; vertical-align: middle;" /> Add Cat
+        </button>
+      `;
+      return wrapper;
+    })(),
+    duration: -1, // Stays until user clicks
+    gravity: "top",
+    position: "center",
+    style: {
+      background: "#fffbe7",
+      border: "2px solid #ffcc66",
+      boxShadow: "0 6px 24px #0001",
+      borderRadius: "1.2rem",
+      minWidth: "260px",
+      zIndex: 999999,
+    },
+    callback: () => {
+      document.getElementById("addCatBtnToast")?.removeEventListener("click", window.__addCatBtnToastHandler);
+    }
+  }).showToast();
+
+  // Add button click triggers the real Add Cat popup
+  window.__addCatBtnToastHandler = () => {
+    document.getElementById("addCatBtn")?.click();
+  };
+  requestAnimationFrame(() => {
+    document.getElementById("addCatBtnToast")?.addEventListener("click", window.__addCatBtnToastHandler);
+  });
+}
+

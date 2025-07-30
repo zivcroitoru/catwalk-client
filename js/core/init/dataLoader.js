@@ -11,8 +11,8 @@ export let shopItems = [];
 export async function loadAllData() {
   try {
 const [shopRes, templatesRes] = await Promise.all([
-  fetch(`${APP_URL}/api/shop-items`),
-  fetch(`${APP_URL}/api/cat-templates`)
+  fetch(`${APP_URL}/api/shop`),
+  fetch(`${APP_URL}/api/cats/allcats`)
 ]);
 
     // 🐱 Load local user cats

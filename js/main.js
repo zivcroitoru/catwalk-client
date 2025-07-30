@@ -17,26 +17,28 @@ import { bindUI } from './features/ui/uiBinder.js';
 import { loadAllData } from './core/init/dataLoader.js';
 import { updateCoinCount } from './core/storage.js';
 
-// ───────────── Globals ─────────────
 import { APP_URL } from './core/config.js';
 
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOMContentLoaded');
 
-  await loadAllData();           // data from DB (cats, shop, templates)
+  await loadAllData();           // Load cats, items, templates, etc.
+  renderCarousel();              // Render carousel or empty state
+  setupShopTabs();               // Shop tab handlers
+  setupEditMode();               // Edit/save/delete profile buttons
+  bindUI();                      // Global UI interactions
+  await updateCoinCount();       // Coin display from DB
 
-  renderCarousel();
-
-  setupShopTabs();
-  setupEditMode();
-  bindUI();
-  await updateCoinCount();
+  // ✅ Empty state button redirects to main add button
+  document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
+    document.getElementById('addCatBtn')?.click();
+  });
 
   console.log('✅ Initialized systems');
 });
 
-// ───────────── Expose to Window ─────────────
+// ───────────── Expose to Window (for inline HTML handlers) ─────────────
 Object.assign(window, {
   toggleShop,
   renderShopItems,

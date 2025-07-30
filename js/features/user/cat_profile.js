@@ -8,8 +8,8 @@ import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadUserItems, saveUserItems } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
-  setDisplay('catProfile', true, 'flex');
-  setDisplay('catProfileScroll', true);
+  // ❌ Removed force-show of scroll
+  // setDisplay('catProfileScroll', true);
 
   const nameInput = $('catName');
   const descInput = $('catDesc');
@@ -121,7 +121,6 @@ export function setupEditMode() {
       userItems.userCats = window.userCats;
       await saveUserItems({ userCats: userItems.userCats });
 
-      setDisplay('catProfile', false);
       setDisplay('catProfileScroll', false);
       window.renderCarousel();
 

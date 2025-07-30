@@ -1,46 +1,51 @@
-// /features/ui/carousel.js
-
 import { $, setDisplay } from '../../core/utils.js';
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
 import { loadUserItems, addCatToUser } from '../../core/storage.js';
+import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
 export function renderCarousel() {
   const container = document.getElementById("catCarousel");
-  const profile = document.getElementById("catProfile");
   const scroll = document.getElementById("catProfileScroll");
+  const podium = document.getElementById("catDisplay");
 
-  if (!container) return console.warn("❌ catCarousel not found");
+  if (!container) return;
 
-  // 🧼 Clean boot userCats if missing
   if (!Array.isArray(window.userCats)) {
     window.userCats = loadUserItems().userCats || [];
   }
 
-  console.log("🔄 Rendering carousel with", window.userCats?.length || 0, "cats");
+  const hasCats = window.userCats.length > 0;
+
+  // Show/hide main UI sections
+  setDisplay("catAreaWrapper", hasCats);
+  setDisplay("emptyState", !hasCats);
+  scroll?.classList.toggle("hidden", !hasCats);
+  podium?.classList.toggle("hidden", !hasCats);
+
   container.innerHTML = "";
 
-  if (!window.userCats.length) {
-    console.warn("⚠️ No cats to display");
+  if (!hasCats) {
+    toastNoCats(); // ✅ Show Toastify floaty
     updateInventoryCount();
     return;
   }
 
+  // Remove any floating no-cat Toast (if you want to auto-clear it)
+  if (window.Toastify && Toastify.recent) {
+    try { Toastify.recent.hideToast(); } catch { }
+  }
+
+  // Create cat cards
   window.userCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
-    // 🛡 Ensure equipment is defined
-    cat.equipment ||= {
-      hat: null,
-      top: null,
-      eyes: null,
-      accessories: []
-    };
+    cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">
@@ -61,21 +66,15 @@ export function renderCarousel() {
       window.selectedCat = cat;
       selectCatCard(card);
       showCatProfile(cat);
-      console.log("🐾 Selected cat:", cat.name);
       if (!isSame) updateCatPreview(cat);
     });
 
     container.appendChild(card);
   });
 
-  // Select and preview first cat
+  // Select and show the first cat
   const firstCat = window.userCats[0];
-  firstCat.equipment ||= {
-    hat: null,
-    top: null,
-    eyes: null,
-    accessories: []
-  };
+  firstCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
   window.selectedCat = firstCat;
   updateCatPreview(firstCat);
 
@@ -88,11 +87,7 @@ export function renderCarousel() {
   showCatProfile(firstCat);
   selectCatCard(document.querySelector(".cat-card"));
 
-  if (profile) profile.style.display = "flex";
-  if (scroll) scroll.style.display = "block";
-
   updateInventoryCount();
-  console.log("✅ Profile made visible");
 }
 
 // ───────────── Card Select Highlight ─────────────
@@ -106,17 +101,14 @@ function selectCatCard(selectedCard) {
 // ───────────── Scroll Carousel ─────────────
 export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
-  if (!carousel) {
-    console.warn("❌ catCarousel not found for scrolling");
-    return;
-  }
+  if (!carousel) return;
 
   const totalCards = carousel.children.length;
   const maxPage = Math.max(0, Math.ceil(totalCards / CARDS_PER_PAGE) - 1);
   state.currentPage = Math.max(0, Math.min(state.currentPage + direction, maxPage));
 
   const card = carousel.querySelector(".cat-card");
-  const gap = 20; // CSS gap
+  const gap = 20;
   const cardWidth = card?.offsetWidth || 0;
   const totalWidth = (cardWidth + gap) * CARDS_PER_PAGE;
   const offset = state.currentPage * totalWidth;
@@ -153,43 +145,7 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     description: ""
   };
 
-  // Save to storage
   addCatToUser(fullCat);
-
-  // Update runtime state
   window.userCats.push(fullCat);
-
-  // Add to DOM
-  const card = document.createElement("div");
-  card.className = "cat-card";
-
-  card.innerHTML = `
-    <div class="cat-thumbnail">
-      <div class="cat-bg"></div>
-      <img id="carouselBase" class="cat-layer" />
-      <img id="carouselHat" class="cat-layer" />
-      <img id="carouselTop" class="cat-layer" />
-      <img id="carouselEyes" class="cat-layer" />
-      <img id="carouselAccessory" class="cat-layer" />
-    </div>
-    <span>${label}</span>
-  `;
-
-  updateCatPreview(fullCat, card);
-
-  card.onclick = () =>
-    import("../user/cat_profile.js").then((m) => m.showCatProfile(fullCat));
-
-  const carousel = $("catCarousel");
-  if (carousel) carousel.appendChild(card);
-
-  const catImg = $("carouselCat");
-  if (catImg) {
-    catImg.src = imgUrl;
-    catImg.classList.remove("bounce-in");
-    void catImg.offsetWidth;
-    catImg.classList.add("bounce-in");
-  }
-
-  updateInventoryCount();
+  renderCarousel();
 }

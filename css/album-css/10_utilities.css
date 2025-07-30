@@ -58,3 +58,12 @@
 .confirm-buttons button:hover {
   background: #333;
 }
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+.empty-state-message {
+  text-align: center;
+  margin-top: 4rem;
+}

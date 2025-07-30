@@ -2,6 +2,7 @@
   authentication.js – session‑cookie version (with logs)
 -----------------------------------------------------------------------------*/
 import { APP_URL } from '../../core/config.js';
+console.log('APP_URL:', APP_URL);
 
 // ───────────── helpers ─────────────
 async function postJSON(url, body) {

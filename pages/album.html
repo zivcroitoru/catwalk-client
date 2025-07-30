@@ -26,28 +26,39 @@
 <body>
   <div class="welcome-message" id="welcomeMessage">Welcome, Guest</div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
-
-  <div id="game">
-    <!-- Cat Display -->
-    <div class="cat-display-wrapper">
-      <div class="ellipse-podium">
-        <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-        <!-- <div class="carousel-cat" id="carouselCatWrapper">
-          <img id="carouselBase" class="cat-layer" alt="Base Cat" />
-          <img id="carouselHat" class="cat-layer" alt="Hat" />
-          <img id="carouselTop" class="cat-layer" alt="Top" />
-          <img id="carouselEyes" class="cat-layer" alt="Eyes" />
-          <img id="carouselAccessory" class="cat-layer" alt="Accessory" />
-        </div> -->
-        <div class="carousel-cat">
-  <img class="cat-layer carouselBase" alt="Base" />
-  <img class="cat-layer carouselHat" alt="Hat" />
-  <img class="cat-layer carouselTop" alt="Top" />
-  <img class="cat-layer carouselEyes" alt="Eyes" />
-  <img class="cat-layer carouselAccessory" alt="Accessory" />
-</div>
+<div id="game">
+  <!-- ✅ CAT AREA WRAPPER -->
+<!-- CAT AREA WRAPPER -->
+<div id="catAreaWrapper">
+  <!-- Cat Display -->
+<div class="cat-display-wrapper hidden" id="catDisplay">
+    <div class="ellipse-podium">
+      <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+      <div class="carousel-cat">
+        <img class="cat-layer carouselBase" alt="Base" />
+        <img class="cat-layer carouselHat" alt="Hat" />
+        <img class="cat-layer carouselTop" alt="Top" />
+        <img class="cat-layer carouselEyes" alt="Eyes" />
+        <img class="cat-layer carouselAccessory" alt="Accessory" />
       </div>
     </div>
+  </div>
+
+  <!-- Carousel Area -->
+  <div class="carousel-wrapper" id="carouselWrapper">
+    ...
+  </div>
+</div> <!-- ✅ END of #catAreaWrapper -->
+
+<div id="emptyState" class="hidden empty-state-message">
+  <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+  <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+  <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+    <img src="../assets/ui/plus.png" alt="Add Cat" />
+  </button>
+</div>
+
+
 
     <!-- Topbar -->
     <div class="topbar">
@@ -73,33 +84,42 @@
 
     <!-- Carousel Area -->
     <div class="wrapper">
-      <div class="main-area">
-        <div class="carousel-wrapper">
-          <div class="carousel-background">
-            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
-            <div class="carousel-viewport">
-              <div class="carousel" id="catCarousel"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
-<button id="addCatBtn" class="add-cat-btn">
-  <img src="../assets/ui/plus.png" alt="Add Cat" />
-</button>
-          </div>
+  <div class="main-area">
+  <!-- 🎠 Carousel Display -->
+  <div class="carousel-wrapper">
+    <div class="carousel-background">
+      <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
+      <div class="carousel-viewport">
+        <div class="carousel" id="catCarousel"></div>
+      </div>
+      <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+      <button id="addCatBtn" class="add-cat-btn">
+        <img src="../assets/ui/plus.png" alt="Add Cat" />
+      </button>
+    </div>
 
-          <!-- Floating UI -->
-          <div class="floating-actions">
-            <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
-          </div>
-        </div>
+    <!-- 🧾 Floating Info -->
+    <div class="floating-actions">
+      <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+    </div>
+  </div>
 
-        <!-- ✅ Right Pane: profile + shop stack here -->
-        <div class="right-pane">
-          <!-- ✅ Overlay blocker goes first -->
-          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+  <!-- 🐱 Empty State Message -->
+  <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
+    <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+    <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+    <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+      <img src="../assets/ui/plus.png" alt="Add Cat" />
+    </button>
+  </div>
 
-          <!-- Profile Panel -->
-          <div id="catProfileScroll" class="cat-profile-scroll">
-            <div class="scroll-inner">
+  <!-- 🧾 Right Pane: Profile + Shop -->
+  <div class="right-pane">
+    <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+
+    <!-- 🧑‍💻 Profile Panel -->
+    <div id="catProfileScroll" class="cat-profile-scroll hidden">
+      <div class="scroll-inner">
               <input type="text" id="catName" class="profile-name-input" disabled />
 
               <div class="profile-main">
