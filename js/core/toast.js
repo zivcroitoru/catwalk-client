@@ -181,7 +181,6 @@ export function toastNoCats() {
       `;
       wrapper.innerHTML = `
         <div style="font-size: 2rem; font-weight: bold; color: #555; margin-bottom: 0.7rem;">No cats :(</div>
-        <div style="margin-bottom: 1rem; font-size: 1.2rem; color: #666;">Press the plus to add one!</div>
         <button id="addCatBtnToast" style="
           background: #ffcc66; 
           border: 2px solid #222; 
