@@ -1,9 +1,9 @@
-// const APP_URL = window.location.hostname === 'localhost'
-//   ? 'http://localhost:3000'
-//   : 'https://catwalk-server.onrender.com';
+const APP_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://catwalk-server.onrender.com';
 
 
-import { APP_URL } from '../../js/main.js';
+// import { APP_URL } from '../../js/main.js';
 
 
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
@@ -63,7 +63,7 @@ function showImages(items) {
 
   items.forEach((item, index) => {
     const img = document.createElement('img');
-    img.src = item.sprite_url;
+    img.src = item.sprite_url_preview || item.sprite_url;
     img.className = 'users-stuff';
     img.width = 224;
     img.height = 224;

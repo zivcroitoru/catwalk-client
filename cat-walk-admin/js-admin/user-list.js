@@ -1,8 +1,8 @@
 // Determine the backend URL based on the environment
-// const APP_URL = window.location.hostname === 'localhost'
-//   ? 'http://localhost:3000'
-//   : 'https://catwalk-server.onrender.com';
-import { APP_URL } from '../../js/main.js';
+const APP_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://catwalk-server.onrender.com';
+// import { APP_URL } from '../../js/main.js';
 
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
 
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   table.appendChild(headerRow);
 
-  // Fetch players from the API
+  // Fetch players from the API //
   fetch(`${APP_URL}/api/players`)
     .then(response => response.json())
     .then(players => {

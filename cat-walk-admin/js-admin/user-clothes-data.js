@@ -1,7 +1,7 @@
-// const APP_URL = window.location.hostname === 'localhost'
-//   ? 'http://localhost:3000'
-//   : 'https://catwalk-server.onrender.com';
-import { APP_URL } from '../../js/main.js';
+const APP_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://catwalk-server.onrender.com';
+// import { APP_URL } from '../../js/main.js';
 // Get params from URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get('player_id');
@@ -23,7 +23,7 @@ if (!playerId || isNaN(itemIndex)) {
       console.log('Fetched items:', items);
       const item = items[itemIndex];
 
-      document.querySelector('.clothes-pic-data').src = item.sprite_url;
+      document.querySelector('.clothes-pic-data').src = item.sprite_url_preview;
       console.log('Clothing item data:', item);
 
       const ul = document.querySelector('.data-clothes');
