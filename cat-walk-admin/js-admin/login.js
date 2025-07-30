@@ -5,7 +5,7 @@ const APP_URL = window.location.hostname === 'localhost'
   : 'https://catwalk-server.onrender.com';
  
 // import { APP_URL } from '../../js/main.js';
-
+console.log('APP_URL:', APP_URL);
 
 const designWidth = 1920;
     const designHeight = 1080;
