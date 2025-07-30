@@ -29,7 +29,7 @@ export default defineConfig({
         editCat: resolve(__dirname, 'cat-walk-admin/htmls/edit-cat.html'),
         done: resolve(__dirname, 'cat-walk-admin/htmls/done.html'),
         clothesDatabase: resolve(__dirname, 'cat-walk-admin/htmls/clothes-database.html'),
-        choseUser: resolve(__dirname, 'cat-walk-admin/htmls/chose_user.html'),
+        choseUser: resolve(__dirname, 'cat-walk-admin/htmls/chose-user.html'),
         chosenMessage: resolve(__dirname, 'cat-walk-admin/htmls/chosen-message.html'),
         catDatabase: resolve(__dirname, 'cat-walk-admin/htmls/cat-database.html'),
       },
