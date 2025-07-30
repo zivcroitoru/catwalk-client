@@ -1,8 +1,8 @@
 // Determine the backend URL based on the environment
-// const APP_URL = window.location.hostname === 'localhost'
-//   ? 'http://localhost:3000'
-//   : 'https://catwalk-server.onrender.com';
-import { APP_URL } from '../../js/main.js';
+const APP_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://catwalk-server.onrender.com';
+// import { APP_URL } from '../../js/main.js';
 
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
 
@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   table.style.width = '100%';
   table.style.borderCollapse = 'collapse';
   table.style.backgroundColor = 'white'; // <-- Set table background to white
+  console.log('Creating table with players data');
 
   // Create header row based on your columns
   const headerRow = document.createElement('tr');
@@ -24,13 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
     th.style.padding = '10px';
     th.style.backgroundColor = '#ddd';
     headerRow.appendChild(th);
+    console.log(`Adding column: ${colName}`);
   });
   table.appendChild(headerRow);
 
-  // Fetch players from the API
+  // Fetch players from the API //
   fetch(`${APP_URL}/api/players`)
     .then(response => response.json())
     .then(players => {
+      console.log('Fetched players:', players);
       players.forEach(player => {
         const tr = document.createElement('tr');
         const values = [
