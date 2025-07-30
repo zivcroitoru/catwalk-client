@@ -19,7 +19,7 @@ import { updateCoinCount } from './core/storage.js';
 
 
 // ───────────── Globals ─────────────
-export const APP_URL = "http://localhost:3000";
+export const APP_URL = import.meta.env.VITE_APP_URL; 
 
 // ───────────── Init ─────────────
 document.addEventListener("DOMContentLoaded", async () => {
