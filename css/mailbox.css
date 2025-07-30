@@ -1,0 +1,75 @@
+/* Design System Variables */
+:root {
+  /* Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-cream: #FFEEC3;
+  --color-yellow: #FFDE8C;
+  --color-brown: #DAAB6E;
+  --color-red: #FB0B0B;
+  --color-salmon: #D06767;
+  --color-gold: #FFC20E;
+  --color-blue: #57B9FF;
+  --color-light-purple: #F8C4FF;
+  --color-purple: #B70EFF;
+  
+  /* Typography */
+  --font-main: 'Jersey 10', monospace;
+  
+  /* Strokes */
+  --stroke-very-thin: 2px;
+  --stroke-thin: 4px;
+  --stroke-thick: 7px;
+  --stroke-xl: 12px;
+
+  /* Spacing */
+  --spacing-xs: 10px;
+  --spacing-sm: 20px;
+  --spacing-md: 30px;
+  --spacing-lg: 100px;
+
+  /* Font Sizes */
+  --font-size-xl: 128px;
+  --font-size-lg: 96px;
+  --font-size-md: 64px;
+  --font-size-sm: 48px;
+  --font-size-xs: 36px;
+  --font-size-xxs: 24px;
+}
+
+/* Mailbox Display Area */
+.mailbox-display {
+    position: absolute;
+    top: 200px; /* Below the title */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 1050px;
+    height: 420px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    
+    /* Add flexbox for future content layout */
+    display: flex;
+    align-items: flex-end; /* Align content to bottom */
+    justify-content: space-between;
+    padding: var(--spacing-sm); /* 20px padding on all sides */
+    box-sizing: border-box; /* Include padding in dimensions */
+    
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
+    
+    /* Add border for definition */
+    border: var(--stroke-thin) solid var(--color-black);
+    
+    /* Smooth transition for show/hide */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    
+    /* Ensure it appears above other content */
+    z-index: 1000;
+}
+
+/* Visible state - add this class to show the mailbox */
+.mailbox-display.show {
+    opacity: 1;
+    visibility: visible;
+}
