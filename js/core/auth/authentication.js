@@ -1,105 +1,77 @@
-import { APP_URL } from "../../main.js";
+/*-----------------------------------------------------------------------------
+  authentication.js – session‑cookie version
+-----------------------------------------------------------------------------*/
+import { APP_URL } from '../../core/config.js';
 
-// Handle registration
-async function handleRegister(event) {
-  event.preventDefault();
+// ───────────── helpers ─────────────
+async function postJSON(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+function showError(msg = '') {
+  const box = document.querySelector('.warning-box');
+  if (!box) return;
+  box.style.display = msg ? 'block' : 'none';
+  box.style.color = 'red';
+  box.textContent = msg;
+}
 
+// ───────────── register ─────────────
+export async function handleRegister(e) {
+  e.preventDefault();
   const username = document.querySelector('input[type="text"]').value;
   const password = document.querySelector('input[type="password"]').value;
-
   try {
-    const response = await fetch(`${APP_URL}/auth/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: 'include', // Include cookies for session
-      body: JSON.stringify({ username, password })
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      alert("Account created successfully!");
-      console.log("Registration successful");
-      // Optionally redirect to login page
-      // window.location.href = "login.html";
-    } else {
-      showError(result.error || "Signup failed");
-    }
-  } catch (error) {
-    console.error(error);
-    showError("Network error. Please try again.");
+    await postJSON(`${APP_URL}/auth/signup`, { username, password });
+    alert('Account created successfully!');
+  } catch (err) {
+    console.error(err);
+    showError(err.message);
   }
 }
 window.handleRegister = handleRegister;
 
-// Handle login
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+// ───────────── login ─────────────
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  const username = document.getElementById("usernameInput").value;
-  const password = document.getElementById("passwordInput").value;
-
+  const username = document.getElementById('usernameInput').value;
+  const password = document.getElementById('passwordInput').value;
   try {
-    const res = await fetch(`${APP_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: 'include',
-      body: JSON.stringify({ username, password }),
-    });
-
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error("Invalid JSON response from server");
-    }
-
-    if (!res.ok) {
-      showError(data?.error || "Login failed");
-      return;
-    }
-
-    // Success: store username and redirect
-    localStorage.setItem("username", data.username);
-    localStorage.setItem("userId", data.userId);
-    window.location.href = "album.html";
+    await postJSON(`${APP_URL}/auth/login`, { username, password }); // sets cookie
+    window.location.href = 'album.html';
   } catch (err) {
     console.error(err);
-    showError("Something went wrong. Please try again.");
+    showError(err.message);
   }
 });
 
-// Display welcome message if username is stored
-document.addEventListener("DOMContentLoaded", () => {
-  const username = localStorage.getItem("username") || "Guest";
-  const welcomeMessage = document.getElementById("welcomeMessage");
-  if (welcomeMessage) {
-    welcomeMessage.textContent = `Welcome, ${username}`;
+// ───────────── welcome banner ─────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  const banner = document.getElementById('welcomeMessage');
+  if (!banner) return;
+  try {
+    const { username } = await fetch(`${APP_URL}/auth/me`, {
+      credentials: 'include'
+    }).then(r => r.json());
+    banner.textContent = `Welcome, ${username || 'Guest'}`;
+  } catch {
+    banner.textContent = 'Welcome, Guest';
   }
 });
 
-// Sign out
-export function signOut() {
-  localStorage.removeItem("username");
-  localStorage.removeItem("userId");
-  localStorage.removeItem("userItems");
-  window.location.href = "login.html";
+// ───────────── sign‑out ─────────────
+export async function signOut() {
+  try {
+    await fetch(`${APP_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+  } finally {
+    window.location.href = 'login.html';
+  }
 }
 window.signOut = signOut;
-
-// Display error messages
-function showError(msg) {
-  const warningBox = document.querySelector(".warning-box");
-  if (!warningBox) return;
-
-  if (!msg) {
-    warningBox.style.display = "none";
-    warningBox.textContent = "";
-    return;
-  }
-  warningBox.textContent = msg;
-  warningBox.style.color = "red";
-  warningBox.style.display = "block";
-}

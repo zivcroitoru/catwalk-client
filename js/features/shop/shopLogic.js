@@ -1,102 +1,78 @@
+/*-----------------------------------------------------------------------------
+  shopLogic.js – DB version, no localStorage
+-----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
+import { loadUserItems, saveUserItems } from '../../core/storage.js';
+import { updateCat } from '../../core/api.js';       // ← server PATCH helper
 
 const previewKeyMap = {
-  hats: "hat",
-  tops: "top",
-  accessories: "accessories",
-  eyes: "eyes"
+  hats: 'hat',
+  tops: 'top',
+  accessories: 'accessories',
+  eyes: 'eyes'
 };
 
 export function getItemState(id, category, userItems) {
-  const owned = userItems.ownedItems?.includes(id);
-  const selectedCat = window.selectedCat;
-  const equipped = selectedCat?.equipment?.[category];
-
-  if (!owned) return "buy";
-  if (equipped === id) return "unequip";
-  return "equip";
+  const owned       = userItems.ownedItems?.includes(id);
+  const equipped    = window.selectedCat?.equipment?.[category];
+  if (!owned)            return 'buy';
+  if (equipped === id)   return 'unequip';
+  return 'equip';
 }
 
-export function handleShopClick(item, userItems) {
-  const state = getItemState(item.id, item.category, userItems);
+export async function handleShopClick(item, userItems) {
+  const state      = getItemState(item.id, item.category, userItems);
   const previewKey = previewKeyMap[item.category];
-  console.log(`🛍️ handleShopClick | State: ${state}, Category: ${item.category}, ID: ${item.id}, Template: ${item.template}`);
+  console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
-  if (state === "buy") {
-    if (userItems.coins >= item.price) {
-      userItems.ownedItems.push(String(item.id));
-      userItems.coins -= item.price;
-      console.log(`💰 Bought item: ${item.id}, new coin balance: ${userItems.coins}`);
-      return "bought";
-    } else {
-      console.warn("❌ Not enough coins.");
-      return "not_enough";
-    }
+  // ───── buy ─────
+  if (state === 'buy') {
+    if (userItems.coins < item.price) return 'not_enough';
+    userItems.ownedItems.push(String(item.id));
+    userItems.coins -= item.price;
+    return 'bought';
   }
 
-  if (state === "equip") {
+  // ───── equip / unequip ─────
+  if (!window.selectedCat.equipment) window.selectedCat.equipment = {};
+
+  if (state === 'equip') {
     userItems.equippedItems[item.category] = item.id;
-    console.log(`🎽 Equipped item: ${item.id} in category ${item.category}`);
-
-    if (!window.selectedCat.equipment) {
-      window.selectedCat.equipment = {};
-    }
-
-    if (previewKey === "accessories") {
+    if (previewKey === 'accessories')
       window.selectedCat.equipment.accessories = [item.template];
-    } else {
+    else
       window.selectedCat.equipment[previewKey] = item.template;
-    }
-
-    console.log("🐱 Updated selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
-
-    // ✅ Sync to userCats and localStorage
-    syncCatEquipment();
-
-    updateCatPreview(window.selectedCat); // podium
-    const thumb = document.querySelector(
-      `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
-    );
-    if (thumb) updateCatPreview(window.selectedCat, thumb); // thumbnail
-    return "equipped";
   }
 
-  if (state === "unequip") {
+  if (state === 'unequip') {
     delete userItems.equippedItems[item.category];
-    console.log(`🚫 Unequipped category: ${item.category}`);
-
-    if (window.selectedCat.equipment) {
-      if (previewKey === "accessories") {
-        window.selectedCat.equipment.accessories = [];
-      } else {
-        delete window.selectedCat.equipment[previewKey];
-      }
-    }
-
-    console.log("🐱 After unequip, selectedCat.equipment:", JSON.stringify(window.selectedCat.equipment, null, 2));
-
-    // ✅ Sync to userCats and localStorage
-    syncCatEquipment();
-
-    updateCatPreview(window.selectedCat); // podium
-    const thumb = document.querySelector(
-      `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
-    );
-    if (thumb) updateCatPreview(window.selectedCat, thumb); // thumbnail
-    return "unequipped";
+    if (previewKey === 'accessories')
+      window.selectedCat.equipment.accessories = [];
+    else
+      delete window.selectedCat.equipment[previewKey];
   }
 
-  return "noop";
+  await syncCatEquipment();     // persist changes
+  updateCatPreview(window.selectedCat);        // podium
+  const thumb = document.querySelector(
+    `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
+  );
+  if (thumb) updateCatPreview(window.selectedCat, thumb); // thumbnail
+
+  return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// 🔁 Equipment persistence helper
-function syncCatEquipment() {
-  const index = window.userCats.findIndex(c => c.id === window.selectedCat.id);
-  if (index !== -1) {
-    window.userCats[index].equipment = structuredClone(window.selectedCat.equipment);
-    localStorage.setItem("usercats", JSON.stringify(window.userCats));
-    console.log("💾 Equipment synced to localStorage");
-  } else {
-    console.warn("❗ selectedCat not found in userCats");
-  }
+// 🔁 persist equipment to DB and userItems
+async function syncCatEquipment() {
+  // 1️⃣ update selected cat on server
+  await updateCat(window.selectedCat.id, { equipment: window.selectedCat.equipment });
+
+  // 2️⃣ update cached userItems in DB
+  const userItems = await loadUserItems();
+  const idx = window.userCats.findIndex(c => c.id === window.selectedCat.id);
+  if (idx !== -1) window.userCats[idx].equipment = structuredClone(window.selectedCat.equipment);
+  userItems.userCats = window.userCats;
+  await saveUserItems({ userCats: userItems.userCats });
+
+  console.log('💾 Equipment synced to DB & cache');
 }

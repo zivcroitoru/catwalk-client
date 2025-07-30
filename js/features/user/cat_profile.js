@@ -1,205 +1,165 @@
 /*-----------------------------------------------------------------------------
-  profile.js
+  profile.js – DB version (no localStorage)
 -----------------------------------------------------------------------------*/
 
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { saveUserItems, loadUserItems } from '../../core/storage.js';
+import { loadUserItems, saveUserItems } from '../../core/storage.js';
 
-export function showCatProfile(cat) {
-  setDisplay("catProfile", true, "flex");
-  setDisplay("catProfileScroll", true);
+export async function showCatProfile(cat) {
+  setDisplay('catProfile', true, 'flex');
+  setDisplay('catProfileScroll', true);
 
-  const nameInput = $("catName");
-  const descInput = $("catDesc");
-  const charCount = $("charCount");
-  const descBlock = $("descBlock");
+  const nameInput = $('catName');
+  const descInput = $('catDesc');
+  const charCount = $('charCount');
+  const descBlock = $('descBlock');
 
-  $("profileBreed").textContent = cat.breed;
-  $("profileVariant").textContent = cat.variant;
-  $("profilePalette").textContent = cat.palette;
-  $("profileBirthday").textContent = cat.birthday;
-  $("profileImage").src = cat.image;
+  $('profileBreed').textContent    = cat.breed;
+  $('profileVariant').textContent  = cat.variant;
+  $('profilePalette').textContent  = cat.palette;
+  $('profileBirthday').textContent = cat.birthday;
+  $('profileImage').src            = cat.image;
 
-  // ✅ Calculate age in days
-  const birthDate = new Date(cat.birthday);
-  const today = new Date();
-  const ageInDays = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
-  $("profileAge").textContent = `${ageInDays} days`;
+  // age in days
+  const ageInDays = Math.floor(
+    (Date.now() - new Date(cat.birthday)) / (1000 * 60 * 60 * 24)
+  );
+  $('profileAge').textContent = `${ageInDays} days`;
 
-  // ✅ Store updated age
-  const index = window.userCats.findIndex(c => c.id === cat.id);
-  if (index !== -1) {
-    window.userCats[index].age = ageInDays;
-    const userItems = loadUserItems();
+  // persist age
+  const idx = window.userCats.findIndex(c => c.id === cat.id);
+  if (idx !== -1) {
+    window.userCats[idx].age = ageInDays;
+    const userItems = await loadUserItems();
     userItems.userCats = window.userCats;
-    saveUserItems(userItems);
+    await saveUserItems({ userCats: userItems.userCats });
   }
 
-  nameInput.value = cat.name;
-  nameInput.disabled = true;
+  nameInput.value     = cat.name;
+  nameInput.disabled  = true;
 
-  const desc = cat.description || "";
-  descInput.value = desc;
-  descInput.readOnly = true;
-  descInput.classList.remove("editing");
+  descInput.value     = cat.description || '';
+  descInput.readOnly  = true;
+  descInput.classList.remove('editing');
   resizeTextarea(descInput);
 
-  charCount.textContent = `${desc.length} / ${CHAR_LIMIT} characters`;
-  descBlock.classList.remove("editing");
+  charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
+  descBlock.classList.remove('editing');
 
   window.currentCat = cat;
 }
 
 export function setupEditMode() {
-  const editBtn = $("editBtn");
-  const saveBtn = $("saveBtn");
-  const cancelBtn = $("cancelBtn");
-  const deleteBtn = $("deleteBtn");
-
-  const nameInput = $("catName");
-  const descInput = $("catDesc");
-  const descBlock = $("descBlock");
-  const charCount = $("charCount");
-
-  if (![editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descBlock, charCount].every(Boolean)) {
-    console.warn("⚠️ setupEditMode aborted — missing elements");
+  const els = [
+    'editBtn','saveBtn','cancelBtn','deleteBtn',
+    'catName','catDesc','descBlock','charCount'
+  ].map($);
+  if (els.some(e => !e)) {
+    console.warn('⚠️ setupEditMode aborted — missing elements');
     return;
   }
+  const [
+    editBtn, saveBtn, cancelBtn, deleteBtn,
+    nameInput, descInput, descBlock, charCount
+  ] = els;
 
-  descInput.addEventListener("input", () => {
+  descInput.addEventListener('input', () => {
     resizeTextarea(descInput);
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
   });
 
-  editBtn.addEventListener("click", () => {
+  editBtn.onclick = () => {
     nameInput.dataset.original = nameInput.value;
     descInput.dataset.original = descInput.value;
-
     nameInput.disabled = false;
     descInput.readOnly = false;
-    descInput.classList.add("editing");
-    descBlock.classList.add("editing");
-
+    descInput.classList.add('editing');
+    descBlock.classList.add('editing');
     toggleButtons({ edit: false, save: true, cancel: true });
     resizeTextarea(descInput);
+  };
 
-    console.log("✏️ Edit mode enabled");
-  });
-
-  saveBtn.addEventListener("click", () => {
-    const name = nameInput.value.trim();
-    const desc = descInput.value.trim();
-
-    if (desc.length > CHAR_LIMIT) {
+  saveBtn.onclick = async () => {
+    if (descInput.value.length > CHAR_LIMIT) {
       alert(`Description too long. Max: ${CHAR_LIMIT} characters.`);
       return;
     }
-
     if (window.currentCat) {
-      window.currentCat.name = name;
-      window.currentCat.description = desc;
+      window.currentCat.name        = nameInput.value.trim();
+      window.currentCat.description = descInput.value.trim();
 
-      const index = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (index !== -1) {
-        window.userCats[index].name = name;
-        window.userCats[index].description = desc;
-
-        const userItems = loadUserItems();
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (idx !== -1) {
+        window.userCats[idx] = { ...window.currentCat };
+        const userItems = await loadUserItems();
         userItems.userCats = window.userCats;
-        saveUserItems(userItems);
-
-        console.log("💾 Name & description saved to userItems");
+        await saveUserItems({ userCats: userItems.userCats });
       }
-
-      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"]`);
-      if (card) {
-        const nameSpan = card.querySelector("span");
-        if (nameSpan) nameSpan.textContent = name;
-      }
+      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
+      if (card) card.textContent = window.currentCat.name;
     }
-
-    nameInput.disabled = true;
-    descInput.readOnly = true;
-    descInput.classList.remove("editing");
-    descBlock.classList.remove("editing");
-
-    toggleButtons({ edit: true, save: false, cancel: false });
-    toastSimple("Changes saved!", "#ffcc66");
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    nameInput.value = nameInput.dataset.original;
-    descInput.value = descInput.dataset.original;
-
-    nameInput.disabled = true;
-    descInput.readOnly = true;
-    descInput.classList.remove("editing");
-    descBlock.classList.remove("editing");
-
-    toggleButtons({ edit: true, save: false, cancel: false });
-
-    console.log("↩️ Edit canceled");
-  });
-
-  deleteBtn.addEventListener("click", () => {
-    if (!window.currentCat) {
-      console.warn("⚠️ No currentCat found. Aborting delete.");
-      return;
-    }
-
-    toastConfirmDelete(window.currentCat, () => {
-      const deletedIndex = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (deletedIndex === -1) return;
-
-      window.userCats.splice(deletedIndex, 1);
-
-      // 🔐 Sync to localStorage
-      const userItems = loadUserItems();
-      userItems.userCats = window.userCats;
-      saveUserItems(userItems);
-
-      setDisplay("catProfile", false);
-      setDisplay("catProfileScroll", false);
-      window.renderCarousel();
-
-      const newIndex = Math.max(0, deletedIndex - 1);
-      const newCat = window.userCats[newIndex];
-      const mainCatImg = document.getElementById("carouselCat");
-
-      if (newCat) {
-        showCatProfile(newCat);
-        if (mainCatImg) mainCatImg.src = newCat.image;
-        setDisplay("catProfile", true);
-        setDisplay("catProfileScroll", true);
-      } else {
-        if (mainCatImg) mainCatImg.src = "../assets/cats/placeholder.png";
-      }
-
-      toastSimple("Cat deleted!", "#ffcc66");
-    });
-  });
-}
-
-function resizeTextarea(textarea) {
-  textarea.style.height = "auto";
-  textarea.style.height = textarea.scrollHeight + "px";
-}
-
-function toggleButtons({ edit, save, cancel }) {
-  const toggle = (id, show) => {
-    const el = $(id);
-    if (el) {
-      el.style.visibility = "visible";
-      el.classList.toggle("hidden", !show);
-    }
+    finishEdit();
+    toastSimple('Changes saved!', '#ffcc66');
   };
 
-  toggle("editBtn", edit);
-  toggle("saveBtn", save);
-  toggle("cancelBtn", cancel);
-  toggle("deleteBtn", edit);
-  toggle("customizeBtn", edit);
-  toggle("fashionBtn", edit);
+  cancelBtn.onclick = () => {
+    nameInput.value = nameInput.dataset.original;
+    descInput.value = descInput.dataset.original;
+    finishEdit();
+  };
+
+  deleteBtn.onclick = () => {
+    if (!window.currentCat) return;
+    toastConfirmDelete(window.currentCat, async () => {
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (idx === -1) return;
+      window.userCats.splice(idx, 1);
+
+      const userItems = await loadUserItems();
+      userItems.userCats = window.userCats;
+      await saveUserItems({ userCats: userItems.userCats });
+
+      setDisplay('catProfile', false);
+      setDisplay('catProfileScroll', false);
+      window.renderCarousel();
+
+      const newCat = window.userCats[Math.max(0, idx - 1)];
+      const mainImg = document.getElementById('carouselCat');
+      if (newCat) {
+        showCatProfile(newCat);
+        if (mainImg) mainImg.src = newCat.image;
+      } else if (mainImg) {
+        mainImg.src = '../assets/cats/placeholder.png';
+      }
+      toastSimple('Cat deleted!', '#ffcc66');
+    });
+  };
+
+  function finishEdit() {
+    nameInput.disabled = true;
+    descInput.readOnly = true;
+    descInput.classList.remove('editing');
+    descBlock.classList.remove('editing');
+    toggleButtons({ edit: true, save: false, cancel: false });
+  }
+}
+
+// ───────────── helpers ─────────────
+function resizeTextarea(t) {
+  t.style.height = 'auto';
+  t.style.height = t.scrollHeight + 'px';
+}
+function toggleButtons({ edit, save, cancel }) {
+  const setVis = (id, show) => {
+    const el = $(id);
+    if (el) el.classList.toggle('hidden', !show);
+  };
+  setVis('editBtn',    edit);
+  setVis('saveBtn',    save);
+  setVis('cancelBtn',  cancel);
+  setVis('deleteBtn',  edit);
+  setVis('customizeBtn', edit);
+  setVis('fashionBtn',  edit);
 }

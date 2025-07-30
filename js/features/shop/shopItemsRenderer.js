@@ -1,9 +1,13 @@
+/*-----------------------------------------------------------------------------
+  shopItemsRenderer.js – async + DB
+-----------------------------------------------------------------------------*/
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadUserItems,
   saveUserItems,
   updateCoinCount
 } from '../../core/storage.js';
+import { updateCat } from '../../core/api.js';
 import {
   toastBought,
   toastCancelled,
@@ -11,104 +15,87 @@ import {
   toastNotEnough
 } from '../../core/toast.js';
 
-export function renderShopItems(data, activeCategory) {
-  const container = document.getElementById("shopItems");
+export async function renderShopItems(data, activeCategory) {
+  const container = document.getElementById('shopItems');
   if (!data || !container || !data[activeCategory]) return;
 
-  const items = data[activeCategory];
-  const userItems = loadUserItems();
-  const ownedSet = new Set(userItems.ownedItems || []);
+  const userItems  = await loadUserItems();
+  const ownedSet   = new Set(userItems.ownedItems || []);
   const selectedCat = window.selectedCat;
-  const equipped = selectedCat?.equipment?.[activeCategory] || null;
+  const equipped   = selectedCat?.equipment?.[activeCategory] || null;
 
-  container.innerHTML = "";
-
-  items.forEach(({ name, sprite_url_preview, price, template }) => {
-    const img = sprite_url_preview;
-    const id = `${activeCategory}_${name.toLowerCase().replaceAll(" ", "_")}`;
+  container.innerHTML = '';
+  data[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
+    const id = `${activeCategory}_${name.toLowerCase().replaceAll(' ', '_')}`;
     const state = getItemState(id, activeCategory, userItems);
-    const isBuy = state === "buy";
+    const isBuy = state === 'buy';
 
-    const card = document.createElement("div");
-    card.className = "shop-card";
+    const card = document.createElement('div');
+    card.className = 'shop-card';
     card.dataset.category = activeCategory;
-
-    if (equipped === id) card.classList.add("equipped");
-    else if (ownedSet.has(id)) card.classList.add("owned");
+    if (equipped === id)        card.classList.add('equipped');
+    else if (ownedSet.has(id))  card.classList.add('owned');
 
     card.innerHTML = `
-      <img src="${img}" class="shop-img" alt="${name}" />
-      <div class="${isBuy ? "shop-price-bar" : "shop-btn-bar"}">
+      <img src="${sprite_url_preview}" class="shop-img" alt="${name}" />
+      <div class="${isBuy ? 'shop-price-bar' : 'shop-btn-bar'}">
         ${isBuy
-          ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin" />
-             <span>${price}</span>`
+          ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin"/><span>${price}</span>`
           : `<button class="shop-btn">${state.toUpperCase()}</button>`}
       </div>
     `;
-
     const clickTarget = isBuy
-      ? card.querySelector(".shop-price-bar")
-      : card.querySelector(".shop-btn");
+      ? card.querySelector('.shop-price-bar')
+      : card.querySelector('.shop-btn');
 
-    clickTarget.onclick = () => {
-      const item = { id, name, img, price, category: activeCategory, template };
+    clickTarget.onclick = async () => {
+      const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
 
       if (isBuy) {
         showBuyConfirmation(item, userItems, data, activeCategory);
-      } else {
-        const result = handleShopClick(item, userItems);
-        saveUserItems(userItems);
-        updateCoinCount();
-
-        const userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
-        const cat = userCats.find(c => c.id === selectedCat?.id);
-        if (cat) {
-          cat.equipment[activeCategory] = result === "equipped" ? id : null;
-          localStorage.setItem("usercats", JSON.stringify(userCats));
-          selectedCat.equipment[activeCategory] = cat.equipment[activeCategory];
-          console.log(`🐾 ${cat.name} now ${result} ${activeCategory}: ${cat.equipment[activeCategory]}`);
-        }
-
-        if (result === "equipped" || result === "unequipped") {
-          toastEquipResult(name, result);
-          renderShopItems(data, activeCategory);
-        }
+        return;
       }
+
+      const result = handleShopClick(item, userItems);
+      await saveUserItems(userItems);
+      await updateCoinCount();
+
+      if (selectedCat) {
+        selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
+        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+      }
+      toastEquipResult(name, result);
+      renderShopItems(data, activeCategory);
     };
 
     container.appendChild(card);
   });
 }
 
-function showBuyConfirmation(item, userItems, data, activeCategory) {
-  const confirmBox = document.createElement("div");
-  confirmBox.className = "confirm-toast";
-  confirmBox.innerHTML = `
+async function showBuyConfirmation(item, userItems, data, activeCategory) {
+  const box = document.createElement('div');
+  box.className = 'confirm-toast';
+  box.innerHTML = `
     <div class="confirm-text">Buy "<b>${item.name}</b>" for ${item.price} coins?</div>
     <div class="confirm-buttons">
       <button class="yes-btn">Yes</button>
       <button class="no-btn">No</button>
-    </div>
-  `;
-  document.body.appendChild(confirmBox);
+    </div>`;
+  document.body.appendChild(box);
 
-  confirmBox.querySelector(".yes-btn").onclick = () => {
+  box.querySelector('.yes-btn').onclick = async () => {
     const result = handleShopClick(item, userItems);
-    saveUserItems(userItems);
-    updateCoinCount();
+    await saveUserItems(userItems);
+    await updateCoinCount();
 
-    if (result === "bought") {
-      toastBought(item.name);
-      renderShopItems(data, activeCategory);
-    } else if (result === "not_enough") {
-      toastNotEnough();
-    }
+    if (result === 'bought')      toastBought(item.name);
+    else if (result === 'not_enough') toastNotEnough();
 
-    confirmBox.remove();
+    renderShopItems(data, activeCategory);
+    box.remove();
   };
-
-  confirmBox.querySelector(".no-btn").onclick = () => {
+  box.querySelector('.no-btn').onclick = () => {
     toastCancelled();
-    confirmBox.remove();
+    box.remove();
   };
 }

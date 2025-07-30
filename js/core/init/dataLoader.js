@@ -1,6 +1,8 @@
 // /core/init/dataLoader.js
 
 import { getUserCats } from "../storage.js"
+import { APP_URL } from '../../core/config.js'
+
 
 
 export let userCats = [];
@@ -8,10 +10,10 @@ export let shopItems = [];
 
 export async function loadAllData() {
   try {
-    const [shopRes, templatesRes] = await Promise.all([
-      fetch("../data/shopItems.json"),
-      fetch("../data/cat_templates.json")
-    ]);
+const [shopRes, templatesRes] = await Promise.all([
+  fetch(`${APP_URL}/api/shop-items`),
+  fetch(`${APP_URL}/api/cat-templates`)
+]);
 
     // 🐱 Load local user cats
     userCats = getUserCats();

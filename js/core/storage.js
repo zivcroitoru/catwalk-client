@@ -1,70 +1,68 @@
-// /js/core/storage.js
+/*-----------------------------------------------------------------------------
+  storage.js – DB‑backed user inventory
+-----------------------------------------------------------------------------*/
+import { APP_URL } from './config.js'; // adjust path if needed
 
-const USER_ITEMS_KEY = "userItems";
+const API = `${APP_URL}/api/user-items`;
+let cache = null;
 
-const DEFAULT_USER_ITEMS = {
-  coins: 500,
-  ownedItems: [],
-  userCats: []
-};
+// ───────────── REST helpers ─────────────
+async function apiGet() {
+  const res = await fetch(API, { credentials: 'include' });
+  if (!res.ok) throw new Error('GET /user-items failed');
+  return res.json();
+}
+async function apiPatch(body) {
+  const res = await fetch(API, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error('PATCH /user-items failed');
+  return res.json();
+}
 
 // ───────────── Load & Save ─────────────
-
-export function loadUserItems() {
-  const data = localStorage.getItem(USER_ITEMS_KEY);
-  return data ? JSON.parse(data) : structuredClone(DEFAULT_USER_ITEMS);
+export async function loadUserItems(force = false) {
+  if (cache && !force) return cache;
+  cache = await apiGet();
+  return cache;
+}
+export async function saveUserItems(userItems) {
+  cache = await apiPatch(userItems);
+  return cache;
 }
 
-export function saveUserItems(userItems) {
-  localStorage.setItem(USER_ITEMS_KEY, JSON.stringify(userItems));
+// ───────────── Cats access ─────────────
+export async function getUserCats() {
+  const { userCats = [] } = await loadUserItems();
+  return userCats;
 }
-
-// ───────────── Cats Access ─────────────
-
-export function getUserCats() {
-  return loadUserItems().userCats || [];
-}
-
-export function addCatToUser(cat) {
-  const userItems = loadUserItems();
-  userItems.userCats.push(cat);
-  saveUserItems(userItems);
+export async function addCatToUser(cat) {
+  const userItems = await loadUserItems();
+  userItems.userCats = [...userItems.userCats, cat];
+  await saveUserItems({ userCats: userItems.userCats });
   updateUI();
 }
 
-// ───────────── Patch Update ─────────────
-
-export function updateUserItems(updates = {}) {
-  const userItems = loadUserItems();
-  Object.assign(userItems, updates);
-  saveUserItems(userItems);
+// ───────────── Patch update ─────────────
+export async function updateUserItems(updates = {}) {
+  await saveUserItems(updates);
   updateUI();
 }
 
-// ───────────── UI Updates ─────────────
-
-export function updateCoinCount() {
-  const coins = loadUserItems().coins;
-  const el = document.querySelector(".coin-count");
-  if (el) {
-    el.textContent = coins;
-    console.log(`🪙 Coin count updated to ${coins}`);
-  } else {
-    console.warn("❌ .coin-count element not found");
-  }
+// ───────────── UI updates ─────────────
+export async function updateCoinCount() {
+  const { coins = 0 } = await loadUserItems();
+  const el = document.querySelector('.coin-count');
+  if (el) el.textContent = coins;
 }
-
-export function updateCatCountUI() {
-  const count = loadUserItems().userCats?.length || 0;
-  const el = document.querySelector(".cat-count");
-  if (el) {
-    el.textContent = `Total Cats: ${count}`;
-    console.log(`🐱 Cat count updated to ${count}`);
-  } else {
-    console.warn("❌ .cat-count element not found");
-  }
+export async function updateCatCountUI() {
+  const { userCats = [] } = await loadUserItems();
+  const el = document.querySelector('.cat-count');
+  if (el) el.textContent = `Total Cats: ${userCats.length}`;
 }
-
 export function updateUI() {
   updateCoinCount();
   updateCatCountUI();
