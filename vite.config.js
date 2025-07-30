@@ -18,7 +18,9 @@ export default defineConfig({
         adminLogin: resolve(__dirname, 'cat-walk-admin/htmls/admin-login.html'),
         addClothes: resolve(__dirname, 'cat-walk-admin/htmls/add-clothes.html'),
         addCats: resolve(__dirname, 'cat-walk-admin/htmls/add-cats.html'),
-        userCatData: resolve(__dirname, 'cat-walk-admin/htmls/user_cat_data.html'),
+        userCatData: resolve(__dirname, 'cat-walk-admin/htmls/user-cat-data.html'),
+        userCatData: resolve(__dirname, 'cat-walk-admin/htmls/user-clothes-data.html'),
+
         users: resolve(__dirname, 'cat-walk-admin/htmls/users.html'),
         newNameClothes: resolve(__dirname, 'cat-walk-admin/htmls/new-name-clothes.html'),
         nameNewCat: resolve(__dirname, 'cat-walk-admin/htmls/name-new-cat.html'),
