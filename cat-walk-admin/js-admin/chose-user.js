@@ -1,6 +1,10 @@
-const APP_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:3000'
-  : 'https://catwalk-server.onrender.com';
+// const APP_URL = window.location.hostname === 'localhost'
+//   ? 'http://localhost:3000'
+//   : 'https://catwalk-server.onrender.com';
+
+
+import { APP_URL } from '../../js/main.js';
+
 
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
 

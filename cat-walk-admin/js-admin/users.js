@@ -1,3 +1,5 @@
+
+
 const rectangle = document.querySelector('.rectangle');
 
   // Select cat and clothes images inside .category
