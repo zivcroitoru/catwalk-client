@@ -8,18 +8,41 @@ let cache = null;
 
 // ───────────── REST helpers ─────────────
 async function apiGet() {
-  const res = await fetch(API, { credentials: 'include' });
-  if (!res.ok) throw new Error('GET /user-items failed');
+  const token = localStorage.getItem('token');
+  const res = await fetch(API, { 
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+      throw new Error('Auth token expired');
+    }
+    throw new Error('GET /user-items failed');
+  }
   return res.json();
 }
 async function apiPatch(body) {
+  const token = localStorage.getItem('token');
   const res = await fetch(API, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(body)
   });
-  if (!res.ok) throw new Error('PATCH /user-items failed');
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+      throw new Error('Auth token expired');
+    }
+    throw new Error('PATCH /user-items failed');
+  }
+  return res.json();
   return res.json();
 }
 
