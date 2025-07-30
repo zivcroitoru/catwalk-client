@@ -190,6 +190,20 @@ column-gap: 20px;
   margin-left:10px;
 }
 
+
+.popup {
+  position: absolute;
+  background-color: #fff;
+  border: 2px solid #888;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+  max-width: 250px;
+  font-size: 14px;
+}
+
+
 /*--------------list----------------*/
 .data-list {
     position: relative;

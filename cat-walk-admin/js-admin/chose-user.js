@@ -23,6 +23,8 @@ const catImagesContainer = document.getElementById('cat-images');
 const catColor = '#ffffffff';     // white background for cats
 const clothesColor = '#838e84';   // green background for clothes
 
+let currentView = 'cats'; // Tracks what is currently shown
+
 // Show player info
 if (playerId) {
   fetch(`${APP_URL}/api/players/${playerId}`)
@@ -47,8 +49,6 @@ if (playerId) {
 }
 
 // Helper to show images in the container
-let currentView = 'cats'; // Add this at the top of your script, before any function
-
 function showImages(items) {
   catImagesContainer.innerHTML = '';
 
@@ -64,18 +64,21 @@ function showImages(items) {
     img.width = 224;
     img.height = 224;
     img.alt = 'Item image';
+    img.style.cursor = 'pointer';
 
     if (currentView === 'cats') {
-      img.style.cursor = 'pointer';
       img.addEventListener('click', () => {
         window.location.href = `/cat-walk-admin/htmls/user-cat-data.html?player_id=${playerId}&cat_index=${index}`;
+      });
+    } else if (currentView === 'clothes') {
+      img.addEventListener('click', () => {
+        window.location.href = `/cat-walk-admin/htmls/user-clothes-data.html?player_id=${playerId}&item_index=${index}`;
       });
     }
 
     catImagesContainer.appendChild(img);
   });
 }
-
 
 // Fetch and show cats
 function fetchAndShowCats() {
@@ -86,6 +89,7 @@ function fetchAndShowCats() {
       return res.json();
     })
     .then(data => {
+      currentView = 'cats';
       rectangle.style.backgroundColor = catColor;
       catCountElement.textContent = `CATS: ${data.length}`;
       showImages(data);
@@ -105,6 +109,7 @@ function fetchAndShowClothes() {
       return res.json();
     })
     .then(data => {
+      currentView = 'clothes';
       rectangle.style.backgroundColor = clothesColor;
       clothesCountElement.textContent = `CLOTHES: ${data.length}`;
       showImages(data);
