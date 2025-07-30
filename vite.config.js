@@ -19,8 +19,7 @@ export default defineConfig({
         addClothes: resolve(__dirname, 'cat-walk-admin/htmls/add-clothes.html'),
         addCats: resolve(__dirname, 'cat-walk-admin/htmls/add-cats.html'),
         userCatData: resolve(__dirname, 'cat-walk-admin/htmls/user-cat-data.html'),
-        userCatData: resolve(__dirname, 'cat-walk-admin/htmls/user-clothes-data.html'),
-
+        userClothesData: resolve(__dirname, 'cat-walk-admin/htmls/user-clothes-data.html'), // Fixed: renamed from duplicate userCatData
         users: resolve(__dirname, 'cat-walk-admin/htmls/users.html'),
         newNameClothes: resolve(__dirname, 'cat-walk-admin/htmls/new-name-clothes.html'),
         nameNewCat: resolve(__dirname, 'cat-walk-admin/htmls/name-new-cat.html'),
@@ -43,6 +42,7 @@ export default defineConfig({
   },
   publicDir: false, // assets are managed manually
   server: {
+    port: 3000,
     open: 'index.html',
-  },
+  }
 });
