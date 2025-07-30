@@ -7,6 +7,7 @@ console.log(window.location.hostname, 'using backend URL:', APP_URL);
 // Get player ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get('id');
+console.log('player_id:', playerId);
 
 if (!playerId) {
   alert('No player ID provided.');
