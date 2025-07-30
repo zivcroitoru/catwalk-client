@@ -1,9 +1,10 @@
 // Determine the backend URL based on the environment
-const APP_URL = window.location.hostname === 'localhost'
-  ? 'http://localhost:3000'
-  : 'https://catwalk-server.onrender.com';
+// const APP_URL = window.location.hostname === 'localhost'
+//   ? 'http://localhost:3000'
+//   : 'https://catwalk-server.onrender.com';
 // import { APP_URL } from '../../js/main.js';
-
+import { APP_URL } from "../../js/core/config.js";
+console.log('APP_URL:', APP_URL);
 console.log(window.location.hostname, 'using backend URL:', APP_URL);
 
 document.addEventListener('DOMContentLoaded', () => {

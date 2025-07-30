@@ -1,9 +1,10 @@
-const APP_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:3000'
-    : 'https://catwalk-server.onrender.com';
+// const APP_URL = window.location.hostname === 'localhost'
+//     ? 'http://localhost:3000'
+//     : 'https://catwalk-server.onrender.com';
+import { APP_URL } from "../../js/core/config.js";
 
 // import { APP_URL } from '../../js/main.js';
-
+console.log('APP_URL:', APP_URL);
 
 // Get params from URL
 const urlParams = new URLSearchParams(window.location.search);
