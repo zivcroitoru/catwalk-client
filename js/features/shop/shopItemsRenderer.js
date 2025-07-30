@@ -17,8 +17,9 @@ export function renderShopItems(data, activeCategory) {
 
   const items = data[activeCategory];
   const userItems = loadUserItems();
-  const equipped = userItems.equippedItems?.[activeCategory];
   const ownedSet = new Set(userItems.ownedItems || []);
+  const selectedCat = window.selectedCat;
+  const equipped = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = "";
 
@@ -59,15 +60,13 @@ export function renderShopItems(data, activeCategory) {
         saveUserItems(userItems);
         updateCoinCount();
 
-        const selectedCat = window.selectedCat;
-        if (selectedCat) {
-          const userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
-          const cat = userCats.find(c => c.id === selectedCat.id);
-          if (cat) {
-            cat.equipment[activeCategory] = result === "equipped" ? id : null;
-            localStorage.setItem("usercats", JSON.stringify(userCats));
-            console.log(`🐾 ${cat.name} now ${result} ${activeCategory}: ${cat.equipment[activeCategory]}`);
-          }
+        const userCats = JSON.parse(localStorage.getItem("usercats") || "[]");
+        const cat = userCats.find(c => c.id === selectedCat?.id);
+        if (cat) {
+          cat.equipment[activeCategory] = result === "equipped" ? id : null;
+          localStorage.setItem("usercats", JSON.stringify(userCats));
+          selectedCat.equipment[activeCategory] = cat.equipment[activeCategory];
+          console.log(`🐾 ${cat.name} now ${result} ${activeCategory}: ${cat.equipment[activeCategory]}`);
         }
 
         if (result === "equipped" || result === "unequipped") {

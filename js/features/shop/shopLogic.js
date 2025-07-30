@@ -7,15 +7,14 @@ const previewKeyMap = {
   eyes: "eyes"
 };
 
-export function getItemState(itemId, category, userItems) {
-  const owned = userItems.ownedItems.map(String);
-  const id = String(itemId);
+export function getItemState(id, category, userItems) {
+  const owned = userItems.ownedItems?.includes(id);
+  const selectedCat = window.selectedCat;
+  const equipped = selectedCat?.equipment?.[category];
 
-  return !owned.includes(id)
-    ? "buy"
-    : userItems.equippedItems[category] === itemId
-    ? "unequip"
-    : "equip";
+  if (!owned) return "buy";
+  if (equipped === id) return "unequip";
+  return "equip";
 }
 
 export function handleShopClick(item, userItems) {
