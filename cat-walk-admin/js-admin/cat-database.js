@@ -1,3 +1,6 @@
+import { APP_URL } from "../../js/core/config.js";
+console.log('APP_URL:', APP_URL);
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('https://catwalk-server.onrender.com/api/cats/allcats');
