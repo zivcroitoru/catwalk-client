@@ -21,7 +21,7 @@ export function updateCatPreview(cat, container = document) {
         path.startsWith('blob:')) {
       // Use the URL as-is
       finalPath = path;
-    } else if (!path.startsWith('/')) {
+    } else if (path.startsWith('/')) {
       // For relative paths, prepend APP_URL
       finalPath = `${APP_URL}/${path}`;
     }
@@ -30,11 +30,6 @@ export function updateCatPreview(cat, container = document) {
     el.onerror = () => {
       console.warn(`⚠️ Failed to load image: ${path}`);
       el.style.display = "none";
-      // Try fallback image if available
-      if (cls === 'carouselBase') {
-        el.src = '../assets/cats/placeholder.png';
-        el.style.display = "block";
-      }
     };
     
     el.src = finalPath;
