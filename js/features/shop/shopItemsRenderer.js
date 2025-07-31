@@ -56,8 +56,10 @@ export async function renderShopItems(activeCategory) {
         return;
       }
 
-      const result = await handleShopClick(item, playerItems);
-      await updateCoinCount();
+const result = await handleShopClick(item, playerItems);
+const updatedItems = await loadPlayerItems(true); // 👈 refreshes owned items
+await updateCoinCount();
+
 
       if (selectedCat) {
         selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
