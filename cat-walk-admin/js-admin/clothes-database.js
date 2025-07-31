@@ -1,85 +1,75 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
+console.log(localStorage.getItem('selectedCloth'));
 
-let clothesData = [];
-let currentPage = 1;
-const clothesPerPage = 6;
-let selectedCloth = null;
+const urlParams = new URLSearchParams(window.location.search);
+const clothId = urlParams.get('id');
+let selectedCloth = JSON.parse(localStorage.getItem('selectedCloth'));
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const response = await fetch(`${APP_URL}/api/clothes/all`); // update endpoint as needed
-    clothesData = await response.json();
+if (!clothId || !selectedCloth) {
+  console.error("Missing cloth ID or data");
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    const clothImage = document.querySelector('.cat-pic-data');
+    const clothName = document.querySelector('.clothes-name');
+    const clothIdField = document.querySelector('.clothes-id');
+    const clothDate = document.querySelector('.clothes-date');
+    const saveBtn = document.querySelector('.save-button');
+    const cancelBtn = document.querySelector('.cancel-button');
 
-    if (!Array.isArray(clothesData) || clothesData.length === 0) {
-      document.querySelector('.clothesype').textContent = 'No clothes available';
-      return;
-    }
+    // Prefill data
+    if (clothImage) clothImage.src = selectedCloth.sprite_url_preview;
+    if (clothName) clothName.textContent = selectedCloth.template || selectedCloth.category || 'Unnamed Cloth';
+    if (clothIdField) clothIdField.textContent = `CLOTHES ID: ${selectedCloth.item_id}`;
+    if (clothDate) clothDate.textContent = `CREATED: ${selectedCloth.created_at?.split('T')[0] || 'N/A'}`;
 
-    renderClothesPage();
-  } catch (err) {
-    console.error('Failed to load clothes:', err);
-    document.getElementById('warning').textContent = 'Error loading clothes data.';
-  }
-});
+    // Optional: make sprite URL editable on image click
+    clothImage.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = selectedCloth.sprite_url_preview;
+      input.style.width = '100%';
+      input.style.fontSize = '14px';
+      clothImage.replaceWith(input);
+      input.focus();
 
-function renderClothesPage() {
-  const gridWrapper = document.querySelector('.grid-wrapper-cats');
-  const pageDisplay = document.querySelector('.pages p');
-  const bigImg = document.querySelector('.clothes-pic-data');
-  const clothTypeLabel = document.querySelector('.clothesype');
+      input.addEventListener('blur', () => {
+        selectedCloth.sprite_url_preview = input.value;
+        localStorage.setItem('selectedCloth', JSON.stringify(selectedCloth));
+        location.reload(); // Re-render with new image
+      });
 
-  gridWrapper.innerHTML = '';
-
-  const start = (currentPage - 1) * clothesPerPage;
-  const currentClothes = clothesData.slice(start, start + clothesPerPage);
-
-  currentClothes.forEach((cloth, index) => {
-    const img = document.createElement('img');
-    img.src = cloth.sprite_url;
-    img.className = 'users-stuff';
-    img.width = 150;
-    img.height = 150;
-
-    gridWrapper.appendChild(img);
-
-    img.addEventListener('click', () => {
-      bigImg.src = cloth.sprite_url;
-      clothTypeLabel.textContent = cloth.template || cloth.type;
-      selectedCloth = cloth;
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') input.blur();
+      });
     });
 
-    if (index === 0) {
-      bigImg.src = cloth.sprite_url;
-      clothTypeLabel.textContent = cloth.template || cloth.type;
-      selectedCloth = cloth;
-    }
+    // SAVE
+    saveBtn.addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${APP_URL}/api/shop/edit/${selectedCloth.item_id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sprite_url_preview: selectedCloth.sprite_url_preview,
+            // add other editable fields if needed
+          })
+        });
+
+        if (!response.ok) throw new Error('Failed to update clothes');
+
+        const data = await response.json();
+        console.log('Clothes updated successfully:', data);
+        alert('Changes saved successfully!');
+      } catch (err) {
+        console.error('Save error:', err);
+        alert('Failed to save changes.');
+      }
+    });
+
+    // CANCEL
+    cancelBtn.addEventListener('click', () => {
+      window.location.href = 'clothes-database.html';
+    });
   });
-
-  const totalPages = Math.ceil(clothesData.length / clothesPerPage);
-  pageDisplay.textContent = `${currentPage}/${totalPages}`;
 }
-
-// Pagination controls
-document.querySelector('.arrow-left').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    renderClothesPage();
-  }
-});
-
-document.querySelector('.arrow-right').addEventListener('click', () => {
-  const totalPages = Math.ceil(clothesData.length / clothesPerPage);
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderClothesPage();
-  }
-});
-
-// Optionally add click-to-edit or redirect functionality on the big image
-// document.querySelector('.clothes-pic-data').addEventListener('click', () => {
-//   if (selectedCloth) {
-//     localStorage.setItem('selectedCloth', JSON.stringify(selectedCloth));
-//     window.location.href = `edit-cloth.html?id=${selectedCloth.cloth_id}`;
-//   }
-// });

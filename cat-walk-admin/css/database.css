@@ -201,7 +201,16 @@ body {
 
 
 
-.cat-pic-data,
+.cat-pic-data {
+    width: 600px;
+    height: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+}
+
 .clothes-pic-data {
     width: 600px;
     height: 600px;
@@ -237,6 +246,28 @@ body {
     margin-left: x;
 }
 
+.grid-wrapper-clothes{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 100px;
+    /* Keep horizontal spacing */
+    row-gap: 50px;
+    justify-items: center;
+    align-items: center;
+    padding: 20px;
+    padding-bottom: 100px;
+    position: absolute;
+    top: 0;
+    margin-top: 50px;
+    margin-left: 25px;
+    left: 0;
+    /* width: 300px;
+    height: 300px; */
+    z-index: 1;
+    image-rendering: pixelated;
+    /* or 2 for grid-wrapper-cats */
+    margin-left: x;
+}
 .grid-wrapper-cats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -260,7 +291,11 @@ body {
 
 }
 
-
+.users-stuff-clothes{
+        gap: 200px;
+        margin-top: 50px;
+    object-fit: cover;
+}
 .users-stuff {
     gap: 200px;
     object-fit: cover;
