@@ -16,6 +16,7 @@ if (!clothId || !selectedCloth) {
     const clothSprite = document.querySelector('.clothes-sprite-url');
     const saveBtn = document.querySelector('.save-button');
     const cancelBtn = document.querySelector('.cancel-button');
+     const deleteBtn = document.querySelector('.delete-button-clothes');
 
     // Prefill data
     if (clothImage) clothImage.src = selectedCloth.sprite_url_preview;
@@ -68,9 +69,33 @@ clothSprite.addEventListener('click', () => {
       }
     });
 
-    // CANCEL
+// CANCEL button click handler
     cancelBtn.addEventListener('click', () => {
       window.location.href = 'clothes-database.html';
+    });
+
+    // DELETE button click handler
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm('Are you sure you want to delete this clothing item? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${APP_URL}/api/shop/delete/${selectedCloth.item_id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete the clothing item');
+        }
+
+        alert('Clothing item deleted successfully.');
+        window.location.href = 'clothes-database.html';
+      } catch (err) {
+        console.error('Delete error:', err);
+        alert('Failed to delete the clothing item.');
+      }
     });
   });
 }
