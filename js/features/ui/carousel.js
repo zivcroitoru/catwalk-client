@@ -42,11 +42,24 @@ export async function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
-  // Initialize cats with proper equipment and validate images
-   window.userCats = window.userCats.map(cat => ({
-    ...cat,
-    equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
-    image: cat.sprite_url || cat.image // Use sprite_url as the primary source for image
+  // Normalize cats to match server structure
+  window.userCats = window.userCats.map(cat => ({
+    // Required fields from server
+    id: cat.cat_id || cat.id,
+    template: cat.template,
+    name: cat.name || 'Unnamed Cat',
+    birthdate: cat.birthdate || new Date().toISOString().split('T')[0],
+    description: cat.description || '',
+    sprite_url: cat.sprite_url,
+    
+    // Client-side UI state
+    selected: false,
+    equipment: {
+      hat: cat.equipment?.hat || null,
+      top: cat.equipment?.top || null,
+      eyes: cat.equipment?.eyes || null,
+      accessories: cat.equipment?.accessories || []
+    }
   }));
 
 
@@ -67,6 +80,12 @@ export async function renderCarousel() {
       </div>
       <span>${cat.name}</span>
     `;
+
+    // Update the carouselBase image layer with the sprite_url
+    const baseLayer = card.querySelector(".carouselBase");
+    if (baseLayer) {
+      baseLayer.src = cat.sprite_url;
+    }
 
     updateCatPreview(cat, card.querySelector(`#cardPreview_${cat.id}`));
 
@@ -89,7 +108,7 @@ export async function renderCarousel() {
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
-    mainCatImg.src = firstCat.image;
+    mainCatImg.src = firstCat.sprite_url;
     mainCatImg.alt = firstCat.name || "Cat";
   }
 
@@ -132,29 +151,5 @@ export function updateInventoryCount() {
   if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
 }
 
-// ───────────── Dynamic Add ─────────────
-export function addCatToCarousel(imgUrl, label, equipment = {}) {
-  const today = new Date().toISOString().split("T")[0];
-
-  const fullCat = {
-    id: crypto.randomUUID(),
-    name: label,
-    image: imgUrl,
-    equipment: {
-      hat: equipment.hat || null,
-      top: equipment.top || null,
-      eyes: equipment.eyes || null,
-      accessories: equipment.accessories || []
-    },
-    breed: "-",
-    variant: "-",
-    palette: "-",
-    birthdate : today,
-    age: 0,
-    description: ""
-  };
-
-  addCatToUser(fullCat);
-  window.userCats.push(fullCat);
-  renderCarousel();
-}
+// Note: Dynamic cat addition has been moved to breedItemsRenderer.js
+// This maintains a single source of truth for adding cats through the breed selection UI

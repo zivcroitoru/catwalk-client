@@ -5,10 +5,17 @@ import { renderBreedItems } from "./breedItemsRenderer.js";
 import { $$ } from "../../core/utils.js";
 
 export function initBreedTabs() {
+  console.log('🏷️ Initializing breed tabs...');
+
   const bar = document.getElementById("breedTabs");
-  if (!bar) return; // Missing container
+  if (!bar) {
+    console.error('❌ breedTabs container not found');
+    return;
+  }
 
   const breeds = Object.keys(window.breedItems || {});
+  console.log('📋 Available breeds:', breeds);
+
   if (!breeds.length) {
     console.warn("⚠️ No breeds to initialize");
     return;

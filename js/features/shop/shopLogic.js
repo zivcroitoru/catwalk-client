@@ -38,7 +38,10 @@ export async function handleShopClick(item, playerItems) {
   }
 
   // ───── equip / unequip ─────
-  if (!window.selectedCat.equipment) window.selectedCat.equipment = {};
+  // Initialize standard equipment structure if needed
+  if (!window.selectedCat.equipment) {
+    window.selectedCat.equipment = { hat: null, top: null, eyes: null, accessories: [] };
+  }
 
   if (state === 'equip') {
     playerItems.equippedItems[item.category] = item.id;
@@ -70,9 +73,15 @@ export async function handleShopClick(item, playerItems) {
 
 // 🔁 persist equipment to DB (only cat, not playerItems anymore)
 async function syncCatEquipment() {
-  await updateCat(window.selectedCat.id, {
-    equipment: window.selectedCat.equipment
-  });
+  // Ensure equipment has standard structure before saving
+  const equipment = {
+    hat: window.selectedCat.equipment?.hat || null,
+    top: window.selectedCat.equipment?.top || null,
+    eyes: window.selectedCat.equipment?.eyes || null,
+    accessories: window.selectedCat.equipment?.accessories || []
+  };
+
+  await updateCat(window.selectedCat.id, { equipment });
 
   const idx = window.userCats.findIndex(
     (c) => c.id === window.selectedCat.id

@@ -3,13 +3,23 @@ import { initBreedTabs } from "./breedTabs.js";
 import { renderBreedItems } from "./breedItemsRenderer.js";
 
 export function toggleAddCat() {
+  console.log("🔄 Starting Add Cat toggle...");
+
+  // Get required elements
   const popup   = document.getElementById("addCatPopup");
   const blocker = document.getElementById("addCatOverlayBlocker");
+  const breedTabsContainer = document.getElementById("breedTabs");
+  const breedItemsContainer = document.getElementById("breedItems");
 
-  console.log("🔄 Toggling Add Cat Popup...");
-  console.log("📦 Popup:", popup);
-  console.log("🛡️ Blocker:", blocker);
-  console.log("📚 Breed Items:", window.breedItems);
+  // Log initial state
+  console.log("📦 Elements found:", {
+    popup: !!popup,
+    blocker: !!blocker,
+    breedTabs: !!breedTabsContainer,
+    breedItems: !!breedItemsContainer
+  });
+  console.log("� Available breeds:", Object.keys(window.breedItems || {}));
+  console.log("🎨 First breed data:", Object.values(window.breedItems || {})[0]);
 
   initBreedTabs();
 

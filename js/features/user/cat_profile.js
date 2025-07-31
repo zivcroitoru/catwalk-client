@@ -13,19 +13,19 @@ export async function showCatProfile(cat) {
   const charCount = $('charCount');
   const descBlock = $('descBlock');
 
-  $('profileBreed').textContent    = cat.breed;
-  $('profileVariant').textContent  = cat.variant;
-  $('profilePalette').textContent  = cat.palette;
+  // Display template properties from template string
+  const [breed, variant] = cat.template.split('-');
+  $('profileBreed').textContent = breed;
+  $('profileVariant').textContent = variant;
+  $('profilePalette').textContent = cat.palette;
   $('profileBirthday').textContent = cat.birthdate;
-  $('profileImage').src            = cat.image;
+  $('profileImage').src = cat.sprite_url;
 
+  // Calculate and display age
   const ageInDays = Math.floor(
     (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
   );
   $('profileAge').textContent = `${ageInDays} days`;
-
-  const idx = window.userCats.findIndex(c => c.id === cat.id);
-  if (idx !== -1) window.userCats[idx].age = ageInDays;
 
   nameInput.value     = cat.name;
   nameInput.disabled  = true;
@@ -80,12 +80,32 @@ export function setupEditMode() {
     }
 
     if (window.currentCat) {
-      window.currentCat.name        = nameInput.value.trim();
+      // Update cat properties that can be edited
+      window.currentCat.name = nameInput.value.trim();
       window.currentCat.description = descInput.value.trim();
 
-      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx !== -1) window.userCats[idx] = { ...window.currentCat };
+      // Save changes to server
+      try {
+        await updateCat(window.currentCat.id, {
+          name: window.currentCat.name,
+          description: window.currentCat.description
+        });
 
+        // Update cat in global state after server confirms
+        const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+        if (idx !== -1) {
+          window.userCats[idx] = {
+            ...window.currentCat,
+            template: `${window.currentCat.breed}-${window.currentCat.variant}-${window.currentCat.palette}`
+          };
+        }
+      } catch (err) {
+        console.error('Failed to save cat changes:', err);
+        toastSimple('Failed to save changes', '#ff6666');
+        return;
+      }
+
+      // Update card display
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
     }
@@ -116,7 +136,7 @@ export function setupEditMode() {
       const mainImg = document.getElementById('carouselCat');
       if (newCat) {
         showCatProfile(newCat);
-        if (mainImg) mainImg.src = newCat.image;
+        if (mainImg) mainImg.src = newCat.sprite_url;
       } else if (mainImg) {
         mainImg.src = '../assets/cats/placeholder.png';
       }

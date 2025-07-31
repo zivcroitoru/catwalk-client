@@ -63,11 +63,13 @@ export async function loadAllData() {
     window.breedItems = breedItems; // Ensure global access
 
     for (const cat of templates) {
-      const breed = cat.breed || cat.template || cat.type;
-      const sprite = cat.sprite_url;
+      // Extract breed from template or fallback
+      const template = cat.template || `${cat.breed}-${cat.variant || 'default'}-${cat.palette || 'default'}`;
+      const [breed] = template.split('-');
+      const sprite_url = cat.sprite_url;
 
       console.log("🐈‍⬛ RAW CAT:", cat);
-      console.log("📦 Mapped:", { breed, sprite });
+      console.log("📦 Mapped:", { template, breed, sprite_url });
 
       if (!breed) {
         console.warn("⛔ Skipping template due to missing breed:", cat);
@@ -78,10 +80,11 @@ export async function loadAllData() {
       if (!breedItems[breed]) breedItems[breed] = [];
 
       breedItems[breed].push({
-        name: cat.name || "Unnamed",
-        variant: cat.variant || cat.name || "Default",
-        palette: cat.palette || "default",
-        sprite
+        name: cat.name || "Unnamed", 
+        template,
+        sprite_url,
+        variant: (cat.variant || 'default'),
+        palette: (cat.palette || 'default')
       });
     }
 

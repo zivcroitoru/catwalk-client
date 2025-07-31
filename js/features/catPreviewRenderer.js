@@ -4,6 +4,9 @@ export function updateCatPreview(cat, container = document) {
     return;
   }
 
+  // Ensure cat has standardized structure
+  cat.equipment = cat.equipment || { hat: null, top: null, eyes: null, accessories: [] };
+
   const setLayer = (cls, path) => {
     console.log("Setting layer", cls, "with path", path);
     
@@ -17,12 +20,15 @@ export function updateCatPreview(cat, container = document) {
     }
 
     // Process the path based on type
+    if (!path) return null;
+
     let finalPath = path;
-    if (!path.startsWith('data:') && // Don't modify data URLs
-        !path.startsWith('http') &&   // Don't modify absolute URLs
-        !path.startsWith('blob:') &&  // Don't modify blob URLs
-        !path.startsWith('/')) {      // Don't modify root-relative paths
-      finalPath = `${APP_URL}/${path}`;
+    if (!path.startsWith('data:') &&  // Don't modify data URLs
+        !path.startsWith('http') &&    // Don't modify absolute URLs
+        !path.startsWith('blob:')) {   // Don't modify blob URLs
+      // For relative or root-relative paths, ensure proper formatting
+      const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+      finalPath = `${APP_URL}/${cleanPath}`;
     }
 
     // Handle image load errors
@@ -35,10 +41,10 @@ export function updateCatPreview(cat, container = document) {
     el.style.display = "block";
   };
 
-  // Initialize equipment if not present
+  // Always use normalized equipment structure
   cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
-  setLayer("carouselBase", cat.image);
+  setLayer("carouselBase", cat.sprite_url);
 
   const getSprite = (category, itemId) => {
     if (!itemId || !window.shopItems) return "";
