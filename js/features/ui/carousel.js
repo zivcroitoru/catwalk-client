@@ -3,7 +3,7 @@ import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
-import { loadPlayerItems, addCatToUser } from '../../core/storage.js';
+import { loadPlayerItems, addCatToUser, getPlayerCats } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
@@ -18,13 +18,15 @@ export async function renderCarousel() {
   }
 
   // Always ensure we have fresh data
-  console.log('🔄 Loading player items...');
-  const items = await loadPlayerItems();
-  if (!items || !Array.isArray(items.userCats)) {
-    console.error('❌ Invalid player items data:', items);
+  console.log('🔄 Loading player cats...');
+  const cats = await getPlayerCats();
+  console.log("Cats array shape " + cats);
+  
+  if (!cats || !Array.isArray(cats)) {
+    console.error('❌ Invalid player items data:', cats);
     window.userCats = [];
   } else {
-    window.userCats = items.userCats.filter(cat => cat && cat.id); // Ensure valid cats only
+    window.userCats = cats.filter(cat => cat && cat.id); // Ensure valid cats only
   }
 
   const hasCats = Array.isArray(window.userCats) && window.userCats.length > 0;
