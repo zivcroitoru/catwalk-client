@@ -141,6 +141,9 @@ export async function getPlayerCats() {
   }));
 }
 
+// Log sprite_url for debugging
+console.log("🐾 Debugging sprite_url:", cats.map(cat => cat.sprite_url));
+
 export async function updateCat(catId, updates) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
