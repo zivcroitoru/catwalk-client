@@ -17,7 +17,7 @@ export async function showCatProfile(cat) {
   $('profileBreed').textContent = breed;
   $('profileVariant').textContent = variant;
   $('profilePalette').textContent = cat.palette;
-  $('profileBirthday').textContent = cat.birthdate;
+  $('profileBirthday').textContent = cat.birthdate.split('T')[0];;
   $('profileImage').src = cat.sprite_url;
 
   const ageInDays = Math.floor(
