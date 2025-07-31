@@ -58,7 +58,6 @@ function showAddCatConfirmation(breed, variantData) {
   }
 
   const { name, variant, palette, sprite_url } = variantData;
-  const template = `${breed}-${variant}-${palette}`;
 
   // Create and append confirmation box
   const confirmBox = document.createElement("div");
