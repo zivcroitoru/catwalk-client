@@ -281,9 +281,8 @@
 /* Message View Controls */
 .message-controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    gap: var(--spacing-sm);
 }
 
 /* Back Button */
@@ -305,30 +304,6 @@
 }
 
 .back-btn:hover {
-    background-color: var(--color-brown);
-}
-
-/* Mark as Unread Button */
-.mark-unread-btn {
-    background-color: var(--color-yellow);
-    border: var(--stroke-thin) solid var(--color-black);
-    height: 40px;
-    padding: 0 var(--spacing-sm);
-    font-family: var(--font-main);
-    font-size: var(--font-size-xxs);
-    font-weight: bold;
-    color: var(--color-black);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    outline: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mark-unread-btn:hover {
     background-color: var(--color-brown);
 }
 
