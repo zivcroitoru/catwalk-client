@@ -92,7 +92,7 @@ function showAddCatConfirmation(breed, variantData) {
         onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
 
       <div style="font-size: 13px; color: #333; margin-top: 12px;">
-        <b>${variant} (${toPascalCase(palette)})</b>
+        <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
       </div>
 
       <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
