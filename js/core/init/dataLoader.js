@@ -18,7 +18,7 @@ export async function loadAllData() {
     console.log('🔄 Starting data load...');
 
     // Load all data in parallel
-    const [shopRes, templatesRes, loadedUserCats] = await Promise.all([
+    const [shopRes, templates, loadedUserCats] = await Promise.all([
       fetch(`${APP_URL}/api/shop`, { headers })
         .then(res => {
           if (!res.ok) throw new Error(`Shop fetch failed: ${res.status}`);
@@ -57,7 +57,6 @@ export async function loadAllData() {
     }
 
     // 🧪 Templates
-    const templates = await templatesRes.json();
     console.log("🐾 templates structure:", templates);
 
     const breedItems = {};
