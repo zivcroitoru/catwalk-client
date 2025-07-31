@@ -33,7 +33,6 @@ export async function showCatProfile(cat) {
   descInput.value    = cat.description || '';
   descInput.readOnly = true;
   descInput.classList.remove('editing');
-  resizeTextarea(descInput);
 
   charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
   descBlock.classList.remove('editing');
@@ -58,7 +57,6 @@ export function setupEditMode() {
   ] = els;
 
   descInput.addEventListener('input', () => {
-    resizeTextarea(descInput);
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
   });
 
@@ -70,7 +68,6 @@ export function setupEditMode() {
     descInput.classList.add('editing');
     descBlock.classList.add('editing');
     toggleButtons({ edit: false, save: true, cancel: true });
-    resizeTextarea(descInput);
   };
 
   saveBtn.onclick = async () => {
@@ -156,10 +153,6 @@ export function setupEditMode() {
 }
 
 // ───────────── helpers ─────────────
-function resizeTextarea(t) {
-  t.style.height = 'auto';
-  t.style.height = t.scrollHeight + 'px';
-}
 
 function toggleButtons({ edit, save, cancel }) {
   const setVis = (id, show) => {
