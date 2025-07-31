@@ -12,9 +12,7 @@ let itemCache = null;
 async function apiGetItems() {
   const token = localStorage.getItem('token');
   const res = await fetch(PLAYER_ITEMS_API, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!res.ok) {
@@ -29,7 +27,7 @@ async function apiGetItems() {
   return res.json();
 }
 
-async function apiPatchItems(body) {
+async function apiPatchItem(template) {
   const token = localStorage.getItem('token');
   const res = await fetch(PLAYER_ITEMS_API, {
     method: 'PATCH',
@@ -37,7 +35,7 @@ async function apiPatchItems(body) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({ template })
   });
 
   if (!res.ok) {
@@ -55,9 +53,7 @@ async function apiPatchItems(body) {
 async function apiGetCats() {
   const token = localStorage.getItem('token');
   const res = await fetch(PLAYER_CATS_API, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!res.ok) {
@@ -79,9 +75,12 @@ export async function loadPlayerItems(force = false) {
   return itemCache;
 }
 
-export async function savePlayerItems(playerItems) {
-  itemCache = await apiPatchItems(playerItems);
-  return itemCache;
+// 🛍️ Unlock/purchase a new item by template ID
+export async function unlockPlayerItem(template) {
+  const result = await apiPatchItem(template);
+  await loadPlayerItems(true);
+  updateUI();
+  return result.item;
 }
 
 // ───────────── Player ID from JWT ─────────────
@@ -102,16 +101,13 @@ function getPlayerIdFromToken() {
 
 // ───────────── Cats Access ─────────────
 export async function getPlayerCats() {
-  const cats = await apiGetCats();
-  return cats;
+  return await apiGetCats();
 }
 
 export async function addCatToUser(cat) {
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
-  if (!playerId) {
-    throw new Error('No player ID found in token');
-  }
+  if (!playerId) throw new Error('No player ID found in token');
 
   const template = `${cat.breed}-${cat.variant}-${cat.palette}`;
 
@@ -131,20 +127,12 @@ export async function addCatToUser(cat) {
     })
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to add cat');
-  }
+  if (!res.ok) throw new Error('Failed to add cat');
 
   const result = await res.json();
   await loadPlayerItems(true);
   updateUI();
   return result.cat;
-}
-
-// ───────────── Patch Update ─────────────
-export async function updatePlayerItems(updates = {}) {
-  await savePlayerItems(updates);
-  updateUI();
 }
 
 // ───────────── UI Updates ─────────────
