@@ -69,7 +69,7 @@ function showAddCatConfirmation(breed, variantData) {
       palette,
       sprite,
       image: sprite,
-      birthday: new Date().toISOString().split("T")[0],
+      birthdate: new Date().toISOString().split("T")[0],
       age: 0,
       description: "",
       equipment: {
