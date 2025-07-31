@@ -19,7 +19,7 @@ export async function loadAllData() {
 
     // 🐱 Set user cats
     userCats = loadedUserCats;
-    console.log("📦 Loaded userCats from userItems");
+    console.log("📦 Loaded userCats from userItems!!");
 
     // 🛒 Load shop data
     shopItems = await shopRes.json();
