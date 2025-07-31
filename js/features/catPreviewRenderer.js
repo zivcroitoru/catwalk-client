@@ -8,20 +8,32 @@ export function updateCatPreview(cat, container = document) {
     const el = container.querySelector(`.${cls}`);
     if (!el) return;
     
-    // Ensure the path is absolute
-    let finalPath = path || "";
-    if (finalPath && !finalPath.startsWith('http') && !finalPath.startsWith('/')) {
-      finalPath = `${APP_URL}/${finalPath}`;
+    // Handle empty or invalid paths
+    if (!path) {
+      el.style.display = "none";
+      return;
+    }
+
+    // Process the path - directly use data URLs, absolute URLs, and blob URLs
+    let finalPath = path;
+    if (path.startsWith('data:') || 
+        path.startsWith('http') || 
+        path.startsWith('blob:')) {
+      // Use the URL as-is
+      finalPath = path;
+    } else if (!path.startsWith('/')) {
+      // For relative paths, prepend APP_URL
+      finalPath = `${APP_URL}/${path}`;
     }
 
     // Handle image load errors
     el.onerror = () => {
-      console.warn(`⚠️ Failed to load image: ${finalPath}`);
+      console.warn(`⚠️ Failed to load image: ${path}`);
       el.style.display = "none";
     };
     
     el.src = finalPath;
-    el.style.display = finalPath ? "block" : "none";
+    el.style.display = "block";
   };
 
   // Initialize equipment if not present
