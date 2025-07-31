@@ -1,17 +1,54 @@
 export function updateCatPreview(cat, container = document) {
-  if (!cat) return;
+  if (!cat) {
+    console.warn('⚠️ No cat provided to updateCatPreview');
+    return;
+  }
 
   const setLayer = (cls, path) => {
+    console.log("Setting layer", cls, "with path", path);
+    
     const el = container.querySelector(`.${cls}`);
     if (!el) return;
-    el.src = path || "";
-    el.style.display = path ? "block" : "none";
+    
+    // Handle empty or invalid paths
+    if (!path) {
+      el.style.display = "none";
+      return;
+    }
+
+    // Process the path based on type
+    let finalPath = path;
+    if (!path.startsWith('data:') && // Don't modify data URLs
+        !path.startsWith('http') &&   // Don't modify absolute URLs
+        !path.startsWith('blob:') &&  // Don't modify blob URLs
+        !path.startsWith('/')) {      // Don't modify root-relative paths
+      finalPath = `${APP_URL}/${path}`;
+    }
+
+    // Handle image load errors
+    el.onerror = () => {
+      console.warn(`⚠️ Failed to load image: ${path}`);
+      el.style.display = "none";
+    };
+    
+    el.src = finalPath;
+    el.style.display = "block";
   };
+
+  // Initialize equipment if not present
+  cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
   setLayer("carouselBase", cat.image);
 
   const getSprite = (category, itemId) => {
-    if (!itemId || !window.shopItems?.[category]) return "";
+    if (!itemId || !window.shopItems) return "";
+    
+    // Initialize category if missing
+    if (!window.shopItems[category]) {
+      console.warn(`⚠️ Missing shop category: ${category}`);
+      window.shopItems[category] = [];
+    }
+    
     const item = window.shopItems[category].find(
       i => i.id === itemId || i.template === itemId
     );

@@ -1,24 +1,27 @@
-import { $, setDisplay } from '../../core/utils.js';
+import { $, setDisplay } from '../../core/utils.js'
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
-import { loadPlayerItems, addCatToUser } from '../../core/storage.js';
+import { getPlayerCats, addCatToUser } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
-export function renderCarousel() {
+export async function renderCarousel() {
   const container = document.getElementById("catCarousel");
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
 
-  if (!container) return;
-
-  if (!Array.isArray(window.userCats)) {
-    window.userCats = loadPlayerItems().userCats || [];
+  if (!container) {
+    console.warn('⚠️ Carousel container not found');
+    return;
   }
 
+  // Get fresh cats data
+  console.log('🔄 Loading player cats...');
+  window.userCats = await getPlayerCats();
   const hasCats = window.userCats.length > 0;
+  console.log(`📦 Found ${window.userCats.length} cats`);
 
   // Show/hide main UI sections
   setDisplay("catAreaWrapper", hasCats);
@@ -39,13 +42,19 @@ export function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
+  // Initialize cats with proper equipment and validate images
+   window.userCats = window.userCats.map(cat => ({
+    ...cat,
+    equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
+    image: cat.sprite_url || cat.image // Use sprite_url as the primary source for image
+  }));
+
+
   // Create cat cards
   window.userCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
-
-    cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">
