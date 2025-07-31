@@ -116,7 +116,7 @@ function showAddCatConfirmation(breed, variantData) {
     console.log("🐱 Cat added:", newCat);
     console.log(`📦 Total cats: ${window.userCats?.length}`);
 
-    updateUIAfterCatAddition(window.userCats.length);
+    updateUI(getPlayerIdFromToken());
     toastCatAdded({ breed, name, sprite_url });
     window.closeAddCat?.();
     confirmBox.remove();
@@ -131,7 +131,7 @@ function showAddCatConfirmation(breed, variantData) {
   };
 }
 
-function updateUIAfterCatAddition(catCount) {
+function updateUI(catCount) {
   window.renderCarousel?.();
   updateInventoryCount(catCount);
 }
