@@ -236,7 +236,7 @@ export async function addCatToUser(cat) {
 
 // ───────────── UI Updates ─────────────
 export async function updateCoinCount() {
-  const { coins = 0 } = await loadPlayerItems();
+  const { coins } = await loadPlayerItems();
   const el = document.querySelector('.coin-count');
   if (el) el.textContent = coins;
 }

@@ -50,6 +50,14 @@ export async function loadShopAndTemplates () {
 
   console.log(`✅ Templates ready (${Object.keys(breedItems).length} breeds)`);
   console.log('🛍️ Full shop data:', shopItems); // ← here
+  window.shopItemsByCategory = shopItems.reduce((acc, item) => {
+  const cat = item.category?.toLowerCase();
+  if (!cat) return acc;
+  (acc[cat] ||= []).push(item);
+  return acc;
+}, {});
+console.log("🗂️ Grouped shop items:", window.shopItemsByCategory);
+
 }
 
 
