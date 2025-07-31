@@ -1,6 +1,6 @@
 // /js/core/toast.js
 
-export function toastCatAdded({ breed, name, sprite }) {
+export function toastCatAdded({ breed, name, sprite_url }) {
   Toastify({
     node: (() => {
       const wrapper = document.createElement("div");
@@ -13,7 +13,7 @@ export function toastCatAdded({ breed, name, sprite }) {
         align-items: center;
       `;
       wrapper.innerHTML = `
-        <img src="${sprite}" alt="Cat"
+        <img src="${sprite_url}" alt="Cat"
           style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
         <div><b>${breed} (${name})</b> added!</div>
       `;

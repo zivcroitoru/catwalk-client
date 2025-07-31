@@ -81,6 +81,12 @@ export async function renderCarousel() {
       <span>${cat.name}</span>
     `;
 
+    // Update the carouselBase image layer with the sprite_url
+    const baseLayer = card.querySelector(".carouselBase");
+    if (baseLayer) {
+      baseLayer.src = cat.sprite_url;
+    }
+
     updateCatPreview(cat, card.querySelector(`#cardPreview_${cat.id}`));
 
     card.addEventListener("click", () => {
