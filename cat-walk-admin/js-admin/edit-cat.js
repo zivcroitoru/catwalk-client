@@ -54,7 +54,7 @@ if (!catId || !selectedCat) {
           catSprite.textContent = `SPRITE URL: ${newSpriteUrl}`;
 
           try {
-            const response = await fetch(`${APP_URL}/api/cats/${selectedCat.cat_id}`, {
+            const response = await fetch(`${APP_URL}/api/cats/allcats/${selectedCat.cat_id}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json'
