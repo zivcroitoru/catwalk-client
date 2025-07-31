@@ -3,7 +3,7 @@ import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
-import { getPlayerCats, addCatToUser, normalizeCat } from '../../core/storage.js';
+import { getPlayerCats, buildSpriteLookup, normalizeCat } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────

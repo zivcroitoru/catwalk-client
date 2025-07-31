@@ -118,7 +118,7 @@ function getPlayerIdFromToken() {
 
 // ───────────── Cats Access ─────────────
 // helpers -----------------------------------------------------------
-function buildSpriteLookup(breedItems = {}) {
+export function buildSpriteLookup(breedItems = {}) {
   return Object.values(breedItems)          // { breed: [variants] } → array-of-arrays
     .flat()                                 // flatten
     .reduce((acc, v) => {
