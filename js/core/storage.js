@@ -305,12 +305,12 @@ export async function updateUI() {
       console.warn('⚠️ .coin-count element not found');
     }
 
-    const catCountEl = document.querySelector('.cat-count');
+    const catCountEl = document.getElementById('cat-count');
     if (catCountEl) {
-      catCountEl.textContent = `Total Cats: ${cat_count}`;
+      catCountEl.textContent = `Inventory: ${cat_count}/25`;
       console.log('🐱 Cat count updated:', cat_count);
     } else {
-      console.warn('⚠️ .cat-count element not found');
+      console.warn('⚠️ #cat-count element not found');
     }
 
   } catch (err) {
