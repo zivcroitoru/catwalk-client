@@ -64,12 +64,7 @@ export async function loadAllData() {
 
     for (const cat of templates) {
       const breed = cat.breed || cat.template || cat.type;
-      let sprite = cat.sprite_url || cat.sprite;
-
-      // Ensure sprite URL is absolute
-      if (sprite && !sprite.startsWith('http') && !sprite.startsWith('/')) {
-        sprite = `${APP_URL}/${sprite}`;
-      }
+      const sprite = cat.sprite_url;
 
       console.log("🐈‍⬛ RAW CAT:", cat);
       console.log("📦 Mapped:", { breed, sprite });

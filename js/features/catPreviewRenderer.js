@@ -5,7 +5,7 @@ export function updateCatPreview(cat, container = document) {
   }
 
   const setLayer = (cls, path) => {
-    console.log("base path is" + path);
+    console.log("Setting layer", cls, "with path", path);
     
     const el = container.querySelector(`.${cls}`);
     if (!el) return;
@@ -16,8 +16,14 @@ export function updateCatPreview(cat, container = document) {
       return;
     }
 
-    // Process the path - directly use data URLs, absolute URLs, and blob URLs
+    // Process the path based on type
     let finalPath = path;
+    if (!path.startsWith('data:') && // Don't modify data URLs
+        !path.startsWith('http') &&   // Don't modify absolute URLs
+        !path.startsWith('blob:') &&  // Don't modify blob URLs
+        !path.startsWith('/')) {      // Don't modify root-relative paths
+      finalPath = `${APP_URL}/${path}`;
+    }
 
     // Handle image load errors
     el.onerror = () => {
