@@ -125,6 +125,7 @@ async function connectSocket() {
     const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
     
     socket = io({
+       transports: ['websocket'],
       auth: {
         token: token
       }
