@@ -11,44 +11,41 @@ const previewKeyMap = {
   eyes: 'eyes'
 };
 
-export function getItemState(id, category, player_items) {
-  const owned       = player_items.ownedItems?.includes(id);
-  const equipped    = window.selectedCat?.equipment?.[category];
-  if (!owned)            return 'buy';
-  if (equipped === id)   return 'unequip';
+export function getItemState(id, category, playerItems) {
+  const owned    = playerItems.ownedItems?.includes(id);
+  const equipped = window.selectedCat?.equipment?.[category];
+  if (!owned)           return 'buy';
+  if (equipped === id)  return 'unequip';
   return 'equip';
 }
 
-export async function handleShopClick(item, player_items) {
-  const state      = getItemState(item.id, item.category, player_items);
+export async function handleShopClick(item, playerItems) {
+  const state      = getItemState(item.id, item.category, playerItems);
   const previewKey = previewKeyMap[item.category];
   console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
   // ───── buy ─────
   if (state === 'buy') {
-    if (player_items.coins < item.price) return 'not_enough';
+    if (playerItems.coins < item.price) return 'not_enough';
 
-    // ✅ Unlock via proper server call
-    await unlockplayer_items(item.template);
+    await unlockPlayerItem(item.template); // ✅ corrected function
 
-    // ✅ Prevent push on undefined
-    if (!Array.isArray(player_items.ownedItems)) {
-      player_items.ownedItems = [];
+    if (!Array.isArray(playerItems.ownedItems)) {
+      playerItems.ownedItems = [];
     }
 
-    player_items.ownedItems.push(String(item.id));
-    player_items.coins -= item.price;
+    playerItems.ownedItems.push(String(item.id));
+    playerItems.coins -= item.price;
     return 'bought';
   }
 
   // ───── equip / unequip ─────
-  // Initialize standard equipment structure if needed
   if (!window.selectedCat.equipment) {
     window.selectedCat.equipment = { hat: null, top: null, eyes: null, accessories: [] };
   }
 
   if (state === 'equip') {
-    player_items.equippedItems[item.category] = item.id;
+    playerItems.equippedItems[item.category] = item.id;
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [item.template];
     } else {
@@ -57,7 +54,7 @@ export async function handleShopClick(item, player_items) {
   }
 
   if (state === 'unequip') {
-    delete player_items.equippedItems[item.category];
+    delete playerItems.equippedItems[item.category];
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [];
     } else {
@@ -65,19 +62,18 @@ export async function handleShopClick(item, player_items) {
     }
   }
 
-  await syncCatEquipment();                         // 💾 persist changes
-  updateCatPreview(window.selectedCat);             // 🎨 podium
+  await syncCatEquipment();
+  updateCatPreview(window.selectedCat);
+
   const thumb = document.querySelector(
     `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
   );
-  if (thumb) updateCatPreview(window.selectedCat, thumb); // 🎨 thumbnail
+  if (thumb) updateCatPreview(window.selectedCat, thumb);
 
   return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// 🔁 persist equipment to DB (only cat, not player_items anymore)
 async function syncCatEquipment() {
-  // Ensure equipment has standard structure before saving
   const equipment = {
     hat: window.selectedCat.equipment?.hat || null,
     top: window.selectedCat.equipment?.top || null,
