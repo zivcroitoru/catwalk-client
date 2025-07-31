@@ -125,10 +125,14 @@ export function toastSimple(text, background = "#4caf50") {
 }
 
 export function toastConfirmDelete(cat, onConfirm, onCancel) {
+  const imageURL = new URL(cat.sprite_url || cat.image || '', window.location.origin).href;
+
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
-      <img src="${cat.image}" alt="Cat" style="width:96px; height:96px; object-fit:contain; margin-bottom:16px;" />
+      <img src="${imageURL}" alt="Cat"
+        style="width:96px; height:96px; object-fit:contain; margin-bottom:16px;"
+        onerror="this.style.display='none'; console.warn('❌ Failed to load cat image:', this.src);" />
       <div style="margin-bottom:16px;">Delete "<b>${cat.name}</b>"?</div>
       <button id="confirmDelete" style="margin-right:16px; font-size:12px;">Yes</button>
       <button id="cancelDelete" style="font-size:12px;">Cancel</button>
@@ -176,6 +180,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
     });
   });
 }
+
 export function toastNoCats() {
   Toastify({
     node: (() => {
