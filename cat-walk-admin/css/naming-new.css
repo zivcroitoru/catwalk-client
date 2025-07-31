@@ -135,7 +135,7 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    margin-bottom: 60px;
+    margin-bottom: 100px;
     font-size: 32px;
     color: #4E5C4F;
     font-weight: 400;
@@ -150,7 +150,7 @@ body {
 .cat-breed:hover,
 .cat-variant:hover,
 .cat-pallete:hover,
-.cat-sprite:hover {
+.cat-description:hover {
     color: #b2c2b2;
 }
 
