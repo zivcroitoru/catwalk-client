@@ -4,7 +4,7 @@
 import { APP_URL } from './config.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
-const PLAYER_CATS_API  = `${APP_URL}/api/cats`;
+const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
 
@@ -278,9 +278,13 @@ export async function updateCoinCount() {
 export async function updateUI() {
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
-  if (!token || !playerId) return;
+  if (!token || !playerId) {
+    console.warn('⚠️ Missing token or player ID');
+    return;
+  }
 
   try {
+    console.log('🔄 Fetching player data for UI update...');
     const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -291,6 +295,7 @@ export async function updateUI() {
     }
 
     const { coins, cat_count } = await res.json();
+    console.log('✅ Player data fetched:', { coins, cat_count });
 
     const coinEl = document.querySelector('.coin-count');
     if (coinEl) {
