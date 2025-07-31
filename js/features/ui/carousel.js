@@ -17,19 +17,18 @@ export async function renderCarousel() {
     return;
   }
 
-  if (!Array.isArray(window.userCats)) {
-    console.log('🔄 Loading player items...');
-    const items = await loadPlayerItems();
-    if (!items || !Array.isArray(items.userCats)) {
-      console.error('❌ Invalid player items data:', items);
-      window.userCats = [];
-    } else {
-      window.userCats = items.userCats;
-    }
+  // Always ensure we have fresh data
+  console.log('🔄 Loading player items...');
+  const items = await loadPlayerItems();
+  if (!items || !Array.isArray(items.userCats)) {
+    console.error('❌ Invalid player items data:', items);
+    window.userCats = [];
+  } else {
+    window.userCats = items.userCats.filter(cat => cat && cat.id); // Ensure valid cats only
   }
 
-  const hasCats = window.userCats.length > 0;
-  console.log(`📦 Found ${window.userCats.length} cats`);
+  const hasCats = Array.isArray(window.userCats) && window.userCats.length > 0;
+  console.log(`📦 Found ${window.userCats?.length || 0} cats`);
 
   // Show/hide main UI sections
   setDisplay("catAreaWrapper", hasCats);

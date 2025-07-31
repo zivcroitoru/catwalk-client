@@ -75,7 +75,7 @@ async function apiGetCats() {
 
   const data = await res.json();
   console.log('📦 Received cats data:', data);
-  
+
   // Validate the data structure
   if (!Array.isArray(data)) {
     console.error('Invalid cats data received:', data);
