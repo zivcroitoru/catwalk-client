@@ -52,6 +52,13 @@ async function apiPatchItem(template) {
 
 async function apiGetCats() {
   const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('No auth token found');
+    window.location.href = 'login.html';
+    throw new Error('No auth token');
+  }
+
+  console.log('🔄 Fetching cats from API...');
   const res = await fetch(PLAYER_CATS_API, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
@@ -62,10 +69,20 @@ async function apiGetCats() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
+    console.error('Failed to fetch cats:', res.status, res.statusText);
     throw new Error('GET /cats failed');
   }
 
-  return res.json();
+  const data = await res.json();
+  console.log('📦 Received cats data:', data);
+  
+  // Validate the data structure
+  if (!Array.isArray(data)) {
+    console.error('Invalid cats data received:', data);
+    throw new Error('Invalid cats data format');
+  }
+
+  return data;
 }
 
 // ───────────── Load & Save ─────────────
@@ -148,7 +165,7 @@ export async function updateCatCountUI() {
   if (el) el.textContent = `Total Cats: ${cats.length}`;
 }
 
-export function updateUI() {
+export function updateUI() {i
   updateCoinCount();
   updateCatCountUI();
 }

@@ -9,39 +9,78 @@ export let shopItems = [];
 export async function loadAllData() {
   try {
     const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    if (!token) {
+      console.error('No auth token found for data loading');
+      throw new Error('Authentication required');
+    }
 
+    const headers = { Authorization: `Bearer ${token}` };
+    console.log('🔄 Starting data load...');
+
+    // Load all data in parallel
     const [shopRes, templatesRes, loadedUserCats] = await Promise.all([
-      fetch(`${APP_URL}/api/shop`, { headers }),
-      fetch(`${APP_URL}/api/cats/allcats`, { headers }),
+      fetch(`${APP_URL}/api/shop`, { headers })
+        .then(res => {
+          if (!res.ok) throw new Error(`Shop fetch failed: ${res.status}`);
+          return res.json();
+        }),
+      fetch(`${APP_URL}/api/cats/allcats`, { headers })
+        .then(res => {
+          if (!res.ok) throw new Error(`Templates fetch failed: ${res.status}`);
+          return res.json();
+        }),
       getPlayerCats()
-    ]);
+        .catch(err => {
+          console.error('Failed to load player cats:', err);
+          return [];
+        })
+    ]).catch(err => {
+      console.error('Failed to load initial data:', err);
+      throw err;
+    });
 
-    // 🐱 User cats
-    userCats = loadedUserCats;
-    console.log("📦 Loaded userCats from player_cats!!");
+    // 🐱 User cats validation
+    if (!Array.isArray(loadedUserCats)) {
+      console.error('Invalid user cats data:', loadedUserCats);
+      userCats = [];
+    } else {
+      userCats = loadedUserCats.filter(cat => cat && cat.id);
+      console.log("📦 Loaded", userCats.length, "valid user cats");
+    }
 
-    // 🛒 Shop
-    shopItems = await shopRes.json();
+    // 🛒 Shop validation
+    if (!shopRes || typeof shopRes !== 'object') {
+      console.error('Invalid shop data:', shopRes);
+      shopItems = {};
+    } else {
+      shopItems = shopRes;
+    }
 
     // 🧪 Templates
     const templates = await templatesRes.json();
     console.log("🐾 templates structure:", templates);
 
     const breedItems = {};
+    window.breedItems = breedItems; // Ensure global access
 
     for (const cat of templates) {
       const breed = cat.breed || cat.template || cat.type;
-      const sprite = cat.sprite_url || cat.sprite;
+      let sprite = cat.sprite_url || cat.sprite;
+
+      // Ensure sprite URL is absolute
+      if (sprite && !sprite.startsWith('http') && !sprite.startsWith('/')) {
+        sprite = `${APP_URL}/${sprite}`;
+      }
 
       console.log("🐈‍⬛ RAW CAT:", cat);
       console.log("📦 Mapped:", { breed, sprite });
 
-      if (!breed || !sprite || sprite === "null") {
-        console.warn("⛔ Skipping template due to missing data:", { breed, sprite });
+      if (!breed) {
+        console.warn("⛔ Skipping template due to missing breed:", cat);
         continue;
       }
 
+      // Initialize breed category if it doesn't exist
       if (!breedItems[breed]) breedItems[breed] = [];
 
       breedItems[breed].push({

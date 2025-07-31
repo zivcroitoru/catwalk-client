@@ -7,18 +7,29 @@ import { loadPlayerItems, addCatToUser } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
-export function renderCarousel() {
+export async function renderCarousel() {
   const container = document.getElementById("catCarousel");
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
 
-  if (!container) return;
+  if (!container) {
+    console.warn('⚠️ Carousel container not found');
+    return;
+  }
 
   if (!Array.isArray(window.userCats)) {
-    window.userCats = loadPlayerItems().userCats || [];
+    console.log('🔄 Loading player items...');
+    const items = await loadPlayerItems();
+    if (!items || !Array.isArray(items.userCats)) {
+      console.error('❌ Invalid player items data:', items);
+      window.userCats = [];
+    } else {
+      window.userCats = items.userCats;
+    }
   }
 
   const hasCats = window.userCats.length > 0;
+  console.log(`📦 Found ${window.userCats.length} cats`);
 
   // Show/hide main UI sections
   setDisplay("catAreaWrapper", hasCats);
@@ -39,13 +50,18 @@ export function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
+  // Initialize cats with proper equipment and validate images
+  window.userCats = window.userCats.map(cat => ({
+    ...cat,
+    equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
+    image: cat.image || '../assets/cats/placeholder.png'  // Fallback image
+  }));
+
   // Create cat cards
   window.userCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
-
-    cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">

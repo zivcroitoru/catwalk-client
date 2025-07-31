@@ -24,6 +24,7 @@ export function bindUI() {
       const cat = window.selectedCat;
       if (!cat?.id) {
         console.warn("❌ No selected cat to enter fashion show");
+        toastSimple('Please select a cat first!', '#ff6666');
         return;
       }
       console.log(`🎭 Entering Fashion Show with cat ID ${cat.id}`);
