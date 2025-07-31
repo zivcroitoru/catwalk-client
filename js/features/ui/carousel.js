@@ -140,7 +140,7 @@ export function addCatToCarousel(imgUrl, label, equipment = {}) {
     breed: "-",
     variant: "-",
     palette: "-",
-    birthday: today,
+    birthdate : today,
     age: 0,
     description: ""
   };
