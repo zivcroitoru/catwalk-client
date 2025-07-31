@@ -122,9 +122,9 @@ async function connectSocket() {
     }
     
     // Import Socket.io (assuming it's available globally or via CDN)
-    const socketUrl = APP_URL.replace('http', 'ws'); // Convert to WebSocket URL
+    const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
     
-    socket = io(socketUrl, {
+    socket = io({
       auth: {
         token: token
       }
@@ -132,7 +132,6 @@ async function connectSocket() {
     
     // Connection events
     socket.on('connect', () => {
-      console.log('📬 Connected to mailbox server');
       loadMailboxData();
     });
     
