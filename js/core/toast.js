@@ -6,34 +6,45 @@ export function toastCatAdded({ breed, name, sprite_url }) {
       const wrapper = document.createElement("div");
       wrapper.style.cssText = `
         font-family: 'Press Start 2P', monospace;
-        font-size: 10px;
+        font-size: 14px;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 16px;
+        gap: 30px;
       `;
       wrapper.innerHTML = `
         <img src="${sprite_url}" alt="Cat"
-          style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
-        <div><b>${breed} (${name})</b> added!</div>
+          style="
+            width: 48px;
+            height: 48px;
+            image-rendering: pixelated;
+            transform: scale(1.5);
+            transform-origin: center;
+          " />
+        <div><b>${breed} (${name})</b></div>
+        <div style="font-size: 12px;">added to your collection!</div>
       `;
       return wrapper;
     })(),
-    duration: 1800,
+    duration: 2200,
     gravity: "top",
     position: "center",
     style: {
       background: "#4caf50",
-      border: "2px solid black",
-      padding: "8px",
-      width: "180px",
-      maxWidth: "80vw",
+      border: "3px solid black",
+      padding: "20px",
+      width: "260px",
+      maxWidth: "90vw",
       color: "black",
-      boxShadow: "4px 4px #000",
+      boxShadow: "6px 6px #000",
       zIndex: 999999,
     }
   }).showToast();
 }
+
+
 
 export function toastCancelled() {
   Toastify({
@@ -114,10 +125,14 @@ export function toastSimple(text, background = "#4caf50") {
 }
 
 export function toastConfirmDelete(cat, onConfirm, onCancel) {
+  const imageURL = new URL(cat.sprite_url || cat.image || '', window.location.origin).href;
+
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
-      <img src="${cat.image}" alt="Cat" style="width:96px; height:96px; object-fit:contain; margin-bottom:16px;" />
+      <img src="${imageURL}" alt="Cat"
+        style="width:96px; height:96px; object-fit:contain; margin-bottom:16px;"
+        onerror="this.style.display='none'; console.warn('❌ Failed to load cat image:', this.src);" />
       <div style="margin-bottom:16px;">Delete "<b>${cat.name}</b>"?</div>
       <button id="confirmDelete" style="margin-right:16px; font-size:12px;">Yes</button>
       <button id="cancelDelete" style="font-size:12px;">Cancel</button>
@@ -165,6 +180,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
     });
   });
 }
+
 export function toastNoCats() {
   Toastify({
     node: (() => {

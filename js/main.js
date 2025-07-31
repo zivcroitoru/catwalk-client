@@ -3,10 +3,9 @@ console.log('🐱 MAIN.JS LOADED');
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-import { initializeMailbox, toggleMailbox } from './features/mailbox/mailbox.js';
+import { initializeMailbox, toggleMailbox, requestNotificationPermission } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
-
 import { renderCarousel, scrollCarousel } from './features/ui/carousel.js';
 import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
@@ -18,9 +17,9 @@ import {
   loadShopAndTemplates,
   loadUserCats
 } from './core/init/dataLoader.js';
-import { updateCoinCount } from './core/storage.js';
+import { updateUI } from './core/storage.js';
 
-import { APP_URL } from './core/config.js';
+
 
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -36,12 +35,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* UI init – safe to read breedItems & userCats from here */
+  await updateUI();
   renderCarousel();
   setupShopTabs();
   setupEditMode();
   bindUI();
-  await updateCoinCount();
-  initializeMailbox();
+
+  // Initialize mailbox (only once!)
+  await initializeMailbox();
 
   document.getElementById('addCatBtnEmpty')
     ?.addEventListener('click', () =>
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   console.log('✅ Systems initialized');
 });
+
 
 // ───────────── Expose to Window (for inline HTML handlers) ─────────────
 Object.assign(window, {

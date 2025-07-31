@@ -1,887 +1,846 @@
 /*-----------------------------------------------------------------------------
-  mailbox.js - Enhanced mailbox system with conversation history for SENT
+  mailbox.js (CLIENT) - Messages System for Cat Walk Game
+  Handles real-time messaging via Socket.io
 -----------------------------------------------------------------------------*/
 
-// Sample message data - in a real app this would come from a server/database
-const messageData = {
-  1: {
-    title: "Welcome to CatWalk! Your fashion journey begins now.",
-    date: "12/06/2025",
-    body: `Welcome to CatWalk, the ultimate cat fashion experience!
-We're thrilled to have you join our community of cat fashion enthusiasts. Here at CatWalk, you can:
-• Collect and customize adorable cats
-• Dress them up in the latest fashion trends
-• Show off your styling skills in fashion shows
-• Earn coins and unlock new outfits
-• Connect with other cat lovers
-Your journey starts now - explore the shop, customize your cats, and let your creativity shine!
-Meow-gnificent adventures await!
-- The CatWalk Team`
-  },
-  2: {
-    title: "New outfit collection available in the shop!",
-    date: "12/05/2025",
-    body: `Exciting news! 
-We've just added a brand new collection of outfits to the shop:
-🎩 Elegant Top Hats Collection
-👗 Summer Breeze Dresses
-🕶️ Cool Shades Accessories
-👑 Royal Crown Series
-Each piece has been carefully designed to make your cats look absolutely stunning. Check out the shop now and give your feline friends the makeover they deserve!
-Limited time offer: Get 20% off your first purchase from the new collection!
-Happy styling!`
-  },
-  3: {
-    title: "Your cat looks amazing in the latest fashion show!",
-    date: "12/04/2025",
-    body: `Congratulations!
-Your cat absolutely stole the show in yesterday's fashion event! The judges were impressed by your creative styling choices and attention to detail.
-Your cat scored:
-• Style: 9.5/10
-• Creativity: 9.8/10
-• Overall Impact: 9.7/10
-As a reward for your excellent fashion sense, you've earned 150 bonus coins!
-Keep up the fantastic work and we can't wait to see what amazing looks you'll create next.
-Strike a pose! 📸`
-  },
-  4: {
-    title: "Reminder: Don't forget to feed your cats daily.",
-    date: "12/03/2025",
-    body: `Friendly reminder! 🐱
-Your cats need daily care to stay happy and healthy. Remember to:
-• Feed them their favorite treats
-• Give them plenty of attention and pets
-• Keep them clean and groomed
-• Make sure they get enough rest
-Happy cats perform better in fashion shows and are more responsive to styling. A well-cared-for cat is a beautiful cat!
-Take good care of your feline friends and they'll reward you with purrs and excellent runway performances.`
-  },
-  5: {
-    title: "System maintenance scheduled for tonight.",
-    date: "12/02/2025",
-    body: `Important Notice: Scheduled Maintenance
-We will be performing system maintenance tonight from 2:00 AM to 4:00 AM EST to improve your CatWalk experience.
-During this time:
-• The game may be temporarily unavailable
-• Fashion shows will be paused
-• Shop purchases may be delayed
-Expected improvements:
-• Faster loading times
-• Better outfit rendering
-• Enhanced stability
-• Bug fixes and performance optimizations
-We apologize for any inconvenience and appreciate your patience as we make CatWalk even better!
-- Technical Team`
-  },
-  6: {
-    title: "Special event: Double coins weekend starts tomorrow!",
-    date: "12/01/2025",
-    body: `🎉 DOUBLE COINS WEEKEND! 🎉
-Get ready for an amazing weekend event!
-Starting tomorrow, you'll earn DOUBLE COINS for:
-• Participating in fashion shows
-• Completing daily challenges
-• Caring for your cats
-• Trying new outfit combinations
-This is the perfect time to:
-• Save up for that expensive outfit you've been eyeing
-• Unlock new cat breeds
-• Build up your coin reserves
-Event runs from Friday 6 PM to Monday 6 AM.
-Don't miss out on this incredible opportunity to boost your coin collection!
-See you on the runway! ✨`
-  },
-  7: {
-    title: "Got ideas for new outfits or features? Contact us!",
-    date: "11/30/2025",
-    body: `We Want to Hear From You! 💭
-CatWalk is constantly evolving, and YOUR feedback helps shape the future of the game!
-We'd love to hear your ideas about:
-• New outfit designs and themes
-• Fashion show improvements
-• Cat breeds you'd like to see
-• Quality of life features
-• Anything else that would make your experience better!
-How to reach us:
-• Use the "Contact Us" tab in this mailbox
-• Email us at feedback@catwalk-game.com
-• Join our community forums
-Every suggestion is read and considered by our development team. Some of the best features in CatWalk came directly from player suggestions!
-Thank you for helping us make CatWalk purr-fect! 🐾`
-  },
-  8: {
-    title: "Recent outfit loading bugs have been fixed.",
-    date: "11/29/2025",
-    body: `Bug Fix Update - Version 1.2.3
-We've successfully resolved the outfit loading issues that some players experienced last week.
-Fixed Issues:
-• Outfits not displaying properly after purchase
-• Accessories disappearing when switching between cats
-• Slow loading times in the customization menu
-• Fashion show outfit preview errors
-Additional Improvements:
-• Smoother transitions between different views
-• Better memory management for large outfit collections
-• Enhanced compatibility with older devices
-• More reliable save system
-If you continue to experience any issues, please don't hesitate to contact our support team.
-Thank you for your patience and for reporting these bugs!
-- Development Team`
-  }
-};
+import { getLoggedInUserInfo } from '../../core/utils.js';
+import { APP_URL } from '../../core/config.js';
 
-// Enhanced SENT message data with conversation history
-const sentMessageData = {
-  1: {
-    title: "Feedback about cat outfits and color coordination",
-    date: "12/01/2025",
-    conversation: [
-      {
-        sender: "player",
-        message: `Hi CatWalk Team,
-I love the new outfit collections! The summer dresses are particularly cute. However, I noticed that some of the accessories don't quite match the color palette of certain cat breeds. 
-Would it be possible to add more color variations for accessories to better complement all the different cat breeds?
-Thanks for all your hard work on this amazing game!
-Best regards,
-A CatWalk Fan`,
-        timestamp: "12/01/2025 2:30 PM"
-      },
-      {
-        sender: "admin",
-        message: `Hello!
-Thank you so much for your thoughtful feedback! We're delighted to hear that you're enjoying the summer dress collection.
-Your observation about color coordination is spot-on and actually something our design team has been discussing. We're planning to release expanded color palettes for accessories in our next update.
-Keep an eye out for the announcement in the coming weeks!
-Best regards,
-CatWalk Design Team`,
-        timestamp: "12/01/2025 4:15 PM"
-      },
-      {
-        sender: "player",
-        message: `That's fantastic news! I'm really excited to see the new color options. Will this include the hat collection as well?`,
-        timestamp: "12/01/2025 6:20 PM"
-      },
-      {
-        sender: "admin",
-        message: `Absolutely! The hat collection will be getting the same treatment. We're particularly excited about adding some seasonal color variants that should pair beautifully with all cat breeds.`,
-        timestamp: "12/02/2025 9:00 AM"
-      }
-    ]
-  },
-  2: {
-    title: "Suggestion for winter-themed outfits",
-    date: "11/28/2025",
-    conversation: [
-      {
-        sender: "player",
-        message: `Hello!
-I was wondering if you could consider adding some winter-themed outfits? My cats would look absolutely adorable in little scarves and winter hats!
-Maybe you could also add some snow-themed backgrounds for the fashion shows during the winter season?
-Thanks for considering my suggestion!`,
-        timestamp: "11/28/2025 1:45 PM"
-      },
-      {
-        sender: "admin",
-        message: `What a lovely suggestion! Winter-themed outfits sound absolutely adorable. We're actually in the early planning stages for our winter collection.
-Scarves and winter hats are definitely on our list, along with cozy sweaters and maybe even some tiny boots!
-The snow-themed backgrounds idea is brilliant too - we'll share this with our environment art team.
-Thank you for the creative input!`,
-        timestamp: "11/28/2025 5:20 PM"
-      },
-      {
-        sender: "player",
-        message: `Oh wow, tiny boots would be so cute! When do you think the winter collection might be released?`,
-        timestamp: "11/29/2025 8:30 AM"
-      }
-    ]
-  },
-  3: {
-    title: "Bug report - outfit loading issue",
-    date: "11/25/2025",
-    conversation: [
-      {
-        sender: "player",
-        message: `Hi Support Team,
-I've been experiencing an issue where some outfits don't display properly after purchase. The accessories seem to disappear when I switch between different cats.
-This happens most often with the new hat collection. Is this a known issue?
-Thanks for your help!`,
-        timestamp: "11/25/2025 3:10 PM"
-      },
-      {
-        sender: "admin",
-        message: `Hi there!
-Thank you for reporting this issue. Yes, this is a known bug that we're actively working on fixing. It seems to affect the hat collection specifically due to a rendering conflict.
-As a temporary workaround, try refreshing the page after switching cats - this should restore the missing accessories.
-We expect to have a permanent fix deployed by the end of this week.
-Sorry for the inconvenience!`,
-        timestamp: "11/25/2025 4:45 PM"
-      },
-      {
-        sender: "player",
-        message: `Thanks for the quick response! The workaround helps. Looking forward to the fix.`,
-        timestamp: "11/25/2025 6:00 PM"
-      },
-      {
-        sender: "admin",
-        message: `Great news! The fix has been deployed. You should no longer experience the disappearing accessories issue. Let us know if you encounter any other problems!`,
-        timestamp: "11/29/2025 2:30 PM"
-      }
-    ]
-  },
-  4: {
-    title: "Thank you for the Double Coins Weekend!",
-    date: "11/20/2025",
-    conversation: [
-      {
-        sender: "player",
-        message: `Dear CatWalk Team,
-I just wanted to say thank you for the amazing Double Coins Weekend event! It was so much fun and I was able to save up enough coins to buy some really cool outfits for my cats.
-Please consider doing more events like this in the future!
-Best wishes,
-Happy Player`,
-        timestamp: "11/20/2025 7:20 PM"
-      },
-      {
-        sender: "admin",
-        message: `Aww, thank you so much for this wonderful message! It absolutely made our day to hear that you enjoyed the Double Coins Weekend.
-Events like these are definitely something we want to do more often. We're already planning some exciting events for the holiday season!
-Keep an eye on your mailbox for announcements. 😊`,
-        timestamp: "11/21/2025 10:15 AM"
-      }
-    ]
-  },
-  5: {
-    title: "Request for new cat breeds",
-    date: "11/15/2025",
-    conversation: [
-      {
-        sender: "player",
-        message: `Hello,
-I absolutely love CatWalk and have been playing for a while now. I was wondering if you have any plans to add more cat breeds to the game?
-I would particularly love to see:
-• Maine Coon cats
-• Ragdoll cats  
-• Scottish Fold cats
-• Bengal cats
-Thanks for making such an awesome game!`,
-        timestamp: "11/15/2025 12:30 PM"
-      },
-      {
-        sender: "admin",
-        message: `Hello!
-Thank you for your continued support and for playing CatWalk! We're thrilled that you're enjoying the game.
-Your breed suggestions are fantastic! Maine Coons and Ragdolls are actually in development right now. Scottish Folds and Bengals are on our wishlist for future updates.
-Each new breed takes quite a bit of work to implement properly (different body shapes, fur patterns, etc.) but we're committed to expanding our feline family!
-Stay tuned for announcements!`,
-        timestamp: "11/15/2025 3:45 PM"
-      },
-      {
-        sender: "player",
-        message: `That's so exciting! I can't wait to see the Maine Coons especially. Will they have their characteristic long fur?`,
-        timestamp: "11/15/2025 8:15 PM"
-      },
-      {
-        sender: "admin",
-        message: `Absolutely! The Maine Coons will have their beautiful long, fluffy fur with all the characteristic tufts and plumes. We're really focusing on making each breed authentic to their real-world counterparts.`,
-        timestamp: "11/16/2025 11:20 AM"
-      }
-    ]
-  }
-};
+// Constants
+const MAX_MESSAGE_LENGTH = 250;
+const MAX_SUBJECT_LENGTH = 50;
 
-// ===== MAIN MAILBOX FUNCTIONS =====
-export function toggleMailbox() {
-  console.log('🐱 toggleMailbox called');
-  const mailboxDisplay = document.getElementById('mailboxDisplay');
-  if (mailboxDisplay) {
-    const isVisible = mailboxDisplay.classList.contains('show');
-    console.log(`Mailbox currently ${isVisible ? 'visible' : 'hidden'}, toggling...`);
-    mailboxDisplay.classList.toggle('show');
+// Global state
+let socket = null;
+let currentUser = null;
+let mailboxData = {
+  tickets: [],
+  broadcasts: [],
+  unread_tickets: 0,
+  unread_broadcasts: 0
+};
+let currentView = 'list'; // 'list', 'detail', 'contact', 'conversation'
+let currentTab = 'all'; // 'all', 'unread', 'sent', 'contact'
+let selectedMessage = null;
+let selectedTicket = null;
+
+// DOM Elements (cached for performance)
+let mailboxDisplay = null;
+let mailboxButtons = [];
+let contentArea = null;
+let messagesList = null;
+let messageView = null;
+let contactView = null;
+let conversationView = null;
+
+/**
+ * Initialize the mailbox system
+ */
+export async function initializeMailbox() {
+  try {
+    // Get current user info
+    currentUser = await getLoggedInUserInfo();
     
-    // If we're showing the mailbox and handlers aren't set up, set them up now
-    if (!isVisible && !mailboxDisplay.hasAttribute('data-handlers-setup')) {
-      console.log('📧 Setting up handlers as mailbox becomes visible...');
-      setupMailboxHandlers();
-    }
-  } else {
-    console.error('❌ Mailbox display element not found!');
+    // Cache DOM elements
+    cacheElements();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Connect to Socket.io
+    await connectSocket();
+    
+    console.log('📬 Mailbox initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize mailbox:', error);
   }
 }
 
-export function initializeMailbox() {
-  console.log('🐱 Initializing mailbox system...');
+/**
+ * Cache DOM elements for better performance
+ */
+function cacheElements() {
+  mailboxDisplay = document.getElementById('mailboxDisplay');
+  contentArea = document.querySelector('.mailbox-content');
+  messagesList = document.getElementById('allMessagesList');
+  messageView = document.getElementById('messageView');
+  contactView = document.getElementById('contactView');
+  conversationView = document.querySelector('.conversation-view');
   
-  // Use a more robust approach to ensure DOM is ready
-  const init = () => {
-    console.log('🐱 DOM ready, setting up mailbox...');
-    
-    // Add a small delay to ensure all elements are fully rendered
-    setTimeout(() => {
-      const mailboxDisplay = document.getElementById('mailboxDisplay');
-      if (mailboxDisplay) {
-        console.log('✅ Mailbox display found, checking for buttons...');
-        const buttons = mailboxDisplay.querySelectorAll('.mailbox-btn');
-        console.log(`Found ${buttons.length} mailbox buttons`);
-        
-        if (buttons.length > 0) {
-          setupMailboxHandlers();
-        } else {
-          console.warn('⚠️ No mailbox buttons found during initialization');
-        }
-      } else {
-        console.error('❌ Mailbox display not found during initialization');
-      }
-    }, 100);
-  };
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  // Cache navigation buttons
+  mailboxButtons = Array.from(document.querySelectorAll('.mailbox-btn'));
 }
 
-// ===== PRIVATE FUNCTIONS =====
-function setupMailboxHandlers() {
-  console.log('🐱 Setting up mailbox handlers...');
-  
-  const mailboxDisplay = document.getElementById('mailboxDisplay');
-  if (!mailboxDisplay) {
-    console.error('❌ Cannot setup handlers: mailbox display not found');
-    return;
-  }
-  
-  // Check if handlers are already set up
-  if (mailboxDisplay.hasAttribute('data-handlers-setup')) {
-    console.log('✅ Handlers already set up, skipping...');
-    return;
-  }
-  
-  // Setup tab button handlers
-  const mailboxBtns = mailboxDisplay.querySelectorAll('.mailbox-btn');
-  console.log(`🔍 Found ${mailboxBtns.length} mailbox buttons`);
-  
-  if (mailboxBtns.length === 0) {
-    console.error('❌ No mailbox buttons found!');
-    return;
-  }
-  
-  mailboxBtns.forEach((btn, index) => {
-    const tabType = btn.getAttribute('data-tab');
-    console.log(`📝 Setting up button ${index + 1}: ${tabType}`);
-    
-    // Remove any existing listeners to prevent duplicates
-    btn.removeEventListener('click', handleTabClick);
-    
-    // Add the click handler
-    btn.addEventListener('click', handleTabClick);
+/**
+ * Setup all event listeners
+ */
+function setupEventListeners() {
+  // Tab navigation
+  mailboxButtons.forEach(btn => {
+    btn.addEventListener('click', () => handleTabSwitch(btn.dataset.tab));
   });
   
-  // Setup message click handlers for both ALL and SENT messages
-  setupMessageClickHandlers();
+  // Back button in message view
+  const backBtn = document.getElementById('backToListBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => showView('list'));
+  }
   
-  // Setup control button handlers
-  setupMessageViewControls();
-  setupContactViewControls();
+  // Send button in contact view
+  const sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) {
+    sendBtn.addEventListener('click', handleSendMessage);
+  }
   
-  // Mark handlers as set up
-  mailboxDisplay.setAttribute('data-handlers-setup', 'true');
+  // Contact form validation
+  const subjectInput = document.getElementById('contactSubjectInput');
+  const messageInput = document.getElementById('contactInput');
   
-  console.log('✅ Mailbox handlers initialized successfully');
+  if (subjectInput) {
+    subjectInput.addEventListener('input', () => validateInput(subjectInput, MAX_SUBJECT_LENGTH));
+  }
+  
+  if (messageInput) {
+    messageInput.addEventListener('input', () => validateInput(messageInput, MAX_MESSAGE_LENGTH));
+  }
+  
+  // Set current date in contact view
+  const contactDateElement = document.getElementById('contactViewDate');
+  if (contactDateElement) {
+    contactDateElement.textContent = formatDate(new Date());
+  }
 }
 
-// Separate function for tab click handling to avoid closure issues
-function handleTabClick(event) {
-  const clickedBtn = event.currentTarget;
-  const tabType = clickedBtn.getAttribute('data-tab');
-  
-  console.log(`🔄 Tab clicked: ${tabType}`);
-  
-  // Remove active class from all buttons
-  const allBtns = document.querySelectorAll('.mailbox-btn');
-  allBtns.forEach(b => b.classList.remove('active'));
-  
-  // Add active class to clicked button
-  clickedBtn.classList.add('active');
-  
-  // Show appropriate content
-  showTabContent(tabType);
+/**
+ * Connect to Socket.io server
+ */
+async function connectSocket() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token');
+    }
+    
+    // Import Socket.io (assuming it's available globally or via CDN)
+    const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
+    
+    socket = io({
+       transports: ['websocket'],
+      auth: {
+        token: token
+      }
+    });
+    
+    // Connection events
+    socket.on('connect', () => {
+      loadMailboxData();
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('📬 Disconnected from mailbox server');
+    });
+    
+    socket.on('connect_error', (error) => {
+      console.error('📬 Connection error:', error);
+    });
+    
+    // Mailbox events
+    socket.on('connection_confirmed', () => {
+      console.log('📬 Connection confirmed by server');
+    });
+    
+    socket.on('mailbox_data', handleMailboxData);
+    socket.on('ticket_messages', handleTicketMessages);
+    socket.on('new_message', handleNewMessage);
+    socket.on('new_broadcast', handleNewBroadcast);
+    socket.on('message_status_update', handleMessageStatusUpdate);
+    socket.on('ticket_created', handleTicketCreated);
+    socket.on('error', handleSocketError);
+    
+  } catch (error) {
+    console.error('❌ Failed to connect to mailbox server:', error);
+  }
 }
 
-function showTabContent(tabType) {
-  console.log(`🔄 Showing tab content: ${tabType}`);
+/**
+ * Toggle mailbox visibility
+ */
+export function toggleMailbox() {
+  if (!mailboxDisplay) return;
+  
+  const isVisible = mailboxDisplay.classList.contains('show');
+  
+  if (isVisible) {
+    closeMailbox();
+  } else {
+    openMailbox();
+  }
+}
+
+/**
+ * Open mailbox
+ */
+function openMailbox() {
+  if (!mailboxDisplay) return;
+  
+  mailboxDisplay.classList.add('show');
+  
+  // Load fresh data when opening
+  if (socket && socket.connected) {
+    loadMailboxData();
+  }
+  
+  // Reset to default view
+  showView('list');
+  setActiveTab('all');
+}
+
+/**
+ * Close mailbox
+ */
+function closeMailbox() {
+  if (!mailboxDisplay) return;
+  
+  mailboxDisplay.classList.remove('show');
+}
+
+/**
+ * Load mailbox data from server
+ */
+function loadMailboxData() {
+  if (socket) {
+    socket.emit('get_mailbox_data');
+  }
+}
+
+/**
+ * Handle mailbox data from server
+ */
+function handleMailboxData(data) {
+  mailboxData = data;
+  console.log('📬 Received mailbox data:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // Render current view
+  renderCurrentView();
+}
+
+/**
+ * Handle tab switching
+ * 
+ * Tab Behavior:
+ * - ALL MESSAGES: Shows all broadcasts (read = white, unread = grey)
+ * - UNREAD: Shows only unread broadcasts (same coloring)
+ * - SENT: Shows all tickets - player-created AND admin-replied (opened = white, closed = grey)
+ * - CONTACT US: Create new ticket form
+ */
+function handleTabSwitch(tab) {
+  currentTab = tab;
+  setActiveTab(tab);
+  
+  switch (tab) {
+    case 'all':
+      showView('list');
+      renderAllMessages(); // All broadcasts
+      break;
+    case 'unread':
+      showView('list');
+      renderUnreadMessages(); // Unread broadcasts only
+      break;
+    case 'sent':
+      showView('list');
+      renderSentMessages(); // All tickets (both directions)
+      break;
+    case 'contact':
+      showView('contact');
+      clearContactForm();
+      break;
+  }
+}
+
+/**
+ * Set active tab visual state
+ */
+function setActiveTab(activeTab) {
+  mailboxButtons.forEach(btn => {
+    if (btn.dataset.tab === activeTab) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Show specific view
+ */
+function showView(view) {
+  currentView = view;
   
   // Hide all views first
-  hideAllViews();
+  if (messagesList) messagesList.style.display = 'none';
+  if (messageView) messageView.style.display = 'none';
+  if (contactView) contactView.style.display = 'none';
+  if (conversationView) conversationView.style.display = 'none';
   
-  if (tabType === 'all') {
-    const messageList = document.getElementById('allMessagesList');
-    if (messageList) {
-      messageList.style.display = 'flex';
-      console.log('✅ Showing all messages');
-    } else {
-      console.error('❌ All messages list not found');
+  // Show the requested view
+  switch (view) {
+    case 'list':
+      if (messagesList) messagesList.style.display = 'flex';
+      break;
+    case 'detail':
+      if (messageView) messageView.style.display = 'flex';
+      break;
+    case 'contact':
+      if (contactView) contactView.style.display = 'flex';
+      break;
+    case 'conversation':
+      if (conversationView) conversationView.style.display = 'flex';
+      break;
+  }
+}
+
+/**
+ * Render all messages (ALL MESSAGES tab - shows all broadcasts)
+ */
+function renderAllMessages() {
+  if (!messagesList) return;
+  
+  // ALL MESSAGES = All broadcasts only
+  const allBroadcasts = mailboxData.broadcasts.map(b => ({ ...b, type: 'broadcast' }))
+    .sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+  
+  renderMessageList(allBroadcasts);
+}
+
+/**
+ * Render unread messages (UNREAD tab - shows unread broadcasts only)
+ */
+function renderUnreadMessages() {
+  if (!messagesList) return;
+  
+  // UNREAD = Only unread broadcasts
+  const unreadBroadcasts = mailboxData.broadcasts
+    .filter(b => !b.is_read)
+    .map(b => ({ ...b, type: 'broadcast' }))
+    .sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+  
+  renderMessageList(unreadBroadcasts);
+}
+
+/**
+ * Render sent messages (SENT tab - shows all tickets)
+ */
+function renderSentMessages() {
+  if (!messagesList) return;
+  
+  // SENT = All tickets (both player-created and admin-replied)
+  const allTickets = mailboxData.tickets.map(t => ({ ...t, type: 'ticket' }))
+    .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
+  
+  renderMessageList(allTickets);
+}
+
+/**
+ * Render message list
+ */
+function renderMessageList(messages) {
+  if (!messagesList) return;
+  
+  messagesList.innerHTML = '';
+  
+  messages.forEach(message => {
+    const messageBox = createMessageBox(message);
+    messagesList.appendChild(messageBox);
+  });
+}
+
+/**
+ * Create individual message box element
+ */
+function createMessageBox(message) {
+  const messageBox = document.createElement('div');
+  messageBox.className = 'message-box';
+  messageBox.dataset.messageId = message.id;
+  messageBox.dataset.messageType = message.type;
+  
+  // Add read class based on message type and status
+  if (message.type === 'broadcast') {
+    // For broadcasts: read = white background, unread = grey background
+    if (message.is_read) {
+      messageBox.classList.add('read');
     }
-  } else if (tabType === 'sent') {
-    showSentMessagesList();
-  } else if (tabType === 'contact') {
-    showContactView();
-  } else if (tabType === 'unread') {
-    // For unread tab, show empty for now
-    console.log('✅ Showing unread (empty for now)');
-  }
-}
-
-function hideAllViews() {
-  const views = ['allMessagesList', 'sentMessagesList', 'messageView', 'contactView', 'conversationView'];
-  views.forEach(viewId => {
-    const view = document.getElementById(viewId);
-    if (view) view.style.display = 'none';
-  });
-}
-
-function showSentMessagesList() {
-  console.log('📤 Showing sent messages list');
-  
-  let sentMessagesList = document.getElementById('sentMessagesList');
-  
-  // Create sent messages list if it doesn't exist
-  if (!sentMessagesList) {
-    console.log('📤 Creating sent messages list...');
-    sentMessagesList = createSentMessagesList();
+  } else if (message.type === 'ticket') {
+    // For tickets: opened = white background, closed = grey background
+    if (message.status === 'closed') {
+      messageBox.classList.add('read');
+    }
   }
   
-  if (sentMessagesList) {
-    sentMessagesList.style.display = 'flex';
-    console.log('✅ Sent messages list shown');
-  } else {
-    console.error('❌ Failed to create/show sent messages list');
-  }
-}
-
-function createSentMessagesList() {
-  const mailboxContent = document.querySelector('.mailbox-content');
-  if (!mailboxContent) {
-    console.error('❌ Mailbox content not found');
-    return null;
-  }
+  const title = document.createElement('div');
+  title.className = 'message-title';
+  title.textContent = message.subject;
   
-  // Create the sent messages list container
-  const sentMessagesList = document.createElement('div');
-  sentMessagesList.className = 'message-list';
-  sentMessagesList.id = 'sentMessagesList';
-  sentMessagesList.style.display = 'none';
+  const date = document.createElement('div');
+  date.className = 'message-date';
+  date.textContent = formatDate(new Date(message.sent_at || message.last_activity_at));
   
-  // Create message boxes for sent messages
-  Object.entries(sentMessageData).forEach(([messageId, message]) => {
-    const messageBox = document.createElement('div');
-    messageBox.className = 'message-box';
-    messageBox.setAttribute('data-message-id', `sent-${messageId}`);
-    messageBox.setAttribute('data-message-type', 'sent');
-    
-    const messageTitle = document.createElement('div');
-    messageTitle.className = 'message-title';
-    messageTitle.textContent = message.title;
-    
-    const messageDate = document.createElement('div');
-    messageDate.className = 'message-date';
-    messageDate.textContent = message.date;
-    
-    messageBox.appendChild(messageTitle);
-    messageBox.appendChild(messageDate);
-    sentMessagesList.appendChild(messageBox);
+  messageBox.appendChild(title);
+  messageBox.appendChild(date);
+  
+  // Click handler
+  messageBox.addEventListener('click', () => {
+    if (message.type === 'broadcast') {
+      showBroadcastDetail(message);
+    } else if (message.type === 'ticket') {
+      // All tickets (from SENT tab) should open conversation view
+      showTicketDetail(message);
+    }
   });
   
-  // Add to mailbox content
-  mailboxContent.appendChild(sentMessagesList);
-  
-  // Setup click handlers for sent messages
-  setupSentMessageClickHandlers();
-  
-  console.log('✅ Sent messages list created');
-  return sentMessagesList;
+  return messageBox;
 }
 
-function setupSentMessageClickHandlers() {
-  const sentMessageBoxes = document.querySelectorAll('[data-message-type="sent"]');
-  console.log(`📨 Setting up ${sentMessageBoxes.length} sent message click handlers`);
+/**
+ * Show broadcast detail
+ */
+function showBroadcastDetail(broadcast) {
+  selectedMessage = broadcast;
   
-  sentMessageBoxes.forEach(messageBox => {
-    messageBox.addEventListener('click', function() {
-      const messageId = this.getAttribute('data-message-id');
-      console.log(`📧 Sent message clicked: ${messageId}`);
-      if (messageId) showConversationView(messageId);
+  // Update message view elements
+  const titleElement = document.getElementById('messageViewTitle');
+  const dateElement = document.getElementById('messageViewDate');
+  const bodyElement = document.getElementById('messageViewBody');
+  
+  if (titleElement) titleElement.textContent = broadcast.subject;
+  if (dateElement) dateElement.textContent = formatDate(new Date(broadcast.sent_at));
+  if (bodyElement) bodyElement.innerHTML = `<p>${broadcast.body}</p>`;
+  
+  // Mark as read if not already
+  if (!broadcast.is_read) {
+    socket.emit('mark_broadcast', { broadcast_id: broadcast.id });
+  }
+  
+  showView('detail');
+}
+
+/**
+ * Show ticket detail (conversation view)
+ */
+function showTicketDetail(ticket) {
+  selectedTicket = ticket;
+  
+  // Request ticket messages from server
+  socket.emit('get_ticket_messages', { ticket_id: ticket.id });
+}
+
+/**
+ * Handle ticket messages from server
+ */
+function handleTicketMessages(data) {
+  const { ticket_id, messages } = data;
+  
+  if (selectedTicket && selectedTicket.id === ticket_id) {
+    renderConversationView(messages);
+    showView('conversation');
+  }
+}
+
+/**
+ * Render conversation view
+ */
+function renderConversationView(messages) {
+  if (!conversationView) return;
+  
+  // Update conversation header
+  const titleElement = conversationView.querySelector('.conversation-view-title');
+  const dateElement = conversationView.querySelector('.conversation-view-date');
+  
+  if (titleElement && selectedTicket) titleElement.textContent = selectedTicket.subject;
+  if (dateElement && selectedTicket) dateElement.textContent = formatDate(new Date(selectedTicket.created_at));
+  
+  // Render message history
+  const historyContainer = conversationView.querySelector('.conversation-history');
+  if (historyContainer) {
+    historyContainer.innerHTML = '';
+    
+    messages.forEach(message => {
+      const messageElement = createConversationMessage(message);
+      historyContainer.appendChild(messageElement);
     });
-  });
-}
-
-function createConversationView() {
-  const mailboxContent = document.querySelector('.mailbox-content');
-  if (!mailboxContent) {
-    console.error('❌ Mailbox content not found');
-    return null;
-  }
-  
-  // Create conversation view container
-  const conversationView = document.createElement('div');
-  conversationView.className = 'conversation-view';
-  conversationView.id = 'conversationView';
-  conversationView.style.display = 'none';
-  
-  conversationView.innerHTML = `
-    <!-- Conversation Header -->
-    <div class="conversation-view-header">
-      <div class="conversation-view-title" id="conversationViewTitle">Conversation Title</div>
-      <div class="conversation-view-date" id="conversationViewDate">Date</div>
-    </div>
-    
-    <!-- Conversation History -->
-    <div class="conversation-history" id="conversationHistory">
-      <!-- Messages will be inserted here -->
-    </div>
-    
-    <!-- Message Input Area -->
-    <div class="conversation-input-container">
-      <textarea class="conversation-input-area" id="conversationInput" placeholder="Type your message here..."></textarea>
-      <div class="conversation-controls">
-        <button class="back-btn" id="backToSentListBtn">←</button>
-        <button class="send-btn" id="conversationSendBtn">SEND</button>
-      </div>
-    </div>
-  `;
-  
-  // Add to mailbox content
-  mailboxContent.appendChild(conversationView);
-  
-  // Setup event handlers for the conversation view
-  setupConversationViewControls();
-  
-  console.log('✅ Conversation view created');
-  return conversationView;
-}
-
-function setupConversationViewControls() {
-  const backBtn = document.getElementById('backToSentListBtn');
-  const sendBtn = document.getElementById('conversationSendBtn');
-  
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      console.log('⬅️ Back to sent list button clicked');
-      goBackToSentList();
-    });
-  }
-  
-  if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
-      console.log('📤 Conversation send button clicked');
-      handleConversationSend();
-    });
-  }
-}
-
-function showConversationView(messageId) {
-  console.log(`💬 Showing conversation view for ID: ${messageId}`);
-  
-  // Extract the actual ID (remove 'sent-' prefix)
-  const actualId = messageId.replace('sent-', '');
-  const conversation = sentMessageData[actualId];
-  
-  if (!conversation) {
-    console.error('❌ Conversation not found:', messageId);
-    return;
-  }
-  
-  // Create conversation view if it doesn't exist
-  let conversationView = document.getElementById('conversationView');
-  if (!conversationView) {
-    conversationView = createConversationView();
-  }
-  
-  if (!conversationView) {
-    console.error('❌ Failed to create conversation view');
-    return;
-  }
-  
-  // Update header
-  const conversationViewTitle = document.getElementById('conversationViewTitle');
-  const conversationViewDate = document.getElementById('conversationViewDate');
-  
-  if (conversationViewTitle) conversationViewTitle.textContent = conversation.title;
-  if (conversationViewDate) conversationViewDate.textContent = conversation.date;
-  
-  // Build conversation history
-  const conversationHistory = document.getElementById('conversationHistory');
-  if (conversationHistory) {
-    conversationHistory.innerHTML = '';
-    
-    conversation.conversation.forEach(message => {
-      const messageElement = document.createElement('div');
-      messageElement.className = `conversation-message ${message.sender}`;
-      
-      messageElement.innerHTML = `
-        <div class="message-content">
-          ${message.message.replace(/\n/g, '<br>')}
-        </div>
-        <div class="message-timestamp">${message.timestamp}</div>
-      `;
-      
-      conversationHistory.appendChild(messageElement);
-    });
-  }
-  
-  // Clear the input
-  const conversationInput = document.getElementById('conversationInput');
-  if (conversationInput) conversationInput.value = '';
-  
-  // Store conversation ID for sending messages
-  conversationView.setAttribute('data-current-conversation-id', messageId);
-  
-  // Hide other views and show conversation view
-  hideAllViews();
-  conversationView.style.display = 'flex';
-  
-  console.log('✅ Conversation view shown');
-}
-
-function goBackToSentList() {
-  console.log('⬅️ Going back to sent list');
-  hideAllViews();
-  showSentMessagesList();
-}
-
-function handleConversationSend() {
-  const conversationInput = document.getElementById('conversationInput');
-  const conversationView = document.getElementById('conversationView');
-  
-  if (!conversationInput || !conversationView) return;
-  
-  const message = conversationInput.value.trim();
-  if (message === '') {
-    console.log('⚠️ No message to send');
-    return;
-  }
-  
-  const conversationId = conversationView.getAttribute('data-current-conversation-id');
-  console.log('📤 Sending message in conversation:', conversationId);
-  console.log('Message:', message);
-  
-  // Add the message to the conversation history visually
-  const conversationHistory = document.getElementById('conversationHistory');
-  if (conversationHistory) {
-    const messageElement = document.createElement('div');
-    messageElement.className = 'conversation-message player';
-    
-    const now = new Date();
-    const timestamp = now.toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric'
-    }) + ' ' + now.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-    
-    messageElement.innerHTML = `
-      <div class="message-content">
-        ${message.replace(/\n/g, '<br>')}
-      </div>
-      <div class="message-timestamp">${timestamp}</div>
-    `;
-    
-    conversationHistory.appendChild(messageElement);
     
     // Scroll to bottom
-    conversationHistory.scrollTop = conversationHistory.scrollHeight;
+    historyContainer.scrollTop = historyContainer.scrollHeight;
   }
   
-  // Clear input
-  conversationInput.value = '';
-  
-  // In a real app, you would send this to the server
-  console.log('✅ Message added to conversation');
+  // Setup conversation input
+  setupConversationInput();
 }
 
-function showContactView() {
-  console.log('📧 Showing contact view');
-  const contactView = document.getElementById('contactView');
-  const contactViewDate = document.getElementById('contactViewDate');
-  const contactInput = document.getElementById('contactInput');
-  const contactSubjectInput = document.getElementById('contactSubjectInput');
+/**
+ * Create conversation message element
+ */
+function createConversationMessage(message) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `conversation-message ${message.sender_type}`;
   
-  if (!contactView) {
-    console.error('❌ Contact view not found');
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'message-content';
+  contentDiv.textContent = message.body;
+  
+  const timestampDiv = document.createElement('div');
+  timestampDiv.className = 'message-timestamp';
+  timestampDiv.textContent = formatDateTime(new Date(message.sent_at));
+  
+  messageDiv.appendChild(contentDiv);
+  messageDiv.appendChild(timestampDiv);
+  
+  return messageDiv;
+}
+
+/**
+ * Setup conversation input functionality
+ */
+function setupConversationInput() {
+  const inputArea = conversationView?.querySelector('.conversation-input-area');
+  const sendBtn = conversationView?.querySelector('.send-btn');
+  const backBtn = conversationView?.querySelector('.back-btn');
+  
+  if (sendBtn) {
+    sendBtn.onclick = () => {
+      if (inputArea && inputArea.value.trim() && selectedTicket) {
+        const message = inputArea.value.trim();
+        
+        if (message.length <= MAX_MESSAGE_LENGTH) {
+          socket.emit('send_message', {
+            ticket_id: selectedTicket.id,
+            body: message
+          });
+          
+          inputArea.value = '';
+        } else {
+          showError('Message too long. Maximum 250 characters.');
+        }
+      }
+    };
+  }
+  
+  if (backBtn) {
+    backBtn.onclick = () => showView('list');
+  }
+}
+
+/**
+ * Handle sending new message (Contact Us)
+ */
+function handleSendMessage() {
+  const subjectInput = document.getElementById('contactSubjectInput');
+  const messageInput = document.getElementById('contactInput');
+  
+  if (!subjectInput || !messageInput) return;
+  
+  const subject = subjectInput.value.trim();
+  const body = messageInput.value.trim();
+  
+  // Validation
+  if (!subject) {
+    showError('Please enter a subject.');
     return;
   }
   
-  // Set current date
-  const currentDate = new Date().toLocaleDateString('en-US', {
+  if (!body) {
+    showError('Please enter a message.');
+    return;
+  }
+  
+  if (subject.length > MAX_SUBJECT_LENGTH) {
+    showError(`Subject too long. Maximum ${MAX_SUBJECT_LENGTH} characters.`);
+    return;
+  }
+  
+  if (body.length > MAX_MESSAGE_LENGTH) {
+    showError(`Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.`);
+    return;
+  }
+  
+  // Send to server
+  socket.emit('create_ticket', {
+    subject: subject,
+    body: body
+  });
+}
+
+/**
+ * Handle ticket created confirmation
+ */
+function handleTicketCreated(data) {
+  console.log('📬 Ticket created:', data);
+  
+  // Clear form
+  clearContactForm();
+  
+  // Show success message
+  showSuccess('Message sent successfully!');
+  
+  // Switch to All Messages tab
+  handleTabSwitch('all');
+  
+  // Reload data
+  loadMailboxData();
+}
+
+/**
+ * Handle new message notification
+ */
+function handleNewMessage(data) {
+  console.log('📬 New message received:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // If currently viewing this conversation, add the message
+  if (currentView === 'conversation' && selectedTicket && selectedTicket.id === data.ticket_id) {
+    const historyContainer = conversationView?.querySelector('.conversation-history');
+    if (historyContainer) {
+      const messageElement = createConversationMessage(data.message);
+      historyContainer.appendChild(messageElement);
+      historyContainer.scrollTop = historyContainer.scrollHeight;
+    }
+  }
+  
+  // Show notification if mailbox is closed
+  if (!mailboxDisplay?.classList.contains('show')) {
+    showNotification('New message received!');
+  }
+  
+  // Reload data to update counts
+  loadMailboxData();
+}
+
+/**
+ * Handle new broadcast notification
+ */
+function handleNewBroadcast(data) {
+  console.log('📬 New broadcast received:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // Show notification if mailbox is closed
+  if (!mailboxDisplay?.classList.contains('show')) {
+    showNotification('New announcement received!');
+  }
+  
+  // Reload data
+  loadMailboxData();
+}
+
+/**
+ * Handle message status update
+ */
+function handleMessageStatusUpdate(data) {
+  console.log('📬 Message status updated:', data);
+  
+  // Update local state and UI if needed
+  updateNotificationIndicators();
+}
+
+/**
+ * Handle socket errors
+ */
+function handleSocketError(error) {
+  console.error('📬 Socket error:', error);
+  showError(error.message || 'Connection error occurred.');
+}
+
+/**
+ * Update notification indicators
+ * Shows count of unread broadcasts + tickets with unread messages
+ */
+function updateNotificationIndicators() {
+  // Count unread broadcasts
+  const unreadBroadcastsCount = mailboxData.broadcasts.filter(b => !b.is_read).length;
+  
+  // Count tickets with unread messages (from admin)
+  const unreadTicketsCount = mailboxData.tickets.filter(t => t.unread_messages > 0).length;
+  
+  const totalUnread = unreadBroadcastsCount + unreadTicketsCount;
+  
+  // Update mailbox icon with notification indicator
+  const mailboxIcon = document.querySelector('.topbar-icon[title="Mailbox"]');
+  if (mailboxIcon && totalUnread > 0) {
+    // Add notification indicator if not exists
+    let indicator = mailboxIcon.querySelector('.notification-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.className = 'notification-indicator';
+      indicator.style.cssText = `
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--color-red);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        z-index: 1001;
+      `;
+      mailboxIcon.style.position = 'relative';
+      mailboxIcon.appendChild(indicator);
+    }
+    indicator.textContent = totalUnread > 99 ? '99+' : totalUnread.toString();
+  } else {
+    // Remove indicator if no unread messages
+    const indicator = mailboxIcon?.querySelector('.notification-indicator');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+}
+
+/**
+ * Render current view based on current tab
+ */
+function renderCurrentView() {
+  switch (currentTab) {
+    case 'all':
+      renderAllMessages();
+      break;
+    case 'unread':
+      renderUnreadMessages();
+      break;
+    case 'sent':
+      renderSentMessages();
+      break;
+    case 'contact':
+      // Contact view doesn't need rendering
+      break;
+  }
+}
+
+/**
+ * Clear contact form
+ */
+function clearContactForm() {
+  const subjectInput = document.getElementById('contactSubjectInput');
+  const messageInput = document.getElementById('contactInput');
+  
+  if (subjectInput) subjectInput.value = '';
+  if (messageInput) messageInput.value = '';
+}
+
+/**
+ * Validate input length
+ */
+function validateInput(input, maxLength) {
+  if (input.value.length > maxLength) {
+    input.value = input.value.substring(0, maxLength);
+    showError(`Maximum ${maxLength} characters allowed.`);
+  }
+}
+
+/**
+ * Format date for display
+ */
+function formatDate(date) {
+  return date.toLocaleDateString('en-US', {
     month: '2-digit',
     day: '2-digit',
     year: 'numeric'
   });
-  if (contactViewDate) contactViewDate.textContent = currentDate;
-  
-  // Clear inputs
-  if (contactInput) contactInput.value = '';
-  if (contactSubjectInput) contactSubjectInput.value = '';
-  
-  contactView.style.display = 'flex';
-  console.log('✅ Contact view shown');
 }
 
-function setupMessageClickHandlers() {
-  const messageBoxes = document.querySelectorAll('[data-message-type]:not([data-message-type="sent"]), .message-box:not([data-message-type])');
-  console.log(`📨 Setting up ${messageBoxes.length} message click handlers`);
-  
-  messageBoxes.forEach(messageBox => {
-    messageBox.addEventListener('click', function() {
-      const messageId = this.getAttribute('data-message-id');
-      console.log(`📧 Message clicked: ${messageId}`);
-      if (messageId) showMessageView(messageId);
-    });
+/**
+ * Format date and time for display
+ */
+function formatDateTime(date) {
+  return date.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 }
 
-function setupMessageViewControls() {
-  const backBtn = document.getElementById('backToListBtn');
-  const markUnreadBtn = document.getElementById('markUnreadBtn');
-  
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      console.log('⬅️ Back button clicked');
-      goBackToCurrentList();
-    });
-  }
-  
-  if (markUnreadBtn) {
-    markUnreadBtn.addEventListener('click', () => {
-      console.log('📝 Mark unread button clicked');
-      markMessageAsUnread();
-    });
-  }
-}
-
-function setupContactViewControls() {
-  const sendBtn = document.getElementById('sendBtn');
-  
-  if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
-      console.log('📤 Send button clicked');
-      handleSendMessage();
-    });
-  }
-}
-
-function showMessageView(messageId) {
-  console.log(`📧 Showing message view for ID: ${messageId}`);
-  const message = messageData[messageId];
-  if (!message) {
-    console.error('❌ Message not found:', messageId);
-    return;
-  }
-  
-  const messageView = document.getElementById('messageView');
-  const messageViewTitle = document.getElementById('messageViewTitle');
-  const messageViewDate = document.getElementById('messageViewDate');
-  const messageViewBody = document.getElementById('messageViewBody');
-  
-  if (!messageView) {
-    console.error('❌ Message view not found');
-    return;
-  }
-  
-  // Update content
-  if (messageViewTitle) messageViewTitle.textContent = message.title;
-  if (messageViewDate) messageViewDate.textContent = message.date;
-  if (messageViewBody) {
-    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => 
-      `<p>${paragraph.replace(/\n/g, '<br>')}</p>`
-    ).join('');
-  }
-  
-  // Store message ID and type for back functionality
-  messageView.setAttribute('data-current-message-id', messageId);
-  messageView.setAttribute('data-current-message-type', 'received');
-  
-  // Hide other views and show message view
-  hideAllViews();
-  messageView.style.display = 'flex';
-  
-  console.log('✅ Message view shown');
-}
-
-function goBackToCurrentList() {
-  console.log('⬅️ Going back to current list');
-  const messageView = document.getElementById('messageView');
-  if (!messageView) return;
-  
-  const messageType = messageView.getAttribute('data-current-message-type');
-  
-  hideAllViews();
-  
-  if (messageType === 'sent') {
-    // Go back to sent messages list
-    showSentMessagesList();
+/**
+ * Show success message
+ */
+function showSuccess(message) {
+  if (typeof Toastify !== 'undefined') {
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "var(--color-gold)",
+      stopOnFocus: true
+    }).showToast();
   } else {
-    // Go back to all messages list
-    const messageList = document.getElementById('allMessagesList');
-    if (messageList) {
-      messageList.style.display = 'flex';
-      console.log('✅ Returned to all messages list');
-    }
+    alert(message);
   }
 }
 
-function markMessageAsUnread() {
-  const messageView = document.getElementById('messageView');
-  if (!messageView) return;
-  
-  const messageId = messageView.getAttribute('data-current-message-id');
-  const messageType = messageView.getAttribute('data-current-message-type');
-  
-  if (messageId) {
-    const messageBox = document.querySelector(`[data-message-id="${messageId}"]`);
-    if (messageBox) {
-      messageBox.classList.add('read');
-      console.log(`✅ Message ${messageId} marked as read`);
-    }
-    goBackToCurrentList();
+/**
+ * Show error message
+ */
+function showError(message) {
+  if (typeof Toastify !== 'undefined') {
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "var(--color-red)",
+      stopOnFocus: true
+    }).showToast();
+  } else {
+    alert(message);
   }
 }
 
-function handleSendMessage() {
-  const contactInput = document.getElementById('contactInput');
-  const contactSubjectInput = document.getElementById('contactSubjectInput');
-  
-  const message = contactInput?.value.trim() || '';
-  const subject = contactSubjectInput?.value.trim() || '';
-  
-  if (message === '' && subject === '') {
-    console.log('⚠️ No message or subject to send');
-    return;
+/**
+ * Show notification
+ */
+function showNotification(message) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Cat Walk', {
+      body: message,
+      icon: '../assets/icons/cat_browser_icon.png'
+    });
+  } else {
+    showSuccess(message);
   }
-  
-  // Log the message (in real app, would send to server)
-  console.log('📤 Message sent:');
-  console.log('Subject:', subject || '(No subject)');
-  console.log('Message:', message || '(No message)');
-  
-  // Clear inputs
-  if (contactInput) contactInput.value = '';
-  if (contactSubjectInput) contactSubjectInput.value = '';
-  
-  // Return to ALL MESSAGES view
-  const allMessagesBtn = document.querySelector('[data-tab="all"]');
-  const mailboxBtns = document.querySelectorAll('.mailbox-btn');
-  
-  mailboxBtns.forEach(b => b.classList.remove('active'));
-  if (allMessagesBtn) allMessagesBtn.classList.add('active');
-  
-  showTabContent('all');
 }
 
-// Make toggleMailbox available globally for HTML onclick handlers
-if (typeof window !== 'undefined') {
-  window.toggleMailbox = toggleMailbox;
+/**
+ * Request notification permission
+ */
+export function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 }
+
+/**
+ * Cleanup function for when user leaves the page
+ */
+export function cleanup() {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+}
+
+// Make toggleMailbox available globally for HTML onclick
+window.toggleMailbox = toggleMailbox;
+
+// Auto-initialize when module loads
+// initializeMailbox();

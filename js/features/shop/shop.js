@@ -38,7 +38,7 @@ export function toggleShop() {
   if (window.shopItemsByCategory) {
     const activeTab = document.querySelector(".tab.active");
     const category = activeTab?.dataset.category?.toLowerCase() || "hats";
-    renderShopItems(window.shopItemsByCategory, category);
+    renderShopItems(category);
   } else {
     console.warn("⚠️ shopItems not loaded yet");
   }

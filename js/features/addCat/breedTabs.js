@@ -2,7 +2,7 @@
   breedTabs.js – builds tabs from breed names (once)
 -----------------------------------------------------------------------------*/
 import { renderBreedItems } from "./breedItemsRenderer.js";
-import { $$ } from "../../core/utils.js";
+import { $$, toPascalCase } from "../../core/utils.js";
 
 export function initBreedTabs() {
   console.log('🏷️ Initializing breed tabs...');
@@ -28,7 +28,7 @@ export function initBreedTabs() {
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.breed = breed;
-    tab.textContent = breed;
+    tab.textContent = toPascalCase(breed);
     if (i === 0) tab.classList.add("active");
     bar.appendChild(tab);
   });

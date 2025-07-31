@@ -1,7 +1,6 @@
 // /features/ui/uiBinder.js
 
 import { toggleShop, closeShop } from '../shop/shop.js';
-import { renderShopItems } from '../shop/shopItemsRenderer.js';
 import { closeAddCat } from '../addCat/addCat.js';
 import { toggleAddCat } from '../addCat/addCat.js';
 

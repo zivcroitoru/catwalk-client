@@ -4,7 +4,7 @@
 import { APP_URL } from './config.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
-const PLAYER_CATS_API  = `${APP_URL}/api/cats`;
+const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
 
@@ -252,7 +252,20 @@ export async function addCatToUser(cat) {
 
 // ───────────── UI Updates ─────────────
 export async function updateCoinCount() {
-  const { coins } = await loadPlayerItems(true);
+  const token = localStorage.getItem('token');
+  const playerId = getPlayerIdFromToken();
+  if (!token || !playerId) return;
+
+  const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    console.error('Failed to fetch player data for coin count:', res.statusText);
+    return;
+  }
+
+  const { coins } = await res.json();
   const el = document.querySelector('.coin-count');
   if (el) {
     el.textContent = coins;
@@ -262,20 +275,53 @@ export async function updateCoinCount() {
   }
 }
 
-export async function updateCatCountUI() {
-  const cats = await getPlayerCats();
-  const el = document.querySelector('.cat-count');
-  if (el) el.textContent = `Total Cats: ${cats.length}`;
+export async function updateUI() {
+  const token = localStorage.getItem('token');
+  const playerId = getPlayerIdFromToken();
+  if (!token || !playerId) {
+    console.warn('⚠️ Missing token or player ID');
+    return;
+  }
+
+  try {
+    console.log('🔄 Fetching player data for UI update...');
+    const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      console.error('❌ Failed to fetch player data:', res.statusText);
+      return;
+    }
+
+    const { coins, cat_count } = await res.json();
+    console.log('✅ Player data fetched:', { coins, cat_count });
+
+    const coinEl = document.querySelector('.coin-count');
+    if (coinEl) {
+      coinEl.textContent = coins;
+      console.log('🪙 Coin count updated:', coins);
+    } else {
+      console.warn('⚠️ .coin-count element not found');
+    }
+
+    const catCountEl = document.getElementById('cat-count');
+    if (catCountEl) {
+      catCountEl.textContent = `Inventory: ${cat_count}/25`;
+      console.log('🐱 Cat count updated:', cat_count);
+    } else {
+      console.warn('⚠️ #cat-count element not found');
+    }
+
+  } catch (err) {
+    console.error('Error updating UI:', err);
+  }
 }
 
-export function updateUI() {
-  updateCoinCount();
-  updateCatCountUI();
-}
 
 export function normalizeCat(cat, spriteByTemplate) {
-  const template = cat.template ?? `${cat.breed}-${cat.variant}-${cat.palette}`;
-
+  const template = cat.template;
+  const [breed, variant, palette] = template?.split('-') ?? [];
   return {
     id: cat.cat_id ?? cat.id,
     template,
@@ -283,7 +329,11 @@ export function normalizeCat(cat, spriteByTemplate) {
     birthdate: cat.birthdate,
     description: cat.description ?? '',
     sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
+    breed: cat.breed || breed,
+    variant: cat.variant || variant,
+    palette: cat.palette || palette,
     selected: false,
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
+

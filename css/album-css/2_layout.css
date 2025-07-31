@@ -101,7 +101,7 @@
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: translate(-200px, 600px) scale(5);
+  transform: translate(-200px, 500px) scale(5);
   margin: 0 auto;
 }
 
@@ -114,8 +114,8 @@
 .cat-layer {
   position: absolute;
   top: 100%;
-  left: 30%;
-  transform: translate(-50%, -105%);
+  left: 50%;
+  transform: translate(-50%, -95%) scale(0.8); /* moved down */
   width: 10.42vw;
   height: auto;
   object-fit: contain;
