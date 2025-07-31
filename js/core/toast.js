@@ -11,22 +11,24 @@ export function toastCatAdded({ breed, name, sprite_url }) {
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 8px;
+        gap: 6px;
       `;
       wrapper.innerHTML = `
         <img src="${sprite_url}" alt="Cat"
-          style="width: 32px; height: 32px; image-rendering: pixelated; margin-bottom: 4px;" />
-        <div><b>${breed} (${name})</b> added!</div>
+          style="width: 32px; height: 32px; image-rendering: pixelated;" />
+        <div style="margin-top: 4px;"><b>${breed} (${name})</b> added!</div>
       `;
       return wrapper;
     })(),
-    duration: 1800,
+    duration: 2000,
     gravity: "top",
     position: "center",
     style: {
       background: "#4caf50",
       border: "2px solid black",
-      padding: "8px",
-      width: "180px",
+      padding: "12px 8px",
+      width: "200px",
       maxWidth: "80vw",
       color: "black",
       boxShadow: "4px 4px #000",
@@ -34,6 +36,7 @@ export function toastCatAdded({ breed, name, sprite_url }) {
     }
   }).showToast();
 }
+
 
 export function toastCancelled() {
   Toastify({
