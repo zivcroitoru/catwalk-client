@@ -5,7 +5,7 @@
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadPlayerItems as loadUserItems, updateCat } from '../../core/storage.js';
+import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
   const nameInput = $('catName');
@@ -13,7 +13,6 @@ export async function showCatProfile(cat) {
   const charCount = $('charCount');
   const descBlock = $('descBlock');
 
-  // Display template properties from template string
   const [breed, variant] = cat.template.split('-');
   $('profileBreed').textContent = breed;
   $('profileVariant').textContent = variant;
@@ -21,7 +20,6 @@ export async function showCatProfile(cat) {
   $('profileBirthday').textContent = cat.birthdate;
   $('profileImage').src = cat.sprite_url;
 
-  // Calculate and display age
   const ageInDays = Math.floor(
     (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
   );
@@ -120,6 +118,14 @@ export function setupEditMode() {
     if (!window.currentCat) return;
 
     toastConfirmDelete(window.currentCat, async () => {
+      try {
+        await deleteCat(window.currentCat.id); // 🔥 DELETE from backend
+      } catch (err) {
+        console.error('❌ Failed to delete cat:', err);
+        toastSimple('Delete failed', '#ff6666');
+        return;
+      }
+
       const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
       if (idx === -1) return;
 
