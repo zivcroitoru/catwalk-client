@@ -52,7 +52,7 @@ export async function renderShopItems(activeCategory) {
       const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
 
       if (isBuy) {
-        showBuyConfirmation(item, playerItems, window.shopItemsByCategory, activeCategory);
+        showBuyConfirmation(item, playerItems, activeCategory); // ✅ fixed call
         return;
       }
 
