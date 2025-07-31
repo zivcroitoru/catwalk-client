@@ -1,4 +1,4 @@
-import { $, setDisplay } from '../../core/ut  // Initialize cats with proper equipment and validate images
+import { $, setDisplay } from '../../core/utils.js'
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
