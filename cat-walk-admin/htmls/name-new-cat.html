@@ -6,43 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>add-clothes</title>
     <link rel="stylesheet" href="../css/naming-new.css">
+        <script defer src="../js-admin/edit-new-cat.js" type="module"></script>
+
 </head>
 
 <div class="menu">
-        <div class="title">MENU</div>
-        <a href="users.html">USERS</a>
-        <div class="separator"></div>
-        <a href="messages.html">MESSAGES (0)</a>
-        <div class="separator"></div>
-        <a href="cat-database.html">CAT LIST</a>
-        <div class="separator"></div>
-        <a href="clothes-database.html">CLOTHES LIST</a>
-        <div class="separator"></div>
-        <a href="add-cats.html" style="font-weight:bolder;">ADD CATS</a>
-        <div class="separator"></div>
-        <a href="add-clothes.html">ADD CLOTHES</a>
-        <div class="separator"></div>
-        <a href="admin-login.html">LOGOUT</a>
+    <div class="title">MENU</div>
+    <a href="users.html">USERS</a>
+    <div class="separator"></div>
+    <a href="messages.html">MESSAGES (0)</a>
+    <div class="separator"></div>
+    <a href="cat-database.html">CAT LIST</a>
+    <div class="separator"></div>
+    <a href="clothes-database.html">CLOTHES LIST</a>
+    <div class="separator"></div>
+    <a href="add-cats.html" style="font-weight:bolder;">ADD CATS</a>
+    <div class="separator"></div>
+    <a href="add-clothes.html">ADD CLOTHES</a>
+    <div class="separator"></div>
+    <a href="admin-login.html">LOGOUT</a>
 
-    </div>
+</div>
 
 
-    <div class="table">
-        <div class="content">
-            <a class="back" href="cat-database.html">
-                ◄BACK
-            </a>
-            <div class="rectangle">
-                <div class="big-cat">
-                    <img src="../PICS/GINGER-TABY-CAT.png" class="cat-pic-data" width="500" height="500">
-                </div>
-                <div class="name">CAT-CAT-CAT
-                </div>
+<div class="table">
+    <div class="content">
+        <a class="back" href="cat-database.html">
+            ◄BACK
+        </a>
+        <div class="rectangle">
+            <div class="big-cat">
+                <img src="../PICS/GINGER-TABY-CAT.png" class="cat-pic-data" id="sprite" width="500" height="500">
             </div>
-            <div class="button-container">
-                <button class="next-button">NEXT</button>
+            <div class="edit-stuff">
+                <p class="cat-name" id="cat-name" contenteditable="true">TEMPLATE-TEMPLATE-TEMPLATE</p>
+                <p class="cat-breed" id="cat-breed" contenteditable="true">BREED</p>
+                <p class="cat-variant" id="cat-variant" contenteditable="true">VARIANT</p>
+                <p class="cat-pallete" id="cat-pallete" contenteditable="true">PALLETE</p>
+                <p class="cat-sprite" id="cat-sprite">ggg</p>
+
             </div>
         </div>
-</body>
+        <div class="button-container">
+            <button class="next-button">NEXT</button>
+        </div>
+    </div>
+    </body>
 
 </html>

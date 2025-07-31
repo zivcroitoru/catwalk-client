@@ -124,7 +124,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-      image-rendering: pixelated;
+    image-rendering: pixelated;
 
 
 }
@@ -152,7 +152,7 @@ body {
 }
 
 .cat-name-input {
-   width: 500px;
+    width: 500px;
     height: 100px;
     font-size: 32px;
     font-weight: 100;
@@ -169,14 +169,13 @@ body {
     padding: 0
 }
 
+
 .cat-sprite,
 .cat-breed,
 .cat-variant,
 .cat-pallete,
 .cat-status,
-.cat-date,
-.clothes-id,
-.clothes-date {
+.cat-date {
     width: 500px;
     height: 100px;
     font-size: 22px;
@@ -192,6 +191,31 @@ body {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+
+.clothes-category,
+.clothes-sprite-url {
+    width: 500px;
+    height: 100px;
+    font-size: 22px;
+    font-weight: 100;
+    color: #878787;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+
 }
 
 
@@ -224,6 +248,7 @@ body {
     align-items: center;
 }
 
+.delete-button-clothes:hover,
 .cancel-button:hover,
 .delete-button:hover,
 .save-button:hover {
@@ -248,6 +273,19 @@ body {
     margin-right: 140px;
 }
 
+.delete-button-clothes {
+    font-family: 'Nunito', sans-serif;
+    width: 200px;
+    height: 80px;
+    background-color: #4E5C4F;
+    border-radius: 100px;
+    font-size: 28px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 140px;
+    margin-top: 100px;
+}
 
 
 

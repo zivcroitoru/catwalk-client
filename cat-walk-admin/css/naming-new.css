@@ -112,16 +112,16 @@ body {
     height: 550px;
     border-radius: 30px;
     transform: scale(0.8);
-    margin-bottom: 80px;
+    /* margin-bottom: 80px; */
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
+    left: 0;
+    transform: scale(0.8);
     border: 5px solid #cccccc;
 
 }
 
 .cat-pic-data,
-.clothes-pic-data{
+.clothes-pic-data {
 
     position: absolute;
     top: 50%;
@@ -131,25 +131,27 @@ body {
 }
 
 
-.name {
+.edit-stuff {
     position: absolute;
     bottom: 0;
+    right: 0;
+    margin-bottom: 60px;
     font-size: 32px;
     color: #4E5C4F;
     font-weight: 400;
     cursor: pointer;
-    background-color: #F6F0F0;
     padding: 20px 100px;
-    border-radius: 50px;
+    border-radius: 100px;
     text-decoration: none;
-    border: 2px solid #ccc;
-    transition: background-color 0.3s;
     gap: 10px;
 }
 
-
-.name:hover {
-    background-color: #dcdcdc;
+.cat-name:hover,
+.cat-breed:hover,
+.cat-variant:hover,
+.cat-pallete:hover,
+.cat-sprite:hover {
+    color: #b2c2b2;
 }
 
 
@@ -198,5 +200,3 @@ body {
 .back:hover {
     color: rgb(29, 44, 36);
 }
-
-

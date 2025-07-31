@@ -1,0 +1,29 @@
+import { APP_URL } from "../../js/core/config.js";
+console.log('APP_URL:', APP_URL);
+
+const uploadBtn = document.getElementById('uploadBtn');
+const spriteInput = document.getElementById('spriteInput');
+const nextButton = document.querySelector('.next-button');
+
+uploadBtn.addEventListener('click', () => {
+  if (spriteInput.style.display === 'none') {
+    spriteInput.style.display = 'block';
+    spriteInput.focus();
+  }
+});
+
+// ✅ NEXT button logic
+nextButton.addEventListener('click', () => {
+  const spriteURL = spriteInput.value.trim();
+
+  if (spriteURL === '') {
+    alert('Please enter a sprite URL before continuing.');
+    return;
+  }
+
+  // ✅ Save it to localStorage
+  localStorage.setItem('spriteURL', spriteURL);
+
+  // ✅ Go to the next page (change to your actual page)
+  window.location.href = 'name-new-cat.html';
+});
