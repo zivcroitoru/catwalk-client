@@ -82,7 +82,6 @@ export async function loadAllData() {
       breedItems[breed].push({
         name: cat.name || "Unnamed", 
         template,
-        sprite: cat,
         sprite_url,
         variant: (cat.variant || 'default'),
         palette: (cat.palette || 'default')

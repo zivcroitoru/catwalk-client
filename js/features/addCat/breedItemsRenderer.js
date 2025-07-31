@@ -94,13 +94,11 @@ function showAddCatConfirmation(breed, variantData) {
       name: `${breed} (${name})`,
       birthdate: new Date().toISOString().split("T")[0],
       description: "",
-      sprite_url,
-
       // Template properties
       breed,
       variant,
       palette,
-      sprite_url: sprite,
+      sprite_url,
 
       // Client-side UI state
       selected: false,
@@ -119,7 +117,7 @@ function showAddCatConfirmation(breed, variantData) {
     console.log(`📦 Total cats: ${window.userCats?.length}`);
 
     updateUIAfterCatAddition(window.userCats.length);
-    toastCatAdded({ breed, name, sprite });
+    toastCatAdded({ breed, name, sprite_url });
     window.closeAddCat?.();
     confirmBox.remove();
 
