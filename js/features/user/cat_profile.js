@@ -5,8 +5,7 @@
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadPlayerItems as loadUserItems, savePlayerItems as saveUserItems } from '../../core/storage.js';
-
+import { loadPlayerItems as loadUserItems } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
   const nameInput = $('catName');
@@ -20,20 +19,13 @@ export async function showCatProfile(cat) {
   $('profileBirthday').textContent = cat.birthdate;
   $('profileImage').src            = cat.image;
 
-  // age in days
   const ageInDays = Math.floor(
     (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
   );
   $('profileAge').textContent = `${ageInDays} days`;
 
-  // persist age
   const idx = window.userCats.findIndex(c => c.id === cat.id);
-  if (idx !== -1) {
-    window.userCats[idx].age = ageInDays;
-    const userItems = await loadUserItems();
-    userItems.userCats = window.userCats;
-    await saveUserItems({ userCats: userItems.userCats });
-  }
+  if (idx !== -1) window.userCats[idx].age = ageInDays;
 
   nameInput.value     = cat.name;
   nameInput.disabled  = true;
@@ -54,6 +46,7 @@ export function setupEditMode() {
     'editBtn','saveBtn','cancelBtn','deleteBtn',
     'catName','catDesc','descBlock','charCount'
   ].map($);
+
   if (els.some(e => !e)) {
     console.warn('⚠️ setupEditMode aborted — missing elements');
     return;
@@ -91,12 +84,7 @@ export function setupEditMode() {
       window.currentCat.description = descInput.value.trim();
 
       const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx !== -1) {
-        window.userCats[idx] = { ...window.currentCat };
-        const userItems = await loadUserItems();
-        userItems.userCats = window.userCats;
-        await saveUserItems({ userCats: userItems.userCats });
-      }
+      if (idx !== -1) window.userCats[idx] = { ...window.currentCat };
 
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
@@ -120,9 +108,6 @@ export function setupEditMode() {
       if (idx === -1) return;
 
       window.userCats.splice(idx, 1);
-      const userItems = await loadUserItems();
-      userItems.userCats = window.userCats;
-      await saveUserItems({ userCats: userItems.userCats });
 
       setDisplay('catProfileScroll', false);
       window.renderCarousel();
@@ -154,6 +139,7 @@ function resizeTextarea(t) {
   t.style.height = 'auto';
   t.style.height = t.scrollHeight + 'px';
 }
+
 function toggleButtons({ edit, save, cancel }) {
   const setVis = (id, show) => {
     const el = $(id);
