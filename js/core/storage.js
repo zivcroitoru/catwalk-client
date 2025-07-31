@@ -4,7 +4,7 @@
 import { APP_URL } from './config.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
-const PLAYER_CATS_API = `${APP_URL}/api/cats`;
+const PLAYER_CATS_API  = `${APP_URL}/api/cats`;
 
 let itemCache = null;
 
@@ -100,6 +100,23 @@ async function apiUpdateCat(catId, updates) {
   if (!res.ok) {
     console.error('Failed to update cat:', res.status, res.statusText);
     throw new Error('Failed to update cat');
+  }
+
+  return res.json();
+}
+
+export async function deleteCat(catId) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${PLAYER_CATS_API}/${catId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    console.error('❌ Failed to delete cat:', res.status, res.statusText);
+    throw new Error('Failed to delete cat');
   }
 
   return res.json();
