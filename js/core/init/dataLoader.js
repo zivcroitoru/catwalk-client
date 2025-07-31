@@ -8,20 +8,19 @@ import {
 import { APP_URL } from '../../core/config.js';
 
 /* globals for legacy code --------------------------------------- */
-export let userCats  = [];
-export let shopItems = [];
+export let userCats = [];
 
 /*--------------------------------------------------------------
   STEP A: load shop list + cat templates, build breedItems
 ----------------------------------------------------------------*/
-export async function loadShopAndTemplates () {
+export async function loadShopAndTemplates() {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Authentication required');
   const headers = { Authorization: `Bearer ${token}` };
 
   console.log('🔄 Loading shop + templates…');
   const [shopRes, templates] = await Promise.all([
-    fetch(`${APP_URL}/api/shop`,         { headers }).then(r => r.json()),
+    fetch(`${APP_URL}/api/shop`, { headers }).then(r => r.json()),
     fetch(`${APP_URL}/api/cats/allcats`, { headers }).then(r => r.json())
   ]);
 
@@ -37,27 +36,33 @@ export async function loadShopAndTemplates () {
       name: t.name ?? 'Unnamed',
       template,
       sprite_url: t.sprite_url,
-      variant:  t.variant  ?? 'default',
-      palette:  t.palette  ?? 'default'
+      variant: t.variant ?? 'default',
+      palette: t.palette ?? 'default'
     });
   }
 
+  
   /* expose + reset caches */
+  window.shopItemsByCategory = shopRes.reduce((acc, item) => {
+    const category = item.category.toLowerCase();
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(item);
+    return acc;
+  }, {});
+  console.log("📦 Grouped shop items by category:", window.shopItemsByCategory);
   window.breedItems = breedItems;
-  shopItems         = shopRes;
-  window.shopItems  = shopItems;
   resetSpriteLookup();
 
   console.log(`✅ Templates ready (${Object.keys(breedItems).length} breeds)`);
   console.log('🛍️ Full shop data:', shopItems); // ← here
-  
+
 }
 
 
 /*--------------------------------------------------------------
   STEP B: load the player’s cats – must run *after* step A
 ----------------------------------------------------------------*/
-export async function loadUserCats () {
+export async function loadUserCats() {
   console.log('🔄 Loading player cats…');
   userCats = (await getPlayerCats()).map(c =>
     normalizeCat(c, buildSpriteLookup(window.breedItems))
@@ -67,7 +72,7 @@ export async function loadUserCats () {
 }
 
 /* optional convenience wrapper */
-export async function loadAllData () {
+export async function loadAllData() {
   await loadShopAndTemplates();
   await loadUserCats();
 }

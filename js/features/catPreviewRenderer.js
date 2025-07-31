@@ -47,15 +47,15 @@ export function updateCatPreview(cat, container = document) {
   setLayer("carouselBase", cat.sprite_url);
 
   const getSprite = (category, itemId) => {
-    if (!itemId || !window.shopItems) return "";
-    
-    // Initialize category if missing
-    if (!window.shopItems[category]) {
-      console.warn(`⚠️ Missing shop category: ${category}`);
-      window.shopItems[category] = [];
+    if (!itemId || !window.shopItemsByCategory) return "";
+
+    // Check if the category exists in shopItemsByCategory
+    if (!window.shopItemsByCategory[category]) {
+      console.warn(`⚠️ Missing shop category in shopItemsByCategory: ${category}`);
+      return "";
     }
-    
-    const item = window.shopItems[category].find(
+
+    const item = window.shopItemsByCategory[category].find(
       i => i.id === itemId || i.template === itemId
     );
     return item?.sprite_url || "";

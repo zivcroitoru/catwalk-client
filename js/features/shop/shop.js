@@ -35,18 +35,7 @@ export function toggleShop() {
   document.body.classList.add("shop-lock");
 
   // ✅ Load current tab items
-  if (window.shopItems) {
-    // 🧹 Group items by category if not already grouped
-    if (!window.shopItemsByCategory) {
-      window.shopItemsByCategory = window.shopItems.reduce((acc, item) => {
-        const category = item.category.toLowerCase();
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(item);
-        return acc;
-      }, {});
-      console.log("📦 Grouped shop items by category:", window.shopItemsByCategory);
-    }
-
+  if (window.shopItemsByCategory) {
     const activeTab = document.querySelector(".tab.active");
     const category = activeTab?.dataset.category?.toLowerCase() || "hats";
     renderShopItems(window.shopItemsByCategory, category);
