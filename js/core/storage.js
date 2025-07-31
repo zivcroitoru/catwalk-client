@@ -252,7 +252,20 @@ export async function addCatToUser(cat) {
 
 // ───────────── UI Updates ─────────────
 export async function updateCoinCount() {
-  const { coins } = await loadPlayerItems(true);
+  const token = localStorage.getItem('token');
+  const playerId = getPlayerIdFromToken();
+  if (!token || !playerId) return;
+
+  const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    console.error('Failed to fetch player data for coin count:', res.statusText);
+    return;
+  }
+
+  const { coins } = await res.json();
   const el = document.querySelector('.coin-count');
   if (el) {
     el.textContent = coins;
@@ -262,16 +275,44 @@ export async function updateCoinCount() {
   }
 }
 
-export async function updateCatCountUI() {
-  const cats = await getPlayerCats();
-  const el = document.querySelector('.cat-count');
-  if (el) el.textContent = `Total Cats: ${cats.length}`;
+export async function updateUI() {
+  const token = localStorage.getItem('token');
+  const playerId = getPlayerIdFromToken();
+  if (!token || !playerId) return;
+
+  try {
+    const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      console.error('❌ Failed to fetch player data:', res.statusText);
+      return;
+    }
+
+    const { coins, cat_count } = await res.json();
+
+    const coinEl = document.querySelector('.coin-count');
+    if (coinEl) {
+      coinEl.textContent = coins;
+      console.log('🪙 Coin count updated:', coins);
+    } else {
+      console.warn('⚠️ .coin-count element not found');
+    }
+
+    const catCountEl = document.querySelector('.cat-count');
+    if (catCountEl) {
+      catCountEl.textContent = `Total Cats: ${cat_count}`;
+      console.log('🐱 Cat count updated:', cat_count);
+    } else {
+      console.warn('⚠️ .cat-count element not found');
+    }
+
+  } catch (err) {
+    console.error('Error updating UI:', err);
+  }
 }
 
-export function updateUI() {
-  updateCoinCount();
-  updateCatCountUI();
-}
 
 export function normalizeCat(cat, spriteByTemplate) {
   const template = cat.template ?? `${cat.breed}-${cat.variant}-${cat.palette}`;

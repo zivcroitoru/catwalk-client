@@ -28,7 +28,7 @@ export function setupShopTabs() {
         return;
       }
 
-      renderShopItems(window.shopItemsByCategory, selected);
+      renderShopItems(selected);
     });
   });
 

@@ -18,7 +18,7 @@ import {
   loadShopAndTemplates,
   loadUserCats
 } from './core/init/dataLoader.js';
-import { updateCoinCount } from './core/storage.js';
+import { updateCoinCount, updateUI } from './core/storage.js';
 
 import { APP_URL } from './core/config.js';
 
@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* UI init – safe to read breedItems & userCats from here */
+  await updateUI();
   renderCarousel();
   setupShopTabs();
   setupEditMode();
   bindUI();
-  await updateCoinCount();
   initializeMailbox();
 
   document.getElementById('addCatBtnEmpty')
