@@ -1,6 +1,7 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
+
 const rectangle = document.querySelector('.rectangle');
 
   // Select cat and clothes images inside .category
