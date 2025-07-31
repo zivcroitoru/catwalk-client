@@ -1,10 +1,10 @@
 /*-----------------------------------------------------------------------------
-  storage.js – DB-backed player inventory
+  storage.js – DB-backed player inventory & cats
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
-const PLAYER_CATS_API = `${APP_URL}/api/player_cats`;
+const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
 
@@ -66,7 +66,7 @@ async function apiGetCats() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('GET /player_cats failed');
+    throw new Error('GET /cats failed');
   }
 
   return res.json();
@@ -102,7 +102,7 @@ function getPlayerIdFromToken() {
 
 // ───────────── Cats Access ─────────────
 export async function getPlayerCats() {
-  const { cats = [] } = await apiGetCats();
+  const cats = await apiGetCats();
   return cats;
 }
 
