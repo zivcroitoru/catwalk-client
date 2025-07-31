@@ -14,9 +14,9 @@ import {
   toastNotEnough
 } from '../../core/toast.js';
 
-export async function renderShopItems(data, activeCategory) {
+export async function renderShopItems(activeCategory) {
   const container = document.getElementById('shopItems');
-  if (!data || !container || !data[activeCategory]) return;
+  if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) return;
 
   const playerItems  = await loadPlayerItems();
   const ownedSet     = new Set(playerItems.ownedItems || []);
@@ -24,7 +24,7 @@ export async function renderShopItems(data, activeCategory) {
   const equipped     = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = '';
-  data[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
+  window.shopItemsByCategory[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
     const id = `${activeCategory}_${name.toLowerCase().replaceAll(' ', '_')}`;
     const state = getItemState(id, activeCategory, playerItems);
     const isBuy = state === 'buy';
@@ -52,7 +52,7 @@ export async function renderShopItems(data, activeCategory) {
       const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
 
       if (isBuy) {
-        showBuyConfirmation(item, playerItems, data, activeCategory);
+        showBuyConfirmation(item, playerItems, window.shopItemsByCategory, activeCategory);
         return;
       }
 
@@ -65,14 +65,14 @@ export async function renderShopItems(data, activeCategory) {
       }
 
       toastEquipResult(name, result);
-      renderShopItems(data, activeCategory);
+      renderShopItems(activeCategory);
     };
 
     container.appendChild(card);
   });
 }
 
-async function showBuyConfirmation(item, playerItems, data, activeCategory) {
+async function showBuyConfirmation(item, playerItems, activeCategory) {
   const box = document.createElement('div');
   box.className = 'confirm-toast';
   box.innerHTML = `
@@ -90,7 +90,7 @@ async function showBuyConfirmation(item, playerItems, data, activeCategory) {
     if (result === 'bought')           toastBought(item.name);
     else if (result === 'not_enough') toastNotEnough();
 
-    renderShopItems(data, activeCategory);
+    renderShopItems(activeCategory);
     box.remove();
   };
 
