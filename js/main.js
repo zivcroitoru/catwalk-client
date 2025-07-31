@@ -3,7 +3,7 @@ console.log('🐱 MAIN.JS LOADED');
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-import { toggleMailbox } from './features/mailbox/mailbox.js';
+import { initializeMailbox, toggleMailbox } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
 
@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEditMode();              // Edit/save/delete profile buttons
   bindUI();                     // Global UI interactions
   await updateCoinCount();      // Coin display from DB
+
+  // ✅ Initialize mailbox system (handles all its own logic)
+  initializeMailbox();
 
   // ✅ Empty state button redirects to main add button
   document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {

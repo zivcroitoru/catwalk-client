@@ -79,7 +79,144 @@
 
     <!-- ✅ Mailbox Display -->
     <div class="mailbox-display" id="mailboxDisplay">
-      <!-- Placeholder content - will be filled later -->
+
+
+
+
+
+
+
+      <!-- Mailbox Navigation Buttons -->
+      <div class="mailbox-nav">
+        <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
+        <button class="mailbox-btn" data-tab="unread">UNREAD</button>
+        <button class="mailbox-btn" data-tab="sent">SENT</button>
+        <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
+      </div>
+      
+      <!-- Mailbox Content Area -->
+      <div class="mailbox-content">
+        <!-- Message List View -->
+        <div class="message-list" id="allMessagesList">
+          <!-- Message Box 1 -->
+          <div class="message-box" data-message-id="1">
+            <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
+            <div class="message-date">12/06/2025</div>
+          </div>
+          
+          <!-- Message Box 2 -->
+          <div class="message-box" data-message-id="2">
+            <div class="message-title">New outfit collection available in the shop!</div>
+            <div class="message-date">12/05/2025</div>
+          </div>
+          
+          <!-- Message Box 3 -->
+          <div class="message-box" data-message-id="3">
+            <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
+            <div class="message-date">12/04/2025</div>
+          </div>
+          
+          <!-- Message Box 4 -->
+          <div class="message-box" data-message-id="4">
+            <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
+            <div class="message-date">12/03/2025</div>
+          </div>
+          
+          <!-- Message Box 5 -->
+          <div class="message-box" data-message-id="5">
+            <div class="message-title">System maintenance scheduled for tonight.</div>
+            <div class="message-date">12/02/2025</div>
+          </div>
+          
+          <!-- Message Box 6 -->
+          <div class="message-box" data-message-id="6">
+            <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
+            <div class="message-date">12/01/2025</div>
+          </div>
+          
+          <!-- Message Box 7 -->
+          <div class="message-box" data-message-id="7">
+            <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
+            <div class="message-date">11/30/2025</div>
+          </div>
+          
+          <!-- Message Box 8 -->
+          <div class="message-box" data-message-id="8">
+            <div class="message-title">Recent outfit loading bugs have been fixed.</div>
+            <div class="message-date">11/29/2025</div>
+          </div>
+        </div>
+        
+        <!-- Message Detail View -->
+        <div class="message-view" id="messageView">
+          <!-- Message Header (Title and Date) -->
+          <div class="message-view-header">
+            <div class="message-view-title" id="messageViewTitle">Message Title</div>
+            <div class="message-view-date" id="messageViewDate">12/06/2025</div>
+          </div>
+          
+          <!-- Message Body -->
+          <div class="message-body" id="messageViewBody">
+            <p>Message content will appear here...</p>
+          </div>
+          
+          <!-- Message Controls -->
+          <div class="message-controls">
+            <button class="back-btn" id="backToListBtn">←</button>
+            <button class="mark-unread-btn" id="markUnreadBtn">MARK AS UNREAD</button>
+          </div>
+        </div>
+        
+        <!-- Contact Us View -->
+        <div class="contact-view" id="contactView">
+          <!-- Contact Header (Title and Date) -->
+          <div class="contact-view-header">
+            <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
+            <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
+          </div>
+          
+          <!-- Contact Input Area -->
+          <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
+          
+          <!-- Contact Controls -->
+          <div class="contact-controls">
+            <button class="send-btn" id="sendBtn">SEND</button>
+          </div>
+        </div>
+        
+        <!-- SENT View -->
+        <div class="sent-view" id="sentView">
+          <!-- SENT Header (Title and Date) -->
+          <div class="sent-view-header">
+            <div class="sent-view-title" id="sentViewTitle">Conversation: Feedback about cat outfits</div>
+            <div class="sent-view-date" id="sentViewDate">12/06/2025</div>
+          </div>
+          
+          <!-- Conversation Container -->
+          <div class="conversation-container" id="conversationContainer">
+            <!-- Sample conversation messages will be dynamically added here -->
+          </div>
+          
+          <!-- Reply Input Area -->
+          <textarea class="reply-input-area" id="replyInput" placeholder="Type your reply here..."></textarea>
+          
+          <!-- SENT Controls -->
+          <div class="sent-controls">
+            <button class="send-btn" id="sentSendBtn">SEND</button>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
     <!-- Carousel Area -->
