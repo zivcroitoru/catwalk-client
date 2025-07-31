@@ -146,6 +146,9 @@ body {
     gap: 10px;
 }
 
+.clothes-name:hover,
+.clothes-category:hover,
+.clothes-description:hover,
 .cat-name:hover,
 .cat-breed:hover,
 .cat-variant:hover,

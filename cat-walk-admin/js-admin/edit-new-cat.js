@@ -58,7 +58,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
     alert("Cat added successfully!");
 
     // Redirect to success page or next step
-    window.location.href = "cat-success.html"; // update path as needed
+    window.location.href = "add-cats.html"; // update path as needed
   } catch (err) {
     console.error("Error sending request:", err);
     alert("Network or server error. Please try again later.");
