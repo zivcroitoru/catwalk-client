@@ -22,6 +22,8 @@ import { updateCoinCount, updateUI } from './core/storage.js';
 
 import { APP_URL } from './core/config.js';
 
+import { initializeMailbox, requestNotificationPermission } from './features/mailbox/mailbox.js';
+
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOMContentLoaded');
@@ -50,6 +52,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   console.log('✅ Systems initialized');
 });
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', async () => {
+  await initializeMailbox();
+  requestNotificationPermission(); // Optional: for browser notifications
+});
+
 
 // ───────────── Expose to Window (for inline HTML handlers) ─────────────
 Object.assign(window, {
