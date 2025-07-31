@@ -1,16 +1,13 @@
 /*-----------------------------------------------------------------------------
-  profile.js – DB version (no localStorage)
+  cat_profile.js – DB version (no localStorage)
 -----------------------------------------------------------------------------*/
 
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadPlayerItems, savePlayerItems } from '../../core/storage.js';
+import { loadUserItems, saveUserItems } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
-  // ❌ Removed force-show of scroll
-  // setDisplay('catProfileScroll', true);
-
   const nameInput = $('catName');
   const descInput = $('catDesc');
   const charCount = $('charCount');
@@ -32,9 +29,9 @@ export async function showCatProfile(cat) {
   const idx = window.userCats.findIndex(c => c.id === cat.id);
   if (idx !== -1) {
     window.userCats[idx].age = ageInDays;
-    const playerItems = await loadPlayerItems();
-    playerItems.userCats = window.userCats;
-    await savePlayerItems({ userCats: playerItems.userCats });
+    const userItems = await loadUserItems();
+    userItems.userCats = window.userCats;
+    await saveUserItems({ userCats: userItems.userCats });
   }
 
   nameInput.value     = cat.name;
@@ -60,6 +57,7 @@ export function setupEditMode() {
     console.warn('⚠️ setupEditMode aborted — missing elements');
     return;
   }
+
   const [
     editBtn, saveBtn, cancelBtn, deleteBtn,
     nameInput, descInput, descBlock, charCount
@@ -86,6 +84,7 @@ export function setupEditMode() {
       alert(`Description too long. Max: ${CHAR_LIMIT} characters.`);
       return;
     }
+
     if (window.currentCat) {
       window.currentCat.name        = nameInput.value.trim();
       window.currentCat.description = descInput.value.trim();
@@ -93,13 +92,15 @@ export function setupEditMode() {
       const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
       if (idx !== -1) {
         window.userCats[idx] = { ...window.currentCat };
-        const playerItems = await loadPlayerItems();
-        playerItems.userCats = window.userCats;
-        await savePlayerItems({ userCats: playerItems.userCats });
+        const userItems = await loadUserItems();
+        userItems.userCats = window.userCats;
+        await saveUserItems({ userCats: userItems.userCats });
       }
+
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
     }
+
     finishEdit();
     toastSimple('Changes saved!', '#ffcc66');
   };
@@ -112,11 +113,12 @@ export function setupEditMode() {
 
   deleteBtn.onclick = () => {
     if (!window.currentCat) return;
+
     toastConfirmDelete(window.currentCat, async () => {
       const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
       if (idx === -1) return;
-      window.userCats.splice(idx, 1);
 
+      window.userCats.splice(idx, 1);
       const userItems = await loadUserItems();
       userItems.userCats = window.userCats;
       await saveUserItems({ userCats: userItems.userCats });
@@ -132,6 +134,7 @@ export function setupEditMode() {
       } else if (mainImg) {
         mainImg.src = '../assets/cats/placeholder.png';
       }
+
       toastSimple('Cat deleted!', '#ffcc66');
     });
   };
