@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const API = `${APP_URL}/api/player-items`;
+const API = `${APP_URL}/api/player_items`;
 let cache = null;
 
 // ───────────── REST helpers ─────────────
@@ -21,7 +21,7 @@ async function apiGet() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('GET /player-items failed');
+    throw new Error('GET /player_items failed');
   }
 
   return res.json();
@@ -44,7 +44,7 @@ async function apiPatch(body) {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('PATCH /player-items failed');
+    throw new Error('PATCH /player_items failed');
   }
 
   return res.json();
