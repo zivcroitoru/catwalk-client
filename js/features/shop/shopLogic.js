@@ -31,6 +31,11 @@ export async function handleShopClick(item, playerItems) {
     // ✅ Unlock via proper server call
     await unlockPlayerItem(item.template);
 
+    // ✅ Prevent push on undefined
+    if (!Array.isArray(playerItems.ownedItems)) {
+      playerItems.ownedItems = [];
+    }
+
     playerItems.ownedItems.push(String(item.id));
     playerItems.coins -= item.price;
     return 'bought';
