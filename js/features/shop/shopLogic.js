@@ -2,7 +2,7 @@
   shopLogic.js – DB version, no localStorage
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadplayer_items, unlockplayer_items, updateCat } from '../../core/storage.js';
+import { loadPlayerItems, unlockPlayerItem, updateCat } from '../../core/storage.js';
 
 const previewKeyMap = {
   hats: 'hat',
