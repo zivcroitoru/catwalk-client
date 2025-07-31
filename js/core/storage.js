@@ -1,13 +1,4 @@
-/*---------------------------------------------------export async function loadPlayerItems(force = false) {
-  if (!force && cache) return cache;
-  cache = await apiGet();
-  return cache;
-}
-
-export async function savePlayerItems(playerItems) {
-  cache = await apiPatch(playerItems);
-  return cache;
-}----------------
+/*-----------------------------------------------------------------------------
   storage.js – DB-backed player inventory
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
@@ -60,14 +51,14 @@ async function apiPatch(body) {
 }
 
 // ───────────── Load & Save ─────────────
-export async function loadUserItems(force = false) {
-  if (cache && !force) return cache;
+export async function loadPlayerItems(force = false) {
+  if (!force && cache) return cache;
   cache = await apiGet();
   return cache;
 }
 
-export async function saveUserItems(userItems) {
-  cache = await apiPatch(userItems);
+export async function savePlayerItems(playerItems) {
+  cache = await apiPatch(playerItems);
   return cache;
 }
 
@@ -100,7 +91,7 @@ export async function updateCoinCount() {
 }
 
 export async function updateCatCountUI() {
-  const { userCats = [] } = await loadUserItems();
+  const { userCats = [] } = await loadPlayerItems();
   const el = document.querySelector('.cat-count');
   if (el) el.textContent = `Total Cats: ${userCats.length}`;
 }
