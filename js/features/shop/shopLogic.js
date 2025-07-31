@@ -34,8 +34,10 @@ export async function handleShopClick(item, playerItems) {
       playerItems.ownedItems = [];
     }
 
-    playerItems.ownedItems.push(String(item.id));
-    playerItems.coins -= item.price;
+const updated = await loadPlayerItems(true); // 🔄 force refresh from API
+playerItems.ownedItems = updated.ownedItems;
+playerItems.coins = updated.coins;
+
     return 'bought';
   }
 
