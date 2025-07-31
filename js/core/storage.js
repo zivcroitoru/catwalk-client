@@ -328,9 +328,12 @@ export function normalizeCat(cat, spriteByTemplate) {
     name: cat.name ?? 'Unnamed Cat',
     birthdate: cat.birthdate,
     description: cat.description ?? '',
-    palette: cat.palette,
     sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
+    breed: cat.breed,
+    variant: cat.variant,
+    palette: cat.palette,
     selected: false,
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
+
