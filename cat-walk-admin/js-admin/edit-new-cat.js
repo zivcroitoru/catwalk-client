@@ -1,102 +1,66 @@
-// edit.js
 import { APP_URL } from "../../js/core/config.js";
+console.log('APP_URL:', APP_URL);
 
-window.addEventListener('DOMContentLoaded', () => {
-  console.log('APP_URL:', APP_URL);
+// Get sprite URL from localStorage
+const spriteURL = localStorage.getItem('spriteURL');
+// console.log('Loaded sprite URL from localStorage:', spriteURL);
 
-  const savedSpriteURL = localStorage.getItem('spriteURL');
-  if (savedSpriteURL) {
-    const previewImg = document.getElementById('sprite');
-    if (previewImg) {
-      previewImg.src = savedSpriteURL;
-    }
+// Set the image preview if sprite URL exists
+const spriteImage = document.getElementById('sprite');
+if (spriteImage && spriteURL) {
+  spriteImage.src = spriteURL;
+}
+
+// When "Next" button is clicked, gather cat data and POST to backend
+document.querySelector('.next-button').addEventListener('click', async () => {
+  const template = document.getElementById('cat-name')?.textContent.trim();
+  const breed = document.getElementById('cat-breed')?.textContent.trim();
+  const variant = document.getElementById('cat-variant')?.textContent.trim();
+  const palette = document.getElementById('cat-pallete')?.textContent.trim();
+  const description = document.getElementById('cat-description')?.textContent.trim();
+  const sprite_url = spriteImage?.src;
+
+  const catData = {
+    template,
+    breed,
+    variant,
+    palette,
+    description,
+    sprite_url,
+  };
+
+  console.log('Sending cat data:', catData);
+
+  // Simple frontend validation
+  if (!template || !breed || !variant || !palette || !description || !sprite_url) {
+    alert("Please make sure all fields are filled in.");
+    return;
   }
 
- const fieldIds = [
-    'cat-name',
-    'cat-breed',
-    'cat-variant',
-    'cat-pallete',
-    'cat-description'
-  ];
+  try {
+    const response = await fetch(`${APP_URL}/api/cats/catadd`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(catData),
+    });
 
-  fieldIds.forEach((id) => {
-    const p = document.getElementById(id);
-    if (p) {
-      p.contentEditable = true;
-      p.style.borderBottom = '1px dashed #aaa';
-      p.style.cursor = 'text';
+    const result = await response.json();
 
-      // Load saved value from sessionStorage
-      const savedText = sessionStorage.getItem(id);
-      if (savedText) {
-        p.textContent = savedText;
-      }
-
-      // Save on blur
-      p.addEventListener('blur', () => {
-        sessionStorage.setItem(id, p.textContent);
-        console.log(`Saved: ${id} = ${p.textContent}`);
-      });
-
-      // Save and blur on Enter
-      p.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          p.blur();
-        }
-      });
+    if (!response.ok) {
+      console.error("Server returned error:", result);
+      alert(`Failed to add cat: ${result.error || 'Unknown error'}`);
+      return;
     }
-  });
-});
 
-// NEXT button handler: send cat data to backend
-  const nextButton = document.querySelector('.next-button');
+    console.log("Cat added successfully:", result);
+    alert("Cat added successfully!");
 
-  nextButton.addEventListener('click', async () => {
-    const catData = {
-      template: document.getElementById('cat-name').textContent.trim(),
-      breed: document.getElementById('cat-breed').textContent.trim(),
-      variant: document.getElementById('cat-variant').textContent.trim(),
-      pallete: document.getElementById('cat-pallete').textContent.trim(),
-      description: document.getElementById('cat-description').textContent.trim(),
-      sprite_url: document.getElementById('sprite').src
-    };
-
-    console.log('Sending cat data:', catData);
-
-    try {
-      const response = await fetch(`${APP_URL}/api/cats/catadd`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(catData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Failed to add cat: ${errorData.error || response.statusText}`);
-        return;
-      }
-
-      alert('Cat added successfully!');
-
-      // Clear sessionStorage so no stale data
-      sessionStorage.clear();
-
-      // Optionally redirect to cat list page
-      // window.location.href = 'cat-database.html';
-
-    } catch (error) {
-      alert('Error adding cat: ' + error.message);
-    }
-  });
-
-
-// Clear sessionStorage when user leaves page
-window.addEventListener('beforeunload', () => {
-  sessionStorage.removeItem('spriteURL');
-  const keysToClear = ['cat-name', 'cat-breed', 'cat-variant', 'cat-pallete', 'cat-description'];
-  keysToClear.forEach(key => sessionStorage.removeItem(key));
+    // Redirect to success page or next step
+    window.location.href = "cat-success.html"; // update path as needed
+  } catch (err) {
+    console.error("Error sending request:", err);
+    alert("Network or server error. Please try again later.");
+  }
 });
