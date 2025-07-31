@@ -36,9 +36,20 @@ export function toggleShop() {
 
   // ✅ Load current tab items
   if (window.shopItems) {
+    // 🧹 Group items by category if not already grouped
+    if (!window.shopItemsByCategory) {
+      window.shopItemsByCategory = window.shopItems.reduce((acc, item) => {
+        const category = item.category.toLowerCase();
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(item);
+        return acc;
+      }, {});
+      console.log("📦 Grouped shop items by category:", window.shopItemsByCategory);
+    }
+
     const activeTab = document.querySelector(".tab.active");
     const category = activeTab?.dataset.category?.toLowerCase() || "hats";
-    renderShopItems(window.shopItems, category);
+    renderShopItems(window.shopItemsByCategory, category);
   } else {
     console.warn("⚠️ shopItems not loaded yet");
   }
@@ -80,4 +91,3 @@ export function closeShop() {
   // ✅ Remove global lock
   document.body.classList.remove("shop-lock");
 }
- 
