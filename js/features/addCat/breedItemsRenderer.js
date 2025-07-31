@@ -51,6 +51,11 @@ export function renderBreedItems(breed) {
 
 function showAddCatConfirmation(breed, variantData) {
   console.log('🎭 Showing confirmation for:', { breed, variantData });
+  
+  if (!variantData || !variantData.sprite_url) {
+    console.error('Missing sprite data for confirmation dialog');
+    return;
+  }
 
   const { name, variant, palette, sprite_url } = variantData;
   const template = `${breed}-${variant}-${palette}`;
@@ -89,10 +94,11 @@ function showAddCatConfirmation(breed, variantData) {
       name: `${breed} (${name})`,
       birthdate: new Date().toISOString().split("T")[0],
       description: "",
+      sprite_url,
 
       // Template properties
       breed,
-      variant, 
+      variant,
       palette,
       sprite_url: sprite,
 
