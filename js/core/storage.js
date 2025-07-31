@@ -129,11 +129,11 @@ export async function getPlayerCats() {
     birthdate: cat.birthdate,
     description: cat.description || '',
 
-    // Template properties
-    breed: cat.breed,
-    variant: cat.variant,
-    palette: cat.palette,
-    sprite_url: cat.sprite_url,
+    // Handle sprite_url - ensure it's properly formatted with APP_URL
+    sprite_url: cat.sprite_url ? (
+      cat.sprite_url.startsWith('http') ? cat.sprite_url :
+      `${APP_URL}/${cat.sprite_url.startsWith('/') ? cat.sprite_url.substring(1) : cat.sprite_url}`
+    ) : null,
 
     // Client-side UI state (initialize empty)
     selected: false,

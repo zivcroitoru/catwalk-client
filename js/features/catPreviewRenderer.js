@@ -20,12 +20,15 @@ export function updateCatPreview(cat, container = document) {
     }
 
     // Process the path based on type
+    if (!path) return null;
+
     let finalPath = path;
-    if (!path.startsWith('data:') && // Don't modify data URLs
-        !path.startsWith('http') &&   // Don't modify absolute URLs
-        !path.startsWith('blob:') &&  // Don't modify blob URLs
-        !path.startsWith('/')) {      // Don't modify root-relative paths
-      finalPath = `${APP_URL}/${path}`;
+    if (!path.startsWith('data:') &&  // Don't modify data URLs
+        !path.startsWith('http') &&    // Don't modify absolute URLs
+        !path.startsWith('blob:')) {   // Don't modify blob URLs
+      // For relative or root-relative paths, ensure proper formatting
+      const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+      finalPath = `${APP_URL}/${cleanPath}`;
     }
 
     // Handle image load errors
