@@ -2,7 +2,7 @@
   shopLogic.js – DB version, no localStorage
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadUserItems, saveUserItems } from '../../core/storage.js';
+import { loadPlayerItems, savePlayerItems } from '../../core/storage.js';
 import { updateCat } from '../../core/api.js';       // ← server PATCH helper
 
 const previewKeyMap = {
@@ -12,24 +12,24 @@ const previewKeyMap = {
   eyes: 'eyes'
 };
 
-export function getItemState(id, category, userItems) {
-  const owned       = userItems.ownedItems?.includes(id);
+export function getItemState(id, category, playerItems) {
+  const owned       = playerItems.ownedItems?.includes(id);
   const equipped    = window.selectedCat?.equipment?.[category];
   if (!owned)            return 'buy';
   if (equipped === id)   return 'unequip';
   return 'equip';
 }
 
-export async function handleShopClick(item, userItems) {
-  const state      = getItemState(item.id, item.category, userItems);
+export async function handleShopClick(item, playerItems) {
+  const state      = getItemState(item.id, item.category, playerItems);
   const previewKey = previewKeyMap[item.category];
   console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
   // ───── buy ─────
   if (state === 'buy') {
-    if (userItems.coins < item.price) return 'not_enough';
-    userItems.ownedItems.push(String(item.id));
-    userItems.coins -= item.price;
+    if (playerItems.coins < item.price) return 'not_enough';
+    playerItems.ownedItems.push(String(item.id));
+    playerItems.coins -= item.price;
     return 'bought';
   }
 
@@ -37,7 +37,7 @@ export async function handleShopClick(item, userItems) {
   if (!window.selectedCat.equipment) window.selectedCat.equipment = {};
 
   if (state === 'equip') {
-    userItems.equippedItems[item.category] = item.id;
+    playerItems.equippedItems[item.category] = item.id;
     if (previewKey === 'accessories')
       window.selectedCat.equipment.accessories = [item.template];
     else
@@ -45,7 +45,7 @@ export async function handleShopClick(item, userItems) {
   }
 
   if (state === 'unequip') {
-    delete userItems.equippedItems[item.category];
+    delete playerItems.equippedItems[item.category];
     if (previewKey === 'accessories')
       window.selectedCat.equipment.accessories = [];
     else
@@ -62,17 +62,17 @@ export async function handleShopClick(item, userItems) {
   return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// 🔁 persist equipment to DB and userItems
+// 🔁 persist equipment to DB and playerItems
 async function syncCatEquipment() {
   // 1️⃣ update selected cat on server
   await updateCat(window.selectedCat.id, { equipment: window.selectedCat.equipment });
 
-  // 2️⃣ update cached userItems in DB
-  const userItems = await loadUserItems();
+  // 2️⃣ update cached playerItems in DB
+  const playerItems = await loadPlayerItems();
   const idx = window.userCats.findIndex(c => c.id === window.selectedCat.id);
   if (idx !== -1) window.userCats[idx].equipment = structuredClone(window.selectedCat.equipment);
-  userItems.userCats = window.userCats;
-  await saveUserItems({ userCats: userItems.userCats });
+  playerItems.userCats = window.userCats;
+  await savePlayerItems({ userCats: playerItems.userCats });
 
   console.log('💾 Equipment synced to DB & cache');
 }
