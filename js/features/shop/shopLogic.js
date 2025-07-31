@@ -2,8 +2,7 @@
   shopLogic.js – DB version, no localStorage
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadPlayerItems, unlockPlayerItem } from '../../core/storage.js';
-import { apiUpdateCat } from '../../core/api.js';       // ← server PATCH helper
+import { loadPlayerItems, unlockPlayerItem, updateCat } from '../../core/storage.js';
 
 const previewKeyMap = {
   hats: 'hat',
@@ -81,7 +80,7 @@ async function syncCatEquipment() {
     accessories: window.selectedCat.equipment?.accessories || []
   };
 
-  await apiUpdateCat(window.selectedCat.id, { equipment });
+  await updateCat(window.selectedCat.id, { equipment });
 
   const idx = window.userCats.findIndex(
     (c) => c.id === window.selectedCat.id

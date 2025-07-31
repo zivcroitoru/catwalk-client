@@ -4,9 +4,9 @@
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
+  updateCat,
   updateCoinCount
 } from '../../core/storage.js';
-import { apiUpdateCat } from '../../core/api.js';
 import {
   toastBought,
   toastCancelled,
@@ -61,7 +61,7 @@ export async function renderShopItems(data, activeCategory) {
 
       if (selectedCat) {
         selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
-        await apiUpdateCat(selectedCat.id, { equipment: selectedCat.equipment });
+        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
       }
 
       toastEquipResult(name, result);
