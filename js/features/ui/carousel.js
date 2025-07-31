@@ -4,7 +4,6 @@ import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
 import { getPlayerCats, addCatToUser } from '../../core/storage.js';
-import { getPlayerCats, addCatToUser } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
@@ -20,18 +19,9 @@ export async function renderCarousel() {
 
   // Get fresh cats data
   console.log('🔄 Loading player cats...');
-  const cats = await getPlayerCats();
-  console.log("Cats array shape " + cats);
-  
-  if (!cats || !Array.isArray(cats)) {
-    console.error('❌ Invalid player items data:', cats);
-    window.userCats = [];
-  } else {
-    window.userCats = cats.filter(cat => cat && cat.id); // Ensure valid cats only
-  }
-
-  const hasCats = Array.isArray(window.userCats) && window.userCats.length > 0;
-  console.log(`📦 Found ${window.userCats?.length || 0} cats`);
+  window.userCats = await getPlayerCats();
+  const hasCats = window.userCats.length > 0;
+  console.log(`📦 Found ${window.userCats.length} cats`);
 
   // Show/hide main UI sections
   setDisplay("catAreaWrapper", hasCats);
