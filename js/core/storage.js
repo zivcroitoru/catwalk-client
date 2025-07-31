@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const player_items_API = `${APP_URL}/api/player_items`;
+const PLAYER_ITEMS_API = `${APP_URL}/api/playerItems`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
@@ -11,7 +11,7 @@ let itemCache = null;
 // ───────────── REST helpers ─────────────
 async function apiGetItems() {
   const token = localStorage.getItem('token');
-  const res = await fetch(player_items_API, {
+  const res = await fetch(PLAYER_ITEMS_API, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
@@ -21,7 +21,7 @@ async function apiGetItems() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('GET /player_items failed');
+    throw new Error('GET /playerItems failed');
   }
 
   return res.json();
@@ -29,7 +29,7 @@ async function apiGetItems() {
 
 async function apiPatchItem(template) {
   const token = localStorage.getItem('token');
-  const res = await fetch(player_items_API, {
+  const res = await fetch(PLAYER_ITEMS_API, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ async function apiPatchItem(template) {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('PATCH /player_items failed');
+    throw new Error('PATCH /playerItems failed');
   }
 
   return res.json();
@@ -105,25 +105,8 @@ async function apiUpdateCat(catId, updates) {
   return res.json();
 }
 
-export async function deleteCat(catId) {
-  const token = localStorage.getItem('token');
-  const res = await fetch(`${PLAYER_CATS_API}/${catId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) {
-    console.error('❌ Failed to delete cat:', res.status, res.statusText);
-    throw new Error('Failed to delete cat');
-  }
-
-  return res.json();
-}
-
 // ───────────── Load & Save ─────────────
-export async function loadplayer_items(force = false) {
+export async function loadPlayerItems(force = false) {
   if (!force && itemCache) {
     console.log('🪵 Using cached player items');
     return itemCache;
@@ -138,7 +121,7 @@ export async function unlockPlayerItem(template) {
   console.log('🔓 Unlocking item:', template);
   const result = await apiPatchItem(template);
   console.log('✅ Unlock result:', result);
-  await loadplayer_items(true);
+  await loadPlayerItems(true);
   updateUI();
   return result.item;
 }
@@ -215,6 +198,21 @@ export async function updateCat(catId, updates) {
   }
 }
 
+export async function deleteCat(catId) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${PLAYER_CATS_API}/${catId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    console.error('❌ Failed to delete cat:', res.status, res.statusText);
+    throw new Error('Failed to delete cat');
+  }
+
+  return res.json();
+}
+
 export async function addCatToUser(cat) {
   console.log('➕ Adding cat:', cat);
   const token = localStorage.getItem('token');
@@ -245,7 +243,7 @@ export async function addCatToUser(cat) {
   const result = await res.json();
   console.log('✅ New cat added:', result.cat);
 
-  await loadplayer_items(true);
+  await loadPlayerItems(true);
   updateUI();
   return result.cat;
 }
@@ -312,12 +310,10 @@ export async function updateUI() {
     } else {
       console.warn('⚠️ #cat-count element not found');
     }
-
   } catch (err) {
     console.error('Error updating UI:', err);
   }
 }
-
 
 export function normalizeCat(cat, spriteByTemplate) {
   const template = cat.template;
@@ -336,4 +332,3 @@ export function normalizeCat(cat, spriteByTemplate) {
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
-
