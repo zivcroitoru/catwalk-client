@@ -4,9 +4,9 @@
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
+  updateCat,
   updateCoinCount
 } from '../../core/storage.js';
-import { updateCat } from '../../core/api.js';
 import {
   toastBought,
   toastCancelled,

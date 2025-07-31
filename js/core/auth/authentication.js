@@ -7,9 +7,13 @@ console.log('APP_URL:', APP_URL);
 // ───────────── Token Management ─────────────
 let authToken = localStorage.getItem('token');
 
+// export function getAuthToken() {
+//   return authToken;
+// }
 export function getAuthToken() {
-  return authToken;
+  return localStorage.getItem('token');
 }
+
 
 function setAuthToken(token) {
   authToken = token;

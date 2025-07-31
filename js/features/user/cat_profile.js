@@ -5,7 +5,7 @@
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadPlayerItems as loadUserItems } from '../../core/storage.js';
+import { loadPlayerItems as loadUserItems, updateCat } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
   const nameInput = $('catName');
@@ -88,15 +88,18 @@ export function setupEditMode() {
       try {
         await updateCat(window.currentCat.id, {
           name: window.currentCat.name,
-          description: window.currentCat.description
+          description: window.currentCat.description,
+          template: window.currentCat.template,
+          breed: window.currentCat.breed,
+          variant: window.currentCat.variant,
+          palette: window.currentCat.palette
         });
 
         // Update cat in global state after server confirms
         const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
         if (idx !== -1) {
           window.userCats[idx] = {
-            ...window.currentCat,
-            template: `${window.currentCat.breed}-${window.currentCat.variant}-${window.currentCat.palette}`
+            ...window.currentCat
           };
         }
       } catch (err) {
