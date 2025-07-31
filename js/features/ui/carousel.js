@@ -42,11 +42,19 @@ export async function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
-  // Initialize cats with proper equipment and validate images
+  // Initialize cats with proper equipment and normalize image fields
    window.userCats = window.userCats.map(cat => ({
     ...cat,
-    equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
-    image: cat.sprite_url || cat.image // Use sprite_url as the primary source for image
+    // Ensure consistent equipment structure
+    equipment: cat.equipment || { 
+      hat: null, 
+      top: null, 
+      eyes: null, 
+      accessories: []
+    },
+    // Ensure both image fields exist and are consistent
+    sprite_url: cat.sprite_url || cat.image,
+    image: cat.sprite_url || cat.image
   }));
 
 
@@ -132,29 +140,5 @@ export function updateInventoryCount() {
   if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
 }
 
-// ───────────── Dynamic Add ─────────────
-export function addCatToCarousel(imgUrl, label, equipment = {}) {
-  const today = new Date().toISOString().split("T")[0];
-
-  const fullCat = {
-    id: crypto.randomUUID(),
-    name: label,
-    image: imgUrl,
-    equipment: {
-      hat: equipment.hat || null,
-      top: equipment.top || null,
-      eyes: equipment.eyes || null,
-      accessories: equipment.accessories || []
-    },
-    breed: "-",
-    variant: "-",
-    palette: "-",
-    birthdate : today,
-    age: 0,
-    description: ""
-  };
-
-  addCatToUser(fullCat);
-  window.userCats.push(fullCat);
-  renderCarousel();
-}
+// Note: Dynamic cat addition has been moved to breedItemsRenderer.js
+// This maintains a single source of truth for adding cats through the breed selection UI

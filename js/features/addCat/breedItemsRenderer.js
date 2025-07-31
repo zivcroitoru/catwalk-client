@@ -67,16 +67,15 @@ function showAddCatConfirmation(breed, variantData) {
       breed,
       variant,
       palette,
-      sprite,
-      image: sprite,
+      sprite_url: sprite,   // Consistent with server response
+      image: sprite,        // Used by UI components
       birthdate: new Date().toISOString().split("T")[0],
       age: 0,
       description: "",
       equipment: {
         hat: null,
-        shirt: null,
-        pants: null,
-        shoes: null,
+        top: null,         // Changed from shirt to match UI expectations
+        eyes: null,        // Added to match other equipment structures
         accessories: []
       }
     };
