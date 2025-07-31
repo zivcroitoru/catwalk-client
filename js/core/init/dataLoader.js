@@ -66,13 +66,7 @@ export async function loadAllData() {
       // Extract breed from template or fallback
       const template = cat.template || `${cat.breed}-${cat.variant || 'default'}-${cat.palette || 'default'}`;
       const [breed] = template.split('-');
-      
-      // Ensure sprite_url is properly formatted
-      let sprite_url = cat.sprite_url;
-      if (sprite_url && !sprite_url.startsWith('http')) {
-        sprite_url = sprite_url.startsWith('/') ? sprite_url.substring(1) : sprite_url;
-        sprite_url = `${APP_URL}/${sprite_url}`;
-      }
+      const sprite_url = cat.sprite_url;
 
       console.log("🐈‍⬛ RAW CAT:", cat);
       console.log("📦 Mapped:", { template, breed, sprite_url });
