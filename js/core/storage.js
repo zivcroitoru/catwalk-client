@@ -165,7 +165,7 @@ export async function updateCatCountUI() {
   if (el) el.textContent = `Total Cats: ${cats.length}`;
 }
 
-export function updateUI() {i
+export function updateUI() {
   updateCoinCount();
   updateCatCountUI();
 }
