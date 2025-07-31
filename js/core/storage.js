@@ -320,8 +320,8 @@ export async function updateUI() {
 
 
 export function normalizeCat(cat, spriteByTemplate) {
-  const template = cat.template ?? `${cat.breed}-${cat.variant}-${cat.palette}`;
-
+  const template = cat.template;
+  const [breed, variant, palette] = template?.split('-') ?? [];
   return {
     id: cat.cat_id ?? cat.id,
     template,
@@ -329,9 +329,9 @@ export function normalizeCat(cat, spriteByTemplate) {
     birthdate: cat.birthdate,
     description: cat.description ?? '',
     sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
-    breed: cat.breed,
-    variant: cat.variant,
-    palette: cat.palette,
+    breed: cat.breed || breed,
+    variant: cat.variant || variant,
+    palette: cat.palette || palette,
     selected: false,
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
