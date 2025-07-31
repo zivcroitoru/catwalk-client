@@ -25,7 +25,7 @@ export async function renderShopItems(activeCategory) {
 
   container.innerHTML = '';
   window.shopItemsByCategory[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
-    const id = `${activeCategory}_${name.toLowerCase().replaceAll(' ', '_')}`;
+    const id = template; // 🔥 Use template as the actual ID
     const state = getItemState(id, activeCategory, playerItems);
     const isBuy = state === 'buy';
 
