@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Cats</title>
-  <link rel="icon" type="image/png" href="./assets/icons/cat_browser_icon.png" />
+  <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
 
 
@@ -33,7 +33,7 @@
   <!-- Cat Display -->
 <div class="cat-display-wrapper hidden" id="catDisplay">
     <div class="ellipse-podium">
-      <img src="./assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+      <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
       <div class="carousel-cat">
         <img class="cat-layer carouselBase" alt="Base" />
         <img class="cat-layer carouselHat" alt="Hat" />
@@ -54,7 +54,7 @@
   <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
   <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
   <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-    <img src="./assets/ui/plus.png" alt="Add Cat" />
+    <img src="../assets/ui/plus.png" alt="Add Cat" />
   </button>
 </div>
 
@@ -63,14 +63,14 @@
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
-        <img src="./assets/icons/coin.png" alt="Coins" />
+        <img src="../assets/icons/coin.png" alt="Coins" />
         <span class="coin-count">500</span>
       </div>
       <div class="topbar-icon" id="soundToggle" title="Sound" onclick="toggleSound()">
-        <img id="soundIcon" src="./assets/icons/speakerON.png" alt="Sound" />
+        <img id="soundIcon" src="../assets/icons/speakerON.png" alt="Sound" />
       </div>
       <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
-        <img src="./assets/icons/mail.png" alt="Mailbox" />
+        <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
     </div>
 
@@ -94,7 +94,7 @@
       </div>
       <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
       <button id="addCatBtn" class="add-cat-btn">
-        <img src="./assets/ui/plus.png" alt="Add Cat" />
+        <img src="../assets/ui/plus.png" alt="Add Cat" />
       </button>
     </div>
 
@@ -109,7 +109,7 @@
     <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
     <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
     <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-      <img src="./assets/ui/plus.png" alt="Add Cat" />
+      <img src="../assets/ui/plus.png" alt="Add Cat" />
     </button>
   </div>
 
@@ -181,7 +181,7 @@
 
 
   <!-- Audio + Scripts -->
-<audio src="./assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
+<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
 
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

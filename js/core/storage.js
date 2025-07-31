@@ -64,7 +64,9 @@ export async function getUserCats() {
 }
 export async function addCatToUser(cat) {
   const userItems = await loadUserItems();
-  userItems.userCats = [...userItems.userCats, cat];
+const currentCats = Array.isArray(userItems.userCats) ? userItems.userCats : [];
+userItems.userCats = [...currentCats, cat];
+
   await saveUserItems({ userCats: userItems.userCats });
   updateUI();
 }

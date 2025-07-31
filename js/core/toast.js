@@ -191,7 +191,7 @@ export function toastNoCats() {
           cursor: pointer;
           margin-top: 8px;
         ">
-          <img src="./assets/ui/plus.png" alt="Add Cat" style="width: 22px; vertical-align: middle;" /> Add Cat
+          <img src="../../assets/ui/plus.png" alt="Add Cat" style="width: 22px; vertical-align: middle;" /> Add Cat
         </button>
       `;
       return wrapper;
