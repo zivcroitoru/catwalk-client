@@ -46,7 +46,7 @@ export async function renderCarousel() {
   window.userCats = window.userCats.map(cat => ({
     ...cat,
     equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
-    image: cat.sprite
+    image: cat.sprite_url
   }));
 
   // Create cat cards
