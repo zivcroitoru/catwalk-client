@@ -3,8 +3,8 @@
   Handles real-time messaging via Socket.io
 -----------------------------------------------------------------------------*/
 
-import { getLoggedInUserInfo } from '../core/utils.js';
-import { APP_URL } from '../core/config.js';
+import { getLoggedInUserInfo } from '../../core/utils.js';
+import { APP_URL } from '../../core/config.js';
 
 // Constants
 const MAX_MESSAGE_LENGTH = 250;
