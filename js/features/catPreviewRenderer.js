@@ -5,6 +5,8 @@ export function updateCatPreview(cat, container = document) {
   }
 
   const setLayer = (cls, path) => {
+    console.log("base path is" + path);
+    
     const el = container.querySelector(`.${cls}`);
     if (!el) return;
     
