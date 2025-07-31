@@ -66,15 +66,12 @@ export async function savePlayerItems(playerItems) {
 function getPlayerIdFromToken() {
   const token = localStorage.getItem('token');
   if (!token) return null;
-  
-  // Get the payload part of the JWT (second part)
+
   const payload = token.split('.')[1];
   if (!payload) return null;
 
   try {
-    // Decode the base64 payload
-    const decoded = JSON.parse(atob(payload));
-    return decoded.id;
+    return JSON.parse(atob(payload)).id;
   } catch (e) {
     console.error('Failed to decode JWT token:', e);
     return null;
@@ -94,6 +91,8 @@ export async function addCatToUser(cat) {
     throw new Error('No player ID found in token');
   }
 
+  const template = `${cat.breed}-${cat.variant}-${cat.palette}`;
+
   const res = await fetch(`${APP_URL}/api/cats`, {
     method: 'POST',
     headers: {
@@ -102,11 +101,11 @@ export async function addCatToUser(cat) {
     },
     body: JSON.stringify({
       player_id: playerId,
+      template,
       name: cat.name,
-      breed: cat.breed,
-      variant: cat.variant,
-      palette: cat.palette,
-      description: cat.description || ''
+      birthdate: cat.birthdate,
+      description: cat.description || '',
+      uploaded_photo_url: cat.uploaded_photo_url || ''
     })
   });
 
@@ -115,7 +114,6 @@ export async function addCatToUser(cat) {
   }
 
   const result = await res.json();
-  // Refresh the player items cache since we added a new cat
   await loadPlayerItems(true);
   updateUI();
   return result.cat;
