@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
+const PLAYER_ITEMS_API = `${APP_URL}/api/playerItems`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
