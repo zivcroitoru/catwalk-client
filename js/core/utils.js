@@ -9,7 +9,11 @@ export function setDisplay(el, visible, type = 'block') {
   if (typeof el === 'string') el = $(el);
   if (el) el.style.setProperty('display', visible ? type : 'none', 'important');
 }
-
+export function toPascalCase(str) {
+  return str
+    .replace(/_/g, ' ')
+    .replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+}
 /*─────────────────────────────────────────────────────────────────────────────
   Auth helpers
 ─────────────────────────────────────────────────────────────────────────────*/

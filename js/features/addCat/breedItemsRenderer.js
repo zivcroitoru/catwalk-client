@@ -1,5 +1,6 @@
 import { toastCatAdded, toastCancelled } from '../../core/toast.js';
 import { addCatToUser } from '../../core/storage.js';
+import { toPascalCase } from '../../core/utils.js';
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
@@ -91,7 +92,7 @@ function showAddCatConfirmation(breed, variantData) {
         onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
 
       <div style="font-size: 13px; color: #333; margin-top: 12px;">
-        <b>${variant} (${palette})</b>
+        <b>${variant} (${toPascalCase(palette)})</b>
       </div>
 
       <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
