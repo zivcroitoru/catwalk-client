@@ -16,15 +16,6 @@ export function updateCatPreview(cat, container = document) {
 
     // Process the path - directly use data URLs, absolute URLs, and blob URLs
     let finalPath = path;
-    if (path.startsWith('data:') || 
-        path.startsWith('http') || 
-        path.startsWith('blob:')) {
-      // Use the URL as-is
-      finalPath = path;
-    } else if (path.startsWith('/')) {
-      // For relative paths, prepend APP_URL
-      finalPath = `${APP_URL}/${path}`;
-    }
 
     // Handle image load errors
     el.onerror = () => {
