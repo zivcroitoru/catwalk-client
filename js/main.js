@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupShopTabs();
   setupEditMode();
   bindUI();
-  initializeMailbox();
+
+  // Initialize mailbox (only once!)
+  await initializeMailbox();
 
   document.getElementById('addCatBtnEmpty')
     ?.addEventListener('click', () =>
@@ -48,12 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
   console.log('✅ Systems initialized');
-});
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', async () => {
-  await initializeMailbox();
-  requestNotificationPermission(); // Optional: for browser notifications
 });
 
 
