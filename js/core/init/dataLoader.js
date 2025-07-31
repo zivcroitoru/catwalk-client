@@ -49,7 +49,9 @@ export async function loadShopAndTemplates () {
   resetSpriteLookup();
 
   console.log(`✅ Templates ready (${Object.keys(breedItems).length} breeds)`);
+  console.log('🛍️ Full shop data:', shopItems); // ← here
 }
+
 
 /*--------------------------------------------------------------
   STEP B: load the player’s cats – must run *after* step A
