@@ -246,55 +246,31 @@ export async function addCatToUser(cat) {
   console.log('✅ New cat added:', result.cat);
 
   await loadPlayerItems(true);
-  updateUI(getPlayerIdFromToken());
+  updateUI();
   return result.cat;
 }
 
 // ───────────── UI Updates ─────────────
-export async function updateUI(playerId) {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('No auth token');
-
-    const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch player data:', res.status, res.statusText);
-      throw new Error('Failed to fetch player data');
-    }
-
-    const { coins, cat_count } = await res.json();
-
-    // Update UI elements
-    updateCoinCountUI(coins);
-    updateCatCountUI(cat_count);
-  } catch (error) {
-    console.error('Error updating UI:', error);
-  }
-}
-
-function updateCoinCountUI(coins) {
-  const coinElement = document.querySelector('.coin-count');
-  if (coinElement) {
-    coinElement.textContent = coins;
+export async function updateCoinCount() {
+  const { coins } = await loadPlayerItems(true);
+  const el = document.querySelector('.coin-count');
+  if (el) {
+    el.textContent = coins;
     console.log('🪙 Coin count updated:', coins);
   } else {
     console.warn('⚠️ .coin-count element not found');
   }
 }
 
-function updateCatCountUI(catCount) {
-  const catCountElement = document.querySelector('.cat-count');
-  if (catCountElement) {
-    catCountElement.textContent = `Total Cats: ${catCount}`;
-    console.log('🐱 Cat count updated:', catCount);
-  } else {
-    console.warn('⚠️ .cat-count element not found');
-  }
+export async function updateCatCountUI() {
+  const cats = await getPlayerCats();
+  const el = document.querySelector('.cat-count');
+  if (el) el.textContent = `Total Cats: ${cats.length}`;
+}
+
+export function updateUI() {
+  updateCoinCount();
+  updateCatCountUI();
 }
 
 export function normalizeCat(cat, spriteByTemplate) {
@@ -311,5 +287,3 @@ export function normalizeCat(cat, spriteByTemplate) {
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
-
-export { updateCoinCountUI as updateCoinCount };
