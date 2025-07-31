@@ -14,7 +14,10 @@ import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
 import { toggleAddCat } from './features/addCat/addCat.js';
 
 import { bindUI } from './features/ui/uiBinder.js';
-import { loadAllData } from './core/init/dataLoader.js';
+import {
+  loadShopAndTemplates,
+  loadUserCats
+} from './features/core/dataLoader.js';
 import { updateCoinCount } from './core/storage.js';
 
 import { APP_URL } from './core/config.js';
@@ -23,31 +26,29 @@ import { APP_URL } from './core/config.js';
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOMContentLoaded');
 
-  await loadAllData();           // Load cats, items, templates, etc.
-
-  if (!window.breedItems || Object.keys(window.breedItems).length === 0) {
-    console.warn("⚠️ No breeds to initialize");
-  } else {
-    console.log("📚 Breed Items:", window.breedItems);
-    // Optionally call a function to initialize breed UI
-    // initBreedSelector(); ← Uncomment if you have it
+  try {
+    /* STEP A then STEP B */
+    await loadShopAndTemplates();
+    await loadUserCats();
+  } catch (err) {
+    console.error('❌ Data load failed:', err);
+    return; // bail before touching UI
   }
 
-  renderCarousel();              // Render carousel or empty state
-  setupShopTabs();              // Shop tab handlers
-  setupEditMode();              // Edit/save/delete profile buttons
-  bindUI();                     // Global UI interactions
-  await updateCoinCount();      // Coin display from DB
-
-  // ✅ Initialize mailbox system (handles all its own logic)
+  /* UI init – safe to read breedItems & userCats from here */
+  renderCarousel();
+  setupShopTabs();
+  setupEditMode();
+  bindUI();
+  await updateCoinCount();
   initializeMailbox();
 
-  // ✅ Empty state button redirects to main add button
-  document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
-    document.getElementById('addCatBtn')?.click();
-  });
+  document.getElementById('addCatBtnEmpty')
+    ?.addEventListener('click', () =>
+      document.getElementById('addCatBtn')?.click()
+    );
 
-  console.log('✅ Initialized systems');
+  console.log('✅ Systems initialized');
 });
 
 // ───────────── Expose to Window (for inline HTML handlers) ─────────────
