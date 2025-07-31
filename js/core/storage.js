@@ -311,3 +311,5 @@ export function normalizeCat(cat, spriteByTemplate) {
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
+
+export { updateCoinCountUI as updateCoinCount };
