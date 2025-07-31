@@ -1,5 +1,3 @@
-// /core/init/dataLoader.js
-
 import { getPlayerCats, normalizeCat, buildSpriteLookup } from "../storage.js";
 import { APP_URL } from "../../core/config.js";
 
