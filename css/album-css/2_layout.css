@@ -114,8 +114,8 @@
 .cat-layer {
   position: absolute;
   top: 100%;
-  left: 30%;
-  transform: translate(-50%, -105%);
+  left: 50%;
+  transform: translate(-50%, -105%) scale(0.8); /* 👈 scale down */
   width: 10.42vw;
   height: auto;
   object-fit: contain;
