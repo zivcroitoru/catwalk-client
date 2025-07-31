@@ -3,7 +3,7 @@ console.log('🐱 MAIN.JS LOADED');
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-import { toggleMailbox } from './features/mailbox/mailbox.js';
+import { initializeMailbox, toggleMailbox } from './features/mailbox/mailbox.js';
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
 
@@ -24,11 +24,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ DOMContentLoaded');
 
   await loadAllData();           // Load cats, items, templates, etc.
+
+  if (!window.breedItems || Object.keys(window.breedItems).length === 0) {
+    console.warn("⚠️ No breeds to initialize");
+  } else {
+    console.log("📚 Breed Items:", window.breedItems);
+    // Optionally call a function to initialize breed UI
+    // initBreedSelector(); ← Uncomment if you have it
+  }
+
   renderCarousel();              // Render carousel or empty state
-  setupShopTabs();               // Shop tab handlers
-  setupEditMode();               // Edit/save/delete profile buttons
-  bindUI();                      // Global UI interactions
-  await updateCoinCount();       // Coin display from DB
+  setupShopTabs();              // Shop tab handlers
+  setupEditMode();              // Edit/save/delete profile buttons
+  bindUI();                     // Global UI interactions
+  await updateCoinCount();      // Coin display from DB
+
+  // ✅ Initialize mailbox system (handles all its own logic)
+  initializeMailbox();
 
   // ✅ Empty state button redirects to main add button
   document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {

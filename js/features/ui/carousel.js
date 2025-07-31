@@ -3,7 +3,7 @@ import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
-import { loadUserItems, addCatToUser } from '../../core/storage.js';
+import { loadPlayerItems, addCatToUser } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
@@ -15,7 +15,7 @@ export function renderCarousel() {
   if (!container) return;
 
   if (!Array.isArray(window.userCats)) {
-    window.userCats = loadUserItems().userCats || [];
+    window.userCats = loadPlayerItems().userCats || [];
   }
 
   const hasCats = window.userCats.length > 0;

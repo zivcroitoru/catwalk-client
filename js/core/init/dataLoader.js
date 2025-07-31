@@ -1,55 +1,68 @@
 // /core/init/dataLoader.js
 
-import { getUserCats } from "../storage.js"
-import { APP_URL } from '../../core/config.js'
-
-
+import { getUserCats } from "../storage.js";
+import { APP_URL } from "../../core/config.js";
 
 export let userCats = [];
 export let shopItems = [];
 
 export async function loadAllData() {
   try {
-const [shopRes, templatesRes] = await Promise.all([
-  fetch(`${APP_URL}/api/shop`),
-  fetch(`${APP_URL}/api/cats/allcats`)
-]);
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-    // 🐱 Load local user cats
-    userCats = getUserCats();
-    console.log("📦 Loaded userCats from userItems");
+    const [shopRes, templatesRes, loadedUserCats] = await Promise.all([
+      fetch(`${APP_URL}/api/shop`, { headers }),
+      fetch(`${APP_URL}/api/cats/allcats`, { headers }),
+      getUserCats()
+    ]);
 
-    // 🛒 Load shop data
+    // 🐱 User cats
+    userCats = loadedUserCats;
+    console.log("📦 Loaded userCats from userItems!!");
+
+    // 🛒 Shop
     shopItems = await shopRes.json();
 
-    // 🎨 Parse cat templates
+    // 🧪 Templates
     const templates = await templatesRes.json();
+    console.log("🐾 templates structure:", templates);
+
     const breedItems = {};
 
-    for (const [breed, cats] of Object.entries(templates)) {
-      if (!Array.isArray(cats)) {
-        console.warn(`⚠️ Skipping breed '${breed}' — not an array`);
+    for (const cat of templates) {
+      const breed = cat.breed || cat.template || cat.type;
+      const sprite = cat.sprite_url || cat.sprite;
+
+      console.log("🐈‍⬛ RAW CAT:", cat);
+      console.log("📦 Mapped:", { breed, sprite });
+
+      if (!breed || !sprite || sprite === "null") {
+        console.warn("⛔ Skipping template due to missing data:", { breed, sprite });
         continue;
       }
 
-      breedItems[breed] = cats
-        .filter(cat => cat?.sprite && cat.sprite !== "null")
-        .map(cat => ({
-          name: cat.name,
-          variant: cat.variant || cat.name,
-          palette: cat.palette || "default",
-          sprite: cat.sprite
-        }));
+      if (!breedItems[breed]) breedItems[breed] = [];
 
-      console.log(`✅ Loaded ${breedItems[breed].length} valid variants for '${breed}'`);
+      breedItems[breed].push({
+        name: cat.name || "Unnamed",
+        variant: cat.variant || cat.name || "Default",
+        palette: cat.palette || "default",
+        sprite
+      });
     }
 
-    // 🌍 Expose globals
+    console.log("✅ breedItems:", breedItems);
+
+    for (const [breed, variants] of Object.entries(breedItems)) {
+      console.log(`✅ Loaded ${variants.length} valid variants for '${breed}'`);
+    }
+
     window.userCats = userCats;
     window.shopItems = shopItems;
     window.breedItems = breedItems;
 
-    console.log("✅ All data loaded");
+    console.log("✅ All data loaded!!!");
   } catch (err) {
     console.error("❌ Data loading error:", err);
   }

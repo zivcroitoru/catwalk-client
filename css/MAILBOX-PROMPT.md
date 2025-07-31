@@ -405,7 +405,7 @@ CATWALK-CLIENT/
     align-items: center;
 }
 
-/* Contact Us Title */
+/* Contact Us Title Input Field */
 .contact-view-title {
     background-color: var(--color-white);
     border: var(--stroke-thin) solid var(--color-black);
@@ -419,6 +419,22 @@ CATWALK-CLIENT/
     align-items: center;
     min-height: 24px;
     box-sizing: border-box;
+    outline: none; /* Remove default input outline */
+    resize: none; /* Prevent resizing if browser tries to make it a textarea */
+}
+
+/* Contact Us Title Placeholder Styling */
+.contact-view-title::placeholder {
+    color: var(--color-grey);
+    opacity: 0.7;
+    font-family: var(--font-main);
+    font-size: var(--font-size-xxs);
+}
+
+/* Focus state for Contact Us Title */
+.contact-view-title:focus {
+    background-color: var(--color-white);
+    border-color: var(--color-black);
 }
 
 /* Contact Us Date */
@@ -530,8 +546,6 @@ CATWALK-CLIENT/
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
-
-
   <!-- ✅ Import all CSS files -->
   <link rel="stylesheet" href="../css/album-css/1_base.css">
   <link rel="stylesheet" href="../css/album-css/2_layout.css">
@@ -546,10 +560,42 @@ CATWALK-CLIENT/
   <link rel="stylesheet" href="../css/mailbox.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
-
 <body>
-  <div class="welcome-message" id="welcomeMessage">Welcome, Guest</div>
+  <div class="welcome-message" id="welcomeMessage">Welcome, </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+<div id="game">
+  <!-- ✅ CAT AREA WRAPPER -->
+<!-- CAT AREA WRAPPER -->
+<div id="catAreaWrapper">
+  <!-- Cat Display -->
+<div class="cat-display-wrapper hidden" id="catDisplay">
+    <div class="ellipse-podium">
+      <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+      <div class="carousel-cat">
+        <img class="cat-layer carouselBase" alt="Base" />
+        <img class="cat-layer carouselHat" alt="Hat" />
+        <img class="cat-layer carouselTop" alt="Top" />
+        <img class="cat-layer carouselEyes" alt="Eyes" />
+        <img class="cat-layer carouselAccessory" alt="Accessory" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel Area -->
+  <div class="carousel-wrapper" id="carouselWrapper">
+    ...
+  </div>
+</div> <!-- ✅ END of #catAreaWrapper -->
+
+<div id="emptyState" class="hidden empty-state-message">
+  <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+  <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+  <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+    <img src="../assets/ui/plus.png" alt="Add Cat" />
+  </button>
+</div>
+
+
 
   <div id="game">
     <!-- Cat Display -->
@@ -572,7 +618,6 @@ CATWALK-CLIENT/
 </div>
       </div>
     </div>
-
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
@@ -586,10 +631,8 @@ CATWALK-CLIENT/
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
     </div>
-
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
-
     <!-- Complete Mailbox Display -->
 <div class="mailbox-display" id="mailboxDisplay">
   <!-- Mailbox Navigation Buttons -->
@@ -652,7 +695,6 @@ CATWALK-CLIENT/
         <div class="message-date">11/29/2025</div>
       </div>
     </div>
-
     <!-- Message Detail View -->
     <div class="message-view" id="messageView">
       <!-- Message Header (Title and Date) -->
@@ -672,12 +714,11 @@ CATWALK-CLIENT/
         <button class="mark-unread-btn" id="markUnreadBtn">MARK AS UNREAD</button>
       </div>
     </div>
-
     <!-- Contact Us View -->
     <div class="contact-view" id="contactView">
       <!-- Contact Header (Title and Date) -->
       <div class="contact-view-header">
-        <div class="contact-view-title">Contact Us</div>
+        <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
         <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
       </div>
       
@@ -706,23 +747,19 @@ CATWALK-CLIENT/
   <img src="../assets/ui/plus.png" alt="Add Cat" />
 </button>
           </div>
-
           <!-- Floating UI -->
           <div class="floating-actions">
             <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
           </div>
         </div>
-
         <!-- ✅ Right Pane: profile + shop stack here -->
         <div class="right-pane">
           <!-- ✅ Overlay blocker goes first -->
           <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
-
           <!-- Profile Panel -->
           <div id="catProfileScroll" class="cat-profile-scroll">
             <div class="scroll-inner">
               <input type="text" id="catName" class="profile-name-input" disabled />
-
               <div class="profile-main">
                 <div class="profile-info">
                   <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
@@ -735,14 +772,12 @@ CATWALK-CLIENT/
 <img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
                 </div>
               </div>
-
               <!-- Description -->
               <div class="desc-block" id="descBlock">
                 <label for="catDesc">Description:</label>
                 <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
                 <div id="charCount" class="word-count">0 / 200 characters</div>
               </div>
-
               <!-- Footer Buttons -->
               <div class="profile-footer-buttons">
                 <button class="profile-btn primary" id="editBtn">Edit</button>
@@ -767,7 +802,6 @@ CATWALK-CLIENT/
   </div>
   <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
 </div>
-
 <!-- ✅ Add Cat Popup (matches Shop style) -->
 <div id="addCatPopup" class="shop-popup hidden">
   <div class="tabs" id="breedTabs"></div>
@@ -776,21 +810,14 @@ CATWALK-CLIENT/
   </div>
   <button class="profile-btn danger" style="align-self: flex-end;" onclick="closeAddCat()">✕</button>
 </div>
-
 <!-- ✅ Add Cat Overlay -->
 <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-
-
   <!-- Audio + Scripts -->
 <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
 <!-- ✅ Your modules LAST -->
 <script type="module" src="../js/main.js"></script>
-
-
 </body>
 </html>
 ```
@@ -1040,6 +1067,7 @@ function showContactView() {
     const contactView = document.getElementById('contactView');
     const contactViewDate = document.getElementById('contactViewDate');
     const contactInput = document.getElementById('contactInput');
+    const contactSubjectInput = document.getElementById('contactSubjectInput');
     
     // Set current date
     const currentDate = new Date().toLocaleDateString('en-US', {
@@ -1049,8 +1077,9 @@ function showContactView() {
     });
     contactViewDate.textContent = currentDate;
     
-    // Clear the input area
+    // Clear the input areas
     contactInput.value = '';
+    contactSubjectInput.value = '';
     
     // Show the contact view
     contactView.style.display = 'flex';
@@ -1094,19 +1123,24 @@ function setupMessageViewControls() {
 // Handle send message functionality
 function handleSendMessage() {
     const contactInput = document.getElementById('contactInput');
+    const contactSubjectInput = document.getElementById('contactSubjectInput');
     const message = contactInput.value.trim();
+    const subject = contactSubjectInput.value.trim();
     
-    if (message === '') {
+    if (message === '' && subject === '') {
         // Could add a toast notification here in the future
-        console.log('No message to send');
+        console.log('No message or subject to send');
         return;
     }
     
     // In a real app, this would send the message to a server
-    console.log('Message sent:', message);
+    console.log('Message sent:');
+    console.log('Subject:', subject || '(No subject)');
+    console.log('Message:', message || '(No message)');
     
-    // Clear the input
+    // Clear both inputs
     contactInput.value = '';
+    contactSubjectInput.value = '';
     
     // Go back to ALL MESSAGES view
     // First, set the ALL MESSAGES button as active
@@ -1207,11 +1241,37 @@ function markMessageAsUnread() {
   - Outside of the brown box:
     - on the bottom right we have a SEND button
 - if player clicks on SEND button- the player will go back to the list of messages (ALL MESSAGES).
+## Player click on SENT:
+- The list of messages dissapears
+- instead we have a view of the sent messages:
+  - we have a brown base
+  - a title and date (simular to the messages in the message list and in contact us)
+  - A white rectangle- the body of our message..
+    - This will have a 30 radius
+    - it will stick to the left side
+    - it should be 3/4 of the full width it would have had if it was full width
+    - this message body is not for typing in, its only viewed by the player.
+  - A white rectangle- the body of the message we've recived in reponse, from the admins
+    - This will have a 30 radius
+    - it will stick to the right side
+    - it should be 3/4 of the full width it would have had if it was full width
+    - this message body is not for typing in, its only viewed by the player.
+  - A white rectangle- the body of the message we want to send over to the admins (reply to admin's message)
+    - This will have a 30 radius
+    - it will stick to the left side
+    - it should be 3/4 of the full width it would have had if it was full width
+    - this message body is for typing in.
+  - this can go on and on. anyhow, all the messages here eil be viewed, and the last on will be to write in. the title is for view only.
+  - Outside of the brown box:
+    - on the bottom right we have a SEND button
+- if player clicks on SEND button- the player will go back to the list of messages (ALL MESSAGES).
   
 
-# Your task:
+# What we tried to achive:
 Update functionality and view for for when player clicks on a CONTACT US:
 - In the body, we have "type message here..." - thats very good! we want to add the same functionality to the title- we want instead of "Contact Us" to be a text in grey like "type the subject" or something, and let player type in
+
+# Our ALL MESSAGES and CONTACT US work perfectly, but SENT doesnt work at all, its just blank - ANALYZE THE FILES CAREFULLY.
 
 # Notes: 
 - We need to create a mailbox placeholder, no need for logic at this point. I ONLY want to implement the CSS and HTML.

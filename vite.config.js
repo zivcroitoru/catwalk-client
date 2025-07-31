@@ -38,9 +38,8 @@ export default defineConfig({
         entryFileNames: 'js/[name].js',
       },
     },
-    assetsDir: 'assets',
   },
-  publicDir: false, // assets are managed manually
+  publicDir: true, // assets are managed manually
   server: {
     port: 3000,
     open: 'index.html',

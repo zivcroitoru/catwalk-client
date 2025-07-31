@@ -3,8 +3,8 @@
 -----------------------------------------------------------------------------*/
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
-  loadUserItems,
-  saveUserItems,
+  loadPlayerItems,
+  savePlayerItems,
   updateCoinCount
 } from '../../core/storage.js';
 import { updateCat } from '../../core/api.js';
@@ -19,15 +19,15 @@ export async function renderShopItems(data, activeCategory) {
   const container = document.getElementById('shopItems');
   if (!data || !container || !data[activeCategory]) return;
 
-  const userItems  = await loadUserItems();
-  const ownedSet   = new Set(userItems.ownedItems || []);
+  const playerItems  = await loadPlayerItems();
+  const ownedSet   = new Set(playerItems.ownedItems || []);
   const selectedCat = window.selectedCat;
   const equipped   = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = '';
   data[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
     const id = `${activeCategory}_${name.toLowerCase().replaceAll(' ', '_')}`;
-    const state = getItemState(id, activeCategory, userItems);
+    const state = getItemState(id, activeCategory, playerItems);
     const isBuy = state === 'buy';
 
     const card = document.createElement('div');
@@ -52,12 +52,12 @@ export async function renderShopItems(data, activeCategory) {
       const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
 
       if (isBuy) {
-        showBuyConfirmation(item, userItems, data, activeCategory);
+        showBuyConfirmation(item, playerItems, data, activeCategory);
         return;
       }
 
-      const result = handleShopClick(item, userItems);
-      await saveUserItems(userItems);
+      const result = handleShopClick(item, playerItems);
+      await savePlayerItems(playerItems);
       await updateCoinCount();
 
       if (selectedCat) {
@@ -72,7 +72,7 @@ export async function renderShopItems(data, activeCategory) {
   });
 }
 
-async function showBuyConfirmation(item, userItems, data, activeCategory) {
+async function showBuyConfirmation(item, playerItems, data, activeCategory) {
   const box = document.createElement('div');
   box.className = 'confirm-toast';
   box.innerHTML = `
@@ -84,8 +84,8 @@ async function showBuyConfirmation(item, userItems, data, activeCategory) {
   document.body.appendChild(box);
 
   box.querySelector('.yes-btn').onclick = async () => {
-    const result = handleShopClick(item, userItems);
-    await saveUserItems(userItems);
+    const result = handleShopClick(item, playerItems);
+    await savePlayerItems(playerItems);
     await updateCoinCount();
 
     if (result === 'bought')      toastBought(item.name);

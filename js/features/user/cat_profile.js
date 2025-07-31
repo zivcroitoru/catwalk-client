@@ -5,7 +5,7 @@
 import { $, setDisplay } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadUserItems, saveUserItems } from '../../core/storage.js';
+import { loadPlayerItems, savePlayerItems } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
   // ❌ Removed force-show of scroll
@@ -32,9 +32,9 @@ export async function showCatProfile(cat) {
   const idx = window.userCats.findIndex(c => c.id === cat.id);
   if (idx !== -1) {
     window.userCats[idx].age = ageInDays;
-    const userItems = await loadUserItems();
-    userItems.userCats = window.userCats;
-    await saveUserItems({ userCats: userItems.userCats });
+    const playerItems = await loadPlayerItems();
+    playerItems.userCats = window.userCats;
+    await savePlayerItems({ userCats: playerItems.userCats });
   }
 
   nameInput.value     = cat.name;
@@ -93,9 +93,9 @@ export function setupEditMode() {
       const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
       if (idx !== -1) {
         window.userCats[idx] = { ...window.currentCat };
-        const userItems = await loadUserItems();
-        userItems.userCats = window.userCats;
-        await saveUserItems({ userCats: userItems.userCats });
+        const playerItems = await loadPlayerItems();
+        playerItems.userCats = window.userCats;
+        await savePlayerItems({ userCats: playerItems.userCats });
       }
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
