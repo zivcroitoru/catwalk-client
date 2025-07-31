@@ -62,6 +62,25 @@ export async function savePlayerItems(playerItems) {
   return cache;
 }
 
+// ───────────── Player ID from JWT ─────────────
+function getPlayerIdFromToken() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  
+  // Get the payload part of the JWT (second part)
+  const payload = token.split('.')[1];
+  if (!payload) return null;
+
+  try {
+    // Decode the base64 payload
+    const decoded = JSON.parse(atob(payload));
+    return decoded.id;
+  } catch (e) {
+    console.error('Failed to decode JWT token:', e);
+    return null;
+  }
+}
+
 // ───────────── Cats Access ─────────────
 export async function getUserCats() {
   const { userCats = [] } = await loadPlayerItems();
@@ -69,12 +88,37 @@ export async function getUserCats() {
 }
 
 export async function addCatToUser(cat) {
-  const playerItems = await loadPlayerItems();
-  const currentCats = Array.isArray(playerItems.userCats) ? playerItems.userCats : [];
-  playerItems.userCats = [...currentCats, cat];
+  const token = localStorage.getItem('token');
+  const playerId = getPlayerIdFromToken();
+  if (!playerId) {
+    throw new Error('No player ID found in token');
+  }
 
-  await savePlayerItems({ userCats: playerItems.userCats });
+  const res = await fetch(`${APP_URL}/api/cats`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      player_id: playerId,
+      name: cat.name,
+      breed: cat.breed,
+      variant: cat.variant,
+      palette: cat.palette,
+      description: cat.description || ''
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to add cat');
+  }
+
+  const result = await res.json();
+  // Refresh the player items cache since we added a new cat
+  await loadPlayerItems(true);
   updateUI();
+  return result.cat;
 }
 
 // ───────────── Patch Update ─────────────
