@@ -1,6 +1,7 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
+
 let catsData = [];
 let currentPage = 1;
 const catsPerPage = 6;
