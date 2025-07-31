@@ -17,7 +17,7 @@ import { bindUI } from './features/ui/uiBinder.js';
 import {
   loadShopAndTemplates,
   loadUserCats
-} from './features/core/dataLoader.js';
+} from './core/init/dataLoader.js';
 import { updateCoinCount } from './core/storage.js';
 
 import { APP_URL } from './core/config.js';
