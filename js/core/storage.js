@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const PLAYER_ITEMS_API = `${APP_URL}/api/playerItems`;
+const playerItems_API = `${APP_URL}/api/playerItems`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
@@ -11,7 +11,7 @@ let itemCache = null;
 // ───────────── REST helpers ─────────────
 async function apiGetItems() {
   const token = localStorage.getItem('token');
-  const res = await fetch(PLAYER_ITEMS_API, {
+  const res = await fetch(playerItems_API, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
@@ -21,7 +21,7 @@ async function apiGetItems() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('GET /player_items failed');
+    throw new Error('GET /playerItems failed');
   }
 
   return res.json();
@@ -29,7 +29,7 @@ async function apiGetItems() {
 
 async function apiPatchItem(template) {
   const token = localStorage.getItem('token');
-  const res = await fetch(PLAYER_ITEMS_API, {
+  const res = await fetch(playerItems_API, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ async function apiPatchItem(template) {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('PATCH /player_items failed');
+    throw new Error('PATCH /playerItems failed');
   }
 
   return res.json();
