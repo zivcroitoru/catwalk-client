@@ -125,28 +125,29 @@ export function setupEditMode() {
 
   deleteBtn.onclick = () => {
     if (!window.currentCat) return;
+toastConfirmDelete(window.currentCat, async () => {
+  const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+  if (idx === -1) return;
 
-    toastConfirmDelete(window.currentCat, async () => {
-      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx === -1) return;
+  window.userCats.splice(idx, 1);        // remove cat
+  window.renderCarousel();               // redraw cards
 
-      window.userCats.splice(idx, 1);
+  const hasCats = window.userCats.length > 0;
+  const newCat  = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
+  const mainImg = document.getElementById('carouselCat');
 
-      setDisplay('catProfileScroll', false);
-      window.renderCarousel();
+  if (hasCats) {
+    showCatProfile(newCat);              // load next cat
+    setDisplay('catProfileScroll', true);// keep panel open
+    if (mainImg) mainImg.src = newCat.sprite_url;
+  } else {
+    setDisplay('catProfileScroll', false);// nothing left → hide
+    if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+  }
 
-      const newCat = window.userCats[Math.max(0, idx - 1)];
-      const mainImg = document.getElementById('carouselCat');
-      if (newCat) {
-        showCatProfile(newCat);
-        if (mainImg) mainImg.src = newCat.sprite_url;
-      } else if (mainImg) {
-        mainImg.src = '../assets/cats/placeholder.png';
-      }
+  toastSimple('Cat deleted!', '#ffcc66');
+});
 
-      toastSimple('Cat deleted!', '#ffcc66');
-    });
-  };
 
   function finishEdit() {
     nameInput.disabled = true;
@@ -174,4 +175,5 @@ function toggleButtons({ edit, save, cancel }) {
   setVis('deleteBtn',  edit);
   setVis('customizeBtn', edit);
   setVis('fashionBtn',  edit);
+}
 }
