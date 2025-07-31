@@ -64,22 +64,40 @@ function showAddCatConfirmation(breed, variantData) {
   const confirmBox = document.createElement("div");
   confirmBox.className = "confirm-toast";
   confirmBox.innerHTML = `
-    <div style="text-align: center; font-family: 'Press Start 2P', monospace;">
-      <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">ADD</div>
-      <div class="cat-preview">
-        <img src="${sprite_url}" alt="Cat" 
-          style="width: 64px; height: 64px; transform: scale(1.5); transform-origin: center;
-                 image-rendering: pixelated; margin-top: -20px; margin-bottom: 6px;"
-          onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
-      </div>
-      <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">${breed} (${name})</div>
-      <div style="font-size: 10px; margin-bottom: 12px;">to your cats?</div>
-      <div class="confirm-buttons">
-        <button class="yes-btn">Yes</button>
-        <button class="no-btn">No</button>
-      </div>
+  <div style="
+    font-family: 'Press Start 2P', monospace;
+    text-align: center;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  ">
+    <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
+
+    <img src="${sprite_url}" alt="Cat"
+      style="
+        width: 64px;
+        height: 64px;
+        transform: scale(2);
+        transform-origin: center;
+        image-rendering: pixelated;
+        margin: 4px 0;
+      "
+      onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
+
+    <div style="font-size: 13px; color: #333;"><b>${breed} (${name})</b></div>
+
+    <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
+
+    <div class="confirm-buttons" style="display: flex; gap: 24px; margin-top: 16px;">
+      <button class="yes-btn" style="padding: 6px 14px;">✅ Yes</button>
+      <button class="no-btn" style="padding: 6px 14px;">❌ No</button>
     </div>
-  `;
+  </div>
+`;
+
 
   document.body.appendChild(confirmBox);
 
