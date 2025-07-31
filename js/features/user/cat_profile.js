@@ -2,7 +2,7 @@
   cat_profile.js – DB version (no localStorage)
 -----------------------------------------------------------------------------*/
 
-import { $, setDisplay } from '../../core/utils.js';
+import { $, setDisplay, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
@@ -14,10 +14,12 @@ export async function showCatProfile(cat) {
   const descBlock = $('descBlock');
 
   const [breed, variant] = cat.template.split('-');
-  $('profileBreed').textContent = breed;
-  $('profileVariant').textContent = variant;
-  $('profilePalette').textContent = cat.palette;
-  $('profileBirthday').textContent = cat.birthdate.split('T')[0];;
+  $('profileBreed').textContent = toPascalCase(breed);
+  $('profileVariant').textContent = toPascalCase(variant);
+  $('profilePalette').textContent = toPascalCase(cat.palette);
+  const date = new Date(cat.birthdate);
+  const formatted = `${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear().toString().slice(-2)}`;
+  $('profileBirthday').textContent = formatted;
   $('profileImage').src = cat.sprite_url;
 
   const ageInDays = Math.floor(
@@ -25,10 +27,10 @@ export async function showCatProfile(cat) {
   );
   $('profileAge').textContent = `${ageInDays} days`;
 
-  nameInput.value    = cat.name;
+  nameInput.value = cat.name;
   nameInput.disabled = true;
 
-  descInput.value    = cat.description || '';
+  descInput.value = cat.description || '';
   descInput.readOnly = true;
   descInput.classList.remove('editing');
 
@@ -40,8 +42,8 @@ export async function showCatProfile(cat) {
 
 export function setupEditMode() {
   const els = [
-    'editBtn','saveBtn','cancelBtn','deleteBtn',
-    'catName','catDesc','descBlock','charCount'
+    'editBtn', 'saveBtn', 'cancelBtn', 'deleteBtn',
+    'catName', 'catDesc', 'descBlock', 'charCount'
   ].map($);
 
   if (els.some(e => !e)) {
@@ -165,10 +167,10 @@ function toggleButtons({ edit, save, cancel }) {
     const el = $(id);
     if (el) el.classList.toggle('hidden', !show);
   };
-  setVis('editBtn',      edit);
-  setVis('saveBtn',      save);
-  setVis('cancelBtn',    cancel);
-  setVis('deleteBtn',    edit);
+  setVis('editBtn', edit);
+  setVis('saveBtn', save);
+  setVis('cancelBtn', cancel);
+  setVis('deleteBtn', edit);
   setVis('customizeBtn', edit);
-  setVis('fashionBtn',   edit);
+  setVis('fashionBtn', edit);
 }
