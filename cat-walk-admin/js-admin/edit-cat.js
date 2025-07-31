@@ -1,5 +1,7 @@
 import { APP_URL } from "../../js/core/config.js";
-console.log('APP_URL:', APP_URL);
+console.log(localStorage.getItem('selectedCat'));
+console.log('poo APP_URL:', APP_URL);
+
 // document.addEventListener('DOMContentLoaded', async () => {
 // const urlParams = new URLSearchParams(window.location.search);
 // const template = urlParams.get('template');
