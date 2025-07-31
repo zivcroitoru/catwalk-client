@@ -76,16 +76,18 @@ function showAddCatConfirmation(breed, variantData) {
   ">
     <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
 
-    <img src="${sprite_url}" alt="Cat"
-      style="
-        width: 64px;
-        height: 64px;
-        transform: scale(2);
-        transform-origin: center;
-        image-rendering: pixelated;
-        margin: 4px 0;
-      "
-      onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
+<img src="${sprite_url}" alt="Cat"
+  style="
+    width: 64px;
+    height: 64px;
+    transform: scale(2);
+    transform-origin: center;
+    image-rendering: pixelated;
+    margin-top: -12px;
+    margin-bottom: 4px;
+  "
+  onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
+
 
     <div style="font-size: 13px; color: #333;"><b>${breed} (${name})</b></div>
 
