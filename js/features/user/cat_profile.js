@@ -2,7 +2,7 @@
   cat_profile.js – DB version (no localStorage)
 -----------------------------------------------------------------------------*/
 
-import { $, setDisplay } from '../../core/utils.js';
+import { $, setDisplay, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
@@ -14,9 +14,9 @@ export async function showCatProfile(cat) {
   const descBlock = $('descBlock');
 
   const [breed, variant] = cat.template.split('-');
-  $('profileBreed').textContent = breed;
-  $('profileVariant').textContent = variant;
-  $('profilePalette').textContent = cat.palette;
+  $('profileBreed').textContent = toPascalCase(breed);
+  $('profileVariant').textContent = toPascalCase(variant);
+  $('profilePalette').textContent = toPascalCase(cat.palette);
   $('profileBirthday').textContent = cat.birthdate.split('T')[0];;
   $('profileImage').src = cat.sprite_url;
 
