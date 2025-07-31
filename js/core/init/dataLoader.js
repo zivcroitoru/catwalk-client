@@ -3,45 +3,51 @@
 import { getUserCats } from "../storage.js"
 import { APP_URL } from '../../core/config.js'
 
-
-
 export let userCats = [];
 export let shopItems = [];
 
 export async function loadAllData() {
   try {
-const [shopRes, templatesRes] = await Promise.all([
-  fetch(`${APP_URL}/api/shop`),
-  fetch(`${APP_URL}/api/cats/allcats`)
-]);
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-    // 🐱 Load local user cats
-    userCats = getUserCats();
+    const [shopRes, templatesRes, loadedUserCats] = await Promise.all([
+      fetch(`${APP_URL}/api/shop`, { headers }),
+      fetch(`${APP_URL}/api/cats/allcats`, { headers }),
+      getUserCats()
+    ]);
+
+    // 🐱 Set user cats
+    userCats = loadedUserCats;
     console.log("📦 Loaded userCats from userItems");
 
     // 🛒 Load shop data
     shopItems = await shopRes.json();
 
-    // 🎨 Parse cat templates
+    // 🧪 Parse templates response
     const templates = await templatesRes.json();
+    console.log("🐾 templates structure:", templates);
+
     const breedItems = {};
 
-    for (const [breed, cats] of Object.entries(templates)) {
-      if (!Array.isArray(cats)) {
-        console.warn(`⚠️ Skipping breed '${breed}' — not an array`);
-        continue;
+    // 👇 Auto-grouping logic if templates is a flat array
+    for (const cat of templates) {
+      if (!cat?.breed || !cat?.sprite || cat.sprite === "null") continue;
+
+      if (!breedItems[cat.breed]) {
+        breedItems[cat.breed] = [];
       }
 
-      breedItems[breed] = cats
-        .filter(cat => cat?.sprite && cat.sprite !== "null")
-        .map(cat => ({
-          name: cat.name,
-          variant: cat.variant || cat.name,
-          palette: cat.palette || "default",
-          sprite: cat.sprite
-        }));
+      breedItems[cat.breed].push({
+        name: cat.name,
+        variant: cat.variant || cat.name,
+        palette: cat.palette || "default",
+        sprite: cat.sprite
+      });
+    }
 
-      console.log(`✅ Loaded ${breedItems[breed].length} valid variants for '${breed}'`);
+    for (const [breed, variants] of Object.entries(breedItems)) {
+      console.log(`✅ Loaded ${variants.length} valid variants for '${breed}'`);
     }
 
     // 🌍 Expose globals
@@ -49,7 +55,7 @@ const [shopRes, templatesRes] = await Promise.all([
     window.shopItems = shopItems;
     window.breedItems = breedItems;
 
-    console.log("✅ All data loaded");
+    console.log("✅ All data loaded!!!");
   } catch (err) {
     console.error("❌ Data loading error:", err);
   }
