@@ -8,20 +8,34 @@ export function updateCatPreview(cat, container = document) {
     const el = container.querySelector(`.${cls}`);
     if (!el) return;
     
-    // Ensure the path is absolute
-    let finalPath = path || "";
-    if (finalPath && !finalPath.startsWith('http') && !finalPath.startsWith('/')) {
-      finalPath = `${APP_URL}/${finalPath}`;
+    // Handle empty or invalid paths
+    if (!path) {
+      el.style.display = "none";
+      return;
+    }
+
+    // Process the path
+    let finalPath = path;
+    if (!path.startsWith('data:') && // Don't modify data URLs
+        !path.startsWith('http') &&   // Don't modify absolute URLs
+        !path.startsWith('blob:') &&  // Don't modify blob URLs
+        !path.startsWith('/')) {      // Don't modify root-relative paths
+      finalPath = `${APP_URL}/${path}`;
     }
 
     // Handle image load errors
     el.onerror = () => {
-      console.warn(`⚠️ Failed to load image: ${finalPath}`);
+      console.warn(`⚠️ Failed to load image: ${path}`);
       el.style.display = "none";
+      // Try fallback image if available
+      if (cls === 'carouselBase') {
+        el.src = '../assets/cats/placeholder.png';
+        el.style.display = "block";
+      }
     };
     
     el.src = finalPath;
-    el.style.display = finalPath ? "block" : "none";
+    el.style.display = "block";
   };
 
   // Initialize equipment if not present
