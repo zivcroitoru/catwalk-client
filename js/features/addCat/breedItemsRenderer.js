@@ -71,7 +71,7 @@ function showAddCatConfirmation(breed, variantData) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 30px;
     font-size: 14px;
   ">
     <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
@@ -83,7 +83,7 @@ function showAddCatConfirmation(breed, variantData) {
     transform: scale(2);
     transform-origin: center;
     image-rendering: pixelated;
-    margin-top: -12px;
+    margin-top: -30px;
     margin-bottom: 4px;
   "
   onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
