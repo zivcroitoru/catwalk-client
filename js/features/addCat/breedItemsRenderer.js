@@ -51,56 +51,57 @@ export function renderBreedItems(breed) {
 
 function showAddCatConfirmation(breed, variantData) {
   console.log('🎭 Showing confirmation for:', { breed, variantData });
-  
-  if (!variantData || !variantData.sprite_url) {
-    console.error('Missing sprite data for confirmation dialog');
+
+  // Re-fetch the variant from the breedItems to get accurate data (esp. palette)
+  const allVariants = window.breedItems?.[breed] || [];
+  const matchedVariant = allVariants.find(v =>
+    v.name === variantData.name && v.sprite_url === variantData.sprite_url
+  );
+
+  if (!matchedVariant) {
+    console.error('❌ Variant not found in breedItems for:', variantData.name);
     return;
   }
 
-  const { name, variant, palette, sprite_url } = variantData;
+  const { name, variant, palette, sprite_url } = matchedVariant;
 
-  // Create and append confirmation box
   const confirmBox = document.createElement("div");
   confirmBox.className = "confirm-toast";
   confirmBox.innerHTML = `
-  <div style="
-    font-family: 'Press Start 2P', monospace;
-    text-align: center;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 31px;
-    font-size: 14px;
-  ">
-    <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
+    <div style="
+      font-family: 'Press Start 2P', monospace;
+      text-align: center;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 31px;
+      font-size: 14px;">
+      
+      <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
 
-<img src="${sprite_url}" alt="Cat"
-  style="
-    width: 64px;
-    height: 64px;
-    transform: scale(2);
-    transform-origin: center;
-    image-rendering: pixelated;
-    margin-top: -30px;
-    margin-bottom: 4px;
-  "
-  onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
+      <img src="${sprite_url}" alt="Cat" style="
+        width: 64px;
+        height: 64px;
+        transform: scale(2);
+        transform-origin: center;
+        image-rendering: pixelated;
+        margin-top: -30px;
+        margin-bottom: 4px;"
+        onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
 
+      <div style="font-size: 13px; color: #333; margin-top: 12px;">
+        <b>${breed} (${name})</b>
+      </div>
 
-<div style="font-size: 13px; color: #333; margin-top: 12px;">
-  <b>${breed} (${name})</b>
-</div>
+      <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
 
-    <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
-
-    <div class="confirm-buttons" style="display: flex; gap: 24px; margin-top: 16px;">
-      <button class="yes-btn" style="padding: 6px 14px;">✅ Yes</button>
-      <button class="no-btn" style="padding: 6px 14px;">❌ No</button>
+      <div class="confirm-buttons" style="display: flex; gap: 24px; margin-top: 16px;">
+        <button class="yes-btn" style="padding: 6px 14px;">✅ Yes</button>
+        <button class="no-btn" style="padding: 6px 14px;">❌ No</button>
+      </div>
     </div>
-  </div>
-`;
-
+  `;
 
   document.body.appendChild(confirmBox);
 
@@ -109,26 +110,17 @@ function showAddCatConfirmation(breed, variantData) {
     window.catAdded = true;
 
     const newCat = {
-      // Core fields matching server structure
-      id: crypto.randomUUID(), // Temporary until server assigns real ID
+      id: crypto.randomUUID(),
       template: `${breed}-${variant}-${palette}`,
       name: `${breed} (${name})`,
       birthdate: new Date().toISOString().split("T")[0],
       description: "",
-      // Template properties
       breed,
       variant,
       palette,
       sprite_url,
-
-      // Client-side UI state
       selected: false,
-      equipment: {
-        hat: null,
-        top: null,
-        eyes: null,
-        accessories: []
-      }
+      equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
 
     addCatToUser(newCat);
