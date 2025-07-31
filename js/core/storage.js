@@ -69,12 +69,32 @@ export async function getUserCats() {
 }
 
 export async function addCatToUser(cat) {
-  const playerItems = await loadPlayerItems();
-  const currentCats = Array.isArray(playerItems.userCats) ? playerItems.userCats : [];
-  playerItems.userCats = [...currentCats, cat];
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${APP_URL}/api/cats`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      player_id: cat.player_id,
+      name: cat.name,
+      breed: cat.breed,
+      variant: cat.variant,
+      palette: cat.palette,
+      description: cat.description || ''
+    })
+  });
 
-  await savePlayerItems({ userCats: playerItems.userCats });
+  if (!res.ok) {
+    throw new Error('Failed to add cat');
+  }
+
+  const result = await res.json();
+  // Refresh the player items cache since we added a new cat
+  await loadPlayerItems(true);
   updateUI();
+  return result.cat;
 }
 
 // ───────────── Patch Update ─────────────
