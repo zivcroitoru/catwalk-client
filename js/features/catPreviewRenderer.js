@@ -4,6 +4,9 @@ export function updateCatPreview(cat, container = document) {
     return;
   }
 
+  // Ensure cat has standardized structure
+  cat.equipment = cat.equipment || { hat: null, top: null, eyes: null, accessories: [] };
+
   const setLayer = (cls, path) => {
     console.log("Setting layer", cls, "with path", path);
     
@@ -35,10 +38,10 @@ export function updateCatPreview(cat, container = document) {
     el.style.display = "block";
   };
 
-  // Initialize equipment if not present
+  // Always use normalized equipment structure
   cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
 
-  setLayer("carouselBase", cat.image);
+  setLayer("carouselBase", cat.sprite_url);
 
   const getSprite = (category, itemId) => {
     if (!itemId || !window.shopItems) return "";

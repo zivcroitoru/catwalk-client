@@ -36,7 +36,8 @@ export function renderBreedItems(breed) {
 }
 
 function showAddCatConfirmation(breed, variantData) {
-  const { name, variant, palette, sprite } = variantData;
+  const { name, variant, palette, sprite_url } = variantData;
+  const template = `${breed}-${variant}-${palette}`;
 
   const confirmBox = document.createElement("div");
   confirmBox.className = "confirm-toast";
@@ -62,20 +63,25 @@ function showAddCatConfirmation(breed, variantData) {
     window.catAdded = true;
 
     const newCat = {
-      id: crypto.randomUUID(),
+      // Core fields matching server structure
+      id: crypto.randomUUID(), // Temporary until server assigns real ID
+      template: `${breed}-${variant}-${palette}`,
       name: `${breed} (${name})`,
-      breed,
-      variant,
-      palette,
-      sprite_url: sprite,   // Consistent with server response
-      image: sprite,        // Used by UI components
       birthdate: new Date().toISOString().split("T")[0],
-      age: 0,
       description: "",
+
+      // Template properties
+      breed,
+      variant, 
+      palette,
+      sprite_url: sprite,
+
+      // Client-side UI state
+      selected: false,
       equipment: {
         hat: null,
-        top: null,         // Changed from shirt to match UI expectations
-        eyes: null,        // Added to match other equipment structures
+        top: null,
+        eyes: null,
         accessories: []
       }
     };

@@ -42,19 +42,24 @@ export async function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
-  // Initialize cats with proper equipment and normalize image fields
-   window.userCats = window.userCats.map(cat => ({
-    ...cat,
-    // Ensure consistent equipment structure
-    equipment: cat.equipment || { 
-      hat: null, 
-      top: null, 
-      eyes: null, 
-      accessories: []
-    },
-    // Ensure both image fields exist and are consistent
-    sprite_url: cat.sprite_url || cat.image,
-    image: cat.sprite_url || cat.image
+  // Normalize cats to match server structure
+  window.userCats = window.userCats.map(cat => ({
+    // Required fields from server
+    id: cat.cat_id || cat.id,
+    template: cat.template,
+    name: cat.name || 'Unnamed Cat',
+    birthdate: cat.birthdate || new Date().toISOString().split('T')[0],
+    description: cat.description || '',
+    sprite_url: cat.sprite_url,
+    
+    // Client-side UI state
+    selected: false,
+    equipment: {
+      hat: cat.equipment?.hat || null,
+      top: cat.equipment?.top || null,
+      eyes: cat.equipment?.eyes || null,
+      accessories: cat.equipment?.accessories || []
+    }
   }));
 
 
@@ -97,7 +102,7 @@ export async function renderCarousel() {
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
-    mainCatImg.src = firstCat.image;
+    mainCatImg.src = firstCat.sprite_url;
     mainCatImg.alt = firstCat.name || "Cat";
   }
 

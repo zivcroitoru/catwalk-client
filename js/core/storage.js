@@ -118,7 +118,52 @@ function getPlayerIdFromToken() {
 
 // ───────────── Cats Access ─────────────
 export async function getPlayerCats() {
-  return await apiGetCats();
+  const cats = await apiGetCats();
+  
+  // Normalize cats from server to match our structure
+  return cats.map(cat => ({
+    // Core fields
+    id: cat.cat_id || cat.id,
+    template: cat.template || `${cat.breed}-${cat.variant}-${cat.palette}`,
+    name: cat.name || 'Unnamed Cat',
+    birthdate: cat.birthdate,
+    description: cat.description || '',
+
+    // Template properties
+    breed: cat.breed,
+    variant: cat.variant,
+    palette: cat.palette,
+    sprite_url: cat.sprite_url,
+
+    // Client-side UI state (initialize empty)
+    selected: false,
+    equipment: { hat: null, top: null, eyes: null, accessories: [] }
+  }));
+}
+
+export async function updateCat(catId, updates) {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No auth token');
+
+  const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      name: updates.name,
+      description: updates.description,
+      // Only send server-relevant fields
+      ...(updates.template && { template: updates.template }),
+      ...(updates.breed && { breed: updates.breed }),
+      ...(updates.variant && { variant: updates.variant }),
+      ...(updates.palette && { palette: updates.palette })
+    })
+  });
+
+  if (!res.ok) throw new Error('Failed to update cat');
+  return res.json();
 }
 
 export async function addCatToUser(cat) {
@@ -126,7 +171,10 @@ export async function addCatToUser(cat) {
   const playerId = getPlayerIdFromToken();
   if (!playerId) throw new Error('No player ID found in token');
 
-  const template = `${cat.breed}-${cat.variant}-${cat.palette}`;
+  // Ensure we have all required template fields
+  if (!cat.breed || !cat.variant || !cat.palette) {
+    throw new Error('Missing required template fields (breed, variant, palette)');
+  }
 
   const res = await fetch(`${APP_URL}/api/cats`, {
     method: 'POST',
@@ -136,11 +184,10 @@ export async function addCatToUser(cat) {
     },
     body: JSON.stringify({
       player_id: playerId,
-      template,
+      template: cat.template,
       name: cat.name,
       birthdate: cat.birthdate,
-      description: cat.description || '',
-      uploaded_photo_url: cat.uploaded_photo_url || ''
+      description: cat.description || ''
     })
   });
 
