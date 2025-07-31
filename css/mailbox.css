@@ -303,6 +303,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .back-btn:hover {
     background-color: var(--color-brown);
 }
@@ -326,6 +327,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .mark-unread-btn:hover {
     background-color: var(--color-brown);
 }
@@ -417,6 +419,7 @@
     align-self: flex-start; /* Stick to left side */
     box-sizing: border-box;
 }
+
 .contact-input-area::placeholder {
     color: var(--color-grey);
     opacity: 0.7;
@@ -448,157 +451,33 @@
     align-items: center;
     justify-content: center;
 }
+
 .send-btn:hover {
     background-color: var(--color-brown);
-}
-
-/* SENT View Container */
-.sent-view {
-    display: none; /* Initially hidden */
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-    background-color: var(--color-brown);
-    border: var(--stroke-thin) solid var(--color-black);
-    padding: var(--spacing-xs);
-    gap: var(--spacing-sm);
-}
-
-/* SENT View Header (Title and Date) */
-.sent-view-header {
-    display: flex;
-    gap: var(--spacing-xs);
-    min-height: 40px;
-    align-items: center;
-}
-
-/* SENT View Title */
-.sent-view-title {
-    background-color: var(--color-white);
-    border: var(--stroke-thin) solid var(--color-black);
-    flex: 1;
-    padding: 8px var(--spacing-xs);
-    font-family: var(--font-main);
-    font-size: var(--font-size-xxs);
-    color: var(--color-black);
-    text-align: left;
-    display: flex;
-    align-items: center;
-    min-height: 24px;
-    box-sizing: border-box;
-}
-
-/* SENT View Date */
-.sent-view-date {
-    background-color: var(--color-white);
-    border: var(--stroke-thin) solid var(--color-black);
-    width: 160px;
-    padding: 8px var(--spacing-xs);
-    font-family: var(--font-main);
-    font-size: var(--font-size-xxs);
-    color: var(--color-black);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 24px;
-    box-sizing: border-box;
-    flex-shrink: 0;
-}
-
-/* Conversation Container */
-.conversation-container {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    margin-bottom: var(--spacing-sm);
-}
-
-/* Message Bubble Base */
-.message-bubble {
-    background-color: var(--color-white);
-    border: var(--stroke-thin) solid var(--color-black);
-    border-radius: 30px;
-    width: 75%; /* 3/4 width */
-    padding: var(--spacing-sm);
-    font-family: var(--font-main);
-    font-size: var(--font-size-xxs);
-    color: var(--color-black);
-    line-height: 1.4;
-    box-sizing: border-box;
-    word-wrap: break-word;
-}
-
-/* Sent message (left aligned, user's messages) */
-.message-bubble.sent {
-    align-self: flex-start;
-    background-color: var(--color-white);
-}
-
-/* Received message (right aligned, admin's messages) */
-.message-bubble.received {
-    align-self: flex-end;
-    background-color: var(--color-cream);
-}
-
-/* Reply Input Area (for typing new replies) */
-.reply-input-area {
-    background-color: var(--color-white);
-    border: var(--stroke-thin) solid var(--color-black);
-    border-radius: 30px;
-    width: 75%; /* 3/4 width */
-    min-height: 80px;
-    padding: var(--spacing-sm);
-    font-family: var(--font-main);
-    font-size: var(--font-size-xxs);
-    color: var(--color-black);
-    resize: none;
-    outline: none;
-    align-self: flex-start; /* Stick to left side like sent messages */
-    box-sizing: border-box;
-}
-
-.reply-input-area::placeholder {
-    color: var(--color-grey);
-    opacity: 0.7;
-}
-
-/* SENT Controls */
-.sent-controls {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
 }
 
 /* Scrollbar Styling */
 .mailbox-content::-webkit-scrollbar,
 .message-body::-webkit-scrollbar,
-.contact-input-area::-webkit-scrollbar,
-.conversation-container::-webkit-scrollbar,
-.reply-input-area::-webkit-scrollbar {
+.contact-input-area::-webkit-scrollbar {
     width: 8px;
 }
+
 .mailbox-content::-webkit-scrollbar-track,
 .message-body::-webkit-scrollbar-track,
-.contact-input-area::-webkit-scrollbar-track,
-.conversation-container::-webkit-scrollbar-track,
-.reply-input-area::-webkit-scrollbar-track {
+.contact-input-area::-webkit-scrollbar-track {
     background: var(--color-cream);
 }
+
 .mailbox-content::-webkit-scrollbar-thumb,
 .message-body::-webkit-scrollbar-thumb,
-.contact-input-area::-webkit-scrollbar-thumb,
-.conversation-container::-webkit-scrollbar-thumb,
-.reply-input-area::-webkit-scrollbar-thumb {
+.contact-input-area::-webkit-scrollbar-thumb {
     background: var(--color-brown);
     border-radius: 4px;
 }
+
 .mailbox-content::-webkit-scrollbar-thumb:hover,
 .message-body::-webkit-scrollbar-thumb:hover,
-.contact-input-area::-webkit-scrollbar-thumb:hover,
-.conversation-container::-webkit-scrollbar-thumb:hover,
-.reply-input-area::-webkit-scrollbar-thumb:hover {
+.contact-input-area::-webkit-scrollbar-thumb:hover {
     background: var(--color-salmon);
 }

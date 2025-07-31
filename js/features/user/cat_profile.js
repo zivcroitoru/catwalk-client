@@ -19,12 +19,12 @@ export async function showCatProfile(cat) {
   $('profileBreed').textContent    = cat.breed;
   $('profileVariant').textContent  = cat.variant;
   $('profilePalette').textContent  = cat.palette;
-  $('profileBirthday').textContent = cat.birthday;
+  $('profileBirthday').textContent = cat.birthdate;
   $('profileImage').src            = cat.image;
 
   // age in days
   const ageInDays = Math.floor(
-    (Date.now() - new Date(cat.birthday)) / (1000 * 60 * 60 * 24)
+    (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
   );
   $('profileAge').textContent = `${ageInDays} days`;
 

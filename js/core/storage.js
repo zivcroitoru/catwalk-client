@@ -1,15 +1,17 @@
 /*-----------------------------------------------------------------------------
-  storage.js – DB-backed player inventory
+  storage.js – DB-backed player inventory & cats
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const API = `${APP_URL}/api/player_items`;
-let cache = null;
+const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
+const PLAYER_CATS_API = `${APP_URL}/api/cats`;
+
+let itemCache = null;
 
 // ───────────── REST helpers ─────────────
-async function apiGet() {
+async function apiGetItems() {
   const token = localStorage.getItem('token');
-  const res = await fetch(API, {
+  const res = await fetch(PLAYER_ITEMS_API, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -27,9 +29,9 @@ async function apiGet() {
   return res.json();
 }
 
-async function apiPatch(body) {
+async function apiPatchItems(body) {
   const token = localStorage.getItem('token');
-  const res = await fetch(API, {
+  const res = await fetch(PLAYER_ITEMS_API, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -50,16 +52,36 @@ async function apiPatch(body) {
   return res.json();
 }
 
+async function apiGetCats() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(PLAYER_CATS_API, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+      throw new Error('Auth token expired');
+    }
+    throw new Error('GET /cats failed');
+  }
+
+  return res.json();
+}
+
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
-  if (!force && cache) return cache;
-  cache = await apiGet();
-  return cache;
+  if (!force && itemCache) return itemCache;
+  itemCache = await apiGetItems();
+  return itemCache;
 }
 
 export async function savePlayerItems(playerItems) {
-  cache = await apiPatch(playerItems);
-  return cache;
+  itemCache = await apiPatchItems(playerItems);
+  return itemCache;
 }
 
 // ───────────── Player ID from JWT ─────────────
@@ -79,9 +101,9 @@ function getPlayerIdFromToken() {
 }
 
 // ───────────── Cats Access ─────────────
-export async function getUserCats() {
-  const { userCats = [] } = await loadPlayerItems();
-  return userCats;
+export async function getPlayerCats() {
+  const cats = await apiGetCats();
+  return cats;
 }
 
 export async function addCatToUser(cat) {
@@ -133,9 +155,9 @@ export async function updateCoinCount() {
 }
 
 export async function updateCatCountUI() {
-  const { userCats = [] } = await loadPlayerItems();
+  const cats = await getPlayerCats();
   const el = document.querySelector('.cat-count');
-  if (el) el.textContent = `Total Cats: ${userCats.length}`;
+  if (el) el.textContent = `Total Cats: ${cats.length}`;
 }
 
 export function updateUI() {

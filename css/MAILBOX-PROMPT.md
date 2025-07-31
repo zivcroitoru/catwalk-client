@@ -534,6 +534,7 @@ CATWALK-CLIENT/
 .contact-input-area::-webkit-scrollbar-thumb:hover {
     background: var(--color-salmon);
 }
+
 ```
 
 # C:\dev\catwalk-client\pages\album.html
@@ -580,13 +581,11 @@ CATWALK-CLIENT/
       </div>
     </div>
   </div>
-
   <!-- Carousel Area -->
   <div class="carousel-wrapper" id="carouselWrapper">
     ...
   </div>
 </div> <!-- ✅ END of #catAreaWrapper -->
-
 <div id="emptyState" class="hidden empty-state-message">
   <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
   <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
@@ -594,30 +593,6 @@ CATWALK-CLIENT/
     <img src="../assets/ui/plus.png" alt="Add Cat" />
   </button>
 </div>
-
-
-
-  <div id="game">
-    <!-- Cat Display -->
-    <div class="cat-display-wrapper">
-      <div class="ellipse-podium">
-        <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-        <!-- <div class="carousel-cat" id="carouselCatWrapper">
-          <img id="carouselBase" class="cat-layer" alt="Base Cat" />
-          <img id="carouselHat" class="cat-layer" alt="Hat" />
-          <img id="carouselTop" class="cat-layer" alt="Top" />
-          <img id="carouselEyes" class="cat-layer" alt="Eyes" />
-          <img id="carouselAccessory" class="cat-layer" alt="Accessory" />
-        </div> -->
-        <div class="carousel-cat">
-  <img class="cat-layer carouselBase" alt="Base" />
-  <img class="cat-layer carouselHat" alt="Hat" />
-  <img class="cat-layer carouselTop" alt="Top" />
-  <img class="cat-layer carouselEyes" alt="Eyes" />
-  <img class="cat-layer carouselAccessory" alt="Accessory" />
-</div>
-      </div>
-    </div>
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
@@ -633,132 +608,144 @@ CATWALK-CLIENT/
     </div>
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
-    <!-- Complete Mailbox Display -->
-<div class="mailbox-display" id="mailboxDisplay">
-  <!-- Mailbox Navigation Buttons -->
-  <div class="mailbox-nav">
-    <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
-    <button class="mailbox-btn" data-tab="unread">UNREAD</button>
-    <button class="mailbox-btn" data-tab="sent">SENT</button>
-    <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
-  </div>
-  
-  <!-- Mailbox Content Area -->
-  <div class="mailbox-content">
-    <!-- Message List View -->
-    <div class="message-list" id="allMessagesList">
-      <!-- Message Box 1 -->
-      <div class="message-box" data-message-id="1">
-        <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
-        <div class="message-date">12/06/2025</div>
+    <!-- ✅ Mailbox Display -->
+    <div class="mailbox-display" id="mailboxDisplay">
+      <!-- Mailbox Navigation Buttons -->
+      <div class="mailbox-nav">
+        <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
+        <button class="mailbox-btn" data-tab="unread">UNREAD</button>
+        <button class="mailbox-btn" data-tab="sent">SENT</button>
+        <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
       </div>
       
-      <!-- Message Box 2 -->
-      <div class="message-box" data-message-id="2">
-        <div class="message-title">New outfit collection available in the shop!</div>
-        <div class="message-date">12/05/2025</div>
-      </div>
-      
-      <!-- Message Box 3 -->
-      <div class="message-box" data-message-id="3">
-        <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
-        <div class="message-date">12/04/2025</div>
-      </div>
-      
-      <!-- Message Box 4 -->
-      <div class="message-box" data-message-id="4">
-        <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
-        <div class="message-date">12/03/2025</div>
-      </div>
-      
-      <!-- Message Box 5 -->
-      <div class="message-box" data-message-id="5">
-        <div class="message-title">System maintenance scheduled for tonight.</div>
-        <div class="message-date">12/02/2025</div>
-      </div>
-      
-      <!-- Message Box 6 -->
-      <div class="message-box" data-message-id="6">
-        <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
-        <div class="message-date">12/01/2025</div>
-      </div>
-      
-      <!-- Message Box 7 -->
-      <div class="message-box" data-message-id="7">
-        <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
-        <div class="message-date">11/30/2025</div>
-      </div>
-      
-      <!-- Message Box 8 -->
-      <div class="message-box" data-message-id="8">
-        <div class="message-title">Recent outfit loading bugs have been fixed.</div>
-        <div class="message-date">11/29/2025</div>
-      </div>
-    </div>
-    <!-- Message Detail View -->
-    <div class="message-view" id="messageView">
-      <!-- Message Header (Title and Date) -->
-      <div class="message-view-header">
-        <div class="message-view-title" id="messageViewTitle">Message Title</div>
-        <div class="message-view-date" id="messageViewDate">12/06/2025</div>
-      </div>
-      
-      <!-- Message Body -->
-      <div class="message-body" id="messageViewBody">
-        <p>Message content will appear here...</p>
-      </div>
-      
-      <!-- Message Controls -->
-      <div class="message-controls">
-        <button class="back-btn" id="backToListBtn">←</button>
-        <button class="mark-unread-btn" id="markUnreadBtn">MARK AS UNREAD</button>
-      </div>
-    </div>
-    <!-- Contact Us View -->
-    <div class="contact-view" id="contactView">
-      <!-- Contact Header (Title and Date) -->
-      <div class="contact-view-header">
-        <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
-        <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
-      </div>
-      
-      <!-- Contact Input Area -->
-      <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
-      
-      <!-- Contact Controls -->
-      <div class="contact-controls">
-        <button class="send-btn" id="sendBtn">SEND</button>
-      </div>
-    </div>
-  </div>
-</div>
-    
-    <!-- Carousel Area -->
-    <div class="wrapper">
-      <div class="main-area">
-        <div class="carousel-wrapper">
-          <div class="carousel-background">
-            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
-            <div class="carousel-viewport">
-              <div class="carousel" id="catCarousel"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
-<button id="addCatBtn" class="add-cat-btn">
-  <img src="../assets/ui/plus.png" alt="Add Cat" />
-</button>
+      <!-- Mailbox Content Area -->
+      <div class="mailbox-content">
+        <!-- ALL MESSAGES List View -->
+        <div class="message-list" id="allMessagesList">
+          <!-- Message Box 1 -->
+          <div class="message-box" data-message-id="1">
+            <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
+            <div class="message-date">12/06/2025</div>
           </div>
-          <!-- Floating UI -->
-          <div class="floating-actions">
-            <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+          
+          <!-- Message Box 2 -->
+          <div class="message-box" data-message-id="2">
+            <div class="message-title">New outfit collection available in the shop!</div>
+            <div class="message-date">12/05/2025</div>
+          </div>
+          
+          <!-- Message Box 3 -->
+          <div class="message-box" data-message-id="3">
+            <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
+            <div class="message-date">12/04/2025</div>
+          </div>
+          
+          <!-- Message Box 4 -->
+          <div class="message-box" data-message-id="4">
+            <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
+            <div class="message-date">12/03/2025</div>
+          </div>
+          
+          <!-- Message Box 5 -->
+          <div class="message-box" data-message-id="5">
+            <div class="message-title">System maintenance scheduled for tonight.</div>
+            <div class="message-date">12/02/2025</div>
+          </div>
+          
+          <!-- Message Box 6 -->
+          <div class="message-box" data-message-id="6">
+            <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
+            <div class="message-date">12/01/2025</div>
+          </div>
+          
+          <!-- Message Box 7 -->
+          <div class="message-box" data-message-id="7">
+            <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
+            <div class="message-date">11/30/2025</div>
+          </div>
+          
+          <!-- Message Box 8 -->
+          <div class="message-box" data-message-id="8">
+            <div class="message-title">Recent outfit loading bugs have been fixed.</div>
+            <div class="message-date">11/29/2025</div>
           </div>
         </div>
-        <!-- ✅ Right Pane: profile + shop stack here -->
-        <div class="right-pane">
-          <!-- ✅ Overlay blocker goes first -->
-          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
-          <!-- Profile Panel -->
-          <div id="catProfileScroll" class="cat-profile-scroll">
-            <div class="scroll-inner">
+        
+        <!-- SENT MESSAGES List will be created dynamically by JavaScript -->
+        
+        <!-- Message Detail View (Shared by ALL MESSAGES and SENT) -->
+        <div class="message-view" id="messageView">
+          <!-- Message Header (Title and Date) -->
+          <div class="message-view-header">
+            <div class="message-view-title" id="messageViewTitle">Message Title</div>
+            <div class="message-view-date" id="messageViewDate">12/06/2025</div>
+          </div>
+          
+          <!-- Message Body -->
+          <div class="message-body" id="messageViewBody">
+            <p>Message content will appear here...</p>
+          </div>
+          
+          <!-- Message Controls -->
+          <div class="message-controls">
+            <button class="back-btn" id="backToListBtn">←</button>
+            <button class="mark-unread-btn" id="markUnreadBtn">MARK AS UNREAD</button>
+          </div>
+        </div>
+        
+        <!-- Contact Us View -->
+        <div class="contact-view" id="contactView">
+          <!-- Contact Header (Title and Date) -->
+          <div class="contact-view-header">
+            <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
+            <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
+          </div>
+          
+          <!-- Contact Input Area -->
+          <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
+          
+          <!-- Contact Controls -->
+          <div class="contact-controls">
+            <button class="send-btn" id="sendBtn">SEND</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Carousel Area -->
+    <div class="wrapper">
+  <div class="main-area">
+  <!-- 🎠 Carousel Display -->
+  <div class="carousel-wrapper">
+    <div class="carousel-background">
+      <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
+      <div class="carousel-viewport">
+        <div class="carousel" id="catCarousel"></div>
+      </div>
+      <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+      <button id="addCatBtn" class="add-cat-btn">
+        <img src="../assets/ui/plus.png" alt="Add Cat" />
+      </button>
+    </div>
+    <!-- 🧾 Floating Info -->
+    <div class="floating-actions">
+      <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+    </div>
+  </div>
+  <!-- 🐱 Empty State Message -->
+  <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
+    <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+    <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+    <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+      <img src="../assets/ui/plus.png" alt="Add Cat" />
+    </button>
+  </div>
+  <!-- 🧾 Right Pane: Profile + Shop -->
+  <div class="right-pane">
+    <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+    <!-- 🧑‍💻 Profile Panel -->
+    <div id="catProfileScroll" class="cat-profile-scroll hidden">
+      <div class="scroll-inner">
               <input type="text" id="catName" class="profile-name-input" disabled />
               <div class="profile-main">
                 <div class="profile-info">
@@ -820,14 +807,14 @@ CATWALK-CLIENT/
 <script type="module" src="../js/main.js"></script>
 </body>
 </html>
+
 ```
 
 # C:\dev\catwalk-client\js\features\mailbox\mailbox.js
 ```javascript
 /*-----------------------------------------------------------------------------
-  mailbox.js
+  mailbox.js - Updated mailbox system with proper SENT functionality
 -----------------------------------------------------------------------------*/
-import { $ } from '../../core/utils.js';
 
 // Sample message data - in a real app this would come from a server/database
 const messageData = {
@@ -837,7 +824,6 @@ const messageData = {
     body: `Welcome to CatWalk, the ultimate cat fashion experience!
 
 We're thrilled to have you join our community of cat fashion enthusiasts. Here at CatWalk, you can:
-
 • Collect and customize adorable cats
 • Dress them up in the latest fashion trends
 • Show off your styling skills in fashion shows
@@ -856,7 +842,6 @@ Meow-gnificent adventures await!
     body: `Exciting news! 
 
 We've just added a brand new collection of outfits to the shop:
-
 🎩 Elegant Top Hats Collection
 👗 Summer Breeze Dresses
 🕶️ Cool Shades Accessories
@@ -892,7 +877,6 @@ Strike a pose! 📸`
     body: `Friendly reminder! 🐱
 
 Your cats need daily care to stay happy and healthy. Remember to:
-
 • Feed them their favorite treats
 • Give them plenty of attention and pets
 • Keep them clean and groomed
@@ -998,218 +982,525 @@ Thank you for your patience and for reporting these bugs!
   }
 };
 
+// Sample SENT message data - messages the player has sent
+const sentMessageData = {
+  1: {
+    title: "Feedback about cat outfits and color coordination",
+    date: "12/01/2025",
+    body: `Hi CatWalk Team,
+
+I love the new outfit collections! The summer dresses are particularly cute. However, I noticed that some of the accessories don't quite match the color palette of certain cat breeds. 
+
+Would it be possible to add more color variations for accessories to better complement all the different cat breeds?
+
+Thanks for all your hard work on this amazing game!
+
+Best regards,
+A CatWalk Fan`
+  },
+  2: {
+    title: "Suggestion for winter-themed outfits",
+    date: "11/28/2025",
+    body: `Hello!
+
+I was wondering if you could consider adding some winter-themed outfits? My cats would look absolutely adorable in little scarves and winter hats!
+
+Maybe you could also add some snow-themed backgrounds for the fashion shows during the winter season?
+
+Thanks for considering my suggestion!`
+  },
+  3: {
+    title: "Bug report - outfit loading issue",
+    date: "11/25/2025",
+    body: `Hi Support Team,
+
+I've been experiencing an issue where some outfits don't display properly after purchase. The accessories seem to disappear when I switch between different cats.
+
+This happens most often with the new hat collection. Is this a known issue?
+
+Thanks for your help!`
+  },
+  4: {
+    title: "Thank you for the Double Coins Weekend!",
+    date: "11/20/2025",
+    body: `Dear CatWalk Team,
+
+I just wanted to say thank you for the amazing Double Coins Weekend event! It was so much fun and I was able to save up enough coins to buy some really cool outfits for my cats.
+
+Please consider doing more events like this in the future!
+
+Best wishes,
+Happy Player`
+  },
+  5: {
+    title: "Request for new cat breeds",
+    date: "11/15/2025",
+    body: `Hello,
+
+I absolutely love CatWalk and have been playing for a while now. I was wondering if you have any plans to add more cat breeds to the game?
+
+I would particularly love to see:
+• Maine Coon cats
+• Ragdoll cats  
+• Scottish Fold cats
+• Bengal cats
+
+Thanks for making such an awesome game!`
+  }
+};
+
+// ===== MAIN MAILBOX FUNCTIONS =====
 export function toggleMailbox() {
+  console.log('🐱 toggleMailbox called');
   const mailboxDisplay = document.getElementById('mailboxDisplay');
-  mailboxDisplay.classList.toggle('show');
+  if (mailboxDisplay) {
+    const isVisible = mailboxDisplay.classList.contains('show');
+    console.log(`Mailbox currently ${isVisible ? 'visible' : 'hidden'}, toggling...`);
+    mailboxDisplay.classList.toggle('show');
+    
+    // If we're showing the mailbox and handlers aren't set up, set them up now
+    if (!isVisible && !mailboxDisplay.hasAttribute('data-handlers-setup')) {
+      console.log('📧 Setting up handlers as mailbox becomes visible...');
+      setupMailboxHandlers();
+    }
+  } else {
+    console.error('❌ Mailbox display element not found!');
+  }
+}
+
+export function initializeMailbox() {
+  console.log('🐱 Initializing mailbox system...');
+  
+  // Use a more robust approach to ensure DOM is ready
+  const init = () => {
+    console.log('🐱 DOM ready, setting up mailbox...');
+    
+    // Add a small delay to ensure all elements are fully rendered
+    setTimeout(() => {
+      const mailboxDisplay = document.getElementById('mailboxDisplay');
+      if (mailboxDisplay) {
+        console.log('✅ Mailbox display found, checking for buttons...');
+        const buttons = mailboxDisplay.querySelectorAll('.mailbox-btn');
+        console.log(`Found ${buttons.length} mailbox buttons`);
+        
+        if (buttons.length > 0) {
+          setupMailboxHandlers();
+        } else {
+          console.warn('⚠️ No mailbox buttons found during initialization');
+        }
+      } else {
+        console.error('❌ Mailbox display not found during initialization');
+      }
+    }, 100);
+  };
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+}
+
+// ===== PRIVATE FUNCTIONS =====
+function setupMailboxHandlers() {
+  console.log('🐱 Setting up mailbox handlers...');
+  
+  const mailboxDisplay = document.getElementById('mailboxDisplay');
+  if (!mailboxDisplay) {
+    console.error('❌ Cannot setup handlers: mailbox display not found');
+    return;
+  }
+  
+  // Check if handlers are already set up
+  if (mailboxDisplay.hasAttribute('data-handlers-setup')) {
+    console.log('✅ Handlers already set up, skipping...');
+    return;
+  }
+  
+  // Setup tab button handlers
+  const mailboxBtns = mailboxDisplay.querySelectorAll('.mailbox-btn');
+  console.log(`🔍 Found ${mailboxBtns.length} mailbox buttons`);
+  
+  if (mailboxBtns.length === 0) {
+    console.error('❌ No mailbox buttons found!');
+    return;
+  }
+  
+  mailboxBtns.forEach((btn, index) => {
+    const tabType = btn.getAttribute('data-tab');
+    console.log(`📝 Setting up button ${index + 1}: ${tabType}`);
+    
+    // Remove any existing listeners to prevent duplicates
+    btn.removeEventListener('click', handleTabClick);
+    
+    // Add the click handler
+    btn.addEventListener('click', handleTabClick);
+  });
+  
+  // Setup message click handlers for both ALL and SENT messages
+  setupMessageClickHandlers();
+  
+  // Setup control button handlers
+  setupMessageViewControls();
+  setupContactViewControls();
+  
+  // Mark handlers as set up
+  mailboxDisplay.setAttribute('data-handlers-setup', 'true');
+  
+  console.log('✅ Mailbox handlers initialized successfully');
+}
+
+// Separate function for tab click handling to avoid closure issues
+function handleTabClick(event) {
+  const clickedBtn = event.currentTarget;
+  const tabType = clickedBtn.getAttribute('data-tab');
+  
+  console.log(`🔄 Tab clicked: ${tabType}`);
+  
+  // Remove active class from all buttons
+  const allBtns = document.querySelectorAll('.mailbox-btn');
+  allBtns.forEach(b => b.classList.remove('active'));
+  
+  // Add active class to clicked button
+  clickedBtn.classList.add('active');
+  
+  // Show appropriate content
+  showTabContent(tabType);
+}
+
+function showTabContent(tabType) {
+  console.log(`🔄 Showing tab content: ${tabType}`);
+  
+  // Hide all views first
+  hideAllViews();
+  
+  if (tabType === 'all') {
+    const messageList = document.getElementById('allMessagesList');
+    if (messageList) {
+      messageList.style.display = 'flex';
+      console.log('✅ Showing all messages');
+    } else {
+      console.error('❌ All messages list not found');
+    }
+  } else if (tabType === 'sent') {
+    showSentMessagesList();
+  } else if (tabType === 'contact') {
+    showContactView();
+  } else if (tabType === 'unread') {
+    // For unread tab, show empty for now
+    console.log('✅ Showing unread (empty for now)');
+  }
+}
+
+function hideAllViews() {
+  const views = ['allMessagesList', 'sentMessagesList', 'messageView', 'contactView'];
+  views.forEach(viewId => {
+    const view = document.getElementById(viewId);
+    if (view) view.style.display = 'none';
+  });
+}
+
+function showSentMessagesList() {
+  console.log('📤 Showing sent messages list');
+  
+  let sentMessagesList = document.getElementById('sentMessagesList');
+  
+  // Create sent messages list if it doesn't exist
+  if (!sentMessagesList) {
+    console.log('📤 Creating sent messages list...');
+    sentMessagesList = createSentMessagesList();
+  }
+  
+  if (sentMessagesList) {
+    sentMessagesList.style.display = 'flex';
+    console.log('✅ Sent messages list shown');
+  } else {
+    console.error('❌ Failed to create/show sent messages list');
+  }
+}
+
+function createSentMessagesList() {
+  const mailboxContent = document.querySelector('.mailbox-content');
+  if (!mailboxContent) {
+    console.error('❌ Mailbox content not found');
+    return null;
+  }
+  
+  // Create the sent messages list container
+  const sentMessagesList = document.createElement('div');
+  sentMessagesList.className = 'message-list';
+  sentMessagesList.id = 'sentMessagesList';
+  sentMessagesList.style.display = 'none';
+  
+  // Create message boxes for sent messages
+  Object.entries(sentMessageData).forEach(([messageId, message]) => {
+    const messageBox = document.createElement('div');
+    messageBox.className = 'message-box';
+    messageBox.setAttribute('data-message-id', `sent-${messageId}`);
+    messageBox.setAttribute('data-message-type', 'sent');
+    
+    const messageTitle = document.createElement('div');
+    messageTitle.className = 'message-title';
+    messageTitle.textContent = message.title;
+    
+    const messageDate = document.createElement('div');
+    messageDate.className = 'message-date';
+    messageDate.textContent = message.date;
+    
+    messageBox.appendChild(messageTitle);
+    messageBox.appendChild(messageDate);
+    sentMessagesList.appendChild(messageBox);
+  });
+  
+  // Add to mailbox content
+  mailboxContent.appendChild(sentMessagesList);
+  
+  // Setup click handlers for sent messages
+  setupSentMessageClickHandlers();
+  
+  console.log('✅ Sent messages list created');
+  return sentMessagesList;
+}
+
+function setupSentMessageClickHandlers() {
+  const sentMessageBoxes = document.querySelectorAll('[data-message-type="sent"]');
+  console.log(`📨 Setting up ${sentMessageBoxes.length} sent message click handlers`);
+  
+  sentMessageBoxes.forEach(messageBox => {
+    messageBox.addEventListener('click', function() {
+      const messageId = this.getAttribute('data-message-id');
+      console.log(`📧 Sent message clicked: ${messageId}`);
+      if (messageId) showSentMessageView(messageId);
+    });
+  });
+}
+
+function showContactView() {
+  console.log('📧 Showing contact view');
+  const contactView = document.getElementById('contactView');
+  const contactViewDate = document.getElementById('contactViewDate');
+  const contactInput = document.getElementById('contactInput');
+  const contactSubjectInput = document.getElementById('contactSubjectInput');
+  
+  if (!contactView) {
+    console.error('❌ Contact view not found');
+    return;
+  }
+  
+  // Set current date
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric'
+  });
+  if (contactViewDate) contactViewDate.textContent = currentDate;
+  
+  // Clear inputs
+  if (contactInput) contactInput.value = '';
+  if (contactSubjectInput) contactSubjectInput.value = '';
+  
+  contactView.style.display = 'flex';
+  console.log('✅ Contact view shown');
+}
+
+function setupMessageClickHandlers() {
+  const messageBoxes = document.querySelectorAll('[data-message-type]:not([data-message-type="sent"]), .message-box:not([data-message-type])');
+  console.log(`📨 Setting up ${messageBoxes.length} message click handlers`);
+  
+  messageBoxes.forEach(messageBox => {
+    messageBox.addEventListener('click', function() {
+      const messageId = this.getAttribute('data-message-id');
+      console.log(`📧 Message clicked: ${messageId}`);
+      if (messageId) showMessageView(messageId);
+    });
+  });
+}
+
+function setupMessageViewControls() {
+  const backBtn = document.getElementById('backToListBtn');
+  const markUnreadBtn = document.getElementById('markUnreadBtn');
+  
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      console.log('⬅️ Back button clicked');
+      goBackToCurrentList();
+    });
+  }
+  
+  if (markUnreadBtn) {
+    markUnreadBtn.addEventListener('click', () => {
+      console.log('📝 Mark unread button clicked');
+      markMessageAsUnread();
+    });
+  }
+}
+
+function setupContactViewControls() {
+  const sendBtn = document.getElementById('sendBtn');
+  
+  if (sendBtn) {
+    sendBtn.addEventListener('click', () => {
+      console.log('📤 Send button clicked');
+      handleSendMessage();
+    });
+  }
+}
+
+function showMessageView(messageId) {
+  console.log(`📧 Showing message view for ID: ${messageId}`);
+  const message = messageData[messageId];
+  if (!message) {
+    console.error('❌ Message not found:', messageId);
+    return;
+  }
+  
+  const messageView = document.getElementById('messageView');
+  const messageViewTitle = document.getElementById('messageViewTitle');
+  const messageViewDate = document.getElementById('messageViewDate');
+  const messageViewBody = document.getElementById('messageViewBody');
+  
+  if (!messageView) {
+    console.error('❌ Message view not found');
+    return;
+  }
+  
+  // Update content
+  if (messageViewTitle) messageViewTitle.textContent = message.title;
+  if (messageViewDate) messageViewDate.textContent = message.date;
+  if (messageViewBody) {
+    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => 
+      `<p>${paragraph.replace(/\n/g, '<br>')}</p>`
+    ).join('');
+  }
+  
+  // Store message ID and type for back functionality
+  messageView.setAttribute('data-current-message-id', messageId);
+  messageView.setAttribute('data-current-message-type', 'received');
+  
+  // Hide other views and show message view
+  hideAllViews();
+  messageView.style.display = 'flex';
+  
+  console.log('✅ Message view shown');
+}
+
+function showSentMessageView(messageId) {
+  console.log(`📧 Showing sent message view for ID: ${messageId}`);
+  
+  // Extract the actual ID (remove 'sent-' prefix)
+  const actualId = messageId.replace('sent-', '');
+  const message = sentMessageData[actualId];
+  
+  if (!message) {
+    console.error('❌ Sent message not found:', messageId);
+    return;
+  }
+  
+  const messageView = document.getElementById('messageView');
+  const messageViewTitle = document.getElementById('messageViewTitle');
+  const messageViewDate = document.getElementById('messageViewDate');
+  const messageViewBody = document.getElementById('messageViewBody');
+  
+  if (!messageView) {
+    console.error('❌ Message view not found');
+    return;
+  }
+  
+  // Update content
+  if (messageViewTitle) messageViewTitle.textContent = message.title;
+  if (messageViewDate) messageViewDate.textContent = message.date;
+  if (messageViewBody) {
+    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => 
+      `<p>${paragraph.replace(/\n/g, '<br>')}</p>`
+    ).join('');
+  }
+  
+  // Store message ID and type for back functionality
+  messageView.setAttribute('data-current-message-id', messageId);
+  messageView.setAttribute('data-current-message-type', 'sent');
+  
+  // Hide other views and show message view
+  hideAllViews();
+  messageView.style.display = 'flex';
+  
+  console.log('✅ Sent message view shown');
+}
+
+function goBackToCurrentList() {
+  console.log('⬅️ Going back to current list');
+  const messageView = document.getElementById('messageView');
+  if (!messageView) return;
+  
+  const messageType = messageView.getAttribute('data-current-message-type');
+  
+  hideAllViews();
+  
+  if (messageType === 'sent') {
+    // Go back to sent messages list
+    showSentMessagesList();
+  } else {
+    // Go back to all messages list
+    const messageList = document.getElementById('allMessagesList');
+    if (messageList) {
+      messageList.style.display = 'flex';
+      console.log('✅ Returned to all messages list');
+    }
+  }
+}
+
+function markMessageAsUnread() {
+  const messageView = document.getElementById('messageView');
+  if (!messageView) return;
+  
+  const messageId = messageView.getAttribute('data-current-message-id');
+  const messageType = messageView.getAttribute('data-current-message-type');
+  
+  if (messageId) {
+    const messageBox = document.querySelector(`[data-message-id="${messageId}"]`);
+    if (messageBox) {
+      messageBox.classList.add('read');
+      console.log(`✅ Message ${messageId} marked as read`);
+    }
+    goBackToCurrentList();
+  }
+}
+
+function handleSendMessage() {
+  const contactInput = document.getElementById('contactInput');
+  const contactSubjectInput = document.getElementById('contactSubjectInput');
+  
+  const message = contactInput?.value.trim() || '';
+  const subject = contactSubjectInput?.value.trim() || '';
+  
+  if (message === '' && subject === '') {
+    console.log('⚠️ No message or subject to send');
+    return;
+  }
+  
+  // Log the message (in real app, would send to server)
+  console.log('📤 Message sent:');
+  console.log('Subject:', subject || '(No subject)');
+  console.log('Message:', message || '(No message)');
+  
+  // Clear inputs
+  if (contactInput) contactInput.value = '';
+  if (contactSubjectInput) contactSubjectInput.value = '';
+  
+  // Return to ALL MESSAGES view
+  const allMessagesBtn = document.querySelector('[data-tab="all"]');
+  const mailboxBtns = document.querySelectorAll('.mailbox-btn');
+  
+  mailboxBtns.forEach(b => b.classList.remove('active'));
+  if (allMessagesBtn) allMessagesBtn.classList.add('active');
+  
+  showTabContent('all');
 }
 
 // Make toggleMailbox available globally for HTML onclick handlers
-window.toggleMailbox = toggleMailbox;
-
-// Handle button clicking and tab switching
-document.addEventListener('DOMContentLoaded', function() {
-    const mailboxBtns = document.querySelectorAll('.mailbox-btn');
-    
-    mailboxBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            mailboxBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            // Get the tab type
-            const tabType = this.getAttribute('data-tab');
-            
-            // Show appropriate tab content
-            showTabContent(tabType);
-        });
-    });
-
-    // Add click handlers to message boxes
-    setupMessageClickHandlers();
-    
-    // Add click handlers for message view controls
-    setupMessageViewControls();
-});
-
-// Function to handle tab content switching
-function showTabContent(tabType) {
-    const messageList = document.getElementById('allMessagesList');
-    const messageView = document.getElementById('messageView');
-    const contactView = document.getElementById('contactView');
-    
-    // Hide all views first
-    hideAllViews();
-    
-    if (tabType === 'all') {
-        messageList.style.display = 'flex';
-    } else if (tabType === 'contact') {
-        showContactView();
-    } else {
-        // For unread and sent tabs, hide content for now
-        messageList.style.display = 'none';
-    }
+if (typeof window !== 'undefined') {
+  window.toggleMailbox = toggleMailbox;
 }
 
-// Hide all mailbox views
-function hideAllViews() {
-    const messageList = document.getElementById('allMessagesList');
-    const messageView = document.getElementById('messageView');
-    const contactView = document.getElementById('contactView');
-    
-    messageList.style.display = 'none';
-    messageView.style.display = 'none';
-    contactView.style.display = 'none';
-}
-
-// Show contact us view
-function showContactView() {
-    const contactView = document.getElementById('contactView');
-    const contactViewDate = document.getElementById('contactViewDate');
-    const contactInput = document.getElementById('contactInput');
-    const contactSubjectInput = document.getElementById('contactSubjectInput');
-    
-    // Set current date
-    const currentDate = new Date().toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric'
-    });
-    contactViewDate.textContent = currentDate;
-    
-    // Clear the input areas
-    contactInput.value = '';
-    contactSubjectInput.value = '';
-    
-    // Show the contact view
-    contactView.style.display = 'flex';
-}
-
-// Setup click handlers for message boxes
-function setupMessageClickHandlers() {
-    const messageBoxes = document.querySelectorAll('.message-box');
-    
-    messageBoxes.forEach(messageBox => {
-        messageBox.addEventListener('click', function() {
-            const messageId = this.getAttribute('data-message-id');
-            showMessageView(messageId);
-        });
-    });
-}
-
-// Setup click handlers for message view controls
-function setupMessageViewControls() {
-    const backBtn = document.getElementById('backToListBtn');
-    const markUnreadBtn = document.getElementById('markUnreadBtn');
-    const sendBtn = document.getElementById('sendBtn');
-    
-    if (backBtn) {
-        backBtn.addEventListener('click', showMessageList);
-    }
-    
-    if (markUnreadBtn) {
-        markUnreadBtn.addEventListener('click', function() {
-            markMessageAsUnread();
-        });
-    }
-    
-    if (sendBtn) {
-        sendBtn.addEventListener('click', function() {
-            handleSendMessage();
-        });
-    }
-}
-
-// Handle send message functionality
-function handleSendMessage() {
-    const contactInput = document.getElementById('contactInput');
-    const contactSubjectInput = document.getElementById('contactSubjectInput');
-    const message = contactInput.value.trim();
-    const subject = contactSubjectInput.value.trim();
-    
-    if (message === '' && subject === '') {
-        // Could add a toast notification here in the future
-        console.log('No message or subject to send');
-        return;
-    }
-    
-    // In a real app, this would send the message to a server
-    console.log('Message sent:');
-    console.log('Subject:', subject || '(No subject)');
-    console.log('Message:', message || '(No message)');
-    
-    // Clear both inputs
-    contactInput.value = '';
-    contactSubjectInput.value = '';
-    
-    // Go back to ALL MESSAGES view
-    // First, set the ALL MESSAGES button as active
-    const allMessagesBtn = document.querySelector('[data-tab="all"]');
-    const mailboxBtns = document.querySelectorAll('.mailbox-btn');
-    
-    mailboxBtns.forEach(b => b.classList.remove('active'));
-    allMessagesBtn.classList.add('active');
-    
-    // Show the message list
-    showMessageList();
-}
-
-// Show message detail view
-function showMessageView(messageId) {
-    const messageList = document.getElementById('allMessagesList');
-    const messageView = document.getElementById('messageView');
-    const contactView = document.getElementById('contactView');
-    const messageViewTitle = document.getElementById('messageViewTitle');
-    const messageViewDate = document.getElementById('messageViewDate');
-    const messageViewBody = document.getElementById('messageViewBody');
-    
-    // Get message data
-    const message = messageData[messageId];
-    if (!message) {
-        console.error('Message not found:', messageId);
-        return;
-    }
-    
-    // Update message view content
-    messageViewTitle.textContent = message.title;
-    messageViewDate.textContent = message.date;
-    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => `<p>${paragraph}</p>`).join('');
-    
-    // Store current message ID for mark as unread functionality
-    messageView.setAttribute('data-current-message-id', messageId);
-    
-    // Hide all other views and show message view
-    messageList.style.display = 'none';
-    contactView.style.display = 'none';
-    messageView.style.display = 'flex';
-}
-
-// Show message list (hide other views)
-function showMessageList() {
-    const messageList = document.getElementById('allMessagesList');
-    const messageView = document.getElementById('messageView');
-    const contactView = document.getElementById('contactView');
-    
-    messageList.style.display = 'flex';
-    messageView.style.display = 'none';
-    contactView.style.display = 'none';
-}
-
-// Mark message as unread (add read class to make it grey)
-function markMessageAsUnread() {
-    const messageView = document.getElementById('messageView');
-    const messageId = messageView.getAttribute('data-current-message-id');
-    
-    if (messageId) {
-        const messageBox = document.querySelector(`[data-message-id="${messageId}"]`);
-        if (messageBox) {
-            messageBox.classList.add('read');
-        }
-        
-        // Go back to message list after marking as unread
-        showMessageList();
-    }
-}
 ```
 
 
@@ -1243,10 +1534,30 @@ function markMessageAsUnread() {
 - if player clicks on SEND button- the player will go back to the list of messages (ALL MESSAGES).
 ## Player click on SENT:
 - The list of messages dissapears
+- player can view a list of conversations (titles * date - we currently have this part:D )
+- When clicking on a conversatio, player has a view of a conversation:
+  -the conversation view is identitical to how it lloks like in CONTACT US
+
+
+
+  - we have a brown base
+  - a title and date (simular what we ha)
+  - A white large rectangle- the body of our message
+  - Outside of the brown box:
+    - on the bottom left we have a back arrow "<-" button
+    - on the bottom right we have a MARK AS UNREAD button
+- if player clicks on MARK AS UNREAD button- when player will go back to the list the white parts of this message item will be grey instead.
+
+
+
+- Needs to be EXACTLY like ALL MESSAGES- With different messages. 
+
+The only difference is the we dont type in the title.
+- The list of messages dissapears
 - instead we have a view of the sent messages:
   - we have a brown base
   - a title and date (simular to the messages in the message list and in contact us)
-  - A white rectangle- the body of our message..
+  - A white rectangle- the body a message we have already sent in the past.
     - This will have a 30 radius
     - it will stick to the left side
     - it should be 3/4 of the full width it would have had if it was full width
@@ -1267,11 +1578,8 @@ function markMessageAsUnread() {
 - if player clicks on SEND button- the player will go back to the list of messages (ALL MESSAGES).
   
 
-# What we tried to achive:
-Update functionality and view for for when player clicks on a CONTACT US:
-- In the body, we have "type message here..." - thats very good! we want to add the same functionality to the title- we want instead of "Contact Us" to be a text in grey like "type the subject" or something, and let player type in
-
-# Our ALL MESSAGES and CONTACT US work perfectly, but SENT doesnt work at all, its just blank - ANALYZE THE FILES CAREFULLY.
+# Your task:
+I need you to change the SENT: When clicking a ci=onversation we see a view like the one we see in ALL MESSAGES when we clicl on a message. INSTEAD, what we need the view to be when click on a conversation is an identical view to what we have in CONTACT US. Understood?
 
 # Notes: 
-- We need to create a mailbox placeholder, no need for logic at this point. I ONLY want to implement the CSS and HTML.
+- We need to create a mailbox placeholder.

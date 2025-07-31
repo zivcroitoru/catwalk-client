@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-  mailbox.js - Fixed mailbox system with better debugging and error handling
+  mailbox.js - Updated mailbox system with SENT showing contact-like view
 -----------------------------------------------------------------------------*/
 
 // Sample message data - in a real app this would come from a server/database
@@ -168,36 +168,74 @@ Thank you for your patience and for reporting these bugs!
   }
 };
 
-// Sample conversation data for SENT tab
-const conversationData = {
-  title: "Feedback about cat outfits",
-  date: "12/06/2025",
-  messages: [
-    {
-      type: "sent",
-      content: "I love the new outfit collections! The summer dresses are particularly cute. However, I noticed that some of the accessories don't quite match the color palette of certain cat breeds. Would it be possible to add more color variations?",
-      timestamp: "12/01/2025 10:30 AM"
-    },
-    {
-      type: "received", 
-      content: "Thank you so much for your feedback! We're thrilled you're enjoying the summer collection. You make an excellent point about color coordination. Our design team is already working on expanding the color palette for accessories to better complement all cat breeds. Expect to see updates in the next patch!",
-      timestamp: "12/01/2025 2:15 PM"
-    },
-    {
-      type: "sent",
-      content: "That's fantastic news! While I have your attention, could you also consider adding some winter-themed outfits? My cats would look adorable in little scarves and winter hats!",
-      timestamp: "12/02/2025 9:45 AM"
-    },
-    {
-      type: "received",
-      content: "Winter collection - what a purr-fect idea! ❄️ We've actually been planning exactly that for the upcoming holiday season. Expect cozy scarves, warm mittens, and festive winter hats. We'll also be adding snow-themed backgrounds for the fashion shows. Stay tuned!",
-      timestamp: "12/02/2025 11:20 AM"
-    }
-  ]
+// Sample SENT message data - messages the player has sent
+const sentMessageData = {
+  1: {
+    title: "Feedback about cat outfits and color coordination",
+    date: "12/01/2025",
+    body: `Hi CatWalk Team,
+
+I love the new outfit collections! The summer dresses are particularly cute. However, I noticed that some of the accessories don't quite match the color palette of certain cat breeds. 
+
+Would it be possible to add more color variations for accessories to better complement all the different cat breeds?
+
+Thanks for all your hard work on this amazing game!
+
+Best regards,
+A CatWalk Fan`
+  },
+  2: {
+    title: "Suggestion for winter-themed outfits",
+    date: "11/28/2025",
+    body: `Hello!
+
+I was wondering if you could consider adding some winter-themed outfits? My cats would look absolutely adorable in little scarves and winter hats!
+
+Maybe you could also add some snow-themed backgrounds for the fashion shows during the winter season?
+
+Thanks for considering my suggestion!`
+  },
+  3: {
+    title: "Bug report - outfit loading issue",
+    date: "11/25/2025",
+    body: `Hi Support Team,
+
+I've been experiencing an issue where some outfits don't display properly after purchase. The accessories seem to disappear when I switch between different cats.
+
+This happens most often with the new hat collection. Is this a known issue?
+
+Thanks for your help!`
+  },
+  4: {
+    title: "Thank you for the Double Coins Weekend!",
+    date: "11/20/2025",
+    body: `Dear CatWalk Team,
+
+I just wanted to say thank you for the amazing Double Coins Weekend event! It was so much fun and I was able to save up enough coins to buy some really cool outfits for my cats.
+
+Please consider doing more events like this in the future!
+
+Best wishes,
+Happy Player`
+  },
+  5: {
+    title: "Request for new cat breeds",
+    date: "11/15/2025",
+    body: `Hello,
+
+I absolutely love CatWalk and have been playing for a while now. I was wondering if you have any plans to add more cat breeds to the game?
+
+I would particularly love to see:
+• Maine Coon cats
+• Ragdoll cats  
+• Scottish Fold cats
+• Bengal cats
+
+Thanks for making such an awesome game!`
+  }
 };
 
 // ===== MAIN MAILBOX FUNCTIONS =====
-
 export function toggleMailbox() {
   console.log('🐱 toggleMailbox called');
   const mailboxDisplay = document.getElementById('mailboxDisplay');
@@ -250,7 +288,6 @@ export function initializeMailbox() {
 }
 
 // ===== PRIVATE FUNCTIONS =====
-
 function setupMailboxHandlers() {
   console.log('🐱 Setting up mailbox handlers...');
   
@@ -286,12 +323,12 @@ function setupMailboxHandlers() {
     btn.addEventListener('click', handleTabClick);
   });
   
-  // Setup message click handlers
+  // Setup message click handlers for both ALL and SENT messages
   setupMessageClickHandlers();
   
   // Setup control button handlers
   setupMessageViewControls();
-  setupSentViewControls();
+  setupContactViewControls();
   
   // Mark handlers as set up
   mailboxDisplay.setAttribute('data-handlers-setup', 'true');
@@ -320,37 +357,107 @@ function handleTabClick(event) {
 function showTabContent(tabType) {
   console.log(`🔄 Showing tab content: ${tabType}`);
   
-  const messageList = document.getElementById('allMessagesList');
-  const messageView = document.getElementById('messageView');
-  const contactView = document.getElementById('contactView');
-  const sentView = document.getElementById('sentView');
-  
   // Hide all views first
   hideAllViews();
   
   if (tabType === 'all') {
+    const messageList = document.getElementById('allMessagesList');
     if (messageList) {
       messageList.style.display = 'flex';
       console.log('✅ Showing all messages');
     } else {
       console.error('❌ All messages list not found');
     }
+  } else if (tabType === 'sent') {
+    showSentMessagesList();
   } else if (tabType === 'contact') {
     showContactView();
-  } else if (tabType === 'sent') {
-    showSentView();
   } else if (tabType === 'unread') {
     // For unread tab, show empty for now
-    if (messageList) messageList.style.display = 'none';
     console.log('✅ Showing unread (empty for now)');
   }
 }
 
 function hideAllViews() {
-  const views = ['allMessagesList', 'messageView', 'contactView', 'sentView'];
+  const views = ['allMessagesList', 'sentMessagesList', 'messageView', 'contactView'];
   views.forEach(viewId => {
     const view = document.getElementById(viewId);
     if (view) view.style.display = 'none';
+  });
+}
+
+function showSentMessagesList() {
+  console.log('📤 Showing sent messages list');
+  
+  let sentMessagesList = document.getElementById('sentMessagesList');
+  
+  // Create sent messages list if it doesn't exist
+  if (!sentMessagesList) {
+    console.log('📤 Creating sent messages list...');
+    sentMessagesList = createSentMessagesList();
+  }
+  
+  if (sentMessagesList) {
+    sentMessagesList.style.display = 'flex';
+    console.log('✅ Sent messages list shown');
+  } else {
+    console.error('❌ Failed to create/show sent messages list');
+  }
+}
+
+function createSentMessagesList() {
+  const mailboxContent = document.querySelector('.mailbox-content');
+  if (!mailboxContent) {
+    console.error('❌ Mailbox content not found');
+    return null;
+  }
+  
+  // Create the sent messages list container
+  const sentMessagesList = document.createElement('div');
+  sentMessagesList.className = 'message-list';
+  sentMessagesList.id = 'sentMessagesList';
+  sentMessagesList.style.display = 'none';
+  
+  // Create message boxes for sent messages
+  Object.entries(sentMessageData).forEach(([messageId, message]) => {
+    const messageBox = document.createElement('div');
+    messageBox.className = 'message-box';
+    messageBox.setAttribute('data-message-id', `sent-${messageId}`);
+    messageBox.setAttribute('data-message-type', 'sent');
+    
+    const messageTitle = document.createElement('div');
+    messageTitle.className = 'message-title';
+    messageTitle.textContent = message.title;
+    
+    const messageDate = document.createElement('div');
+    messageDate.className = 'message-date';
+    messageDate.textContent = message.date;
+    
+    messageBox.appendChild(messageTitle);
+    messageBox.appendChild(messageDate);
+    sentMessagesList.appendChild(messageBox);
+  });
+  
+  // Add to mailbox content
+  mailboxContent.appendChild(sentMessagesList);
+  
+  // Setup click handlers for sent messages
+  setupSentMessageClickHandlers();
+  
+  console.log('✅ Sent messages list created');
+  return sentMessagesList;
+}
+
+function setupSentMessageClickHandlers() {
+  const sentMessageBoxes = document.querySelectorAll('[data-message-type="sent"]');
+  console.log(`📨 Setting up ${sentMessageBoxes.length} sent message click handlers`);
+  
+  sentMessageBoxes.forEach(messageBox => {
+    messageBox.addEventListener('click', function() {
+      const messageId = this.getAttribute('data-message-id');
+      console.log(`📧 Sent message clicked: ${messageId}`);
+      if (messageId) showSentMessageContactView(messageId);
+    });
   });
 }
 
@@ -374,59 +481,29 @@ function showContactView() {
   });
   if (contactViewDate) contactViewDate.textContent = currentDate;
   
-  // Clear inputs
-  if (contactInput) contactInput.value = '';
-  if (contactSubjectInput) contactSubjectInput.value = '';
+  // Clear inputs and reset to normal editable state
+  if (contactInput) {
+    contactInput.value = '';
+    contactInput.readOnly = false;
+    contactInput.style.backgroundColor = 'var(--color-white)';
+    contactInput.style.cursor = 'text';
+  }
+  if (contactSubjectInput) {
+    contactSubjectInput.value = '';
+    contactSubjectInput.readOnly = false;
+    contactSubjectInput.style.backgroundColor = 'var(--color-white)';
+    contactSubjectInput.style.cursor = 'text';
+  }
+  
+  // Store the current view type for handling SEND button
+  contactView.setAttribute('data-view-type', 'new-contact');
   
   contactView.style.display = 'flex';
   console.log('✅ Contact view shown');
 }
 
-function showSentView() {
-  console.log('📤 Showing sent view');
-  const sentView = document.getElementById('sentView');
-  const sentViewTitle = document.getElementById('sentViewTitle');
-  const sentViewDate = document.getElementById('sentViewDate');
-  const conversationContainer = document.getElementById('conversationContainer');
-  const replyInput = document.getElementById('replyInput');
-  
-  if (!sentView) {
-    console.error('❌ Sent view not found');
-    return;
-  }
-  
-  // Set conversation title and date
-  if (sentViewTitle) sentViewTitle.textContent = conversationData.title;
-  if (sentViewDate) sentViewDate.textContent = conversationData.date;
-  
-  // Clear previous content
-  if (conversationContainer) conversationContainer.innerHTML = '';
-  if (replyInput) replyInput.value = '';
-  
-  // Populate conversation messages
-  if (conversationContainer) {
-    conversationData.messages.forEach(message => {
-      const messageBubble = document.createElement('div');
-      messageBubble.className = `message-bubble ${message.type}`;
-      messageBubble.textContent = message.content;
-      conversationContainer.appendChild(messageBubble);
-    });
-  }
-  
-  sentView.style.display = 'flex';
-  
-  // Scroll to bottom
-  setTimeout(() => {
-    if (conversationContainer) {
-      conversationContainer.scrollTop = conversationContainer.scrollHeight;
-    }
-  }, 100);
-  
-  console.log('✅ Sent view shown');
-}
-
 function setupMessageClickHandlers() {
-  const messageBoxes = document.querySelectorAll('.message-box');
+  const messageBoxes = document.querySelectorAll('[data-message-type]:not([data-message-type="sent"]), .message-box:not([data-message-type])');
   console.log(`📨 Setting up ${messageBoxes.length} message click handlers`);
   
   messageBoxes.forEach(messageBox => {
@@ -441,12 +518,11 @@ function setupMessageClickHandlers() {
 function setupMessageViewControls() {
   const backBtn = document.getElementById('backToListBtn');
   const markUnreadBtn = document.getElementById('markUnreadBtn');
-  const sendBtn = document.getElementById('sendBtn');
   
   if (backBtn) {
     backBtn.addEventListener('click', () => {
       console.log('⬅️ Back button clicked');
-      showMessageList();
+      goBackToCurrentList();
     });
   }
   
@@ -456,21 +532,15 @@ function setupMessageViewControls() {
       markMessageAsUnread();
     });
   }
+}
+
+function setupContactViewControls() {
+  const sendBtn = document.getElementById('sendBtn');
   
   if (sendBtn) {
     sendBtn.addEventListener('click', () => {
       console.log('📤 Send button clicked');
       handleSendMessage();
-    });
-  }
-}
-
-function setupSentViewControls() {
-  const sentSendBtn = document.getElementById('sentSendBtn');
-  if (sentSendBtn) {
-    sentSendBtn.addEventListener('click', () => {
-      console.log('📤 Sent send button clicked');
-      handleSentReply();
     });
   }
 }
@@ -497,11 +567,14 @@ function showMessageView(messageId) {
   if (messageViewTitle) messageViewTitle.textContent = message.title;
   if (messageViewDate) messageViewDate.textContent = message.date;
   if (messageViewBody) {
-    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => `<p>${paragraph}</p>`).join('');
+    messageViewBody.innerHTML = message.body.split('\n\n').map(paragraph => 
+      `<p>${paragraph.replace(/\n/g, '<br>')}</p>`
+    ).join('');
   }
   
-  // Store message ID for unread functionality
+  // Store message ID and type for back functionality
   messageView.setAttribute('data-current-message-id', messageId);
+  messageView.setAttribute('data-current-message-type', 'received');
   
   // Hide other views and show message view
   hideAllViews();
@@ -510,15 +583,78 @@ function showMessageView(messageId) {
   console.log('✅ Message view shown');
 }
 
-function showMessageList() {
-  console.log('📋 Showing message list');
+// NEW FUNCTION: Show sent message in contact-like view
+function showSentMessageContactView(messageId) {
+  console.log(`📧 Showing sent message contact view for ID: ${messageId}`);
+  
+  // Extract the actual ID (remove 'sent-' prefix)
+  const actualId = messageId.replace('sent-', '');
+  const message = sentMessageData[actualId];
+  
+  if (!message) {
+    console.error('❌ Sent message not found:', messageId);
+    return;
+  }
+  
+  const contactView = document.getElementById('contactView');
+  const contactViewDate = document.getElementById('contactViewDate');
+  const contactInput = document.getElementById('contactInput');
+  const contactSubjectInput = document.getElementById('contactSubjectInput');
+  
+  if (!contactView) {
+    console.error('❌ Contact view not found');
+    return;
+  }
+  
+  // Populate the contact view with sent message data
+  if (contactViewDate) contactViewDate.textContent = message.date;
+  
+  // Make subject input read-only and populate with message title
+  if (contactSubjectInput) {
+    contactSubjectInput.value = message.title;
+    contactSubjectInput.readOnly = true;
+    contactSubjectInput.style.backgroundColor = 'var(--color-grey)'; // Grey background to indicate read-only
+    contactSubjectInput.style.cursor = 'default';
+  }
+  
+  // Clear the body input and let placeholder show (like in CONTACT US)
+  if (contactInput) {
+    contactInput.value = '';
+    contactInput.readOnly = false; // Keep it editable
+    contactInput.style.backgroundColor = 'var(--color-white)'; // Normal background
+    contactInput.style.cursor = 'text';
+  }
+  
+  // Store the current view type and message ID for handling SEND button
+  contactView.setAttribute('data-view-type', 'sent-message');
+  contactView.setAttribute('data-current-message-id', messageId);
+  
+  // Hide other views and show contact view
   hideAllViews();
-  const messageList = document.getElementById('allMessagesList');
-  if (messageList) {
-    messageList.style.display = 'flex';
-    console.log('✅ Message list shown');
+  contactView.style.display = 'flex';
+  
+  console.log('✅ Sent message contact view shown');
+}
+
+function goBackToCurrentList() {
+  console.log('⬅️ Going back to current list');
+  const messageView = document.getElementById('messageView');
+  if (!messageView) return;
+  
+  const messageType = messageView.getAttribute('data-current-message-type');
+  
+  hideAllViews();
+  
+  if (messageType === 'sent') {
+    // Go back to sent messages list
+    showSentMessagesList();
   } else {
-    console.error('❌ Message list not found');
+    // Go back to all messages list
+    const messageList = document.getElementById('allMessagesList');
+    if (messageList) {
+      messageList.style.display = 'flex';
+      console.log('✅ Returned to all messages list');
+    }
   }
 }
 
@@ -527,99 +663,66 @@ function markMessageAsUnread() {
   if (!messageView) return;
   
   const messageId = messageView.getAttribute('data-current-message-id');
+  const messageType = messageView.getAttribute('data-current-message-type');
+  
   if (messageId) {
     const messageBox = document.querySelector(`[data-message-id="${messageId}"]`);
     if (messageBox) {
       messageBox.classList.add('read');
       console.log(`✅ Message ${messageId} marked as read`);
     }
-    showMessageList();
+    goBackToCurrentList();
   }
 }
 
 function handleSendMessage() {
+  const contactView = document.getElementById('contactView');
   const contactInput = document.getElementById('contactInput');
   const contactSubjectInput = document.getElementById('contactSubjectInput');
   
+  if (!contactView) return;
+  
+  const viewType = contactView.getAttribute('data-view-type');
   const message = contactInput?.value.trim() || '';
   const subject = contactSubjectInput?.value.trim() || '';
   
-  if (message === '' && subject === '') {
-    console.log('⚠️ No message or subject to send');
-    return;
-  }
-  
-  // Log the message (in real app, would send to server)
-  console.log('📤 Message sent:');
-  console.log('Subject:', subject || '(No subject)');
-  console.log('Message:', message || '(No message)');
-  
-  // Clear inputs
-  if (contactInput) contactInput.value = '';
-  if (contactSubjectInput) contactSubjectInput.value = '';
-  
-  // Return to ALL MESSAGES view
-  const allMessagesBtn = document.querySelector('[data-tab="all"]');
-  const mailboxBtns = document.querySelectorAll('.mailbox-btn');
-  
-  mailboxBtns.forEach(b => b.classList.remove('active'));
-  if (allMessagesBtn) allMessagesBtn.classList.add('active');
-  
-  showMessageList();
-}
-
-function handleSentReply() {
-  const replyInput = document.getElementById('replyInput');
-  const conversationContainer = document.getElementById('conversationContainer');
-  
-  const message = replyInput?.value.trim() || '';
-  if (message === '') {
-    console.log('⚠️ No reply message to send');
-    return;
-  }
-  
-  // Add message to conversation data
-  const newMessage = {
-    type: "sent",
-    content: message,
-    timestamp: new Date().toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric'
-    }) + ' ' + new Date().toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  };
-  
-  conversationData.messages.push(newMessage);
-  
-  // Add to UI
-  if (conversationContainer) {
-    const messageBubble = document.createElement('div');
-    messageBubble.className = 'message-bubble sent';
-    messageBubble.textContent = message;
-    conversationContainer.appendChild(messageBubble);
+  if (viewType === 'sent-message') {
+    // For sent messages, just go back to the sent messages list
+    console.log('📤 Returning to sent messages list...');
+    showSentMessagesList();
     
-    // Scroll to bottom
-    setTimeout(() => {
-      conversationContainer.scrollTop = conversationContainer.scrollHeight;
-    }, 100);
+    // Update the active tab to SENT
+    const sentBtn = document.querySelector('[data-tab="sent"]');
+    const mailboxBtns = document.querySelectorAll('.mailbox-btn');
+    
+    mailboxBtns.forEach(b => b.classList.remove('active'));
+    if (sentBtn) sentBtn.classList.add('active');
+    
+  } else {
+    // For new contact messages, handle normally
+    if (message === '' && subject === '') {
+      console.log('⚠️ No message or subject to send');
+      return;
+    }
+    
+    // Log the message (in real app, would send to server)
+    console.log('📤 Message sent:');
+    console.log('Subject:', subject || '(No subject)');
+    console.log('Message:', message || '(No message)');
+    
+    // Clear inputs
+    if (contactInput) contactInput.value = '';
+    if (contactSubjectInput) contactSubjectInput.value = '';
+    
+    // Return to ALL MESSAGES view
+    const allMessagesBtn = document.querySelector('[data-tab="all"]');
+    const mailboxBtns = document.querySelectorAll('.mailbox-btn');
+    
+    mailboxBtns.forEach(b => b.classList.remove('active'));
+    if (allMessagesBtn) allMessagesBtn.classList.add('active');
+    
+    showTabContent('all');
   }
-  
-  // Clear input
-  if (replyInput) replyInput.value = '';
-  
-  console.log('📤 Reply sent:', message);
-  
-  // Return to ALL MESSAGES view
-  const allMessagesBtn = document.querySelector('[data-tab="all"]');
-  const mailboxBtns = document.querySelectorAll('.mailbox-btn');
-  
-  mailboxBtns.forEach(b => b.classList.remove('active'));
-  if (allMessagesBtn) allMessagesBtn.classList.add('active');
-  
-  showMessageList();
 }
 
 // Make toggleMailbox available globally for HTML onclick handlers

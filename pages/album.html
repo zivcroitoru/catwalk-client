@@ -6,8 +6,6 @@
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
-
-
   <!-- ✅ Import all CSS files -->
   <link rel="stylesheet" href="../css/album-css/1_base.css">
   <link rel="stylesheet" href="../css/album-css/2_layout.css">
@@ -22,7 +20,6 @@
   <link rel="stylesheet" href="../css/mailbox.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
-
 <body>
   <div class="welcome-message" id="welcomeMessage">Welcome, </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
@@ -43,13 +40,11 @@
       </div>
     </div>
   </div>
-
   <!-- Carousel Area -->
   <div class="carousel-wrapper" id="carouselWrapper">
     ...
   </div>
 </div> <!-- ✅ END of #catAreaWrapper -->
-
 <div id="emptyState" class="hidden empty-state-message">
   <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
   <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
@@ -57,9 +52,6 @@
     <img src="../assets/ui/plus.png" alt="Add Cat" />
   </button>
 </div>
-
-
-
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
@@ -73,19 +65,10 @@
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
     </div>
-
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
-
     <!-- ✅ Mailbox Display -->
     <div class="mailbox-display" id="mailboxDisplay">
-
-
-
-
-
-
-
       <!-- Mailbox Navigation Buttons -->
       <div class="mailbox-nav">
         <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
@@ -96,7 +79,7 @@
       
       <!-- Mailbox Content Area -->
       <div class="mailbox-content">
-        <!-- Message List View -->
+        <!-- ALL MESSAGES List View -->
         <div class="message-list" id="allMessagesList">
           <!-- Message Box 1 -->
           <div class="message-box" data-message-id="1">
@@ -147,7 +130,9 @@
           </div>
         </div>
         
-        <!-- Message Detail View -->
+        <!-- SENT MESSAGES List will be created dynamically by JavaScript -->
+        
+        <!-- Message Detail View (Shared by ALL MESSAGES and SENT) -->
         <div class="message-view" id="messageView">
           <!-- Message Header (Title and Date) -->
           <div class="message-view-header">
@@ -184,41 +169,8 @@
           </div>
         </div>
         
-        <!-- SENT View -->
-        <div class="sent-view" id="sentView">
-          <!-- SENT Header (Title and Date) -->
-          <div class="sent-view-header">
-            <div class="sent-view-title" id="sentViewTitle">Conversation: Feedback about cat outfits</div>
-            <div class="sent-view-date" id="sentViewDate">12/06/2025</div>
-          </div>
-          
-          <!-- Conversation Container -->
-          <div class="conversation-container" id="conversationContainer">
-            <!-- Sample conversation messages will be dynamically added here -->
-          </div>
-          
-          <!-- Reply Input Area -->
-          <textarea class="reply-input-area" id="replyInput" placeholder="Type your reply here..."></textarea>
-          
-          <!-- SENT Controls -->
-          <div class="sent-controls">
-            <button class="send-btn" id="sentSendBtn">SEND</button>
-          </div>
-        </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
     </div>
-
     <!-- Carousel Area -->
     <div class="wrapper">
   <div class="main-area">
@@ -234,13 +186,11 @@
         <img src="../assets/ui/plus.png" alt="Add Cat" />
       </button>
     </div>
-
     <!-- 🧾 Floating Info -->
     <div class="floating-actions">
       <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
     </div>
   </div>
-
   <!-- 🐱 Empty State Message -->
   <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
     <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
@@ -249,36 +199,31 @@
       <img src="../assets/ui/plus.png" alt="Add Cat" />
     </button>
   </div>
-
   <!-- 🧾 Right Pane: Profile + Shop -->
   <div class="right-pane">
     <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
-
     <!-- 🧑‍💻 Profile Panel -->
     <div id="catProfileScroll" class="cat-profile-scroll hidden">
       <div class="scroll-inner">
               <input type="text" id="catName" class="profile-name-input" disabled />
-
               <div class="profile-main">
                 <div class="profile-info">
                   <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
                   <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
                   <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
-                  <div class="profile-row"><strong>Birthday:</strong> <span id="profileBirthday">-</span></div>
+                  <div class="profile-row"><strong>Birthdate:</strong> <span id="profileBirthday">-</span></div>
                   <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
                 </div>
                 <div class="top-right-icons">
 <img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
                 </div>
               </div>
-
               <!-- Description -->
               <div class="desc-block" id="descBlock">
                 <label for="catDesc">Description:</label>
                 <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
                 <div id="charCount" class="word-count">0 / 200 characters</div>
               </div>
-
               <!-- Footer Buttons -->
               <div class="profile-footer-buttons">
                 <button class="profile-btn primary" id="editBtn">Edit</button>
@@ -303,7 +248,6 @@
   </div>
   <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
 </div>
-
 <!-- ✅ Add Cat Popup (matches Shop style) -->
 <div id="addCatPopup" class="shop-popup hidden">
   <div class="tabs" id="breedTabs"></div>
@@ -312,20 +256,13 @@
   </div>
   <button class="profile-btn danger" style="align-self: flex-end;" onclick="closeAddCat()">✕</button>
 </div>
-
 <!-- ✅ Add Cat Overlay -->
 <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-
-
   <!-- Audio + Scripts -->
 <audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
-
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
 <!-- ✅ Your modules LAST -->
 <script type="module" src="../js/main.js"></script>
-
-
 </body>
 </html>
