@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
-const playerItems_API = `${APP_URL}/api/playerItems`;
+const player_items_API = `${APP_URL}/api/player_items`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
 
 let itemCache = null;
@@ -11,7 +11,7 @@ let itemCache = null;
 // ───────────── REST helpers ─────────────
 async function apiGetItems() {
   const token = localStorage.getItem('token');
-  const res = await fetch(playerItems_API, {
+  const res = await fetch(player_items_API, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
@@ -21,7 +21,7 @@ async function apiGetItems() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('GET /playerItems failed');
+    throw new Error('GET /player_items failed');
   }
 
   return res.json();
@@ -29,7 +29,7 @@ async function apiGetItems() {
 
 async function apiPatchItem(template) {
   const token = localStorage.getItem('token');
-  const res = await fetch(playerItems_API, {
+  const res = await fetch(player_items_API, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ async function apiPatchItem(template) {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    throw new Error('PATCH /playerItems failed');
+    throw new Error('PATCH /player_items failed');
   }
 
   return res.json();
@@ -123,7 +123,7 @@ export async function deleteCat(catId) {
 }
 
 // ───────────── Load & Save ─────────────
-export async function loadPlayerItems(force = false) {
+export async function loadplayer_items(force = false) {
   if (!force && itemCache) {
     console.log('🪵 Using cached player items');
     return itemCache;
@@ -138,7 +138,7 @@ export async function unlockPlayerItem(template) {
   console.log('🔓 Unlocking item:', template);
   const result = await apiPatchItem(template);
   console.log('✅ Unlock result:', result);
-  await loadPlayerItems(true);
+  await loadplayer_items(true);
   updateUI();
   return result.item;
 }
@@ -245,7 +245,7 @@ export async function addCatToUser(cat) {
   const result = await res.json();
   console.log('✅ New cat added:', result.cat);
 
-  await loadPlayerItems(true);
+  await loadplayer_items(true);
   updateUI();
   return result.cat;
 }

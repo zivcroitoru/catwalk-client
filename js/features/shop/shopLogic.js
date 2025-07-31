@@ -2,7 +2,7 @@
   shopLogic.js – DB version, no localStorage
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadPlayerItems, unlockPlayerItem, updateCat } from '../../core/storage.js';
+import { loadplayer_items, unlockplayer_items, updateCat } from '../../core/storage.js';
 
 const previewKeyMap = {
   hats: 'hat',
@@ -11,33 +11,33 @@ const previewKeyMap = {
   eyes: 'eyes'
 };
 
-export function getItemState(id, category, playerItems) {
-  const owned       = playerItems.ownedItems?.includes(id);
+export function getItemState(id, category, player_items) {
+  const owned       = player_items.ownedItems?.includes(id);
   const equipped    = window.selectedCat?.equipment?.[category];
   if (!owned)            return 'buy';
   if (equipped === id)   return 'unequip';
   return 'equip';
 }
 
-export async function handleShopClick(item, playerItems) {
-  const state      = getItemState(item.id, item.category, playerItems);
+export async function handleShopClick(item, player_items) {
+  const state      = getItemState(item.id, item.category, player_items);
   const previewKey = previewKeyMap[item.category];
   console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
   // ───── buy ─────
   if (state === 'buy') {
-    if (playerItems.coins < item.price) return 'not_enough';
+    if (player_items.coins < item.price) return 'not_enough';
 
     // ✅ Unlock via proper server call
-    await unlockPlayerItem(item.template);
+    await unlockplayer_items(item.template);
 
     // ✅ Prevent push on undefined
-    if (!Array.isArray(playerItems.ownedItems)) {
-      playerItems.ownedItems = [];
+    if (!Array.isArray(player_items.ownedItems)) {
+      player_items.ownedItems = [];
     }
 
-    playerItems.ownedItems.push(String(item.id));
-    playerItems.coins -= item.price;
+    player_items.ownedItems.push(String(item.id));
+    player_items.coins -= item.price;
     return 'bought';
   }
 
@@ -48,7 +48,7 @@ export async function handleShopClick(item, playerItems) {
   }
 
   if (state === 'equip') {
-    playerItems.equippedItems[item.category] = item.id;
+    player_items.equippedItems[item.category] = item.id;
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [item.template];
     } else {
@@ -57,7 +57,7 @@ export async function handleShopClick(item, playerItems) {
   }
 
   if (state === 'unequip') {
-    delete playerItems.equippedItems[item.category];
+    delete player_items.equippedItems[item.category];
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [];
     } else {
@@ -75,7 +75,7 @@ export async function handleShopClick(item, playerItems) {
   return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// 🔁 persist equipment to DB (only cat, not playerItems anymore)
+// 🔁 persist equipment to DB (only cat, not player_items anymore)
 async function syncCatEquipment() {
   // Ensure equipment has standard structure before saving
   const equipment = {

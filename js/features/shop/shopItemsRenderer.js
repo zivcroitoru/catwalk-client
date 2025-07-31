@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
-  loadPlayerItems,
+  loadplayer_items,
   updateCat,
   updateCoinCount
 } from '../../core/storage.js';
@@ -18,15 +18,15 @@ export async function renderShopItems(activeCategory) {
   const container = document.getElementById('shopItems');
   if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) return;
 
-  const playerItems  = await loadPlayerItems();
-  const ownedSet     = new Set(playerItems.ownedItems || []);
+  const player_items  = await loadplayer_items();
+  const ownedSet     = new Set(player_items.ownedItems || []);
   const selectedCat  = window.selectedCat;
   const equipped     = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = '';
   window.shopItemsByCategory[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
     const id = `${activeCategory}_${name.toLowerCase().replaceAll(' ', '_')}`;
-    const state = getItemState(id, activeCategory, playerItems);
+    const state = getItemState(id, activeCategory, player_items);
     const isBuy = state === 'buy';
 
     const card = document.createElement('div');
@@ -52,11 +52,11 @@ export async function renderShopItems(activeCategory) {
       const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
 
       if (isBuy) {
-        showBuyConfirmation(item, playerItems, activeCategory); // ✅ fixed call
+        showBuyConfirmation(item, player_items, activeCategory); // ✅ fixed call
         return;
       }
 
-      const result = await handleShopClick(item, playerItems);
+      const result = await handleShopClick(item, player_items);
       await updateCoinCount();
 
       if (selectedCat) {
@@ -72,7 +72,7 @@ export async function renderShopItems(activeCategory) {
   });
 }
 
-async function showBuyConfirmation(item, playerItems, activeCategory) {
+async function showBuyConfirmation(item, player_items, activeCategory) {
   const box = document.createElement('div');
   box.className = 'confirm-toast';
   box.innerHTML = `
@@ -84,7 +84,7 @@ async function showBuyConfirmation(item, playerItems, activeCategory) {
   document.body.appendChild(box);
 
   box.querySelector('.yes-btn').onclick = async () => {
-    const result = await handleShopClick(item, playerItems);
+    const result = await handleShopClick(item, player_items);
     await updateCoinCount();
 
     if (result === 'bought')           toastBought(item.name);
