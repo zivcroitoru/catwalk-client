@@ -481,9 +481,19 @@ function showContactView() {
   });
   if (contactViewDate) contactViewDate.textContent = currentDate;
   
-  // Clear inputs
-  if (contactInput) contactInput.value = '';
-  if (contactSubjectInput) contactSubjectInput.value = '';
+  // Clear inputs and reset to normal editable state
+  if (contactInput) {
+    contactInput.value = '';
+    contactInput.readOnly = false;
+    contactInput.style.backgroundColor = 'var(--color-white)';
+    contactInput.style.cursor = 'text';
+  }
+  if (contactSubjectInput) {
+    contactSubjectInput.value = '';
+    contactSubjectInput.readOnly = false;
+    contactSubjectInput.style.backgroundColor = 'var(--color-white)';
+    contactSubjectInput.style.cursor = 'text';
+  }
   
   // Store the current view type for handling SEND button
   contactView.setAttribute('data-view-type', 'new-contact');
@@ -598,8 +608,22 @@ function showSentMessageContactView(messageId) {
   
   // Populate the contact view with sent message data
   if (contactViewDate) contactViewDate.textContent = message.date;
-  if (contactSubjectInput) contactSubjectInput.value = message.title;
-  if (contactInput) contactInput.value = message.body;
+  
+  // Make subject input read-only and populate with message title
+  if (contactSubjectInput) {
+    contactSubjectInput.value = message.title;
+    contactSubjectInput.readOnly = true;
+    contactSubjectInput.style.backgroundColor = 'var(--color-grey)'; // Grey background to indicate read-only
+    contactSubjectInput.style.cursor = 'default';
+  }
+  
+  // Clear the body input and let placeholder show (like in CONTACT US)
+  if (contactInput) {
+    contactInput.value = '';
+    contactInput.readOnly = false; // Keep it editable
+    contactInput.style.backgroundColor = 'var(--color-white)'; // Normal background
+    contactInput.style.cursor = 'text';
+  }
   
   // Store the current view type and message ID for handling SEND button
   contactView.setAttribute('data-view-type', 'sent-message');
