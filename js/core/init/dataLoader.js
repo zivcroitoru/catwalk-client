@@ -1,103 +1,57 @@
-import { getPlayerCats, normalizeCat, buildSpriteLookup } from "../storage.js";
-import { APP_URL } from "../../core/config.js";
+// dataLoader.js
+import {
+  getPlayerCats,
+  normalizeCat,
+  buildSpriteLookup,
+  resetSpriteLookup      
+} from '../storage.js';
+import { APP_URL } from '../../core/config.js';
 
-export let userCats = [];
+export let userCats  = [];
 export let shopItems = [];
 
-export async function loadAllData() {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error('No auth token found for data loading');
-      throw new Error('Authentication required');
-    }
 
-    const headers = { Authorization: `Bearer ${token}` };
-    console.log('🔄 Starting data load...');
+export async function loadAllData () {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('Authentication required');
 
-    // Load all data in parallel
-    const [shopRes, templates, loadedUserCats] = await Promise.all([
-      fetch(`${APP_URL}/api/shop`, { headers })
-        .then(res => {
-          if (!res.ok) throw new Error(`Shop fetch failed: ${res.status}`);
-          return res.json();
-        }),
-      fetch(`${APP_URL}/api/cats/allcats`, { headers })
-        .then(res => {
-          if (!res.ok) throw new Error(`Templates fetch failed: ${res.status}`);
-          return res.json();
-        }),
-      getPlayerCats()
-        .catch(err => {
-          console.error('Failed to load player cats:', err);
-          return [];
-        })
-    ]).catch(err => {
-      console.error('Failed to load initial data:', err);
-      throw err;
+  const headers = { Authorization: `Bearer ${token}` };
+  console.log('🔄 Loading shop + templates…');
+
+  /* shop + templates (sprites) */
+  const [shopRes, templates] = await Promise.all([
+    fetch(`${APP_URL}/api/shop`,         { headers }).then(r => r.json()),
+    fetch(`${APP_URL}/api/cats/allcats`, { headers }).then(r => r.json())
+  ]);
+
+  /* build breedItems from templates */
+  const breedItems = {};
+  for (const t of templates) {
+    const template = t.template ?? `${t.breed}-${t.variant ?? 'default'}-${t.palette ?? 'default'}`;
+    const [breed]  = template.split('-');
+    if (!breed) continue;
+
+    (breedItems[breed] ||= []).push({
+      name:      t.name ?? 'Unnamed',
+      template,
+      sprite_url: t.sprite_url,
+      variant:   t.variant  ?? 'default',
+      palette:   t.palette  ?? 'default'
     });
-
-    // 🐱 User cats validation
-    if (!Array.isArray(loadedUserCats)) {
-      console.error('Invalid user cats data:', loadedUserCats);
-      userCats = [];
-    } else {
-      userCats = loadedUserCats.map(cat => normalizeCat(cat, buildSpriteLookup(window.breedItems)));
-      console.log("📦 Loaded", userCats.length, "valid user cats");
-    }
-
-    // 🛒 Shop validation
-    if (!shopRes || typeof shopRes !== 'object') {
-      console.error('Invalid shop data:', shopRes);
-      shopItems = {};
-    } else {
-      shopItems = shopRes;
-    }
-
-    // 🧪 Templates
-    console.log("🐾 templates structure:", templates);
-
-    const breedItems = {};
-    window.breedItems = breedItems; // Ensure global access
-
-    for (const cat of templates) {
-      // Extract breed from template or fallback
-      const template = cat.template || `${cat.breed}-${cat.variant || 'default'}-${cat.palette || 'default'}`;
-      const [breed] = template.split('-');
-      const sprite_url = cat.sprite_url;
-
-      console.log("🐈‍⬛ RAW CAT:", cat);
-      console.log("📦 Mapped:", { template, breed, sprite_url });
-
-      if (!breed) {
-        console.warn("⛔ Skipping template due to missing breed:", cat);
-        continue;
-      }
-
-      // Initialize breed category if it doesn't exist
-      if (!breedItems[breed]) breedItems[breed] = [];
-
-      breedItems[breed].push({
-        name: cat.name || "Unnamed", 
-        template,
-        sprite_url,
-        variant: (cat.variant || 'default'),
-        palette: (cat.palette || 'default')
-      });
-    }
-
-    console.log("✅ breedItems:", breedItems);
-
-    for (const [breed, variants] of Object.entries(breedItems)) {
-      console.log(`✅ Loaded ${variants.length} valid variants for '${breed}'`);
-    }
-
-    window.userCats = userCats;
-    window.shopItems = shopItems;
-    window.breedItems = breedItems;
-
-    console.log("✅ All data loaded!!!");
-  } catch (err) {
-    console.error("❌ Data loading error:", err);
   }
+  window.breedItems = breedItems;
+  resetSpriteLookup();                   // flush sprite cache
+
+  /* player cats (sprites now resolve) */
+  console.log('🔄 Loading player cats…');
+  userCats = (await getPlayerCats()).map(c =>
+    normalizeCat(c, buildSpriteLookup(breedItems))
+  );
+
+  /* final globals */
+  shopItems          = shopRes;
+  window.userCats    = userCats;
+  window.shopItems   = shopItems;
+
+  console.log(`✅ Loaded ${userCats.length} cats, ${Object.keys(shopItems).length} shop items.`);
 }

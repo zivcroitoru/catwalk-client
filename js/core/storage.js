@@ -119,18 +119,16 @@ function getPlayerIdFromToken() {
 // ───────────── Cats Access ─────────────
 // helpers -----------------------------------------------------------
 export function buildSpriteLookup(breedItems = {}) {
-  return Object.values(breedItems)          // { breed: [variants] } → array-of-arrays
-    .flat()                                 // flatten
-    .reduce((acc, v) => {
-      const key = v.id                     // preferred
-        ?? `${v.breed}-${v.variant}-${v.palette}`; // fallback
-      acc[key] = v.sprite_url;
-      return acc;
-    }, {});
+  return Object.values(breedItems).flat().reduce((acc, v) => {
+    const key = v.id ?? v.template;   // reliable fallback
+    acc[key] = v.sprite_url;
+    return acc;
+  }, {});
 }
 
 // Cache sprite lookup to avoid recomputation
 let cachedSpriteLookup = null;
+export function resetSpriteLookup() { cachedSpriteLookup = null; }
 
 function getSpriteLookup() {
   if (!cachedSpriteLookup) {
@@ -146,18 +144,10 @@ function getSpriteLookup() {
 
 // main --------------------------------------------------------------
 export async function getPlayerCats() {
-  try {
-    const [rawCats, spriteByTemplate] = await Promise.all([
-      apiGetCats(),
-      Promise.resolve(getSpriteLookup())
-    ]);
-
-    const cats = rawCats.map(cat => normalizeCat(cat, spriteByTemplate));
-    return cats; // Let the caller decide to update window.userCats
-  } catch (error) {
-    console.error("Failed to fetch or normalize cats:", error);
-    throw error;
-  }
+  const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
+  const cats = raw.map(c => normalizeCat(c, sprites));
+  window.userCats = cats;    // keep everyone happy
+  return cats;
 }
 
 export async function updateCat(catId, updates) {
