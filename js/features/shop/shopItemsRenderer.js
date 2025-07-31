@@ -4,7 +4,6 @@
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
-  savePlayerItems,
   updateCoinCount
 } from '../../core/storage.js';
 import { updateCat } from '../../core/api.js';
@@ -20,9 +19,9 @@ export async function renderShopItems(data, activeCategory) {
   if (!data || !container || !data[activeCategory]) return;
 
   const playerItems  = await loadPlayerItems();
-  const ownedSet   = new Set(playerItems.ownedItems || []);
-  const selectedCat = window.selectedCat;
-  const equipped   = selectedCat?.equipment?.[activeCategory] || null;
+  const ownedSet     = new Set(playerItems.ownedItems || []);
+  const selectedCat  = window.selectedCat;
+  const equipped     = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = '';
   data[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
@@ -44,6 +43,7 @@ export async function renderShopItems(data, activeCategory) {
           : `<button class="shop-btn">${state.toUpperCase()}</button>`}
       </div>
     `;
+
     const clickTarget = isBuy
       ? card.querySelector('.shop-price-bar')
       : card.querySelector('.shop-btn');
@@ -56,14 +56,14 @@ export async function renderShopItems(data, activeCategory) {
         return;
       }
 
-      const result = handleShopClick(item, playerItems);
-      await savePlayerItems(playerItems);
+      const result = await handleShopClick(item, playerItems);
       await updateCoinCount();
 
       if (selectedCat) {
         selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
         await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
       }
+
       toastEquipResult(name, result);
       renderShopItems(data, activeCategory);
     };
@@ -84,16 +84,16 @@ async function showBuyConfirmation(item, playerItems, data, activeCategory) {
   document.body.appendChild(box);
 
   box.querySelector('.yes-btn').onclick = async () => {
-    const result = handleShopClick(item, playerItems);
-    await savePlayerItems(playerItems);
+    const result = await handleShopClick(item, playerItems);
     await updateCoinCount();
 
-    if (result === 'bought')      toastBought(item.name);
+    if (result === 'bought')           toastBought(item.name);
     else if (result === 'not_enough') toastNotEnough();
 
     renderShopItems(data, activeCategory);
     box.remove();
   };
+
   box.querySelector('.no-btn').onclick = () => {
     toastCancelled();
     box.remove();
