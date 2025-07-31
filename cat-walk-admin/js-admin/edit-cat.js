@@ -1,67 +1,88 @@
+// edit-cat.js
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
+console.log(localStorage.getItem('selectedCat'));
 
-
-
-document.addEventListener('DOMContentLoaded', async () => {
+// 1. Get the selected cat ID from the URL
 const urlParams = new URLSearchParams(window.location.search);
-const template = urlParams.get('template');
-    document.querySelector('.cat-name').textContent = 'No cat data';
-    return;
-  }
+const catId = urlParams.get('id');
 
- );
+// 2. Get the selectedCat object from localStorage (optional, for more data)
+const selectedCat = JSON.parse(localStorage.getItem('selectedCat'));
 
-  // Set basic info from localStorage
-  document.querySelector('.cat-pic-data').src = selectedCat.sprite_url;
-  document.querySelector('.cat-name').textContent = selectedCat.template;
-  document.querySelector('.cat-id').textContent = `CAT ID: ${selectedCat.id}`;
+if (!catId || !selectedCat) {
+  console.error("Missing cat ID or data");
+  // Optionally redirect or show an error message
+} else {
+  // 3. Populate the page with the cat's data
+  document.addEventListener('DOMContentLoaded', () => {
+    // Example elements:
+    const catImage = document.getElementById('cat-pic'); // <img>
+    const catName = document.getElementById('cat-name');   // <h2> or <input>
+    const catBreed = document.getElementById('cat-breed'); // <p> or <select>
+    const catVariant = document.getElementById('cat-variant');     // <p> or
+    const catColor = document.getElementById('cat-pallete'); // <p> or <select>
+    const catSprite = document.getElementById('cat-sprite'); // <p> or <input>
 
-  try {
-    // Fetch template data from server
-    const response = await fetch(`${APP_URL}/api/cats/template/${selectedCat.template}`);
-    console.log('Template response:', response);
-    console.log(selectedCat.template); 
-    if (!response.ok) {
-      throw new Error('Template not found');
-    }
+    // Display data
+    if (catImage) catImage.src = selectedCat.sprite_url;
+    if (catName) catName.textContent = selectedCat.template; // or .value for <input>
+    if (catBreed) catBreed.textContent = `BREED: ${selectedCat.breed}`; // or .value for <input>
+    if (catVariant) catVariant.textContent = `VARIANT: ${selectedCat.variant}`; // or .value
+    if (catColor) catColor.textContent = `PALLETE: ${selectedCat.pallete}`; // or .value for <input>
+    if (catSprite) {
+      catSprite.textContent = `SPRITE URL: ${selectedCat.sprite_url}`;
 
-    const templateData = await response.json();
+      // Make editable on click
+      catSprite.addEventListener('click', () => {
+        // Create an input field with current sprite URL
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = selectedCat.sprite_url;
+        input.style.width = '100%';
 
-    // Update template-related UI
-    const createdAt = new Date(templateData.created_at).toLocaleDateString();
-    document.querySelector('.cat-date').textContent = `CREATED: ${createdAt}`;
-    
-  } catch (err) {
-    console.error('Failed to fetch template data:', err);
-    document.querySelector('.cat-date').textContent = 'CREATED: unknown';
-  }
+        // Replace the text with the input
+        catSprite.textContent = '';
+        catSprite.appendChild(input);
+        input.focus();
 
-  // Optional: Button actions
-  document.querySelector('.cancel-button').addEventListener('click', () => {
-    window.location.href = 'cat-database.html';
-  });
+        // Save on blur or Enter
+        const save = async () => {
+          const newSpriteUrl = input.value;
+          selectedCat.sprite_url = newSpriteUrl;
+          localStorage.setItem('selectedCat', JSON.stringify(selectedCat));
+          catSprite.textContent = `SPRITE URL: ${newSpriteUrl}`;
 
-  document.querySelector('.delete-button').addEventListener('click', async () => {
-    if (!confirm('Are you sure you want to delete this cat?')) return;
+          try {
+            const response = await fetch(`${APP_URL}/api/cats/${selectedCat.cat_id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ sprite_url: newSpriteUrl })
+            });
 
-    try {
-      const res = await fetch(`${APP_URL}/api/cats/${selectedCat.id}`, {
-        method: 'DELETE',
+            if (!response.ok) {
+              throw new Error('Failed to update sprite_url');
+            }
+
+            console.log('Sprite URL updated successfully');
+          } catch (err) {
+            console.error('Error saving to server:', err);
+            alert('Failed to save sprite URL to the database.');
+          }
+        };
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            input.blur(); // triggers save
+          }
+        });
       });
-
-      if (res.ok) {
-        alert('Cat deleted successfully.');
-        window.location.href = 'cat-database.html';
-      } else {
-        alert('Failed to delete cat.');
-      }
-    } catch (err) {
-      console.error('Delete error:', err);
-      alert('Server error.');
     }
-  });
 
-  document.querySelector('.save-button').addEventListener('click', () => {
-    alert('Save feature not implemented yet.');
+
+
   });
+}

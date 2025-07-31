@@ -100,13 +100,14 @@ body {
     left: 0;
     top: 0;
     margin-top: 80px;
-    margin-left: 150px;
+    /* margin-left: 100px; */
     border: 5px solid #cccccc;
 
 }
 
 .cat-info,
 .clothes-info {
+    /* background-color: aqua; */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -114,7 +115,7 @@ body {
     right: 50px;
     top: 30px;
     margin-right: 150px;
-    padding: 0;
+    /* padding: 0; */
 }
 
 .cat-pic-data {
@@ -123,6 +124,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+      image-rendering: pixelated;
+
 
 }
 
@@ -132,7 +135,7 @@ body {
 .clothes-name {
     width: 500px;
     height: 100px;
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 100;
     color: #878787;
     border-radius: 50px;
@@ -148,25 +151,50 @@ body {
 
 }
 
-
-.cat-id,
-.cat-date,
-.clothes-id,
-.clothes-date {
-    width: 500px;
-    gap: 5px;
+.cat-name-input {
+   width: 500px;
     height: 100px;
     font-size: 32px;
     font-weight: 100;
     color: #878787;
+    border-radius: 50px;
+    border: 5px solid #cccccc;
+    background-color: #F6F0F0;
     display: flex;
     justify-content: center;
+    align-items: center;
     text-align: center;
     transform: none;
     cursor: pointer;
-    padding-bottom: 100px;
-
+    padding: 0
 }
+
+.cat-sprite,
+.cat-breed,
+.cat-variant,
+.cat-pallete,
+.cat-status,
+.cat-date,
+.clothes-id,
+.clothes-date {
+    width: 500px;
+    height: 100px;
+    font-size: 22px;
+    font-weight: 100;
+    color: #878787;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: -50px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
 
 /*---------------------buttons----------------------*/
 .button-container {

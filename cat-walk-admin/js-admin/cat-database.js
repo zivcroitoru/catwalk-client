@@ -90,7 +90,7 @@ document.querySelector('.arrow-right').addEventListener('click', () => {
 document.querySelector('.cat-pic-data').addEventListener('click', () => {
   if (selectedCat) {
     localStorage.setItem('selectedCat', JSON.stringify(selectedCat));
-    window.location.href = `edit-cat.html?id=${selectedCat.template}`;
+    window.location.href = `edit-cat.html?id=${selectedCat.cat_id}`;
   }
 });
 
