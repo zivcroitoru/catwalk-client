@@ -134,6 +134,11 @@ let cachedSpriteLookup = null;
 
 function getSpriteLookup() {
   if (!cachedSpriteLookup) {
+    if (!window.breedItems || Object.keys(window.breedItems).length === 0) {
+      console.warn("⚠️ window.breedItems is empty or undefined in getSpriteLookup");
+    } else {
+      console.log("✅ window.breedItems in getSpriteLookup:", window.breedItems);
+    }
     cachedSpriteLookup = buildSpriteLookup(window.breedItems);
   }
   return cachedSpriteLookup;
