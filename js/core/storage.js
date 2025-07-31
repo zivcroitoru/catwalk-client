@@ -124,13 +124,20 @@ export async function deleteCat(catId) {
 
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
-  if (!force && itemCache) return itemCache;
+  if (!force && itemCache) {
+    console.log('🪵 Using cached player items');
+    return itemCache;
+  }
+  console.log('🪵 Fetching fresh player items from API...');
   itemCache = await apiGetItems();
+  console.log('🪵 Fetched items:', itemCache);
   return itemCache;
 }
 
 export async function unlockPlayerItem(template) {
+  console.log('🔓 Unlocking item:', template);
   const result = await apiPatchItem(template);
+  console.log('✅ Unlock result:', result);
   await loadPlayerItems(true);
   updateUI();
   return result.item;
@@ -162,7 +169,9 @@ export function buildSpriteLookup(breedItems = {}) {
 }
 
 let cachedSpriteLookup = null;
-export function resetSpriteLookup() { cachedSpriteLookup = null; }
+export function resetSpriteLookup() {
+  cachedSpriteLookup = null;
+}
 
 function getSpriteLookup() {
   if (!cachedSpriteLookup) {
@@ -177,13 +186,16 @@ function getSpriteLookup() {
 }
 
 export async function getPlayerCats() {
+  console.log('📥 getPlayerCats() start...');
   const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
   const cats = raw.map(c => normalizeCat(c, sprites));
+  console.log('✅ Normalized cats:', cats);
   window.userCats = cats;
   return cats;
 }
 
 export async function updateCat(catId, updates) {
+  console.log(`✏️ Updating cat ${catId} with:`, updates);
   const allowedFields = ['name', 'description', 'template'];
   const safeUpdates = Object.fromEntries(
     Object.entries(updates).filter(([key]) => allowedFields.includes(key))
@@ -194,15 +206,17 @@ export async function updateCat(catId, updates) {
     const idx = window.userCats.findIndex(c => c.id === catId);
     if (idx !== -1) {
       window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };
+      console.log(`✅ Cat ${catId} updated in local cache`);
     }
     return updatedCat;
   } catch (error) {
-    console.error('Error updating cat:', error);
+    console.error('❌ Error updating cat:', error);
     throw error;
   }
 }
 
 export async function addCatToUser(cat) {
+  console.log('➕ Adding cat:', cat);
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
   if (!playerId) throw new Error('No player ID found in token');
@@ -229,6 +243,8 @@ export async function addCatToUser(cat) {
   if (!res.ok) throw new Error('Failed to add cat');
 
   const result = await res.json();
+  console.log('✅ New cat added:', result.cat);
+
   await loadPlayerItems(true);
   updateUI();
   return result.cat;
@@ -236,9 +252,14 @@ export async function addCatToUser(cat) {
 
 // ───────────── UI Updates ─────────────
 export async function updateCoinCount() {
-  const { coins } = await loadPlayerItems();
+  const { coins } = await loadPlayerItems(true);
   const el = document.querySelector('.coin-count');
-  if (el) el.textContent = coins;
+  if (el) {
+    el.textContent = coins;
+    console.log('🪙 Coin count updated:', coins);
+  } else {
+    console.warn('⚠️ .coin-count element not found');
+  }
 }
 
 export async function updateCatCountUI() {
