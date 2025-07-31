@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { loadPlayerItems, unlockPlayerItem } from '../../core/storage.js';
-import { updateCat } from '../../core/api.js';       // ← server PATCH helper
+import { apiUpdateCat } from '../../core/api.js';       // ← server PATCH helper
 
 const previewKeyMap = {
   hats: 'hat',
@@ -81,7 +81,7 @@ async function syncCatEquipment() {
     accessories: window.selectedCat.equipment?.accessories || []
   };
 
-  await updateCat(window.selectedCat.id, { equipment });
+  await apiUpdateCat(window.selectedCat.id, { equipment });
 
   const idx = window.userCats.findIndex(
     (c) => c.id === window.selectedCat.id

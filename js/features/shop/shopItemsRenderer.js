@@ -6,7 +6,7 @@ import {
   loadPlayerItems,
   updateCoinCount
 } from '../../core/storage.js';
-import { updateCat } from '../../core/api.js';
+import { apiUpdateCat } from '../../core/api.js';
 import {
   toastBought,
   toastCancelled,
@@ -61,7 +61,7 @@ export async function renderShopItems(data, activeCategory) {
 
       if (selectedCat) {
         selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
-        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+        await apiUpdateCat(selectedCat.id, { equipment: selectedCat.equipment });
       }
 
       toastEquipResult(name, result);

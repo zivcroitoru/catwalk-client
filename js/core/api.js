@@ -3,16 +3,23 @@
 -----------------------------------------------------------------------------*/
 import { APP_URL } from '../core/config.js'
 
-export async function updateCat(catId, patch) {
+export async function apiUpdateCat(catId, updates) {
   const token = localStorage.getItem('token');
+  if (!token) throw new Error('No auth token');
+
   const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
-    method: 'PATCH',
-    headers: { 
+    method: 'PATCH', // Corrected to use PATCH
+    headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify(patch)
+    body: JSON.stringify(updates)
   });
-  if (!res.ok) throw new Error('Failed to update cat');
+
+  if (!res.ok) {
+    console.error('Failed to update cat:', res.status, res.statusText);
+    throw new Error('Failed to update cat');
+  }
+
   return res.json();
 }

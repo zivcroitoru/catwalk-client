@@ -2,6 +2,7 @@
   storage.js – DB-backed player inventory & cats
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
+import { apiUpdateCat } from './api.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
@@ -151,28 +152,21 @@ export async function getPlayerCats() {
 }
 
 export async function updateCat(catId, updates) {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('No auth token');
+  try {
+    // Call the corrected API method
+    const updatedCat = await apiUpdateCat(catId, updates);
 
-  const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      name: updates.name,
-      description: updates.description,
-      // Only send server-relevant fields
-      ...(updates.template && { template: updates.template }),
-      ...(updates.breed && { breed: updates.breed }),
-      ...(updates.variant && { variant: updates.variant }),
-      ...(updates.palette && { palette: updates.palette })
-    })
-  });
+    // Update local state
+    const idx = window.userCats.findIndex(c => c.id === catId);
+    if (idx !== -1) {
+      window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };
+    }
 
-  if (!res.ok) throw new Error('Failed to update cat');
-  return res.json();
+    return updatedCat;
+  } catch (error) {
+    console.error('Error updating cat:', error);
+    throw error;
+  }
 }
 
 export async function addCatToUser(cat) {
