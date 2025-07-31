@@ -112,9 +112,11 @@ export async function loadPlayerItems(force = false) {
     return itemCache;
   }
   console.log('🪵 Fetching fresh player items from API...');
-  itemCache = await apiGetItems();
-  console.log('🪵 Fetched items:', itemCache);
-  return itemCache;
+itemCache = await apiGetItems();
+itemCache.ownedItems = itemCache.items?.map(i => i.id) || []; // 👈 Normalize
+console.log('🪵 Fetched items:', itemCache);
+return itemCache;
+
 }
 
 export async function unlockPlayerItem(template) {
