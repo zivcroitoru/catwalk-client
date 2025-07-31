@@ -27,11 +27,11 @@ export async function showCatProfile(cat) {
   );
   $('profileAge').textContent = `${ageInDays} days`;
 
-  nameInput.value     = cat.name;
-  nameInput.disabled  = true;
+  nameInput.value    = cat.name;
+  nameInput.disabled = true;
 
-  descInput.value     = cat.description || '';
-  descInput.readOnly  = true;
+  descInput.value    = cat.description || '';
+  descInput.readOnly = true;
   descInput.classList.remove('editing');
   resizeTextarea(descInput);
 
@@ -80,11 +80,9 @@ export function setupEditMode() {
     }
 
     if (window.currentCat) {
-      // Update cat properties that can be edited
       window.currentCat.name = nameInput.value.trim();
       window.currentCat.description = descInput.value.trim();
 
-      // Save changes to server
       try {
         await updateCat(window.currentCat.id, {
           name: window.currentCat.name,
@@ -95,7 +93,6 @@ export function setupEditMode() {
           palette: window.currentCat.palette
         });
 
-        // Update cat in global state after server confirms
         const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
         if (idx !== -1) {
           window.userCats[idx] = {
@@ -108,7 +105,6 @@ export function setupEditMode() {
         return;
       }
 
-      // Update card display
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
     }
@@ -125,29 +121,30 @@ export function setupEditMode() {
 
   deleteBtn.onclick = () => {
     if (!window.currentCat) return;
-toastConfirmDelete(window.currentCat, async () => {
-  const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-  if (idx === -1) return;
 
-  window.userCats.splice(idx, 1);        // remove cat
-  window.renderCarousel();               // redraw cards
+    toastConfirmDelete(window.currentCat, async () => {
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (idx === -1) return;
 
-  const hasCats = window.userCats.length > 0;
-  const newCat  = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
-  const mainImg = document.getElementById('carouselCat');
+      window.userCats.splice(idx, 1);
+      window.renderCarousel();
 
-  if (hasCats) {
-    showCatProfile(newCat);              // load next cat
-    setDisplay('catProfileScroll', true);// keep panel open
-    if (mainImg) mainImg.src = newCat.sprite_url;
-  } else {
-    setDisplay('catProfileScroll', false);// nothing left → hide
-    if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
-  }
+      const hasCats = window.userCats.length > 0;
+      const newCat = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
+      const mainImg = document.getElementById('carouselCat');
 
-  toastSimple('Cat deleted!', '#ffcc66');
-});
+      if (hasCats) {
+        showCatProfile(newCat);
+        setDisplay('catProfileScroll', true);
+        if (mainImg) mainImg.src = newCat.sprite_url;
+      } else {
+        setDisplay('catProfileScroll', false);
+        if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+      }
 
+      toastSimple('Cat deleted!', '#ffcc66');
+    });
+  };
 
   function finishEdit() {
     nameInput.disabled = true;
@@ -169,11 +166,10 @@ function toggleButtons({ edit, save, cancel }) {
     const el = $(id);
     if (el) el.classList.toggle('hidden', !show);
   };
-  setVis('editBtn',    edit);
-  setVis('saveBtn',    save);
-  setVis('cancelBtn',  cancel);
-  setVis('deleteBtn',  edit);
+  setVis('editBtn',      edit);
+  setVis('saveBtn',      save);
+  setVis('cancelBtn',    cancel);
+  setVis('deleteBtn',    edit);
   setVis('customizeBtn', edit);
-  setVis('fashionBtn',  edit);
-}
+  setVis('fashionBtn',   edit);
 }
