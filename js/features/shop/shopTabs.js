@@ -15,7 +15,7 @@ export function setupShopTabs() {
 
       // 🛍️ Render selected category
       const selected = tab.dataset.category.toLowerCase();
-      renderShopItems(window.shopItems, selected);
+renderShopItems(window.shopItemsByCategory, selected);
     });
   });
 
