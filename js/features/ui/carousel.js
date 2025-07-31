@@ -1,4 +1,4 @@
-import { $, setDisplay } from '../../core/utils.js';
+import { $, setDisplay } from '../../core/ut  // Initialize cats with proper equipment and validate images
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
@@ -43,11 +43,12 @@ export async function renderCarousel() {
   }
 
   // Initialize cats with proper equipment and validate images
-  window.userCats = window.userCats.map(cat => ({
+   window.userCats = window.userCats.map(cat => ({
     ...cat,
     equipment: cat.equipment || { hat: null, top: null, eyes: null, accessories: [] },
-    image: cat.sprite_url
+    image: cat.sprite_url || cat.image // Use sprite_url as the primary source for image
   }));
+
 
   // Create cat cards
   window.userCats.forEach((cat) => {
