@@ -3,7 +3,7 @@ import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
-import { getPlayerCats, addCatToUser } from '../../core/storage.js';
+import { getPlayerCats, buildSpriteLookup, normalizeCat } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js'; // ✅ Import the new toast
 
 // ───────────── Full Render ─────────────
@@ -42,29 +42,12 @@ export async function renderCarousel() {
     try { Toastify.recent.hideToast(); } catch { }
   }
 
-  // Normalize cats to match server structure
-  window.userCats = window.userCats.map(cat => ({
-    // Required fields from server
-    id: cat.cat_id || cat.id,
-    template: cat.template,
-    name: cat.name || 'Unnamed Cat',
-    birthdate: cat.birthdate || new Date().toISOString().split('T')[0],
-    description: cat.description || '',
-    sprite_url: cat.sprite_url,
-    
-    // Client-side UI state
-    selected: false,
-    equipment: {
-      hat: cat.equipment?.hat || null,
-      top: cat.equipment?.top || null,
-      eyes: cat.equipment?.eyes || null,
-      accessories: cat.equipment?.accessories || []
-    }
-  }));
+  // Normalize cats before rendering
+  const normalizedCats = window.userCats.map(cat => normalizeCat(cat, buildSpriteLookup(window.breedItems)));
 
-
-  // Create cat cards
-  window.userCats.forEach((cat) => {
+  // Optimize rendering by batching DOM updates
+  const fragment = document.createDocumentFragment();
+  normalizedCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
@@ -72,11 +55,11 @@ export async function renderCarousel() {
     card.innerHTML = `
       <div class="cat-thumbnail" id="cardPreview_${cat.id}">
         <div class="cat-bg"></div>
-        <img class="cat-layer carouselBase" />
-        <img class="cat-layer carouselHat" />
-        <img class="cat-layer carouselTop" />
-        <img class="cat-layer carouselEyes" />
-        <img class="cat-layer carouselAccessory" />
+        <img class="cat-layer carouselBase" loading="lazy" />
+        <img class="cat-layer carouselHat" loading="lazy" />
+        <img class="cat-layer carouselTop" loading="lazy" />
+        <img class="cat-layer carouselEyes" loading="lazy" />
+        <img class="cat-layer carouselAccessory" loading="lazy" />
       </div>
       <span>${cat.name}</span>
     `;
@@ -87,8 +70,6 @@ export async function renderCarousel() {
       baseLayer.src = cat.sprite_url;
     }
 
-    updateCatPreview(cat, card.querySelector(`#cardPreview_${cat.id}`));
-
     card.addEventListener("click", () => {
       const isSame = window.selectedCat?.id === cat.id;
       window.selectedCat = cat;
@@ -97,11 +78,13 @@ export async function renderCarousel() {
       if (!isSame) updateCatPreview(cat);
     });
 
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
 
+  container.appendChild(fragment);
+
   // Select and show the first cat
-  const firstCat = window.userCats[0];
+  const firstCat = normalizedCats[0];
   firstCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
   window.selectedCat = firstCat;
   updateCatPreview(firstCat);

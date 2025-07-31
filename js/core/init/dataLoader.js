@@ -1,6 +1,6 @@
 // /core/init/dataLoader.js
 
-import { getPlayerCats } from "../storage.js";
+import { getPlayerCats, normalizeCat, buildSpriteLookup } from "../storage.js";
 import { APP_URL } from "../../core/config.js";
 
 export let userCats = [];
@@ -44,7 +44,7 @@ export async function loadAllData() {
       console.error('Invalid user cats data:', loadedUserCats);
       userCats = [];
     } else {
-      userCats = loadedUserCats.filter(cat => cat && cat.id);
+      userCats = loadedUserCats.map(cat => normalizeCat(cat, buildSpriteLookup(window.breedItems)));
       console.log("📦 Loaded", userCats.length, "valid user cats");
     }
 

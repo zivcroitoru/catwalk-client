@@ -117,32 +117,43 @@ function getPlayerIdFromToken() {
 }
 
 // ───────────── Cats Access ─────────────
-export async function getPlayerCats() {
-  const cats = await apiGetCats();
-  
-  // Normalize cats from server to match our structure
-  return cats.map(cat => ({
-    // Core fields
-    id: cat.cat_id || cat.id,
-    template: cat.template || `${cat.breed}-${cat.variant}-${cat.palette}`,
-    name: cat.name || 'Unnamed Cat',
-    birthdate: cat.birthdate,
-    description: cat.description || '',
-
-    // Handle sprite_url - ensure it's properly formatted with APP_URL
-    sprite_url: cat.sprite_url ? (
-      cat.sprite_url.startsWith('http') ? cat.sprite_url :
-      `${APP_URL}/${cat.sprite_url.startsWith('/') ? cat.sprite_url.substring(1) : cat.sprite_url}`
-    ) : null,
-
-    // Client-side UI state (initialize empty)
-    selected: false,
-    equipment: { hat: null, top: null, eyes: null, accessories: [] }
-  }));
+// helpers -----------------------------------------------------------
+export function buildSpriteLookup(breedItems = {}) {
+  return Object.values(breedItems)          // { breed: [variants] } → array-of-arrays
+    .flat()                                 // flatten
+    .reduce((acc, v) => {
+      const key = v.id                     // preferred
+        ?? `${v.breed}-${v.variant}-${v.palette}`; // fallback
+      acc[key] = v.sprite_url;
+      return acc;
+    }, {});
 }
 
-// Log sprite_url for debugging
-console.log("🐾 Debugging sprite_url:", cats.map(cat => cat.sprite_url));
+// Cache sprite lookup to avoid recomputation
+let cachedSpriteLookup = null;
+
+function getSpriteLookup() {
+  if (!cachedSpriteLookup) {
+    cachedSpriteLookup = buildSpriteLookup(window.breedItems);
+  }
+  return cachedSpriteLookup;
+}
+
+// main --------------------------------------------------------------
+export async function getPlayerCats() {
+  try {
+    const [rawCats, spriteByTemplate] = await Promise.all([
+      apiGetCats(),
+      Promise.resolve(getSpriteLookup())
+    ]);
+
+    const cats = rawCats.map(cat => normalizeCat(cat, spriteByTemplate));
+    return cats; // Let the caller decide to update window.userCats
+  } catch (error) {
+    console.error("Failed to fetch or normalize cats:", error);
+    throw error;
+  }
+}
 
 export async function updateCat(catId, updates) {
   const token = localStorage.getItem('token');
@@ -175,7 +186,7 @@ export async function addCatToUser(cat) {
   if (!playerId) throw new Error('No player ID found in token');
 
   // Ensure we have all required template fields
-  if (!cat.breed || !cat.variant || !cat.palette) {
+  if (!cat.breed || !cat.variant || !cat.palette || !cat.sprite_url) {
     throw new Error('Missing required template fields (breed, variant, palette)');
   }
 
@@ -218,4 +229,20 @@ export async function updateCatCountUI() {
 export function updateUI() {
   updateCoinCount();
   updateCatCountUI();
+}
+
+// Utility to normalize cat structure
+export function normalizeCat(cat, spriteByTemplate) {
+  const template = cat.template ?? `${cat.breed}-${cat.variant}-${cat.palette}`;
+
+  return {
+    id: cat.cat_id ?? cat.id,
+    template,
+    name: cat.name ?? 'Unnamed Cat',
+    birthdate: cat.birthdate,
+    description: cat.description ?? '',
+    sprite_url: spriteByTemplate[template] ?? null,
+    selected: false,
+    equipment: { hat: null, top: null, eyes: null, accessories: [] },
+  };
 }
