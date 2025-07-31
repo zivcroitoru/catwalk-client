@@ -71,7 +71,7 @@ function showAddCatConfirmation(breed, variantData) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 31px;
     font-size: 14px;
   ">
     <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
