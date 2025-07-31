@@ -115,14 +115,13 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translate(-50%, -90%) scale(0.8); /* moved down */
+  transform: translate(-50%, -95%) scale(0.8); /* moved down */
   width: 10.42vw;
   height: auto;
   object-fit: contain;
   pointer-events: none;
   z-index: 2;
 }
-
 
 /* ───────────── Layout: Carousel ───────────── */
 .carousel-wrapper {
