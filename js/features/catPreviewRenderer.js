@@ -30,6 +30,11 @@ export function updateCatPreview(cat, container = document) {
     el.onerror = () => {
       console.warn(`⚠️ Failed to load image: ${path}`);
       el.style.display = "none";
+      // Try fallback image if available
+      if (cls === 'carouselBase') {
+        el.src = '../assets/cats/placeholder.png';
+        el.style.display = "block";
+      }
     };
     
     el.src = finalPath;
