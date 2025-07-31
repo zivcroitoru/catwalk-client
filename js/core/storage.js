@@ -76,7 +76,6 @@ async function apiGetCats() {
   const data = await res.json();
   console.log('📦 Received cats data:', data);
 
-  // Validate the data structure
   if (!Array.isArray(data)) {
     console.error('Invalid cats data received:', data);
     throw new Error('Invalid cats data format');
@@ -84,12 +83,13 @@ async function apiGetCats() {
 
   return data;
 }
+
 async function apiUpdateCat(catId, updates) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
 
   const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
-    method: 'PATCH', // Corrected to use PATCH
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -104,6 +104,7 @@ async function apiUpdateCat(catId, updates) {
 
   return res.json();
 }
+
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
   if (!force && itemCache) return itemCache;
@@ -111,7 +112,6 @@ export async function loadPlayerItems(force = false) {
   return itemCache;
 }
 
-// 🛍️ Unlock/purchase a new item by template ID
 export async function unlockPlayerItem(template) {
   const result = await apiPatchItem(template);
   await loadPlayerItems(true);
@@ -136,16 +136,14 @@ function getPlayerIdFromToken() {
 }
 
 // ───────────── Cats Access ─────────────
-// helpers -----------------------------------------------------------
 export function buildSpriteLookup(breedItems = {}) {
   return Object.values(breedItems).flat().reduce((acc, v) => {
-    const key = v.id ?? v.template;   // reliable fallback
+    const key = v.id ?? v.template;
     acc[key] = v.sprite_url;
     return acc;
   }, {});
 }
 
-// Cache sprite lookup to avoid recomputation
 let cachedSpriteLookup = null;
 export function resetSpriteLookup() { cachedSpriteLookup = null; }
 
@@ -161,25 +159,25 @@ function getSpriteLookup() {
   return cachedSpriteLookup;
 }
 
-// main --------------------------------------------------------------
 export async function getPlayerCats() {
   const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
   const cats = raw.map(c => normalizeCat(c, sprites));
-  window.userCats = cats;    // keep everyone happy
+  window.userCats = cats;
   return cats;
 }
 
 export async function updateCat(catId, updates) {
-  try {
-    // Call the corrected API method
-    const updatedCat = await apiUpdateCat(catId, updates);
+  const allowedFields = ['name', 'description', 'template'];
+  const safeUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([key]) => allowedFields.includes(key))
+  );
 
-    // Update local state
+  try {
+    const updatedCat = await apiUpdateCat(catId, safeUpdates);
     const idx = window.userCats.findIndex(c => c.id === catId);
     if (idx !== -1) {
       window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };
     }
-
     return updatedCat;
   } catch (error) {
     console.error('Error updating cat:', error);
@@ -192,7 +190,6 @@ export async function addCatToUser(cat) {
   const playerId = getPlayerIdFromToken();
   if (!playerId) throw new Error('No player ID found in token');
 
-  // Ensure we have all required template fields
   if (!cat.breed || !cat.variant || !cat.palette || !cat.sprite_url) {
     throw new Error('Missing required template fields (breed, variant, palette)');
   }
@@ -238,7 +235,6 @@ export function updateUI() {
   updateCatCountUI();
 }
 
-// Utility to normalize cat structure
 export function normalizeCat(cat, spriteByTemplate) {
   const template = cat.template ?? `${cat.breed}-${cat.variant}-${cat.palette}`;
 
@@ -248,7 +244,7 @@ export function normalizeCat(cat, spriteByTemplate) {
     name: cat.name ?? 'Unnamed Cat',
     birthdate: cat.birthdate,
     description: cat.description ?? '',
-    sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64', // Fallback to placeholder
+    sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
     selected: false,
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
