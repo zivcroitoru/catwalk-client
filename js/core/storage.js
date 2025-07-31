@@ -2,7 +2,6 @@
   storage.js – DB-backed player inventory & cats
 -----------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
-import { apiUpdateCat } from './api.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/player_items`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
@@ -85,7 +84,26 @@ async function apiGetCats() {
 
   return data;
 }
+async function apiUpdateCat(catId, updates) {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No auth token');
 
+  const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
+    method: 'PATCH', // Corrected to use PATCH
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(updates)
+  });
+
+  if (!res.ok) {
+    console.error('Failed to update cat:', res.status, res.statusText);
+    throw new Error('Failed to update cat');
+  }
+
+  return res.json();
+}
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
   if (!force && itemCache) return itemCache;
