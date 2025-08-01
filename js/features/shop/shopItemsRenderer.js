@@ -71,9 +71,19 @@ export async function renderShopItems(activeCategory) {
       await updateCoinCount();
 
 if (selectedCat) {
-  if (!selectedCat.equipment) selectedCat.equipment = {}; // 👈 ensure equipment exists
-  selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
+  if (!selectedCat.equipment) {
+    console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
+    selectedCat.equipment = {};
+  }
+
+  const newValue = result === 'equipped' ? id : null;
+  console.log(`🎯 Updating equipment slot '${activeCategory}' to:`, newValue);
+
+  selectedCat.equipment[activeCategory] = newValue;
+
   await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+
+  console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
 }
 
       toastEquipResult(name, result);
