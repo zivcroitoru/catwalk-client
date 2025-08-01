@@ -5,6 +5,7 @@ import { APP_URL } from './config.js';
 
 const PLAYER_ITEMS_API = `${APP_URL}/api/playerItems`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
+const CAT_ITEMS_API = `${APP_URL}/api/cat_items`;
 
 let itemCache = null;
 
@@ -52,13 +53,8 @@ async function apiPatchItem(template) {
 
 async function apiGetCats() {
   const token = localStorage.getItem('token');
-  if (!token) {
-    console.error('No auth token found');
-    window.location.href = 'login.html';
-    throw new Error('No auth token');
-  }
+  if (!token) throw new Error('No auth token');
 
-  console.log('🔄 Fetching cats from API...');
   const res = await fetch(PLAYER_CATS_API, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
@@ -69,18 +65,11 @@ async function apiGetCats() {
       window.location.href = 'login.html';
       throw new Error('Auth token expired');
     }
-    console.error('Failed to fetch cats:', res.status, res.statusText);
     throw new Error('GET /cats failed');
   }
 
   const data = await res.json();
-  console.log('📦 Received cats data:', data);
-
-  if (!Array.isArray(data)) {
-    console.error('Invalid cats data received:', data);
-    throw new Error('Invalid cats data format');
-  }
-
+  if (!Array.isArray(data)) throw new Error('Invalid cats data format');
   return data;
 }
 
@@ -88,7 +77,7 @@ async function apiUpdateCat(catId, updates) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
 
-  const res = await fetch(`${APP_URL}/api/cats/${catId}`, {
+  const res = await fetch(`${PLAYER_CATS_API}/${catId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -105,41 +94,50 @@ async function apiUpdateCat(catId, updates) {
   return res.json();
 }
 
+async function updateCatItems(catId, equipment) {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No auth token');
+
+  const res = await fetch(`${CAT_ITEMS_API}/${catId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ equipment })
+  });
+
+  if (!res.ok) {
+    console.error('Failed to update cat_items:', res.status, res.statusText);
+    throw new Error('Failed to update cat_items');
+  }
+
+  return res.json();
+}
+
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
-  if (!force && itemCache) {
-    console.log('🪵 Using cached player items');
-    return itemCache;
-  }
-  console.log('🪵 Fetching fresh player items from API...');
-itemCache = await apiGetItems();
-itemCache.ownedItems = itemCache.items?.map(i => i.template) || [];
-console.log('🪵 Fetched items:', itemCache);
-return itemCache;
+  if (!force && itemCache) return itemCache;
 
+  itemCache = await apiGetItems();
+  itemCache.ownedItems = itemCache.items?.map(i => i.template) || [];
+  return itemCache;
 }
 
 export async function unlockPlayerItem(template) {
-  console.log('🔓 Unlocking item:', template);
-  const result = await apiPatchItem(template);
-  console.log('✅ Unlock result:', result);
+  await apiPatchItem(template);
   await loadPlayerItems(true);
   updateUI();
-  return result.item;
 }
 
-// ───────────── Player ID from JWT ─────────────
+// ───────────── JWT Helpers ─────────────
 function getPlayerIdFromToken() {
   const token = localStorage.getItem('token');
   if (!token) return null;
 
-  const payload = token.split('.')[1];
-  if (!payload) return null;
-
   try {
-    return JSON.parse(atob(payload)).id;
-  } catch (e) {
-    console.error('Failed to decode JWT token:', e);
+    return JSON.parse(atob(token.split('.')[1])).id;
+  } catch {
     return null;
   }
 }
@@ -160,44 +158,30 @@ export function resetSpriteLookup() {
 
 function getSpriteLookup() {
   if (!cachedSpriteLookup) {
-    if (!window.breedItems || Object.keys(window.breedItems).length === 0) {
-      console.warn("⚠️ window.breedItems is empty or undefined in getSpriteLookup");
-    } else {
-      console.log("✅ window.breedItems in getSpriteLookup:", window.breedItems);
-    }
-    cachedSpriteLookup = buildSpriteLookup(window.breedItems);
+    cachedSpriteLookup = buildSpriteLookup(window.breedItems || {});
   }
   return cachedSpriteLookup;
 }
 
 export async function getPlayerCats() {
-  console.log('📥 getPlayerCats() start...');
   const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
   const cats = raw.map(c => normalizeCat(c, sprites));
-  console.log('✅ Normalized cats:', cats);
   window.userCats = cats;
   return cats;
 }
 
 export async function updateCat(catId, updates) {
-  console.log(`✏️ Updating cat ${catId} with:`, updates);
   const allowedFields = ['name', 'description', 'template'];
   const safeUpdates = Object.fromEntries(
     Object.entries(updates).filter(([key]) => allowedFields.includes(key))
   );
 
-  try {
-    const updatedCat = await apiUpdateCat(catId, safeUpdates);
-    const idx = window.userCats.findIndex(c => c.id === catId);
-    if (idx !== -1) {
-      window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };
-      console.log(`✅ Cat ${catId} updated in local cache`);
-    }
-    return updatedCat;
-  } catch (error) {
-    console.error('❌ Error updating cat:', error);
-    throw error;
+  const updatedCat = await apiUpdateCat(catId, safeUpdates);
+  const idx = window.userCats.findIndex(c => c.id === catId);
+  if (idx !== -1) {
+    window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };
   }
+  return updatedCat;
 }
 
 export async function deleteCat(catId) {
@@ -207,25 +191,16 @@ export async function deleteCat(catId) {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
-  if (!res.ok) {
-    console.error('❌ Failed to delete cat:', res.status, res.statusText);
-    throw new Error('Failed to delete cat');
-  }
-
+  if (!res.ok) throw new Error('Failed to delete cat');
   return res.json();
 }
 
 export async function addCatToUser(cat) {
-  console.log('➕ Adding cat:', cat);
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
-  if (!playerId) throw new Error('No player ID found in token');
+  if (!playerId) throw new Error('No player ID found');
 
-  if (!cat.breed || !cat.variant || !cat.palette || !cat.sprite_url) {
-    throw new Error('Missing required template fields (breed, variant, palette)');
-  }
-
-  const res = await fetch(`${APP_URL}/api/cats`, {
+  const res = await fetch(`${PLAYER_CATS_API}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -241,16 +216,13 @@ export async function addCatToUser(cat) {
   });
 
   if (!res.ok) throw new Error('Failed to add cat');
-
   const result = await res.json();
-  console.log('✅ New cat added:', result.cat);
-
   await loadPlayerItems(true);
   updateUI();
   return result.cat;
 }
 
-// ───────────── UI Updates ─────────────
+// ───────────── UI Update Helpers ─────────────
 export async function updateCoinCount() {
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
@@ -260,61 +232,30 @@ export async function updateCoinCount() {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
-  if (!res.ok) {
-    console.error('Failed to fetch player data for coin count:', res.statusText);
-    return;
-  }
+  if (!res.ok) return;
 
   const { coins } = await res.json();
   const el = document.querySelector('.coin-count');
-  if (el) {
-    el.textContent = coins;
-    console.log('🪙 Coin count updated:', coins);
-  } else {
-    console.warn('⚠️ .coin-count element not found');
-  }
+  if (el) el.textContent = coins;
 }
 
 export async function updateUI() {
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
-  if (!token || !playerId) {
-    console.warn('⚠️ Missing token or player ID');
-    return;
-  }
+  if (!token || !playerId) return;
 
-  try {
-    console.log('🔄 Fetching player data for UI update...');
-    const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+  const res = await fetch(`${APP_URL}/api/players/${playerId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
 
-    if (!res.ok) {
-      console.error('❌ Failed to fetch player data:', res.statusText);
-      return;
-    }
+  if (!res.ok) return;
 
-    const { coins, cat_count } = await res.json();
-    console.log('✅ Player data fetched:', { coins, cat_count });
+  const { coins, cat_count } = await res.json();
+  const coinEl = document.querySelector('.coin-count');
+  if (coinEl) coinEl.textContent = coins;
 
-    const coinEl = document.querySelector('.coin-count');
-    if (coinEl) {
-      coinEl.textContent = coins;
-      console.log('🪙 Coin count updated:', coins);
-    } else {
-      console.warn('⚠️ .coin-count element not found');
-    }
-
-    const catCountEl = document.getElementById('cat-count');
-    if (catCountEl) {
-      catCountEl.textContent = `Inventory: ${cat_count}/25`;
-      console.log('🐱 Cat count updated:', cat_count);
-    } else {
-      console.warn('⚠️ #cat-count element not found');
-    }
-  } catch (err) {
-    console.error('Error updating UI:', err);
-  }
+  const catCountEl = document.getElementById('cat-count');
+  if (catCountEl) catCountEl.textContent = `Inventory: ${cat_count}/25`;
 }
 
 export function normalizeCat(cat, spriteByTemplate) {
@@ -334,3 +275,8 @@ export function normalizeCat(cat, spriteByTemplate) {
     equipment: { hat: null, top: null, eyes: null, accessories: [] },
   };
 }
+
+// ───────────── Export Everything ─────────────
+export {
+  updateCatItems
+};
