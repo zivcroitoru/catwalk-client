@@ -70,11 +70,11 @@ export async function renderShopItems(activeCategory) {
       const updatedItems = await loadPlayerItems(true); // force-refresh
       await updateCoinCount();
 
-      if (selectedCat) {
-        selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
-        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
-        console.log(`🐱 Updated cat equipment for ${selectedCat.name}:`, selectedCat.equipment);
-      }
+if (selectedCat) {
+  if (!selectedCat.equipment) selectedCat.equipment = {}; // 👈 ensure equipment exists
+  selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
+  await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+}
 
       toastEquipResult(name, result);
       renderShopItems(activeCategory); // refresh UI
