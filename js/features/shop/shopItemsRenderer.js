@@ -23,6 +23,7 @@ export async function renderShopItems(activeCategory) {
   }
 
   const playerItems = await loadPlayerItems(true); // force refresh
+  console.log('📦 ownedItems:', playerItems.ownedItems);
   const ownedSet    = new Set(playerItems.ownedItems || []);
   const selectedCat = window.selectedCat;
   const equipped    = selectedCat?.equipment?.[activeCategory] || null;
