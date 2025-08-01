@@ -12,10 +12,11 @@ const previewKeyMap = {
 };
 
 export function getItemState(id, category, playerItems) {
-  const owned    = playerItems.ownedItems?.includes(id);
-  const equipped = window.selectedCat?.equipment?.[category];
-  if (!owned)           return 'buy';
-  if (equipped === id)  return 'unequip';
+  const equippedKey = previewKeyMap[category];
+  const owned       = playerItems.ownedItems?.includes(id);
+  const equipped    = window.selectedCat?.equipment?.[equippedKey];
+  if (!owned)            return 'buy';
+  if (equipped === id)   return 'unequip';
   return 'equip';
 }
 
@@ -28,26 +29,34 @@ export async function handleShopClick(item, playerItems) {
   if (state === 'buy') {
     if (playerItems.coins < item.price) return 'not_enough';
 
-    await unlockPlayerItem(item.template); // ✅ corrected function
+    await unlockPlayerItem(item.template);
 
     if (!Array.isArray(playerItems.ownedItems)) {
       playerItems.ownedItems = [];
     }
 
-const updated = await loadPlayerItems(true); // 🔄 force refresh from API
-playerItems.ownedItems = updated.ownedItems;
-playerItems.coins = updated.coins;
+    const updated = await loadPlayerItems(true);
+    playerItems.ownedItems = updated.ownedItems;
+    playerItems.coins = updated.coins;
 
     return 'bought';
   }
 
   // ───── equip / unequip ─────
   if (!window.selectedCat.equipment) {
-    window.selectedCat.equipment = { hat: null, top: null, eyes: null, accessories: [] };
+    console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
+    window.selectedCat.equipment = {
+      hat: null,
+      top: null,
+      eyes: null,
+      accessories: []
+    };
   }
 
+  // Equip
   if (state === 'equip') {
     playerItems.equippedItems[item.category] = item.id;
+
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [item.template];
     } else {
@@ -55,12 +64,14 @@ playerItems.coins = updated.coins;
     }
   }
 
+  // Unequip
   if (state === 'unequip') {
     delete playerItems.equippedItems[item.category];
+
     if (previewKey === 'accessories') {
       window.selectedCat.equipment.accessories = [];
     } else {
-      delete window.selectedCat.equipment[previewKey];
+      window.selectedCat.equipment[previewKey] = null;
     }
   }
 
@@ -76,20 +87,20 @@ playerItems.coins = updated.coins;
 }
 
 async function syncCatEquipment() {
+  const eq = window.selectedCat.equipment || {};
+
   const equipment = {
-    hat: window.selectedCat.equipment?.hat || null,
-    top: window.selectedCat.equipment?.top || null,
-    eyes: window.selectedCat.equipment?.eyes || null,
-    accessories: window.selectedCat.equipment?.accessories || []
+    hat: eq.hat || null,
+    top: eq.top || null,
+    eyes: eq.eyes || null,
+    accessories: Array.isArray(eq.accessories) ? eq.accessories : []
   };
 
   await updateCat(window.selectedCat.id, { equipment });
 
-  const idx = window.userCats.findIndex(
-    (c) => c.id === window.selectedCat.id
-  );
+  const idx = window.userCats.findIndex((c) => c.id === window.selectedCat.id);
   if (idx !== -1) {
-    window.userCats[idx].equipment = structuredClone(window.selectedCat.equipment);
+    window.userCats[idx].equipment = structuredClone(equipment);
   }
 
   console.log('💾 Equipment synced to DB & cache');
