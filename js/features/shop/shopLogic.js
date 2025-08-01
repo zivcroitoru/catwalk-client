@@ -2,7 +2,7 @@
   shopLogic.js – DB version, no localStorage
 -----------------------------------------------------------------------------*/
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadPlayerItems, unlockPlayerItem, updateCat } from '../../core/storage.js';
+import { loadPlayerItems, unlockPlayerItem, updateCatItems } from '../../core/storage.js';
 
 const previewKeyMap = {
   hats: 'hat',
@@ -80,7 +80,7 @@ export async function handleShopClick(item, playerItems) {
     }
   }
 
-  await syncCatEquipment();
+  await updateCatItems(window.selectedCat.id, window.selectedCat.equipment);
   updateCatPreview(window.selectedCat);
 
   const thumb = document.querySelector(
@@ -89,29 +89,4 @@ export async function handleShopClick(item, playerItems) {
   if (thumb) updateCatPreview(window.selectedCat, thumb);
 
   return state === 'equip' ? 'equipped' : 'unequipped';
-}
-
-async function syncCatEquipment() {
-  const eq = window.selectedCat.equipment || {};
-
-  const equipment = {
-    hat: eq.hat ?? null,
-    top: eq.top ?? null,
-    eyes: eq.eyes ?? null,
-    accessories: Array.isArray(eq.accessories) ? eq.accessories : []
-  };
-
-  console.log(`✏️ Updating cat ${window.selectedCat.id} with:`, { equipment });
-
-  try {
-    await updateCat(window.selectedCat.id, { equipment });
-    const idx = window.userCats.findIndex((c) => c.id === window.selectedCat.id);
-    if (idx !== -1) {
-      window.userCats[idx].equipment = structuredClone(equipment);
-    }
-    console.log('💾 Equipment synced to DB & cache');
-  } catch (err) {
-    console.error('❌ Error updating cat:', err);
-    throw new Error('Failed to update cat');
-  }
 }
