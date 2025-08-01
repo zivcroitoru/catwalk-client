@@ -53,16 +53,21 @@ export async function handleShopClick(item, playerItems) {
     };
   }
 
-  // Equip
-  if (state === 'equip') {
-    playerItems.equippedItems[item.category] = item.id;
-
-    if (previewKey === 'accessories') {
-      window.selectedCat.equipment.accessories = [item.template];
-    } else {
-      window.selectedCat.equipment[previewKey] = item.template;
-    }
+// Equip
+if (state === 'equip') {
+  if (!playerItems.equippedItems) {
+    playerItems.equippedItems = {};
   }
+
+  playerItems.equippedItems[item.category] = item.id;
+
+  if (previewKey === 'accessories') {
+    window.selectedCat.equipment.accessories = [item.template];
+  } else {
+    window.selectedCat.equipment[previewKey] = item.template;
+  }
+}
+
 
   // Unequip
   if (state === 'unequip') {
