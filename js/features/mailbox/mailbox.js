@@ -935,5 +935,5 @@ export async function refreshMailbox() {
 window.toggleMailbox = toggleMailbox;
 window.refreshMailbox = refreshMailbox;
 
-// Auto-initialize when module loads
-// initializeMailbox();
+// Auto-initialize when module loads (uncommented for REST API approach)
+initializeMailbox();
