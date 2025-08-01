@@ -5,6 +5,7 @@ import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
   updateCat,
+  updateCatItems,
   updateCoinCount
 } from '../../core/storage.js';
 import {
@@ -87,7 +88,7 @@ export async function renderShopItems(activeCategory) {
         console.log(`🎯 Updating equipment slot '${activeCategory}' to:`, newValue);
 
         selectedCat.equipment[activeCategory] = newValue;
-        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+        await updateCatItems(selectedCat.id,selectedCat.equipment );
         console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
       }
 
