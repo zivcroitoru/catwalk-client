@@ -67,8 +67,24 @@ function cacheElements() {
   contactView = document.getElementById('contactView');
   conversationView = document.querySelector('.conversation-view');
   
+  // Cache navigation buttons with debugging
+  const foundButtons = document.querySelectorAll('.mailbox-btn');
+  console.log('🔍 Found mailbox buttons:', foundButtons.length, foundButtons);
+
   // Cache navigation buttons
   mailboxButtons = Array.from(document.querySelectorAll('.mailbox-btn'));
+
+    // Debug all elements
+  console.log('📬 Cached elements:', {
+    mailboxDisplay: !!mailboxDisplay,
+    contentArea: !!contentArea,
+    messagesList: !!messagesList,
+    messageView: !!messageView,
+    contactView: !!contactView,
+    conversationView: !!conversationView,
+    mailboxButtons: mailboxButtons.length
+  });
+
 }
 
 /**
