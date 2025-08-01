@@ -52,13 +52,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   console.log('✅ Systems initialized');
 
-  /* ───────────── CAT FACT BUTTON (replaces speaker) ───────────── */
+  /* ───────────── CAT FACT BUTTON (with debug logs) ───────────── */
   const catFactBtn = document.getElementById('catFactToggle');
   if (catFactBtn) {
     catFactBtn.addEventListener('click', async () => {
+      console.log('🐞 Cat fact button clicked!');
       try {
-        const res   = await fetch('https://catfact.ninja/fact');
+        console.log('🐞 Fetching cat fact...');
+        const res = await fetch('https://catfact.ninja/fact');
+        console.log('🐞 API response:', res);
         const { fact } = await res.json();
+        console.log('🐞 Cat fact loaded:', fact);
         Toastify({
           text: `🐾 ${fact}`,
           duration: 5000,
@@ -72,7 +76,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             border: '2px solid #000'
           }
         }).showToast();
-      } catch {
+      } catch (error) {
+        console.error('🐞 Error fetching cat fact:', error);
         Toastify({
           text: 'Failed to load cat fact 😿',
           duration: 3000,
@@ -88,6 +93,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }).showToast();
       }
     });
+  } else {
+    console.warn('⚠️ Cat fact button (#catFactToggle) not found!');
   }
 });
 
