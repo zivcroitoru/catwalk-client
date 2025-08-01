@@ -53,21 +53,21 @@ export async function handleShopClick(item, playerItems) {
     };
   }
 
-// Equip
-if (state === 'equip') {
   if (!playerItems.equippedItems) {
+    console.warn('⚠️ equippedItems was undefined. Initializing...');
     playerItems.equippedItems = {};
   }
 
-  playerItems.equippedItems[item.category] = item.id;
+  // Equip
+  if (state === 'equip') {
+    playerItems.equippedItems[item.category] = item.id;
 
-  if (previewKey === 'accessories') {
-    window.selectedCat.equipment.accessories = [item.template];
-  } else {
-    window.selectedCat.equipment[previewKey] = item.template;
+    if (previewKey === 'accessories') {
+      window.selectedCat.equipment.accessories = [item.template];
+    } else {
+      window.selectedCat.equipment[previewKey] = item.template;
+    }
   }
-}
-
 
   // Unequip
   if (state === 'unequip') {
@@ -95,18 +95,23 @@ async function syncCatEquipment() {
   const eq = window.selectedCat.equipment || {};
 
   const equipment = {
-    hat: eq.hat || null,
-    top: eq.top || null,
-    eyes: eq.eyes || null,
+    hat: eq.hat ?? null,
+    top: eq.top ?? null,
+    eyes: eq.eyes ?? null,
     accessories: Array.isArray(eq.accessories) ? eq.accessories : []
   };
 
-  await updateCat(window.selectedCat.id, { equipment });
+  console.log(`✏️ Updating cat ${window.selectedCat.id} with:`, { equipment });
 
-  const idx = window.userCats.findIndex((c) => c.id === window.selectedCat.id);
-  if (idx !== -1) {
-    window.userCats[idx].equipment = structuredClone(equipment);
+  try {
+    await updateCat(window.selectedCat.id, { equipment });
+    const idx = window.userCats.findIndex((c) => c.id === window.selectedCat.id);
+    if (idx !== -1) {
+      window.userCats[idx].equipment = structuredClone(equipment);
+    }
+    console.log('💾 Equipment synced to DB & cache');
+  } catch (err) {
+    console.error('❌ Error updating cat:', err);
+    throw new Error('Failed to update cat');
   }
-
-  console.log('💾 Equipment synced to DB & cache');
 }
