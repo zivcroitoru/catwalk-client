@@ -15,19 +15,25 @@ import {
 } from '../../core/toast.js';
 
 export async function renderShopItems(activeCategory) {
+  console.log(`🎨 Rendering shop items for category: ${activeCategory}`);
   const container = document.getElementById('shopItems');
-  if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) return;
+  if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) {
+    console.warn('⚠️ Missing shop items or container');
+    return;
+  }
 
-  const playerItems = await loadPlayerItems();
+  const playerItems = await loadPlayerItems(true); // force refresh
   const ownedSet    = new Set(playerItems.ownedItems || []);
   const selectedCat = window.selectedCat;
   const equipped    = selectedCat?.equipment?.[activeCategory] || null;
 
   container.innerHTML = '';
+
   window.shopItemsByCategory[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
-    const id = template; // 🔥 Use template as the actual ID
+    const id = template;
     const state = getItemState(id, activeCategory, playerItems);
     const isBuy = state === 'buy';
+    console.log(`🧾 Item: ${name} | ID: ${id} | State: ${state}`);
 
     const card = document.createElement('div');
     card.className = 'shop-card';
@@ -50,24 +56,27 @@ export async function renderShopItems(activeCategory) {
 
     clickTarget.onclick = async () => {
       const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
+      console.log(`🛍️ handleShopClick | ${state} | ${id}`);
 
       if (isBuy) {
         showBuyConfirmation(item, playerItems, activeCategory);
         return;
       }
 
-const result = await handleShopClick(item, playerItems);
-const updatedItems = await loadPlayerItems(true); // 👈 refreshes owned items
-await updateCoinCount();
+      const result = await handleShopClick(item, playerItems);
+      console.log(`✅ Equip result: ${result}`);
 
+      const updatedItems = await loadPlayerItems(true); // force-refresh
+      await updateCoinCount();
 
       if (selectedCat) {
         selectedCat.equipment[activeCategory] = result === 'equipped' ? id : null;
         await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+        console.log(`🐱 Updated cat equipment for ${selectedCat.name}:`, selectedCat.equipment);
       }
 
       toastEquipResult(name, result);
-      renderShopItems(activeCategory);
+      renderShopItems(activeCategory); // refresh UI
     };
 
     container.appendChild(card);
@@ -86,17 +95,24 @@ async function showBuyConfirmation(item, playerItems, activeCategory) {
   document.body.appendChild(box);
 
   box.querySelector('.yes-btn').onclick = async () => {
+    console.log(`🔓 Unlocking item: ${item.id}`);
     const result = await handleShopClick(item, playerItems);
     await updateCoinCount();
 
-    if (result === 'bought')           toastBought(item.name);
-    else if (result === 'not_enough') toastNotEnough();
+    if (result === 'bought') {
+      console.log(`✅ Unlock result: bought`);
+      toastBought(item.name);
+    } else if (result === 'not_enough') {
+      console.warn(`❌ Not enough coins`);
+      toastNotEnough();
+    }
 
     renderShopItems(activeCategory);
     box.remove();
   };
 
   box.querySelector('.no-btn').onclick = () => {
+    console.log('❌ Cancelled purchase');
     toastCancelled();
     box.remove();
   };
