@@ -89,50 +89,77 @@ function cacheElements() {
 
 /**
  * Setup all event listeners with defensive programming
+ * FIXED VERSION - Simplified approach without cloning
  */
 function setupEventListeners() {
   console.log('🔧 Setting up mailbox event listeners...');
+  
+  // Wait for DOM to be ready if needed
+  if (document.readyState === 'loading') {
+    console.log('🔧 DOM still loading, waiting...');
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(setupEventListeners, 100);
+    });
+    return;
+  }
   
   // Cache navigation buttons with retry logic
   mailboxButtons = Array.from(document.querySelectorAll('.mailbox-btn'));
   console.log(`🔧 Found ${mailboxButtons.length} mailbox buttons`);
   
   if (mailboxButtons.length === 0) {
-    console.warn('⚠️ No mailbox buttons found, retrying in 100ms...');
-    setTimeout(() => {
-      setupEventListeners();
-    }, 100);
+    console.warn('⚠️ No mailbox buttons found, retrying in 200ms...');
+    setTimeout(setupEventListeners, 200);
     return;
   }
   
-  // Tab navigation with detailed logging
+  // Tab navigation with simplified approach
   mailboxButtons.forEach((btn, index) => {
     const tab = btn.dataset.tab;
-    console.log(`🔧 Binding button ${index}: ${tab}`);
+    console.log(`🔧 Binding button ${index}: ${tab} (element:`, btn, `)`);
     
-    // Remove any existing listeners by cloning (prevents duplicate listeners)
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
+    // Remove any existing click listeners by replacing onclick
+    btn.onclick = null;
     
-    // Add click listener with error handling
-    newBtn.addEventListener('click', (e) => {
-      console.log('🔧 Tab clicked:', tab);
+    // Add click listener directly
+    const clickHandler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('🔧 Tab clicked:', tab, 'Button:', btn);
       try {
         handleTabSwitch(tab);
       } catch (error) {
         console.error('❌ Error in tab switch:', error);
       }
-    });
+    };
     
-    // Update our cached reference
-    mailboxButtons[index] = newBtn;
+    // Try multiple ways to ensure the listener is attached
+    btn.addEventListener('click', clickHandler);
+    btn.onclick = clickHandler;  // Fallback
+    
+    // Verify listener was attached
+    console.log(`✅ Listener attached to button ${index} (${tab})`);
   });
+  
+  // Test first button immediately
+  if (mailboxButtons.length > 0) {
+    console.log('🧪 Testing first button click handler...');
+    const testBtn = mailboxButtons[0];
+    // Simulate click to test
+    setTimeout(() => {
+      console.log('🧪 Simulating click on:', testBtn.dataset.tab);
+      testBtn.click();
+    }, 500);
+  }
   
   // Back button in message view
   const backBtn = document.getElementById('backToListBtn');
   if (backBtn) {
     console.log('🔧 Binding back button');
-    backBtn.addEventListener('click', () => showView('list'));
+    backBtn.onclick = () => {
+      console.log('🔧 Back button clicked');
+      showView('list');
+    };
   } else {
     console.warn('⚠️ Back button not found');
   }
@@ -141,7 +168,11 @@ function setupEventListeners() {
   const sendBtn = document.getElementById('sendBtn');
   if (sendBtn) {
     console.log('🔧 Binding send button');
-    sendBtn.addEventListener('click', handleSendMessage);
+    sendBtn.onclick = (e) => {
+      e.preventDefault();
+      console.log('🔧 Send button clicked');
+      handleSendMessage();
+    };
   } else {
     console.warn('⚠️ Send button not found');
   }
@@ -169,6 +200,7 @@ function setupEventListeners() {
   
   console.log('✅ All mailbox event listeners set up successfully');
 }
+
 
 /**
  * Connect to Socket.io server
@@ -302,39 +334,56 @@ function handleMailboxData(data) {
  * - SENT: Shows all tickets - player-created AND admin-replied (opened = white, closed = grey)
  * - CONTACT US: Create new ticket form
  */
+/**
+ * Handle tab switching with enhanced debugging
+ */
 function handleTabSwitch(tab) {
+  console.log('🎯 handleTabSwitch called with tab:', tab);
+  console.log('🎯 Previous tab:', currentTab, '→ New tab:', tab);
+  
   currentTab = tab;
   setActiveTab(tab);
   
   switch (tab) {
     case 'all':
+      console.log('🎯 Switching to ALL MESSAGES');
       showView('list');
       renderAllMessages(); // All broadcasts
       break;
     case 'unread':
+      console.log('🎯 Switching to UNREAD');
       showView('list');
       renderUnreadMessages(); // Unread broadcasts only
       break;
     case 'sent':
+      console.log('🎯 Switching to SENT');
       showView('list');
       renderSentMessages(); // All tickets (both directions)
       break;
     case 'contact':
+      console.log('🎯 Switching to CONTACT US');
       showView('contact');
       clearContactForm();
       break;
+    default:
+      console.warn('⚠️ Unknown tab:', tab);
   }
 }
 
 /**
- * Set active tab visual state
+ * Set active tab visual state with debugging
  */
 function setActiveTab(activeTab) {
-  mailboxButtons.forEach(btn => {
-    if (btn.dataset.tab === activeTab) {
+  console.log('🎨 setActiveTab called with:', activeTab);
+  
+  mailboxButtons.forEach((btn, index) => {
+    const btnTab = btn.dataset.tab;
+    if (btnTab === activeTab) {
       btn.classList.add('active');
+      console.log(`🎨 Button ${index} (${btnTab}) set to ACTIVE`);
     } else {
       btn.classList.remove('active');
+      console.log(`🎨 Button ${index} (${btnTab}) set to inactive`);
     }
   });
 }
