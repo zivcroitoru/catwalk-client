@@ -615,7 +615,8 @@ if (!token) {
 async function connectToFashionShow({ token, catId }) {
   try {
     // 🔐 Fetch user cats from server to get playerId
-    const res = await fetch('https://catwalk.onrender.com/api/cats', {
+const res = await fetch('https://catwalk-server-eu.onrender.com/api/cats', {
+
       headers: {
         Authorization: `Bearer ${token}`
       }
