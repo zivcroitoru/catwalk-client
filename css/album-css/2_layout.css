@@ -102,25 +102,17 @@
   margin-top: 6rem;
 }
 
-/* .ellipse-podium {
+.ellipse-podium {
   position: relative;
   width: fit-content;
   transform: translate(-200px, 300px) scale(5);
   margin: 0 auto;
-} */
-.ellipse-podium {
-  position: relative;
-  width: fit-content;
-  transform: scale(5);  /* Keep scaling */
-  margin: 0 auto;
-  top: -15vw;  /* Adjust this to position the cat correctly vertically */
 }
 
 #carouselCatWrapper {
   position: relative;
   width: 10.42vw;
   height: auto;
-  margin-top: 10vw; /* Moves the element down by 10% of the viewport height */
 }
 
 .cat-layer {
