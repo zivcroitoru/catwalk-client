@@ -121,18 +121,25 @@ async function connectSocket() {
       throw new Error('No authentication token');
     }
     
-    // Import Socket.io (assuming it's available globally or via CDN)
-    const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
-    
-    socket = io({
-       transports: ['websocket'],
+    // ✅ CORRECT: Use APP_URL directly with Socket.io
+    socket = io(APP_URL, {  // Use APP_URL directly
       auth: {
         token: token
       }
     });
+
+    // // Import Socket.io (assuming it's available globally or via CDN)
+    // const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
+    
+    // socket = io({
+    //   auth: {
+    //     token: token
+    //   }
+    // });
     
     // Connection events
     socket.on('connect', () => {
+      console.log('📬 Connected to mailbox server');
       loadMailboxData();
     });
     
