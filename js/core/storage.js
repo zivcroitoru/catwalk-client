@@ -171,12 +171,8 @@ export async function getPlayerCats() {
 }
 
 export async function updateCat(catId, updates) {
-  const allowedFields = ['name', 'description', 'template']; // ✅ no 'equipment'
-  const safeUpdates = Object.fromEntries(
-    Object.entries(updates).filter(([key]) => allowedFields.includes(key))
-  );
 
-  const updatedCat = await apiUpdateCat(catId, safeUpdates);
+  const updatedCat = await apiUpdateCat(catId, updates);
   const idx = window.userCats.findIndex(c => c.id === catId);
   if (idx !== -1) {
     window.userCats[idx] = { ...window.userCats[idx], ...updatedCat };

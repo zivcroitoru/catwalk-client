@@ -4,7 +4,6 @@
 import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
-  updateCat,
   updateCatItems,
   updateCoinCount
 } from '../../core/storage.js';
