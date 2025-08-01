@@ -120,6 +120,7 @@
   position: relative;
   width: 10.42vw;
   height: auto;
+  margin-top: 10vw; /* Moves the element down by 10% of the viewport height */
 }
 
 .cat-layer {
