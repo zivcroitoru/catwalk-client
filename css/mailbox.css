@@ -109,6 +109,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    pointer-events: auto !important;
+    cursor: pointer !important;
+
 }
 
 /* Remove border between adjacent buttons */
