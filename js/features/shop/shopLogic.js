@@ -80,7 +80,12 @@ export async function handleShopClick(item, playerItems) {
     }
   }
 
-  await updateCatItems(window.selectedCat.id, window.selectedCat.equipment);
+  // Send cleaned equipment to server
+  await updateCatItems(
+    window.selectedCat.id,
+    cleanEquipment(window.selectedCat.equipment)
+  );
+
   updateCatPreview(window.selectedCat);
 
   const thumb = document.querySelector(
@@ -89,4 +94,17 @@ export async function handleShopClick(item, playerItems) {
   if (thumb) updateCatPreview(window.selectedCat, thumb);
 
   return state === 'equip' ? 'equipped' : 'unequipped';
+}
+
+// ───────────── Helper: Filter invalid entries ─────────────
+function cleanEquipment(raw) {
+  const cleaned = {};
+
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value === 'string' && value.trim() !== '') {
+      cleaned[key] = value;
+    }
+  }
+
+  return cleaned;
 }
