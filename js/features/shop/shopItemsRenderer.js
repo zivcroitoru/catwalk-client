@@ -75,16 +75,19 @@ export async function renderShopItems(activeCategory) {
       if (selectedCat) {
         if (!selectedCat.equipment) {
           console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
-          selectedCat.equipment = {};
+          selectedCat.equipment = {
+            hats: null,
+            tops: null,
+            eyes: null,
+            accessories: []
+          };
         }
 
         const newValue = result === 'equipped' ? id : null;
         console.log(`🎯 Updating equipment slot '${activeCategory}' to:`, newValue);
 
         selectedCat.equipment[activeCategory] = newValue;
-
         await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
-
         console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
       }
 
