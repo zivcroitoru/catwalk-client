@@ -370,6 +370,15 @@ If real-time messages don’t work (not being received by other clients), we’l
 
 
 # Lets Analyze the console, check if we have problems.
+[vite] connecting...
+authentication.js:5 APP_URL: http://localhost:3001
+client:827 [vite] connected.
+cat_profile.js:8 Uncaught SyntaxError: The requested module '/js/core/storage.js' does not provide an export named 'loadplayer_items' (at cat_profile.js:8:10)Understand this error
+authentication.js:109 🔎 Checking auth status...
+authentication.js:117 👋 Welcome user: test3
+
+We don't really care right now about cats and items loading, our focus is on sockets, connections, and mailbox.
+
 
 # Problem - right now the mailbox tabs (buttons) don't respond
 Right now the mailbox tabs (buttons) don't respond, let's investigate. Are there certain files you need me to send over so we can find the route of the problem?

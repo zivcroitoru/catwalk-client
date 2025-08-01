@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
@@ -24,7 +23,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
-  <div class="welcome-message" id="welcomeMessage">Welcome, </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
 <div id="game">
   <!-- ✅ CAT AREA WRAPPER -->
@@ -61,12 +59,15 @@
         <img src="../assets/icons/coin.png" alt="Coins" />
         <span class="coin-count">500</span>
       </div>
-      <div class="topbar-icon" id="soundToggle" title="Sound" onclick="toggleSound()">
-        <img id="soundIcon" src="../assets/icons/speakerON.png" alt="Sound" />
-      </div>
+<div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
+  <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
+</div>
+
       <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
+        <div class="welcome-message" id="welcomeMessage">Welcome, </div>
+
     </div>
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
@@ -260,11 +261,27 @@
 </div>
 <!-- ✅ Add Cat Overlay -->
 <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-  <!-- Audio + Scripts -->
-<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <!-- ✅ Your modules LAST -->
 <script type="module" src="../js/main.js"></script>
+<div id="catFactContainer" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 360px;              /* wider container */
+  padding: 16px;             /* more padding for readability */
+  background: #fff2d9;
+  border: 3px solid #000;    /* thicker border */
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;           /* increased font size */
+  line-height: 1.4;          /* better line spacing */
+  z-index: 1000;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  user-select: none;
+">
+</div>
+
 </body>
 </html>

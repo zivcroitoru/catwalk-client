@@ -80,7 +80,11 @@
   max-height: 100%;
   object-fit: contain;
 }
-
+.topbar-icon#catFactToggle img {
+  width: 2.8vw;   /* larger width relative to parent */
+  height: auto;   /* preserve aspect ratio */
+  transform: scale(1.4); /* increase overall size (optional tweak) */
+}
 .coin-count {
   position: absolute;
   left: 2.92vw;
@@ -101,7 +105,7 @@
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: translate(-200px, 500px) scale(5);
+  transform: translate(-200px, 315px) scale(5); /* Moved 15px further down */
   margin: 0 auto;
 }
 

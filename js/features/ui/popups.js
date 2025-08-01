@@ -29,3 +29,23 @@ export function toggleUploadCat() {
 export function toggleDetails() {
   togglePopup("catProfileScroll", null, "block");
 }
+
+// ───────── Cat Fact Container Visibility ─────────
+const container = document.getElementById('catFactContainer');
+
+function updateCatFactVisibility() {
+  if (!container.textContent.trim()) {
+    container.style.display = 'none';
+  } else {
+    container.style.display = 'block';
+  }
+}
+
+// Call once on load
+updateCatFactVisibility();
+
+// Use this to update the cat fact text and toggle visibility:
+export function setCatFact(text) {
+  container.textContent = text;
+  updateCatFactVisibility();
+}

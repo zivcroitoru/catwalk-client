@@ -44,14 +44,59 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize mailbox (only once!)
   await initializeMailbox();
 
+  // “Add Cat” from empty-state shortcut
   document.getElementById('addCatBtnEmpty')
     ?.addEventListener('click', () =>
       document.getElementById('addCatBtn')?.click()
     );
 
   console.log('✅ Systems initialized');
-});
 
+  /* ───────────── CAT FACT BUTTON (with debug logs) ───────────── */
+  const catFactBtn = document.getElementById('catFactToggle');
+  if (catFactBtn) {
+    catFactBtn.addEventListener('click', async () => {
+      console.log('🐞 Cat fact button clicked!');
+      try {
+        console.log('🐞 Fetching cat fact...');
+        const res = await fetch('https://catfact.ninja/fact');
+        console.log('🐞 API response:', res);
+        const { fact } = await res.json();
+        console.log('🐞 Cat fact loaded:', fact);
+        Toastify({
+          text: `🐾 ${fact}`,
+          duration: 5000,
+          gravity: 'bottom',
+          position: 'right',
+          style: {
+            background: '#fff2d9',
+            color: '#000',
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: '10px',
+            border: '2px solid #000'
+          }
+        }).showToast();
+      } catch (error) {
+        console.error('🐞 Error fetching cat fact:', error);
+        Toastify({
+          text: 'Failed to load cat fact 😿',
+          duration: 3000,
+          gravity: 'bottom',
+          position: 'right',
+          style: {
+            background: '#fdd',
+            color: '#000',
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: '10px',
+            border: '2px solid #000'
+          }
+        }).showToast();
+      }
+    });
+  } else {
+    console.warn('⚠️ Cat fact button (#catFactToggle) not found!');
+  }
+});
 
 // ───────────── Expose to Window (for inline HTML handlers) ─────────────
 Object.assign(window, {
