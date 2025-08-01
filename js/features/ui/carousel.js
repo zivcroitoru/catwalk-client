@@ -164,7 +164,6 @@ export async function renderCarousel() {
   setDisplay("emptyState", !hasCats);
   scroll?.classList.toggle("hidden", !hasCats);
   podium?.classList.toggle("hidden", !hasCats);
-
   container.innerHTML = "";
 
   if (!hasCats) {
@@ -178,7 +177,13 @@ export async function renderCarousel() {
   }
 
   const spriteLookup = buildSpriteLookup(window.breedItems);
-  const normalizedCats = window.userCats.map(cat => normalizeCat(cat, spriteLookup));
+  console.log('🔍 spriteLookup:', spriteLookup);
+
+  const normalizedCats = window.userCats.map(cat => {
+    const normalized = normalizeCat(cat, spriteLookup);
+    console.log(`🧪 Normalized cat: ${normalized.name}`, normalized);
+    return normalized;
+  });
 
   const fragment = document.createDocumentFragment();
   normalizedCats.forEach((cat) => {
@@ -205,10 +210,24 @@ export async function renderCarousel() {
     const accLayer = card.querySelector(".carouselAccessory");
 
     if (baseLayer) baseLayer.src = cat.sprite_url;
-    if (hatLayer && cat.equipment?.hat) hatLayer.src = spriteLookup[cat.equipment.hat] || '';
-    if (topLayer && cat.equipment?.top) topLayer.src = spriteLookup[cat.equipment.top] || '';
-    if (eyesLayer && cat.equipment?.eyes) eyesLayer.src = spriteLookup[cat.equipment.eyes] || '';
+
+    if (hatLayer && cat.equipment?.hat) {
+      console.log(`🎩 Hat for ${cat.name}: ${cat.equipment.hat} -> ${spriteLookup[cat.equipment.hat]}`);
+      hatLayer.src = spriteLookup[cat.equipment.hat] || '';
+    }
+
+    if (topLayer && cat.equipment?.top) {
+      console.log(`👕 Top for ${cat.name}: ${cat.equipment.top} -> ${spriteLookup[cat.equipment.top]}`);
+      topLayer.src = spriteLookup[cat.equipment.top] || '';
+    }
+
+    if (eyesLayer && cat.equipment?.eyes) {
+      console.log(`👁️ Eyes for ${cat.name}: ${cat.equipment.eyes} -> ${spriteLookup[cat.equipment.eyes]}`);
+      eyesLayer.src = spriteLookup[cat.equipment.eyes] || '';
+    }
+
     if (accLayer && Array.isArray(cat.equipment?.accessories) && cat.equipment.accessories[0]) {
+      console.log(`🧢 Accessory for ${cat.name}: ${cat.equipment.accessories[0]} -> ${spriteLookup[cat.equipment.accessories[0]]}`);
       accLayer.src = spriteLookup[cat.equipment.accessories[0]] || '';
     }
 
@@ -238,7 +257,6 @@ export async function renderCarousel() {
 
   showCatProfile(firstCat);
   selectCatCard(document.querySelector(".cat-card"));
-
   updateInventoryCount();
 }
 
