@@ -23,6 +23,12 @@ let currentView = 'list'; // 'list', 'detail', 'contact', 'conversation'
 let currentTab = 'all'; // 'all', 'unread', 'sent', 'contact'
 let selectedMessage = null;
 let selectedTicket = null;
+let debugInfo = {
+  connectionStatus: 'disconnected',
+  dataReceived: false,
+  lastDataTimestamp: null,
+  errorCount: 0
+};
 
 // DOM Elements (cached for performance)
 let mailboxDisplay = null;
@@ -38,8 +44,11 @@ let conversationView = null;
  */
 export async function initializeMailbox() {
   try {
+    console.log('🚀 STARTING MAILBOX INITIALIZATION...');
+    
     // Get current user info
     currentUser = await getLoggedInUserInfo();
+    console.log('👤 Current user:', currentUser);
     
     // Cache DOM elements
     cacheElements();
