@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------
   mailbox.js (CLIENT) - Messages System for Cat Walk Game
-  Handles messaging via REST API calls to Neon database
+  Handles real-time messaging via Socket.io
 -----------------------------------------------------------------------------*/
 
 import { getLoggedInUserInfo } from '../../core/utils.js';
@@ -9,9 +9,9 @@ import { APP_URL } from '../../core/config.js';
 // Constants
 const MAX_MESSAGE_LENGTH = 250;
 const MAX_SUBJECT_LENGTH = 50;
-const REFRESH_INTERVAL = 30000; // 30 seconds for auto-refresh
 
 // Global state
+let socket = null;
 let currentUser = null;
 let mailboxData = {
   tickets: [],
@@ -23,7 +23,12 @@ let currentView = 'list'; // 'list', 'detail', 'contact', 'conversation'
 let currentTab = 'all'; // 'all', 'unread', 'sent', 'contact'
 let selectedMessage = null;
 let selectedTicket = null;
-let refreshInterval = null;
+let debugInfo = {
+  connectionStatus: 'disconnected',
+  dataReceived: false,
+  lastDataTimestamp: null,
+  errorCount: 0
+};
 
 // DOM Elements (cached for performance)
 let mailboxDisplay = null;
@@ -51,16 +56,12 @@ export async function initializeMailbox() {
     // Setup event listeners
     setupEventListeners();
     
-    // Load initial data
-    await loadMailboxData();
-    
-    // Setup auto-refresh
-    setupAutoRefresh();
+    // Connect to Socket.io
+    await connectSocket();
     
     console.log('📬 Mailbox initialized successfully');
   } catch (error) {
     console.error('❌ Failed to initialize mailbox:', error);
-    showError('Failed to initialize mailbox. Please refresh the page.');
   }
 }
 
@@ -82,7 +83,7 @@ function cacheElements() {
   // Cache navigation buttons
   mailboxButtons = Array.from(document.querySelectorAll('.mailbox-btn'));
 
-  // Debug all elements
+    // Debug all elements
   console.log('📬 Cached elements:', {
     mailboxDisplay: !!mailboxDisplay,
     contentArea: !!contentArea,
@@ -92,10 +93,12 @@ function cacheElements() {
     conversationView: !!conversationView,
     mailboxButtons: mailboxButtons.length
   });
+
 }
 
 /**
- * Setup all event listeners
+ * Setup all event listeners with defensive programming
+ * FIXED VERSION - Simplified approach without cloning
  */
 function setupEventListeners() {
   console.log('🔧 Setting up mailbox event listeners...');
@@ -119,19 +122,19 @@ function setupEventListeners() {
     return;
   }
   
-  // Tab navigation
+  // Tab navigation with simplified approach
   mailboxButtons.forEach((btn, index) => {
     const tab = btn.dataset.tab;
-    console.log(`🔧 Binding button ${index}: ${tab}`);
+    console.log(`🔧 Binding button ${index}: ${tab} (element:`, btn, `)`);
     
-    // Remove any existing click listeners
+    // Remove any existing click listeners by replacing onclick
     btn.onclick = null;
     
-    // Add click listener
+    // Add click listener directly
     const clickHandler = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('🔧 Tab clicked:', tab);
+      console.log('🔧 Tab clicked:', tab, 'Button:', btn);
       try {
         handleTabSwitch(tab);
       } catch (error) {
@@ -139,16 +142,19 @@ function setupEventListeners() {
       }
     };
     
+    // Try multiple ways to ensure the listener is attached
     btn.addEventListener('click', clickHandler);
     btn.onclick = clickHandler;  // Fallback
     
+    // Verify listener was attached
     console.log(`✅ Listener attached to button ${index} (${tab})`);
   });
   
-  // Test first button
+  // Test first button immediately
   if (mailboxButtons.length > 0) {
     console.log('🧪 Testing first button click handler...');
     const testBtn = mailboxButtons[0];
+    // Simulate click to test
     setTimeout(() => {
       console.log('🧪 Simulating click on:', testBtn.dataset.tab);
       testBtn.click();
@@ -163,6 +169,8 @@ function setupEventListeners() {
       console.log('🔧 Back button clicked');
       showView('list');
     };
+  } else {
+    console.warn('⚠️ Back button not found');
   }
   
   // Send button in contact view
@@ -174,6 +182,8 @@ function setupEventListeners() {
       console.log('🔧 Send button clicked');
       handleSendMessage();
     };
+  } else {
+    console.warn('⚠️ Send button not found');
   }
   
   // Contact form validation
@@ -200,57 +210,63 @@ function setupEventListeners() {
   console.log('✅ All mailbox event listeners set up successfully');
 }
 
-/**
- * Setup auto-refresh interval
- */
-function setupAutoRefresh() {
-  // Clear any existing interval
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-  }
-  
-  // Set up new interval
-  refreshInterval = setInterval(() => {
-    if (mailboxDisplay?.classList.contains('show')) {
-      console.log('🔄 Auto-refreshing mailbox data...');
-      loadMailboxData();
-    }
-  }, REFRESH_INTERVAL);
-}
 
 /**
- * Make API request with authentication
+ * Connect to Socket.io server
  */
-async function makeAPIRequest(endpoint, options = {}) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error('No authentication token');
+async function connectSocket() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token');
+    }
+    
+    // ✅ CORRECT: Use APP_URL directly with Socket.io
+    socket = io(APP_URL, {  // Use APP_URL directly
+      auth: {
+        token: token
+      }
+    });
+
+    // // Import Socket.io (assuming it's available globally or via CDN)
+    // const socketUrl = APP_URL.replace('http', 'wss'); // Convert to WebSocket URL
+    
+    // socket = io({
+    //   auth: {
+    //     token: token
+    //   }
+    // });
+    
+    // Connection events
+    socket.on('connect', () => {
+      console.log('📬 Connected to mailbox server');
+      loadMailboxData();
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('📬 Disconnected from mailbox server');
+    });
+    
+    socket.on('connect_error', (error) => {
+      console.error('📬 Connection error:', error);
+    });
+    
+    // Mailbox events
+    socket.on('connection_confirmed', () => {
+      console.log('📬 Connection confirmed by server');
+    });
+    
+    socket.on('mailbox_data', handleMailboxData);
+    socket.on('ticket_messages', handleTicketMessages);
+    socket.on('new_message', handleNewMessage);
+    socket.on('new_broadcast', handleNewBroadcast);
+    socket.on('message_status_update', handleMessageStatusUpdate);
+    socket.on('ticket_created', handleTicketCreated);
+    socket.on('error', handleSocketError);
+    
+  } catch (error) {
+    console.error('❌ Failed to connect to mailbox server:', error);
   }
-  
-  const defaultOptions = {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  };
-  
-  const finalOptions = {
-    ...defaultOptions,
-    ...options,
-    headers: {
-      ...defaultOptions.headers,
-      ...options.headers,
-    },
-  };
-  
-  const response = await fetch(`${APP_URL}${endpoint}`, finalOptions);
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-  }
-  
-  return response.json();
 }
 
 /**
@@ -271,13 +287,15 @@ export function toggleMailbox() {
 /**
  * Open mailbox
  */
-async function openMailbox() {
+function openMailbox() {
   if (!mailboxDisplay) return;
   
   mailboxDisplay.classList.add('show');
   
   // Load fresh data when opening
-  await loadMailboxData();
+  if (socket && socket.connected) {
+    loadMailboxData();
+  }
   
   // Reset to default view
   showView('list');
@@ -294,31 +312,39 @@ function closeMailbox() {
 }
 
 /**
- * Load mailbox data from database
+ * Load mailbox data from server
  */
-async function loadMailboxData() {
-  try {
-    console.log('📬 Loading mailbox data from database...');
-    
-    const data = await makeAPIRequest('/api/mailbox/data');
-    
-    mailboxData = data;
-    console.log('📬 Received mailbox data:', data);
-    
-    // Update notification indicators
-    updateNotificationIndicators();
-    
-    // Render current view
-    renderCurrentView();
-    
-  } catch (error) {
-    console.error('❌ Failed to load mailbox data:', error);
-    showError('Failed to load messages. Please try again.');
+function loadMailboxData() {
+  if (socket) {
+    socket.emit('get_mailbox_data');
   }
 }
 
 /**
+ * Handle mailbox data from server
+ */
+function handleMailboxData(data) {
+  mailboxData = data;
+  console.log('📬 Received mailbox data:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // Render current view
+  renderCurrentView();
+}
+
+/**
  * Handle tab switching
+ * 
+ * Tab Behavior:
+ * - ALL MESSAGES: Shows all broadcasts (read = white, unread = grey)
+ * - UNREAD: Shows only unread broadcasts (same coloring)
+ * - SENT: Shows all tickets - player-created AND admin-replied (opened = white, closed = grey)
+ * - CONTACT US: Create new ticket form
+ */
+/**
+ * Handle tab switching with enhanced debugging
  */
 function handleTabSwitch(tab) {
   console.log('🎯 handleTabSwitch called with tab:', tab);
@@ -331,17 +357,17 @@ function handleTabSwitch(tab) {
     case 'all':
       console.log('🎯 Switching to ALL MESSAGES');
       showView('list');
-      renderAllMessages();
+      renderAllMessages(); // All broadcasts
       break;
     case 'unread':
       console.log('🎯 Switching to UNREAD');
       showView('list');
-      renderUnreadMessages();
+      renderUnreadMessages(); // Unread broadcasts only
       break;
     case 'sent':
       console.log('🎯 Switching to SENT');
       showView('list');
-      renderSentMessages();
+      renderSentMessages(); // All tickets (both directions)
       break;
     case 'contact':
       console.log('🎯 Switching to CONTACT US');
@@ -354,7 +380,7 @@ function handleTabSwitch(tab) {
 }
 
 /**
- * Set active tab visual state
+ * Set active tab visual state with debugging
  */
 function setActiveTab(activeTab) {
   console.log('🎨 setActiveTab called with:', activeTab);
@@ -406,6 +432,7 @@ function showView(view) {
 function renderAllMessages() {
   if (!messagesList) return;
   
+  // ALL MESSAGES = All broadcasts only
   const allBroadcasts = mailboxData.broadcasts.map(b => ({ ...b, type: 'broadcast' }))
     .sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
   
@@ -418,6 +445,7 @@ function renderAllMessages() {
 function renderUnreadMessages() {
   if (!messagesList) return;
   
+  // UNREAD = Only unread broadcasts
   const unreadBroadcasts = mailboxData.broadcasts
     .filter(b => !b.is_read)
     .map(b => ({ ...b, type: 'broadcast' }))
@@ -432,6 +460,7 @@ function renderUnreadMessages() {
 function renderSentMessages() {
   if (!messagesList) return;
   
+  // SENT = All tickets (both player-created and admin-replied)
   const allTickets = mailboxData.tickets.map(t => ({ ...t, type: 'ticket' }))
     .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
   
@@ -445,20 +474,6 @@ function renderMessageList(messages) {
   if (!messagesList) return;
   
   messagesList.innerHTML = '';
-  
-  if (messages.length === 0) {
-    const emptyMessage = document.createElement('div');
-    emptyMessage.className = 'empty-message';
-    emptyMessage.textContent = 'No messages to display';
-    emptyMessage.style.cssText = `
-      text-align: center;
-      padding: 20px;
-      color: var(--color-text-secondary);
-      font-style: italic;
-    `;
-    messagesList.appendChild(emptyMessage);
-    return;
-  }
   
   messages.forEach(message => {
     const messageBox = createMessageBox(message);
@@ -477,10 +492,12 @@ function createMessageBox(message) {
   
   // Add read class based on message type and status
   if (message.type === 'broadcast') {
+    // For broadcasts: read = white background, unread = grey background
     if (message.is_read) {
       messageBox.classList.add('read');
     }
   } else if (message.type === 'ticket') {
+    // For tickets: opened = white background, closed = grey background
     if (message.status === 'closed') {
       messageBox.classList.add('read');
     }
@@ -502,6 +519,7 @@ function createMessageBox(message) {
     if (message.type === 'broadcast') {
       showBroadcastDetail(message);
     } else if (message.type === 'ticket') {
+      // All tickets (from SENT tab) should open conversation view
       showTicketDetail(message);
     }
   });
@@ -512,7 +530,7 @@ function createMessageBox(message) {
 /**
  * Show broadcast detail
  */
-async function showBroadcastDetail(broadcast) {
+function showBroadcastDetail(broadcast) {
   selectedMessage = broadcast;
   
   // Update message view elements
@@ -526,18 +544,7 @@ async function showBroadcastDetail(broadcast) {
   
   // Mark as read if not already
   if (!broadcast.is_read) {
-    try {
-      await makeAPIRequest(`/api/mailbox/broadcasts/${broadcast.id}/mark-read`, {
-        method: 'POST'
-      });
-      
-      // Update local state
-      broadcast.is_read = true;
-      updateNotificationIndicators();
-      
-    } catch (error) {
-      console.error('❌ Failed to mark broadcast as read:', error);
-    }
+    socket.emit('mark_broadcast', { broadcast_id: broadcast.id });
   }
   
   showView('detail');
@@ -546,20 +553,22 @@ async function showBroadcastDetail(broadcast) {
 /**
  * Show ticket detail (conversation view)
  */
-async function showTicketDetail(ticket) {
+function showTicketDetail(ticket) {
   selectedTicket = ticket;
   
-  try {
-    console.log('📬 Loading ticket messages for ticket:', ticket.id);
-    
-    const data = await makeAPIRequest(`/api/mailbox/tickets/${ticket.id}/messages`);
-    
-    renderConversationView(data.messages);
+  // Request ticket messages from server
+  socket.emit('get_ticket_messages', { ticket_id: ticket.id });
+}
+
+/**
+ * Handle ticket messages from server
+ */
+function handleTicketMessages(data) {
+  const { ticket_id, messages } = data;
+  
+  if (selectedTicket && selectedTicket.id === ticket_id) {
+    renderConversationView(messages);
     showView('conversation');
-    
-  } catch (error) {
-    console.error('❌ Failed to load ticket messages:', error);
-    showError('Failed to load conversation. Please try again.');
   }
 }
 
@@ -581,26 +590,13 @@ function renderConversationView(messages) {
   if (historyContainer) {
     historyContainer.innerHTML = '';
     
-    if (messages.length === 0) {
-      const emptyMessage = document.createElement('div');
-      emptyMessage.className = 'empty-conversation';
-      emptyMessage.textContent = 'No messages in this conversation yet.';
-      emptyMessage.style.cssText = `
-        text-align: center;
-        padding: 20px;
-        color: var(--color-text-secondary);
-        font-style: italic;
-      `;
-      historyContainer.appendChild(emptyMessage);
-    } else {
-      messages.forEach(message => {
-        const messageElement = createConversationMessage(message);
-        historyContainer.appendChild(messageElement);
-      });
-      
-      // Scroll to bottom
-      historyContainer.scrollTop = historyContainer.scrollHeight;
-    }
+    messages.forEach(message => {
+      const messageElement = createConversationMessage(message);
+      historyContainer.appendChild(messageElement);
+    });
+    
+    // Scroll to bottom
+    historyContainer.scrollTop = historyContainer.scrollHeight;
   }
   
   // Setup conversation input
@@ -637,31 +633,17 @@ function setupConversationInput() {
   const backBtn = conversationView?.querySelector('.back-btn');
   
   if (sendBtn) {
-    sendBtn.onclick = async () => {
+    sendBtn.onclick = () => {
       if (inputArea && inputArea.value.trim() && selectedTicket) {
         const message = inputArea.value.trim();
         
         if (message.length <= MAX_MESSAGE_LENGTH) {
-          try {
-            await makeAPIRequest(`/api/mailbox/tickets/${selectedTicket.id}/messages`, {
-              method: 'POST',
-              body: JSON.stringify({
-                body: message
-              })
-            });
-            
-            // Clear input
-            inputArea.value = '';
-            
-            // Reload conversation
-            showTicketDetail(selectedTicket);
-            
-            showSuccess('Message sent successfully!');
-            
-          } catch (error) {
-            console.error('❌ Failed to send message:', error);
-            showError('Failed to send message. Please try again.');
-          }
+          socket.emit('send_message', {
+            ticket_id: selectedTicket.id,
+            body: message
+          });
+          
+          inputArea.value = '';
         } else {
           showError('Message too long. Maximum 250 characters.');
         }
@@ -677,7 +659,7 @@ function setupConversationInput() {
 /**
  * Handle sending new message (Contact Us)
  */
-async function handleSendMessage() {
+function handleSendMessage() {
   const subjectInput = document.getElementById('contactSubjectInput');
   const messageInput = document.getElementById('contactInput');
   
@@ -707,39 +689,99 @@ async function handleSendMessage() {
     return;
   }
   
-  try {
-    console.log('📬 Creating new ticket...');
-    
-    const result = await makeAPIRequest('/api/mailbox/tickets', {
-      method: 'POST',
-      body: JSON.stringify({
-        subject: subject,
-        body: body
-      })
-    });
-    
-    console.log('📬 Ticket created:', result);
-    
-    // Clear form
-    clearContactForm();
-    
-    // Show success message
-    showSuccess('Message sent successfully!');
-    
-    // Switch to All Messages tab
-    handleTabSwitch('all');
-    
-    // Reload data
-    await loadMailboxData();
-    
-  } catch (error) {
-    console.error('❌ Failed to create ticket:', error);
-    showError('Failed to send message. Please try again.');
+  // Send to server
+  socket.emit('create_ticket', {
+    subject: subject,
+    body: body
+  });
+}
+
+/**
+ * Handle ticket created confirmation
+ */
+function handleTicketCreated(data) {
+  console.log('📬 Ticket created:', data);
+  
+  // Clear form
+  clearContactForm();
+  
+  // Show success message
+  showSuccess('Message sent successfully!');
+  
+  // Switch to All Messages tab
+  handleTabSwitch('all');
+  
+  // Reload data
+  loadMailboxData();
+}
+
+/**
+ * Handle new message notification
+ */
+function handleNewMessage(data) {
+  console.log('📬 New message received:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // If currently viewing this conversation, add the message
+  if (currentView === 'conversation' && selectedTicket && selectedTicket.id === data.ticket_id) {
+    const historyContainer = conversationView?.querySelector('.conversation-history');
+    if (historyContainer) {
+      const messageElement = createConversationMessage(data.message);
+      historyContainer.appendChild(messageElement);
+      historyContainer.scrollTop = historyContainer.scrollHeight;
+    }
   }
+  
+  // Show notification if mailbox is closed
+  if (!mailboxDisplay?.classList.contains('show')) {
+    showNotification('New message received!');
+  }
+  
+  // Reload data to update counts
+  loadMailboxData();
+}
+
+/**
+ * Handle new broadcast notification
+ */
+function handleNewBroadcast(data) {
+  console.log('📬 New broadcast received:', data);
+  
+  // Update notification indicators
+  updateNotificationIndicators();
+  
+  // Show notification if mailbox is closed
+  if (!mailboxDisplay?.classList.contains('show')) {
+    showNotification('New announcement received!');
+  }
+  
+  // Reload data
+  loadMailboxData();
+}
+
+/**
+ * Handle message status update
+ */
+function handleMessageStatusUpdate(data) {
+  console.log('📬 Message status updated:', data);
+  
+  // Update local state and UI if needed
+  updateNotificationIndicators();
+}
+
+/**
+ * Handle socket errors
+ */
+function handleSocketError(error) {
+  console.error('📬 Socket error:', error);
+  showError(error.message || 'Connection error occurred.');
 }
 
 /**
  * Update notification indicators
+ * Shows count of unread broadcasts + tickets with unread messages
  */
 function updateNotificationIndicators() {
   // Count unread broadcasts
@@ -915,25 +957,14 @@ export function requestNotificationPermission() {
  * Cleanup function for when user leaves the page
  */
 export function cleanup() {
-  // Clear auto-refresh interval
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
+  if (socket) {
+    socket.disconnect();
+    socket = null;
   }
 }
 
-/**
- * Manual refresh function for user-triggered refresh
- */
-export async function refreshMailbox() {
-  console.log('🔄 Manual mailbox refresh triggered');
-  await loadMailboxData();
-  showSuccess('Mailbox refreshed!');
-}
-
-// Make functions available globally for HTML onclick
+// Make toggleMailbox available globally for HTML onclick
 window.toggleMailbox = toggleMailbox;
-window.refreshMailbox = refreshMailbox;
 
 // Auto-initialize when module loads
 // initializeMailbox();
