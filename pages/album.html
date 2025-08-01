@@ -260,11 +260,27 @@
 </div>
 <!-- ✅ Add Cat Overlay -->
 <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-  <!-- Audio + Scripts -->
-<audio src="../assets/audio/bg-music.mp3" autoplay loop id="bgAudio"></audio>
 <!-- ✅ Toastify FIRST -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <!-- ✅ Your modules LAST -->
 <script type="module" src="../js/main.js"></script>
+<div id="catFactContainer" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  max-width: 280px;
+  padding: 12px;
+  background: #fff2d9;
+  border: 2px solid #000;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  z-index: 1000;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  user-select: none;
+">
+  🐾 Click me for a cat fact!
+</div>
+
 </body>
 </html>

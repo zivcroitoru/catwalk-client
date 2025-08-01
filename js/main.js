@@ -50,6 +50,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
 
   console.log('✅ Systems initialized');
+  const factContainer = document.createElement('div');
+factContainer.id = 'catFactContainer';
+factContainer.style = `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  max-width: 280px;
+  padding: 12px;
+  background: #fff2d9;
+  border: 2px solid #000;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  z-index: 1000;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  user-select: none;
+`;
+factContainer.textContent = '🐾 Click me for a cat fact!';
+document.body.appendChild(factContainer);
+
+factContainer.addEventListener('click', async () => {
+  factContainer.textContent = 'Loading...';
+  try {
+    const res = await fetch('https://catfact.ninja/fact');
+    const data = await res.json();
+    factContainer.textContent = data.fact;
+  } catch {
+    factContainer.textContent = 'Failed to load cat fact 😿';
+  }
+});
+
 });
 
 
