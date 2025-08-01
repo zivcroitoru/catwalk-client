@@ -105,7 +105,7 @@
 .ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: translate(-200px, 325px) scale(5); /* Moved 25px further down */
+  transform: translate(-200px, 315px) scale(5); /* Moved 15px further down */
   margin: 0 auto;
 }
 
