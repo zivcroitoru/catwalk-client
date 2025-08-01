@@ -67,7 +67,7 @@ header {
 .menu {
     width: 317px;
     /* margin-top: 111px; */
-    background-color: #ffffff;
+    background-color: #F1EEEE;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,7 +89,7 @@ header {
     margin-bottom: 170px;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
-
+    margin-right: 100px;
     
 }
 
@@ -101,10 +101,10 @@ header {
     border-radius: 30px;
     transform: scale(0.8);
     position: relative;
-    top: 100px;
-    margin-left: auto;
+    top: 20px;
+    /* margin-left: auto;
     margin-right: auto;
-    right: 0;
+    right: 0; */
 }
 
 .player-message p{
@@ -119,15 +119,37 @@ header {
     border-radius: 30px;
     transform: scale(0.8);
     position: relative;
-    top: 100px;
-    margin-left: auto;
-    margin-right: auto;
+    top: 20px;
+    /* margin-left: auto;
+    margin-right: auto; */
 }
 
 .response p{
     margin-left: 20px;
     font-size: 36px;
+    
 }
+.my-curr-response {
+    width: 1465px;
+    height: 392px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    transform: scale(0.8);
+    position: relative;
+    top: 20px;
+    margin-right: 38px;
+    /* margin-left: auto;
+    margin-right: auto; */
+}
+
+.my-curr-response[contenteditable="true"] {
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: text;
+    font-size: 30px;
+    
+}
+
 
 .send-button {
     width: 538px;
@@ -140,7 +162,7 @@ header {
 
     margin-left: auto;
     margin-right: auto;
-    left: 10px;
+    left: 100px;
 
     display: flex;
     justify-content: center;
