@@ -88,24 +88,62 @@ function cacheElements() {
 }
 
 /**
- * Setup all event listeners
+ * Setup all event listeners with defensive programming
  */
 function setupEventListeners() {
-  // Tab navigation
-  mailboxButtons.forEach(btn => {
-    btn.addEventListener('click', () => handleTabSwitch(btn.dataset.tab));
+  console.log('🔧 Setting up mailbox event listeners...');
+  
+  // Cache navigation buttons with retry logic
+  mailboxButtons = Array.from(document.querySelectorAll('.mailbox-btn'));
+  console.log(`🔧 Found ${mailboxButtons.length} mailbox buttons`);
+  
+  if (mailboxButtons.length === 0) {
+    console.warn('⚠️ No mailbox buttons found, retrying in 100ms...');
+    setTimeout(() => {
+      setupEventListeners();
+    }, 100);
+    return;
+  }
+  
+  // Tab navigation with detailed logging
+  mailboxButtons.forEach((btn, index) => {
+    const tab = btn.dataset.tab;
+    console.log(`🔧 Binding button ${index}: ${tab}`);
+    
+    // Remove any existing listeners by cloning (prevents duplicate listeners)
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    
+    // Add click listener with error handling
+    newBtn.addEventListener('click', (e) => {
+      console.log('🔧 Tab clicked:', tab);
+      try {
+        handleTabSwitch(tab);
+      } catch (error) {
+        console.error('❌ Error in tab switch:', error);
+      }
+    });
+    
+    // Update our cached reference
+    mailboxButtons[index] = newBtn;
   });
   
   // Back button in message view
   const backBtn = document.getElementById('backToListBtn');
   if (backBtn) {
+    console.log('🔧 Binding back button');
     backBtn.addEventListener('click', () => showView('list'));
+  } else {
+    console.warn('⚠️ Back button not found');
   }
   
   // Send button in contact view
   const sendBtn = document.getElementById('sendBtn');
   if (sendBtn) {
+    console.log('🔧 Binding send button');
     sendBtn.addEventListener('click', handleSendMessage);
+  } else {
+    console.warn('⚠️ Send button not found');
   }
   
   // Contact form validation
@@ -113,10 +151,12 @@ function setupEventListeners() {
   const messageInput = document.getElementById('contactInput');
   
   if (subjectInput) {
+    console.log('🔧 Binding subject input validation');
     subjectInput.addEventListener('input', () => validateInput(subjectInput, MAX_SUBJECT_LENGTH));
   }
   
   if (messageInput) {
+    console.log('🔧 Binding message input validation');
     messageInput.addEventListener('input', () => validateInput(messageInput, MAX_MESSAGE_LENGTH));
   }
   
@@ -124,7 +164,10 @@ function setupEventListeners() {
   const contactDateElement = document.getElementById('contactViewDate');
   if (contactDateElement) {
     contactDateElement.textContent = formatDate(new Date());
+    console.log('🔧 Set contact view date');
   }
+  
+  console.log('✅ All mailbox event listeners set up successfully');
 }
 
 /**
