@@ -98,7 +98,6 @@ async function updateCatItems(catId, equipment) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
 
-  // 1. Update the modular cat_items
   const res = await fetch(`${CAT_ITEMS_API}/${catId}`, {
     method: 'PATCH',
     headers: {
@@ -113,12 +112,8 @@ async function updateCatItems(catId, equipment) {
     throw new Error('Failed to update cat_items');
   }
 
-  // 2. Also update player_cats snapshot
-  await updateCat(catId, { equipment }); // ✅ this line is required
-
   return res.json();
 }
-
 
 // ───────────── Load & Save ─────────────
 export async function loadPlayerItems(force = false) {
@@ -176,7 +171,7 @@ export async function getPlayerCats() {
 }
 
 export async function updateCat(catId, updates) {
-  const allowedFields = ['name', 'description', 'template', 'equipment']; // ✅ added "equipment"
+  const allowedFields = ['name', 'description', 'template']; // ✅ no 'equipment'
   const safeUpdates = Object.fromEntries(
     Object.entries(updates).filter(([key]) => allowedFields.includes(key))
   );
@@ -188,7 +183,6 @@ export async function updateCat(catId, updates) {
   }
   return updatedCat;
 }
-
 
 export async function deleteCat(catId) {
   const token = localStorage.getItem('token');
