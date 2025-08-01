@@ -171,7 +171,7 @@ export async function getPlayerCats() {
 }
 
 export async function updateCat(catId, updates) {
-  const allowedFields = ['name', 'description', 'template'];
+  const allowedFields = ['name', 'description', 'template', 'equipment']; // ✅ added "equipment"
   const safeUpdates = Object.fromEntries(
     Object.entries(updates).filter(([key]) => allowedFields.includes(key))
   );
@@ -183,6 +183,7 @@ export async function updateCat(catId, updates) {
   }
   return updatedCat;
 }
+
 
 export async function deleteCat(catId) {
   const token = localStorage.getItem('token');
