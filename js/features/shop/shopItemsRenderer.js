@@ -15,7 +15,9 @@ import {
 } from '../../core/toast.js';
 
 export async function renderShopItems(activeCategory) {
+  activeCategory = activeCategory.toLowerCase(); // ✅ Normalize category casing
   console.log(`🎨 Rendering shop items for category: ${activeCategory}`);
+  
   const container = document.getElementById('shopItems');
   if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) {
     console.warn('⚠️ Missing shop items or container');
@@ -70,21 +72,21 @@ export async function renderShopItems(activeCategory) {
       const updatedItems = await loadPlayerItems(true); // force-refresh
       await updateCoinCount();
 
-if (selectedCat) {
-  if (!selectedCat.equipment) {
-    console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
-    selectedCat.equipment = {};
-  }
+      if (selectedCat) {
+        if (!selectedCat.equipment) {
+          console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
+          selectedCat.equipment = {};
+        }
 
-  const newValue = result === 'equipped' ? id : null;
-  console.log(`🎯 Updating equipment slot '${activeCategory}' to:`, newValue);
+        const newValue = result === 'equipped' ? id : null;
+        console.log(`🎯 Updating equipment slot '${activeCategory}' to:`, newValue);
 
-  selectedCat.equipment[activeCategory] = newValue;
+        selectedCat.equipment[activeCategory] = newValue;
 
-  await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
+        await updateCat(selectedCat.id, { equipment: selectedCat.equipment });
 
-  console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
-}
+        console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
+      }
 
       toastEquipResult(name, result);
       renderShopItems(activeCategory); // refresh UI
