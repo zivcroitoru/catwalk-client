@@ -113,7 +113,7 @@ export async function loadPlayerItems(force = false) {
   }
   console.log('🪵 Fetching fresh player items from API...');
 itemCache = await apiGetItems();
-itemCache.ownedItems = itemCache.items?.map(i => i.id) || []; // 👈 Normalize
+itemCache.ownedItems = itemCache.items?.map(i => i.template).filter(Boolean) || [];
 console.log('🪵 Fetched items:', itemCache);
 return itemCache;
 
