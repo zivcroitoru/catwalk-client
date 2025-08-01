@@ -108,11 +108,12 @@
   transform: translate(-200px, 300px) scale(5);
   margin: 0 auto;
 } */
- .ellipse-podium {
+.ellipse-podium {
   position: relative;
   width: fit-content;
-  transform: none; /* remove translate */
+  transform: scale(5);  /* Keep scaling */
   margin: 0 auto;
+  top: -15vw;  /* Adjust this to position the cat correctly vertically */
 }
 
 #carouselCatWrapper {
