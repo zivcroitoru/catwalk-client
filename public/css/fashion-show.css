@@ -1,0 +1,613 @@
+/* Design System Variables */
+:root {
+  /* Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-cream: #FFEEC3;
+  --color-yellow: #FFDE8C;
+  --color-brown: #DAAB6E;
+  --color-red: #FB0B0B;
+  --color-salmon: #D06767;
+  --color-gold: #FFC20E;
+  --color-blue: #57B9FF;
+  --color-light-purple: #F8C4FF;
+  --color-purple: #B70EFF;
+  --color-purple: #F8C4FF;
+  
+  /* Typography */
+  --font-main: 'Jersey 10', monospace;
+  
+/* Strokes */
+--stroke-very-thin: 2px;
+--stroke-thin: 4px;
+--stroke-thick: 7px;
+--stroke-xl: 12px;
+
+/* Spacing */
+--spacing-xs: 10px;
+--spacing-sm: 20px;
+--spacing-sm: 10px;
+--spacing-md: 30px;
+--spacing-lg: 100px;
+
+/* Font Sizes */
+--font-size-xl: 128px;
+--font-size-lg: 96px;
+--font-size-md: 64px;
+--font-size-sm: 48px;
+--font-size-xs: 36px;
+--font-size-xxs: 24px;
+}
+
+/* Fashion Show Styles */
+body {
+    background-color: var(--color-light-purple); /* Light pink/purple background */
+    background-color: var(--color-purple); /* Light pink/purple background */
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Full viewport height */
+    font-family: var(--font-main);
+}
+
+/* Main title styling */
+h1 {
+    font-family: var(--font-main);
+    font-size: var(--font-size-lg); /* 96px */
+    color: var(--color-cream); /* #FFEEC3 */
+    text-align: center;
+    margin: 0; /* Remove default margins */
+    padding: 0;
+    font-weight: normal;
+    
+    /* Position: center top, full viewport width, 128px height */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full viewport width instead of fixed 1920px */
+    height: 128px;
+    
+    /* Center the text vertically within the 128px height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Sharp pixel font rendering - no anti-aliasing */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    
+    /* Black stroke outside - using text-shadow for outside effect */
+    text-shadow: 
+        -7px -7px 0 var(--color-black),
+        7px -7px 0 var(--color-black),
+        -7px 7px 0 var(--color-black),
+        7px 7px 0 var(--color-black),
+        -7px 0 0 var(--color-black),
+        7px 0 0 var(--color-black),
+        0 -7px 0 var(--color-black),
+        0 7px 0 var(--color-black);
+}
+
+/* Waiting message in center */
+.waiting-message {
+    font-family: var(--font-main);
+    font-size: var(--font-size-md); /* 64px - smaller than title's 96px */
+    color: var(--color-black); /* Fill #000000 */
+    font-weight: normal;
+    
+    /* Position in center of screen */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Dimensions: w=1020, h=512 */
+    width: 1020px;
+    height: 512px;
+    
+    /* Center text alignment */
+    text-align: center;
+    line-height: 1.2; /* Adjust line spacing for readability */
+    
+    /* Center content within the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.album-button {
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    width: 98px;
+    height: 98px;
+    
+    /* Convert to block element for precise dimensions */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    text-decoration: none;
+    color: var(--color-black);
+    background-color: var(--color-brown); /* #DAAB6E */
+    font-family: Arial, sans-serif; /* Use simple font instead of Jersey 10 */
+    font-size: var(--font-size-md); /* Big arrow */
+    font-weight: bold; /* Bold for clean thickness */
+    
+    /* Inside border - 12px weight */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black border inside */
+    border: var(--stroke-xl) solid var(--color-black); /* 12px black border inside */
+    box-sizing: border-box; /* Include border in dimensions */
+}
+
+/* Timer Section */
+.timer-section {
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    width: 150px;
+    height: 60px;
+    
+    background-color: var(--color-salmon); /* #D06767 */
+    border: var(--stroke-thick) solid var(--color-black); /* 4px black border */
+    border: var(--stroke-thin) solid var(--color-black); /* 4px black border */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.timer-icon {
+    /* Fixed position within the salmon box */
+    position: absolute;
+    left: 15px; /* Fixed 15px from left edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
+    
+    width: 32px;
+    height: 32px;
+    
+    /* Prevent distortion - maintain aspect ratio */
+    object-fit: contain;
+    
+    /* Crisp pixel rendering */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+#timer-text {
+    /* Fixed position within the salmon box */
+    position: absolute;
+    right: 20px; /* Fixed 15px from right edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
+    
+    width: 32px;
+    height: 32px;
+    
+    /* Prevent distortion - maintain aspect ratio */
+    object-fit: contain;
+    
+    /* Crisp pixel rendering */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+#timer-text {
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm); /* 48px */
+    color: var(--color-black);
+    font-weight: normal;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Cat Display Area */
+.cat-display {
+    position: absolute;
+    top: 200px; /* Below the title */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 1050px;
+    height: 420px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    
+    /* Add flexbox for stage bases layout */
+    display: flex;
+    align-items: flex-end; /* Align stage bases to bottom */
+    justify-content: space-between;
+    padding: var(--spacing-sm); /* 20px padding on all sides */
+    box-sizing: border-box; /* Include padding in dimensions */
+}
+
+/* Stage Base - Basic Styling */
+.stage-base {
+    width: 186px; /* Calculated: (1050 - 120) / 5 */
+    height: 380px; /* Calculated: 420 - 40 */
+    background-color: var(--color-brown); /* #DAAB6E */
+    position: relative; /* For positioning the walkway image */
+    cursor: default; /* Default cursor when not clickable */
+}
+
+/* CLICKABLE FUNCTIONALITY - Only works during voting phase */
+.voting-active .stage-base {
+    cursor: pointer; /* Show pointer cursor during voting */
+    transition: all 0.2s ease; /* Smooth transition for visual feedback */
+}
+
+/* HOVER STATE - Purple outline when hovering (but NOT if already selected OR if it's own cat) */
+.voting-active .stage-base:hover:not(.selected):not(.own-cat-hover) {
+    outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* OWN CAT HOVER STATE - Red outline when hovering over owned cat */
+.stage-base.own-cat-hover {
+    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* OWN CAT SELECTED STATE - Red outline when clicked on owned cat (with warning) */
+.stage-base.own-cat-selected {
+    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* SELECTED STATE - Purple outline when selected (works even when voting disabled) */
+.stage-base.selected {
+    outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
+    outline-offset: 0; /* No gap between outline and element */
+}
+
+/* Results mode - make brown base 1/3 height */
+.stage-base.results-mode {
+    height: 100px; /* 380px / 3 ≈ 127px */
+}
+
+/* Gold base styling for results phase - FIXED to sit ON TOP of brown base */
+.gold-base {
+    position: absolute;
+    bottom: 100px; /* Position ON TOP of the brown base (which is 100px tall) */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 149px; /* 4/5 of brown base width (186px * 0.8 ≈ 149px) */
+    height: 20px; /* Default height - will be overridden by JavaScript based on votes */
+    background-color: var(--color-gold); /* #FFC20E */
+    /* Gold base now sits ON TOP of brown base and extends UPWARD */
+}
+
+.stage-walkway {
+    position: absolute;
+    top: 0; /* Stick to the top */
+    left: 0;
+    width: 100%; /* Full width of the stage base */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+}
+
+/* Cat sprite styling */
+.cat-sprite {
+    position: absolute;
+    top: 80px; /* Exactly 30px above bottom of stage-walkway */
+    left: 0;
+    width: 100%; /* Same width as stage-walkway (300px) */
+    height: auto; /* Maintain aspect ratio - never distorted */
+    display: block;
+    
+    /* Ensure crisp pixel rendering for sprite */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Cat sprite in results mode - positioned on top of gold base */
+.cat-sprite.results-cat {
+    position: absolute;
+    /* Position will be set dynamically by JavaScript to sit on top of gold base */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 149px; /* Same width as gold base */
+    height: 149px; /* Fixed height to match width for square sprite */
+    top: auto; /* Reset top positioning */
+    /* Cat sits on top of the gold base (which sits on top of brown base) */
+}
+
+/* Reward text styling for results phase */
+.reward-text {
+    position: absolute;
+    top: 0px; /* Moved higher from 10px to 5px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-xs); /* 36px - increased from 24px */
+    color: var(--color-white); /* White text */
+    text-align: center;
+    font-weight: normal;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+
+    /* Black stroke outside - using text-shadow for outside effect */
+    text-shadow: 
+    -2px -2px 0 var(--color-black),
+    2px -2px 0 var(--color-black),
+    -2px 2px 0 var(--color-black),
+    2px 2px 0 var(--color-black),
+    -2px 0 0 var(--color-black),
+    2px 0 0 var(--color-black),
+    0 -2px 0 var(--color-black),
+    0 2px 0 var(--color-black);
+}
+
+/* Cat name and username styling updates */
+.cat-name {
+    position: absolute;
+    top: 280px; /* Adjusted for better positioning with stage walkway */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* Reduced from 100% to prevent overflow outside stage base */
+    
+    /* Center content vertically within the defined area */
+    display: flex;
+    align-items: center; /* Vertically center the text */
+    justify-content: center; /* Horizontally center the text */
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-xs); /* 36px - keeping the good size */
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    line-height: 1.1; /* Tighter line height for multi-line names */
+    
+    /* Handle text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Cat name positioning in results mode */
+.results-mode .cat-name {
+    top: 40px; /* Moved higher up in the brown base from 85px */
+    bottom: auto;
+    height: auto;
+    font-size: var(--font-size-xxs);
+}
+
+.username {
+    position: absolute;
+    bottom: 0px; /* Even closer to bottom - from 8px to 5px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* Reduced from 100% to prevent overflow outside stage base */
+    
+    font-family: var(--font-main);
+    font-size: 18px; /* Keeping the good size */
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    
+    /* Handle text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Username positioning in results mode */
+.results-mode .username {
+    bottom: 5px; /* Maintain bottom position in shorter base */
+}
+
+/* RESULTS BUTTONS STYLING */
+
+/* Results buttons container */
+.results-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px; /* Wide enough to space buttons apart */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100; /* Above other elements */
+}
+
+/* Results button styling - matches exit dialog buttons */
+.results-button {
+    padding: 12px 20px;
+    background-color: var(--color-brown); /* #DAAB6E */
+    border: var(--stroke-thick) solid var(--color-black); /* 7px black border */
+    color: var(--color-black);
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm); /* 48px */
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: none;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    
+    /* Ensure proper sizing */
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    
+    /* Minimum width for consistent button sizes */
+    min-width: 200px;
+}
+
+.results-button:hover {
+    opacity: 0.9;
+}
+
+/* Voting Interface Styles */
+.cat-display {
+    position: absolute;
+    top: 150px; /* Below the title */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Perfect centering */
+    width: 1050px;
+    height: 420px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    /* Removed border completely */
+}
+
+.announcement-text {
+    position: absolute;
+    bottom: var(--spacing-md); /* Lower than before (was 100px) */
+    left: 50%;
+    transform: translateX(-50%);
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-md); /* 64px */
+    color: var(--color-black);
+    font-weight: normal;
+    
+    /* Add width to prevent text wrapping */
+    width: 1200px; /* Wide enough for "CALCULATING VOTES, PLEASE WAIT . . ." */
+    text-align: center; /* Keep text centered within the wider container */
+
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+.warning-message {
+    position: absolute;
+    right: var(--spacing-lg);
+    top: 250px;
+    width: 100px;
+    
+    font-family: var(--font-main); /* Changed to Jersey 10 */
+    font-size: var(--font-size-xxs); /* 24px */
+    font-size: var(--font-size-xxs); /* 36px */
+    color: var(--color-red); /* #FB0B0B */
+    text-align: center;
+    line-height: 1.4;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* EXIT CONFIRMATION DIALOG STYLES */
+
+/* Overlay covering full screen */
+.exit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(217, 217, 217, 0.5); /* #D9D9D9 50% */
+    z-index: 1000; /* Above everything */
+    display: flex;
+    align-items: flex-start; /* Changed from center to flex-start */
+    justify-content: center;
+    padding-top: 120px; /* Add top padding to lower the dialog */
+}
+
+/* Cream dialog box */
+.exit-dialog {
+    width: 1100px;
+    height: 500px;
+    background-color: var(--color-cream); /* #FFEEC3 */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black stroke */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 50px; /* Padding around edges */
+    box-sizing: border-box;
+}
+
+/* Dialog title text */
+.exit-dialog-title {
+    font-family: var(--font-main);
+    font-size: var(--font-size-md);
+    color: var(--color-black);
+    text-align: center;
+    font-weight: normal;
+    margin: 0;
+    
+    /* Changed positioning approach - closer to top */
+    margin-bottom: auto; /* Push buttons to bottom */
+    display: flex;
+    align-items: flex-start; /* Align to top instead of center */
+    justify-content: center;
+    line-height: 1.2; /* Better line spacing for multi-line text */
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+}
+
+/* Dialog buttons container */
+.exit-dialog-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 80px; /* Space for buttons at bottom */
+    margin: 0 20px; /* Extra margin to ensure buttons stay inside */
+}
+
+/* Dialog button styling - matches album button */
+.exit-dialog-button {
+    padding: 12px 20px; /* Slightly smaller padding */
+    background-color: var(--color-brown); /* #DAAB6E */
+    border: var(--stroke-thick) solid var(--color-black); /* 12px black border */
+    color: var(--color-black);
+    font-family: var(--font-main);
+    font-size: var(--font-size-sm);
+    font-weight: normal;
+    cursor: pointer;
+    text-decoration: none;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    
+    /* Ensure proper sizing */
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+}
+
+.exit-dialog-button:hover {
+    opacity: 0.9;
+}
