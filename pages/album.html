@@ -24,7 +24,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
-  <div class="welcome-message" id="welcomeMessage">Welcome, </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
 <div id="game">
   <!-- ✅ CAT AREA WRAPPER -->
@@ -61,13 +60,15 @@
         <img src="../assets/icons/coin.png" alt="Coins" />
         <span class="coin-count">500</span>
       </div>
-<div class="topbar-icon" id="catFactToggle" title="Get Cat Fact" style="cursor:pointer;">
+<div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
   <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
 </div>
 
       <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
+        <div class="welcome-message" id="welcomeMessage">Welcome, </div>
+
     </div>
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>

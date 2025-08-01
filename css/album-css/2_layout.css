@@ -102,10 +102,16 @@
   margin-top: 6rem;
 }
 
-.ellipse-podium {
+/* .ellipse-podium {
   position: relative;
   width: fit-content;
   transform: translate(-200px, 300px) scale(5);
+  margin: 0 auto;
+} */
+ .ellipse-podium {
+  position: relative;
+  width: fit-content;
+  transform: none; /* remove translate */
   margin: 0 auto;
 }
 
