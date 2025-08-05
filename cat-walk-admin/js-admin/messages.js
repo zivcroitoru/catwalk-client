@@ -32,9 +32,11 @@ headers.forEach((header) => {
 table.appendChild(headerRow);
 
 function goToTicketPage(ticketId) {
-  localStorage.setItem("ticket", ticketId);
-  window.location.href = `chosen-message.html?id=${ticketId}`;
+  // Save the ticketId to localStorage or URL query param
+  localStorage.setItem("chatRoomId", `ticket_${ticketId}`);
+  window.location.href = `chat.html`; // Create this page next
 }
+
 
 async function deleteTicket(ticketId, rowElement) {
   const confirmed = confirm("Are you sure you want to delete this ticket?");
