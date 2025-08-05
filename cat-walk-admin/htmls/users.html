@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>admin-users</title>
     <link rel="stylesheet" href="../css/users.css">
     <script defer src="../js-admin/user-list.js" type="module"></script>
@@ -31,17 +31,31 @@
     <div class="content">
         <div class="top-bar" style="flex-grow:1; display:flex; align-items:center;">
             <div class="search-bar">
-                <input type="text" placeholder="search">
+                <input type="text" placeholder="search" id="searchInput">
             </div>
             <div class="filter-button">
-                SORT BY
-                <img src="../PICS/sort-logo.png" class="sort-pic" width="20" height="20" alt="logo-pic">
+                <label for="sortSelect">SORT BY</label>
+                <select id="sortSelect">
+                    <option value="">-- Select --</option>
+                    <option value="username-asc">Username (A-Z)</option>
+                    <option value="username-desc">Username (Z-A)</option>
+                    <option value="id-asc">ID (Ascending)</option>
+                    <option value="id-desc">ID (Descending)</option>
+                    <option value="coins-desc">Coins (High to Low)</option>
+                    <option value="coins-asc">Coins (Low to High)</option>
+                    <option value="cat-desc">Cat Count (High to Low)</option>
+                    <option value="cat-asc">Cat Count (Low to High)</option>
+                    <option value="login-desc">Last Login (Newest)</option>
+                    <option value="login-asc">Last Login (Oldest)</option>
+                </select>
             </div>
+
         </div>
         <div class="table">
         </div>
     </div>
-    <p id="warning" style="color: red; margin-top: 10px;"></p>
+    <p id="warning" style="display:none; color: red; font-weight: bold; text-align: center; margin-top: 20px;"></p>
+
 </body>
 
 

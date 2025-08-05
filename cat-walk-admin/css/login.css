@@ -113,5 +113,15 @@ body {
 }
 
 
+.go-back {
+  font-size: 20px;
+  color: #838e84;
+  text-decoration: none;
+  margin-top: 20px;
+  align-self: center;
+  font-weight: 900;
+}
 
-
+.go-back:hover {
+  color: #9eb9a1;
+}

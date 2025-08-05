@@ -18,9 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
   columns.forEach(colName => {
     const th = document.createElement('th');
     th.textContent = colName;
+    th.style.color = 'white';
     th.style.border = '1px solid #ccc';
     th.style.padding = '10px';
-    th.style.backgroundColor = '#ddd';
+    th.style.backgroundColor = '#838E84';
     headerRow.appendChild(th);
     console.log(`Adding column: ${colName}`);
   });
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actionTd.style.textAlign = 'center';
 
         const button = document.createElement('button');
-        button.textContent = 'Go to page';
+        button.textContent = 'GO';
         button.style.padding = '6px 10px';
         button.style.cursor = 'pointer';
 
@@ -72,6 +73,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
         table.appendChild(tr);
       });
+
+
+      
+// STEP 2: Add search functionality AFTER table is built
+searchInput.addEventListener('input', () => {
+  const filter = searchInput.value.toLowerCase().trim();
+  const rows = table.querySelectorAll('tr');
+
+  rows.forEach((row, index) => {
+    if (index === 0) return; // Skip header row
+
+    const idCell = row.children[0];       // ID column
+    const usernameCell = row.children[1]; // Username column
+
+    const id = idCell.textContent.toLowerCase();
+    const username = usernameCell.textContent.toLowerCase();
+
+    // Show row if search matches ID or username
+    if (id.includes(filter) || username.includes(filter)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
+
+sortSelect.addEventListener('change', () => {
+  const value = sortSelect.value;
+  if (!value) return;
+
+  // Split into column and direction
+  const [column, direction] = value.split('-');
+  
+  const rows = Array.from(table.querySelectorAll('tr')).slice(1); // skip header
+
+  // Map column names to index as before
+  const columnIndexMap = {
+    id: 0,
+    username: 1,
+    coins: 2,
+    cat: 3,
+    login: 4
+  };
+
+  const index = columnIndexMap[column];
+  if (index === undefined) return;
+
+  rows.sort((a, b) => {
+    let aText = a.children[index].textContent;
+    let bText = b.children[index].textContent;
+
+    // Convert date for login column to timestamp for comparison
+    if (column === 'login') {
+      aText = new Date(aText).getTime();
+      bText = new Date(bText).getTime();
+    }
+
+    // Numeric or string comparison
+    if (column === 'username') {
+      if (direction === 'asc') return aText.localeCompare(bText);
+      else return bText.localeCompare(aText);
+    } else {
+      // numeric
+      aText = Number(aText);
+      bText = Number(bText);
+      if (direction === 'asc') return aText - bText;
+      else return bText - aText;
+    }
+  });
+
+  // Re-append sorted rows
+  rows.forEach(row => table.appendChild(row));
+});
+
+
     })
     .catch(error => {
       console.error('Error fetching players:', error);

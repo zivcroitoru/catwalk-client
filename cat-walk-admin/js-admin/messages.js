@@ -1,11 +1,12 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log("APP_URL:", APP_URL);
 
-// Elements
 const tableContainer = document.querySelector(".table");
 const warningMessage = document.getElementById("warning");
+const searchInput = document.querySelector(".search-bar input");
+const sortSelect = document.getElementById("sortSelect");
+let allTickets = [];
 
-// Create and append table
 const table = document.createElement("table");
 Object.assign(table.style, {
   borderCollapse: "collapse",
@@ -13,7 +14,6 @@ Object.assign(table.style, {
 });
 tableContainer.appendChild(table);
 
-// Create header row
 const headers = ["Ticket ID", "Subject", "Player ID", "Status", "Last Activity", "Actions"];
 const headerRow = document.createElement("tr");
 
@@ -31,13 +31,11 @@ headers.forEach((header) => {
 
 table.appendChild(headerRow);
 
-// Navigate to ticket details
 function goToTicketPage(ticketId) {
-    localStorage.setItem('ticket', ticketId);
+  localStorage.setItem("ticket", ticketId);
   window.location.href = `chosen-message.html?id=${ticketId}`;
 }
 
-// Delete ticket
 async function deleteTicket(ticketId, rowElement) {
   const confirmed = confirm("Are you sure you want to delete this ticket?");
   if (!confirmed) return;
@@ -53,14 +51,13 @@ async function deleteTicket(ticketId, rowElement) {
     if (!res.ok) throw new Error("Delete failed");
 
     rowElement.remove();
-    console.log(`🗑️ Ticket ${ticketId} deleted`);
+    console.log(`Ticket ${ticketId} deleted`);
   } catch (err) {
-    console.error("❌ Failed to delete ticket:", err);
+    console.error("Failed to delete ticket:", err);
     alert("Failed to delete ticket.");
   }
 }
 
-// Create row for a ticket
 function createTicketRow(ticket) {
   const row = document.createElement("tr");
   row.style.cursor = "pointer";
@@ -86,17 +83,16 @@ function createTicketRow(ticket) {
     row.appendChild(td);
   });
 
-  // Actions column with delete button
   const actionsTd = document.createElement("td");
   actionsTd.style.textAlign = "center";
   actionsTd.style.backgroundColor = "#fff";
 
   const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "🗑️";
+  deleteBtn.textContent = "X";
   deleteBtn.title = "Delete Ticket";
   deleteBtn.style.padding = "4px 8px";
   deleteBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent row click
+    e.stopPropagation();
     deleteTicket(ticket.id, row);
   });
 
@@ -106,7 +102,13 @@ function createTicketRow(ticket) {
   return row;
 }
 
-// Load existing tickets from backend
+function renderTickets(tickets) {
+  table.querySelectorAll("tr:not(:first-child)").forEach((row) => row.remove());
+  tickets.forEach((ticket) => {
+    table.appendChild(createTicketRow(ticket));
+  });
+}
+
 async function loadExistingTickets() {
   try {
     const res = await fetch(`${APP_URL}/api/admins/tickets`, {
@@ -117,17 +119,14 @@ async function loadExistingTickets() {
 
     if (!res.ok) throw new Error("Failed to fetch tickets");
 
-    const tickets = await res.json();
-    tickets.forEach((ticket) => {
-      table.appendChild(createTicketRow(ticket));
-    });
+    allTickets = await res.json();
+    renderTickets(allTickets);
   } catch (err) {
     console.error("Error loading tickets:", err);
-    if (warningMessage) warningMessage.textContent = "⚠️ Failed to load tickets.";
+    if (warningMessage) warningMessage.textContent = "Failed to load tickets.";
   }
 }
 
-// Setup real-time Socket.io connection
 function connectToSocket() {
   const socket = io(APP_URL, {
     auth: {
@@ -136,21 +135,49 @@ function connectToSocket() {
   });
 
   socket.on("connect", () => {
-    console.log("✅ Connected to ticket server");
+    console.log("Connected to ticket server");
   });
 
   socket.on("connect_error", (err) => {
-    console.error("❌ Socket.io connection error:", err.message);
-    if (warningMessage) warningMessage.textContent = "❌ Could not connect to server.";
+    console.error(" Socket.io connection error:", err.message);
+    if (warningMessage) warningMessage.textContent = "Could not connect to server.";
   });
 
   socket.on("new_ticket_notification", ({ ticket }) => {
-    console.log("📩 New ticket received:", ticket);
-    const newRow = createTicketRow(ticket);
-    table.appendChild(newRow);
+    console.log("New ticket received:", ticket);
+    allTickets.push(ticket);
+    renderTickets(allTickets);
   });
 }
 
-// Initialize
+searchInput.addEventListener("input", (e) => {
+  const query = e.target.value.trim().toLowerCase();
+
+  const filtered = allTickets.filter((ticket) => {
+    return (
+      String(ticket.id).includes(query) ||
+      (ticket.subject && ticket.subject.toLowerCase().includes(query)) ||
+      String(ticket.player_id).includes(query) ||
+      (ticket.status && ticket.status.toLowerCase().includes(query))
+    );
+  });
+
+  renderTickets(filtered);
+});
+
+sortSelect.addEventListener("change", (e) => {
+  const value = e.target.value;
+
+  let sortedTickets = [...allTickets];
+
+  if (value === "ID-asc") {
+    sortedTickets.sort((a, b) => a.id - b.id);
+  } else if (value === "ID-desc") {
+    sortedTickets.sort((a, b) => b.id - a.id);
+  }
+
+  renderTickets(sortedTickets);
+});
+
 loadExistingTickets();
 connectToSocket();
