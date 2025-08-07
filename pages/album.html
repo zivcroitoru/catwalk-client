@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,11 @@
   <title>My Cats</title>
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script type="module" src="../js/features/mailbox/player-mailbox.js"></script>
+
+
+
   <!-- ✅ Import all CSS files -->
   <link rel="stylesheet" href="../css/album-css/1_base.css">
   <link rel="stylesheet" href="../css/album-css/2_layout.css">
@@ -22,51 +27,52 @@
   <link rel="stylesheet" href="../css/mailbox.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
-<div id="game">
-  <!-- ✅ CAT AREA WRAPPER -->
-<!-- CAT AREA WRAPPER -->
-<div id="catAreaWrapper">
-  <!-- Cat Display -->
-<div class="cat-display-wrapper hidden" id="catDisplay">
-    <div class="ellipse-podium">
-      <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-      <div class="carousel-cat">
-        <img class="cat-layer carouselBase" alt="Base" />
-        <img class="cat-layer carouselHat" alt="Hat" />
-        <img class="cat-layer carouselTop" alt="Top" />
-        <img class="cat-layer carouselEyes" alt="Eyes" />
-        <img class="cat-layer carouselAccessory" alt="Accessory" />
+  <div id="game">
+    <!-- ✅ CAT AREA WRAPPER -->
+    <!-- CAT AREA WRAPPER -->
+    <div id="catAreaWrapper">
+      <!-- Cat Display -->
+      <div class="cat-display-wrapper hidden" id="catDisplay">
+        <div class="ellipse-podium">
+          <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
+          <div class="carousel-cat">
+            <img class="cat-layer carouselBase" alt="Base" />
+            <img class="cat-layer carouselHat" alt="Hat" />
+            <img class="cat-layer carouselTop" alt="Top" />
+            <img class="cat-layer carouselEyes" alt="Eyes" />
+            <img class="cat-layer carouselAccessory" alt="Accessory" />
+          </div>
+        </div>
       </div>
+      <!-- Carousel Area -->
+      <div class="carousel-wrapper" id="carouselWrapper">
+        ...
+      </div>
+    </div> <!-- ✅ END of #catAreaWrapper -->
+    <div id="emptyState" class="hidden empty-state-message">
+      <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+      <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+      <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+        <img src="../assets/ui/plus.png" alt="Add Cat" />
+      </button>
     </div>
-  </div>
-  <!-- Carousel Area -->
-  <div class="carousel-wrapper" id="carouselWrapper">
-    ...
-  </div>
-</div> <!-- ✅ END of #catAreaWrapper -->
-<div id="emptyState" class="hidden empty-state-message">
-  <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
-  <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
-  <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-    <img src="../assets/ui/plus.png" alt="Add Cat" />
-  </button>
-</div>
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
         <img src="../assets/icons/coin.png" alt="Coins" />
         <span class="coin-count">500</span>
       </div>
-<div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
-  <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
-</div>
+      <div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
+        <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
+      </div>
 
       <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
         <img src="../assets/icons/mail.png" alt="Mailbox" />
       </div>
-        <div class="welcome-message" id="welcomeMessage">Welcome, </div>
+      <div class="welcome-message" id="welcomeMessage">Welcome, </div>
 
     </div>
     <!-- Title -->
@@ -80,9 +86,34 @@
         <button class="mailbox-btn" data-tab="sent">SENT</button>
         <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
       </div>
-      
+
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
       <!-- Mailbox Content Area -->
       <div class="mailbox-content">
+
+        <!-- Real-Time Chat Panel (initially hidden)/////////// -->
+        <div class="chat-panel hidden" id="chatPanel">
+          <div class="chat-messages" id="playerChatMessages"></div>
+          <div class="chat-input">
+            <input type="text" id="playerMessageInput" placeholder="Type a message...">
+            <button id="playerSendButton">Send</button>
+          </div>
+        </div>
+        <!-- Mailbox Popup ////////////////////////////////-->
+        <div id="mailboxPopup" class="popup">
+          <div id="messagesContainer" class="messages-container"></div>
+
+          <!-- Chat input area -->
+          <form id="messageForm">
+            <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off" required />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
         <!-- ALL MESSAGES List View -->
         <div class="message-list" id="allMessagesList">
           <!-- Message Box 1 -->
@@ -90,52 +121,52 @@
             <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
             <div class="message-date">12/06/2025</div>
           </div>
-          
+
           <!-- Message Box 2 -->
           <div class="message-box" data-message-id="2">
             <div class="message-title">New outfit collection available in the shop!</div>
             <div class="message-date">12/05/2025</div>
           </div>
-          
+
           <!-- Message Box 3 -->
           <div class="message-box" data-message-id="3">
             <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
             <div class="message-date">12/04/2025</div>
           </div>
-          
+
           <!-- Message Box 4 -->
           <div class="message-box" data-message-id="4">
             <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
             <div class="message-date">12/03/2025</div>
           </div>
-          
+
           <!-- Message Box 5 -->
           <div class="message-box" data-message-id="5">
             <div class="message-title">System maintenance scheduled for tonight.</div>
             <div class="message-date">12/02/2025</div>
           </div>
-          
+
           <!-- Message Box 6 -->
           <div class="message-box" data-message-id="6">
             <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
             <div class="message-date">12/01/2025</div>
           </div>
-          
+
           <!-- Message Box 7 -->
           <div class="message-box" data-message-id="7">
             <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
             <div class="message-date">11/30/2025</div>
           </div>
-          
+
           <!-- Message Box 8 -->
           <div class="message-box" data-message-id="8">
             <div class="message-title">Recent outfit loading bugs have been fixed.</div>
             <div class="message-date">11/29/2025</div>
           </div>
         </div>
-        
+
         <!-- SENT MESSAGES List will be created dynamically by JavaScript -->
-        
+
         <!-- Message Detail View (Shared by ALL MESSAGES and SENT) -->
         <div class="message-view" id="messageView">
           <!-- Message Header (Title and Date) -->
@@ -143,71 +174,83 @@
             <div class="message-view-title" id="messageViewTitle">Message Title</div>
             <div class="message-view-date" id="messageViewDate">12/06/2025</div>
           </div>
-          
+
           <!-- Message Body -->
           <div class="message-body" id="messageViewBody">
             <p>Message content will appear here...</p>
           </div>
-          
+
           <!-- Message Controls -->
           <div class="message-controls">
             <button class="back-btn" id="backToListBtn">←</button>
           </div>
         </div>
-        
+
         <!-- Contact Us View -->
         <div class="contact-view" id="contactView">
           <!-- Contact Header (Title and Date) -->
           <div class="contact-view-header">
-            <input type="text" class="contact-view-title" id="contactSubjectInput" placeholder="Type the subject here...">
+            <input type="text" class="contact-view-title" id="contactSubjectInput"
+              placeholder="Type the subject here...">
             <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
           </div>
-          
+
           <!-- Contact Input Area -->
           <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
-          
+
           <!-- Contact Controls -->
           <div class="contact-controls">
             <button class="send-btn" id="sendBtn">SEND</button>
           </div>
         </div>
-        
+
       </div>
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+      <!-- Mailbox Content Area -->
+
     </div>
     <!-- Carousel Area -->
     <div class="wrapper">
-  <div class="main-area">
-  <!-- 🎠 Carousel Display -->
-  <div class="carousel-wrapper">
-    <div class="carousel-background">
-      <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
-      <div class="carousel-viewport">
-        <div class="carousel" id="catCarousel"></div>
-      </div>
-      <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
-      <button id="addCatBtn" class="add-cat-btn">
-        <img src="../assets/ui/plus.png" alt="Add Cat" />
-      </button>
-    </div>
-    <!-- 🧾 Floating Info -->
-    <div class="floating-actions">
-      <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
-    </div>
-  </div>
-  <!-- 🐱 Empty State Message -->
-  <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
-    <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
-    <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
-    <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-      <img src="../assets/ui/plus.png" alt="Add Cat" />
-    </button>
-  </div>
-  <!-- 🧾 Right Pane: Profile + Shop -->
-  <div class="right-pane">
-    <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
-    <!-- 🧑‍💻 Profile Panel -->
-    <div id="catProfileScroll" class="cat-profile-scroll hidden">
-      <div class="scroll-inner">
+      <div class="main-area">
+        <!-- 🎠 Carousel Display -->
+        <div class="carousel-wrapper">
+          <div class="carousel-background">
+            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
+            <div class="carousel-viewport">
+              <div class="carousel" id="catCarousel"></div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
+            <button id="addCatBtn" class="add-cat-btn">
+              <img src="../assets/ui/plus.png" alt="Add Cat" />
+            </button>
+          </div>
+          <!-- 🧾 Floating Info -->
+          <div class="floating-actions">
+            <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+          </div>
+        </div>
+        <!-- 🐱 Empty State Message -->
+        <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
+          <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
+          <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
+          <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
+            <img src="../assets/ui/plus.png" alt="Add Cat" />
+          </button>
+        </div>
+        <!-- 🧾 Right Pane: Profile + Shop -->
+        <div class="right-pane">
+          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+          <!-- 🧑‍💻 Profile Panel -->
+          <div id="catProfileScroll" class="cat-profile-scroll hidden">
+            <div class="scroll-inner">
               <input type="text" id="catName" class="profile-name-input" disabled />
               <div class="profile-main">
                 <div class="profile-info">
@@ -218,7 +261,7 @@
                   <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
                 </div>
                 <div class="top-right-icons">
-<img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
+                  <img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
                 </div>
               </div>
               <!-- Description -->
@@ -238,34 +281,34 @@
               </div>
             </div>
           </div>
-<!-- ✅ Shop Popup -->
-<div id="shopPopup" class="shop-popup hidden">
-  <div class="tabs">
-    <div class="tab active" data-category="hats">Hats</div>
-    <div class="tab" data-category="tops">Tops</div>
-    <div class="tab" data-category="accessories">Accessories</div>
-    <div class="tab" data-category="eyes">Eyes</div>
-  </div>
-  <div class="shop-scroll-wrapper">
-    <div id="shopItems"></div>
-  </div>
-  <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
-</div>
-<!-- ✅ Add Cat Popup (matches Shop style) -->
-<div id="addCatPopup" class="shop-popup hidden">
-  <div class="tabs" id="breedTabs"></div>
-  <div class="shop-scroll-wrapper">
-    <div id="breedItems" class="shop-items"></div>
-  </div>
-  <button id="addCatCloseBtn" class="profile-btn danger" style="align-self: flex-end;">✕</button>
-</div>
-<!-- ✅ Add Cat Overlay -->
-<div id="addCatOverlayBlocker" class="overlay hidden"></div>
-<!-- ✅ Toastify FIRST -->
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<!-- ✅ Your modules LAST -->
-<script type="module" src="../js/main.js"></script>
-<div id="catFactContainer" style="
+          <!-- ✅ Shop Popup -->
+          <div id="shopPopup" class="shop-popup hidden">
+            <div class="tabs">
+              <div class="tab active" data-category="hats">Hats</div>
+              <div class="tab" data-category="tops">Tops</div>
+              <div class="tab" data-category="accessories">Accessories</div>
+              <div class="tab" data-category="eyes">Eyes</div>
+            </div>
+            <div class="shop-scroll-wrapper">
+              <div id="shopItems"></div>
+            </div>
+            <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
+          </div>
+          <!-- ✅ Add Cat Popup (matches Shop style) -->
+          <div id="addCatPopup" class="shop-popup hidden">
+            <div class="tabs" id="breedTabs"></div>
+            <div class="shop-scroll-wrapper">
+              <div id="breedItems" class="shop-items"></div>
+            </div>
+            <button id="addCatCloseBtn" class="profile-btn danger" style="align-self: flex-end;">✕</button>
+          </div>
+          <!-- ✅ Add Cat Overlay -->
+          <div id="addCatOverlayBlocker" class="overlay hidden"></div>
+          <!-- ✅ Toastify FIRST -->
+          <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+          <!-- ✅ Your modules LAST -->
+          <script type="module" src="../js/main.js"></script>
+          <div id="catFactContainer" style="
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -281,7 +324,8 @@
   cursor: pointer;
   user-select: none;
 ">
-</div>
+          </div>
 
 </body>
+
 </html>

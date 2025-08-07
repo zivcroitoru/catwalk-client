@@ -76,7 +76,6 @@ body {
 .table {
     width: 100%;
     height: calc(100vh - 120px);
-    background-color: #F1EEEE;
     border-radius: 30px;
     padding: 1vw;
     position: relative;
@@ -131,6 +130,115 @@ body {
     font-weight: 700;
     color: #4E5C4F;
 }
+
+.admin-msg {
+  background: #d1e7dd;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+  text-align: right;
+}
+
+.user-msg {
+  background: #f8d7da;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+
+.messages-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.user-list {
+  width: 250px;
+  background-color: #353c35;
+  color: white;
+  border-radius: 8px;
+  padding: 10px;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+}
+
+.user-entry {
+  padding: 12px;
+  border-bottom: 1px solid #b6b6b6;
+  cursor: pointer;
+}
+
+.user-entry:hover {
+  background-color: #93a293;
+}
+
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 15px;
+  background-color: #838E84;
+  color: white;
+  font-weight: bold;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #f1f2f6;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.message.user {
+  background-color: #dcdde1;
+  align-self: flex-start;
+}
+
+.message.admin {
+  background-color: #838E84;
+  color: #ffffff;
+  align-self: flex-end;
+}
+
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 10px 16px;
+  border: none;
+  background-color: #838E84;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #353c35;
+}
+
 
 /* RESPONSIVE MEDIA QUERIES */
 @media (max-width: 1024px) {

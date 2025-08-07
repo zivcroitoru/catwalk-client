@@ -5,7 +5,7 @@
 import { $, setDisplay, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadplayer_items as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
+import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
 
 export async function showCatProfile(cat) {
   const nameInput = $('catName');

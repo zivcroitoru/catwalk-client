@@ -19,7 +19,17 @@ import {
 } from './core/init/dataLoader.js';
 import { updateUI } from './core/storage.js';
 
+import { setupSocket } from './features/mailbox/player-mailbox.js';
 
+
+
+// ───────────── Socket Setup ─────────────
+const userToken = localStorage.getItem('token');  // or wherever you store it
+const playerId = localStorage.getItem('playerId'); // or your player ID
+
+if (userToken && playerId) {
+  setupSocket(userToken, `player_${playerId}`); // room name can be any string, e.g. player id prefixed
+}
 
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -112,3 +122,5 @@ Object.assign(window, {
   toggleAddCat,
   renderCarousel
 });
+
+

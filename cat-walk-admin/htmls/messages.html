@@ -38,11 +38,25 @@
                 <select id="sortSelect">
                     <option value="">-- Select --</option>
                     <option value="ID-asc">ID(low to high)</option>
-                    <option value="ID-desc">Template (high to low)</option>
+                    <option value="ID-desc">ID(high to low)</option>
                 </select>
             </div>
         </div>
         <div class="table">
+            <div class="messages-container">
+    <!-- Sidebar for users -->
+    <div class="user-list" id="userList"></div>
+
+    <!-- Chat box -->
+    <div class="chat-box">
+      <div class="chat-header" id="chatHeader">Select a user</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendButton">Send</button>
+      </div>
+    </div>
+  </div>
         </div>
     </div>
     <p id="warning" style="color: red; margin-top: 10px;"></p>
