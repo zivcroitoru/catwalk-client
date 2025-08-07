@@ -3,7 +3,10 @@ console.log('🐱 MAIN.JS LOADED');
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-import { initializeMailbox, toggleMailbox, requestNotificationPermission } from './features/mailbox/mailbox.js';
+import { setupSocket } from './features/mailbox/player-mailbox.js';
+import { toggleMailbox } from './features/mailbox/player-mailbox.js';//
+import { requestNotificationPermission } from './features/mailbox/player-mailbox.js';//
+
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
 import { renderCarousel, scrollCarousel } from './features/ui/carousel.js';
@@ -19,17 +22,30 @@ import {
 } from './core/init/dataLoader.js';
 import { updateUI } from './core/storage.js';
 
-import { setupSocket } from './features/mailbox/player-mailbox.js';
-
 
 
 // ───────────── Socket Setup ─────────────
-const userToken = localStorage.getItem('token');  // or wherever you store it
-const playerId = localStorage.getItem('playerId'); // or your player ID
+// const userToken = localStorage.getItem('token');  // or wherever you store it
+// const playerId = localStorage.getItem('playerId'); // or your player ID
+
+// if (userToken && playerId) {
+//   setupSocket(userToken, `player_${playerId}`); // room name can be any string, e.g. player id prefixed
+// }
+
+
+const userToken = localStorage.getItem('token');
+const playerId = localStorage.getItem('playerId');
 
 if (userToken && playerId) {
-  setupSocket(userToken, `player_${playerId}`); // room name can be any string, e.g. player id prefixed
+  setupSocket(userToken, playerId); // just pass the real playerId
 }
+
+
+// ───────────── Notification Permission ─────────────//
+
+document.addEventListener('DOMContentLoaded', () => {
+  requestNotificationPermission(); // Call once on page load or after login
+});
 
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -51,8 +67,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEditMode();
   bindUI();
 
+
+
+  requestNotificationPermission();
   // Initialize mailbox (only once!)
-  await initializeMailbox();
+  // await initializeMailbox();
 
   // “Add Cat” from empty-state shortcut
   document.getElementById('addCatBtnEmpty')

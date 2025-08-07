@@ -30,7 +30,7 @@
 // function initializeSocket() {
 //   console.log('🔧 Initializing socket connection...');
 //   socket = io("http://localhost:3000"); // Assumes socket.io server is on same domain
-  
+
 //   socket.on('connect', () => {
 //     console.log('✅ Connected to fashion show server');
 //     console.log('🔧 Socket ID:', socket.id);
@@ -130,7 +130,7 @@
 // function handleParticipantUpdate(message) {
 //   participants = message.participants;
 //   updateCounterDisplay(participants.length, message.maxCount);
-  
+
 //   // Find our own cat's position in the participants array
 //   const ourParticipant = participants.find(p => p.playerId === playerId);
 //   if (ourParticipant) {
@@ -285,7 +285,7 @@
 //     const catSprite = document.createElement('img');
 //     catSprite.className = 'cat-sprite';
 //     catSprite.alt = `Cat ${participant.catId}`;
-    
+
 //     // Use selected cat image if it's our cat, otherwise placeholder
 //     if (participant.playerId === playerId && selectedCat) {
 //       catSprite.src = selectedCat.image;
@@ -516,11 +516,11 @@
 // // Initialize page when ready
 // document.addEventListener('DOMContentLoaded', () => {
 //   console.log('🎭 Fashion Show page DOM loaded');
-  
+
 //   // Get URL parameters to extract cat ID
 //   const urlParams = new URLSearchParams(window.location.search);
 //   const catIdFromUrl = urlParams.get('catId');
-  
+
 //   if (catIdFromUrl) {
 //     catId = parseInt(catIdFromUrl);
 //     console.log('🐾 Cat ID from URL:', catId);
@@ -549,7 +549,7 @@
 //       if (catId) {
 //         selectedCat = userCats.find(cat => cat.id === catId);
 //       }
-      
+
 //       // Fallback if no cat found
 //       if (!selectedCat && userCats.length > 0) {
 //         selectedCat = userCats[0];
@@ -558,7 +558,7 @@
 
 //       if (selectedCat) {
 //         console.log("🐾 Selected cat from URL parameter:", selectedCat);
-        
+
 //         // Initialize socket connection now that we have all required data
 //         initializeSocket();
 //       } else {
@@ -615,7 +615,7 @@ if (!token) {
 async function connectToFashionShow({ token, catId }) {
   try {
     // 🔐 Fetch user cats from server to get playerId
-const res = await fetch('https://catwalk-server-eu.onrender.com/api/cats', {
+    const res = await fetch('https://catwalk-server-eu.onrender.com/api/cats', {
 
       headers: {
         Authorization: `Bearer ${token}`
@@ -643,9 +643,26 @@ const res = await fetch('https://catwalk-server-eu.onrender.com/api/cats', {
       socket.emit('join', { playerId, catId });
     });
 
+    // socket.on('participant_update', (msg) => {
+    //   console.log('👥 Participant update:', msg);
+    // });
+
     socket.on('participant_update', (msg) => {
       console.log('👥 Participant update:', msg);
+      const count = msg.count || 1; // assuming server sends `msg = { count: 3 }`
+      const counter = document.getElementById('player-counter');
+      counter.textContent = `${count}/5`;
+
+      // If we reached 5 players, show timer section and hide waiting
+      if (count >= 5) {
+        document.querySelector('.waiting-message').style.display = 'none';
+        document.querySelector('.timer-section').style.display = 'flex';
+        startTimer(); // <- We'll implement this in Step 2
+      }
     });
+
+
+
 
     socket.on('voting_phase', (msg) => {
       console.log('🗳️ Voting phase started:', msg);
@@ -663,3 +680,25 @@ const res = await fetch('https://catwalk-server-eu.onrender.com/api/cats', {
     console.error('❌ Failed to connect:', err);
   }
 }
+
+function startTimer() {
+  let timeLeft = 60;
+  const timerText = document.getElementById('timer-text');
+
+  const interval = setInterval(() => {
+    timeLeft--;
+    timerText.textContent = `${timeLeft} s`;
+
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      console.log('⏱️ Timer ended!');
+      
+      // ➕ Optional: tell the server we're ready to vote
+      // socket.emit('timer_done');
+
+      // ➕ Optional: advance UI to voting phase
+      // showVotingUI();
+    }
+  }, 1000);
+}
+
