@@ -149,41 +149,42 @@ function sendMessage() {
 }
 
 // ───────────── CLOSE TICKET ─────────────
-// Example: Closing a ticket
 socket.on('closeTicket', async (ticketId) => {
-    try {
-        // 1. Update DB to mark as closed
-        await DB.query(
-            'UPDATE tickets SET status = $1, closed_at = NOW() WHERE id = $2',
-            ['closed', ticketId]
-        );
+  try {
+    // 1. Update ticket status to 'closed' and update updated_at timestamp
+    await DB.query(
+      `UPDATE tickets_table 
+       SET status = 'closed', updated_at = NOW() 
+       WHERE ticket_id = $1`,
+      [ticketId]
+    );
 
-        // 2. Find the user who owns the ticket
-        const result = await DB.query(
-            'SELECT user_id FROM tickets WHERE id = $1',
-            [ticketId]
-        );
+    // 2. Find the user_id who owns the ticket
+    const result = await DB.query(
+      `SELECT user_id FROM tickets_table WHERE ticket_id = $1`,
+      [ticketId]
+    );
 
-        if (result.rows.length > 0) {
-            const userId = result.rows[0].user_id;
+    if (result.rows.length > 0) {
+      const userId = result.rows[0].user_id;
 
-            // 3. Notify the user via Socket.IO
-            io.to(`user_${userId}`).emit('ticketClosed', {
-                ticketId,
-                message: 'Your ticket has been closed by an admin.'
-            });
-        }
-
-        // 4. Update the admin dashboard for all admins
-        io.to('admins').emit('ticketStatusUpdated', {
-            ticketId,
-            status: 'closed'
-        });
-
-    } catch (err) {
-        console.error('❌ Error closing ticket:', err);
-        socket.emit('error', { message: 'Failed to close ticket.' });
+      // 3. Notify the user socket room (assuming room user_<userId>)
+      io.to(`user_${userId}`).emit('ticketClosed', {
+        ticketId,
+        message: 'Your ticket has been closed by an admin.'
+      });
     }
+
+    // 4. Notify all admins (assuming they joined room 'admins')
+    io.to('admins').emit('ticketClosed', {
+      ticketId,
+      status: 'closed'
+    });
+
+  } catch (err) {
+    console.error('Error closing ticket:', err);
+    socket.emit('error', { message: 'Failed to close ticket.' });
+  }
 });
 
 
