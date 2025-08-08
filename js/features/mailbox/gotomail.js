@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mailboxIcon) {
         mailboxIcon.addEventListener("click", () => {
 
-            window.location.href = `./pages/mailbox.html?id=${userId}`;
+            window.location.href = `mailbox.html?id=${userId}`;
         });
     }
 });
