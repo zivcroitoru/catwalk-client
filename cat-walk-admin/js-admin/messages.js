@@ -1,11 +1,12 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
+// Create socket connection
 const socket = io(APP_URL);
 
 let currentTicketId = null;
-let currentSelectedDiv = null;  // Track selected ticket div
-let allTickets = [];            // Store all fetched tickets
+let currentSelectedDiv = null;
+let allTickets = [];
 
 const closeBtn = document.getElementById('closeTicketButton');
 const sendButton = document.getElementById('sendButton');
@@ -20,7 +21,40 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSendButtonState();
 });
 
-// Fetch tickets list from server and render
+// ───────────── SOCKET EVENTS ─────────────
+
+// Register admin when socket connects
+socket.on('connect', () => {
+  console.log('Admin connected via socket:', socket.id);
+  socket.emit('registerAdmin'); // Tell server this is an admin
+});
+
+// Listen for player messages in real-time
+socket.on('newMessage', (data) => {
+  if (data.ticketId !== currentTicketId) {
+    // Optional: show notification if message is for another ticket
+    console.log(`New message for ticket #${data.ticketId}:`, data.content);
+    return;
+  }
+  const label = data.sender === 'user' ? `Player #${data.userId}` : data.sender;
+  displayMessage({ sender: label, content: data.content });
+});
+
+// Listen for ticket close events
+socket.on('ticketClosed', ({ ticketId }) => {
+  const ticket = allTickets.find(t => t.ticket_id === ticketId);
+  if (ticket) {
+    ticket.status = 'closed';
+    if (ticketId === currentTicketId) {
+      closeBtn.disabled = true;
+      updateSendButtonState();
+      document.getElementById("chatHeader").textContent += " [Closed]";
+    }
+    renderTickets(allTickets);
+  }
+});
+
+// ───────────── FETCH & RENDER TICKETS ─────────────
 async function fetchTickets() {
   try {
     const res = await fetch(`${APP_URL}/api/tickets`);
@@ -32,7 +66,6 @@ async function fetchTickets() {
   }
 }
 
-// Render tickets in sidebar
 function renderTickets(tickets) {
   const ticketList = document.getElementById("ticketList");
   ticketList.innerHTML = "";
@@ -53,7 +86,6 @@ function renderTickets(tickets) {
       currentSelectedDiv = div;
     };
 
-    // Keep highlight if this is currently selected ticket
     if (ticket.ticket_id === currentTicketId) {
       div.classList.add('selected');
       currentSelectedDiv = div;
@@ -63,7 +95,7 @@ function renderTickets(tickets) {
   });
 }
 
-// Handle ticket selection, load chat and enable close button if open
+// ───────────── TICKET SELECTION ─────────────
 async function selectTicket(ticketId, username) {
   currentTicketId = ticketId;
   document.getElementById("chatHeader").textContent = `Chat with ${username} (Ticket #${ticketId})`;
@@ -73,15 +105,21 @@ async function selectTicket(ticketId, username) {
   closeBtn.disabled = !(ticket && ticket.status === 'open');
   updateSendButtonState();
 
+  // Join ticket room for live chat
+  socket.emit('joinTicketRoom', { ticketId });
+
   await fetchChatHistory(ticketId);
 }
 
-// Fetch messages for selected ticket
+// ───────────── CHAT HISTORY ─────────────
 async function fetchChatHistory(ticketId) {
   try {
     const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
     const messages = await res.json();
-    messages.forEach(displayMessage);
+    messages.forEach(msg => {
+      const label = msg.sender === 'admin' ? 'Admin' : `Player #${msg.user_id}`;
+      displayMessage({ sender: label, content: msg.content });
+    });
     scrollToBottom();
   } catch (err) {
     console.error("Failed to fetch chat history", err);
@@ -89,41 +127,29 @@ async function fetchChatHistory(ticketId) {
   }
 }
 
-// Show a message in chat area
+// ───────────── DISPLAY MESSAGE ─────────────
 function displayMessage(msg) {
   const div = document.createElement("div");
-  div.className = msg.sender === "admin" ? "message admin" : "message user";
-  div.textContent = msg.content;
+  div.className = msg.sender.toLowerCase().includes("admin") ? "message admin" : "message user";
+  div.textContent = `${msg.sender}: ${msg.content}`;
   document.getElementById("chatMessages").appendChild(div);
   scrollToBottom();
 }
 
-// Send a message from admin
-async function sendMessage() {
+// ───────────── SEND MESSAGE ─────────────
+function sendMessage() {
   const content = messageInput.value.trim();
   if (!content || !currentTicketId) return;
 
-  displayMessage({ sender: "admin", content });
+  displayMessage({ sender: "Admin", content });
   messageInput.value = "";
   updateSendButtonState();
 
-  try {
-    const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender: "admin", content })
-    });
-    if (!res.ok) {
-      alert("Failed to send message.");
-      console.error('Failed to send message');
-    }
-  } catch (err) {
-    console.error("Failed to send message", err);
-    alert("Failed to send message.");
-  }
+  // Send message in real-time
+  socket.emit('adminMessage', { ticketId: currentTicketId, text: content });
 }
 
-// Close the currently selected ticket
+// ───────────── CLOSE TICKET ─────────────
 async function closeCurrentTicket() {
   if (!currentTicketId) return;
 
@@ -135,12 +161,10 @@ async function closeCurrentTicket() {
       alert(`Ticket #${currentTicketId} closed successfully.`);
       closeBtn.disabled = true;
 
-      // Update local tickets and re-render list
       const ticket = allTickets.find(t => t.ticket_id === currentTicketId);
       if (ticket) ticket.status = 'closed';
       renderTickets(allTickets);
       updateSendButtonState();
-      // Optionally clear chat or mark it closed
       document.getElementById("chatHeader").textContent += " [Closed]";
     } else {
       alert('Failed to close the ticket.');
@@ -151,13 +175,12 @@ async function closeCurrentTicket() {
   }
 }
 
-// Scroll chat messages to bottom
+// ───────────── UTILITIES ─────────────
 function scrollToBottom() {
   const container = document.getElementById("chatMessages");
   container.scrollTop = container.scrollHeight;
 }
 
-// Search input handler: filter tickets by ID or username
 function onSearchInput(e) {
   const query = e.target.value.toLowerCase();
   const filtered = allTickets.filter(ticket => {
@@ -168,43 +191,25 @@ function onSearchInput(e) {
   renderTickets(filtered);
 }
 
-// Sort selection handler: sort tickets by ID asc/desc
 function onSortChange(e) {
   const val = e.target.value;
   if (!val) {
     renderTickets(allTickets);
     return;
   }
-
-  const [field, order] = val.split('-'); // e.g. "ID-asc"
+  const [field, order] = val.split('-');
   const sorted = [...allTickets].sort((a, b) => {
     if (field === 'ID') {
       return order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id;
     }
     return 0;
   });
-
   renderTickets(sorted);
 }
 
-// Disable send button if no ticket or ticket closed
 function updateSendButtonState() {
   sendButton.disabled = !currentTicketId || closeBtn.disabled;
 }
-
-// Listen for ticket close event from socket to update UI
-socket.on('ticketClosed', ({ ticketId }) => {
-  const ticket = allTickets.find(t => t.ticket_id === ticketId);
-  if (ticket) {
-    ticket.status = 'closed';
-    if (ticketId === currentTicketId) {
-      closeBtn.disabled = true;
-      updateSendButtonState();
-      document.getElementById("chatHeader").textContent += " [Closed]";
-    }
-    renderTickets(allTickets);
-  }
-});
 
 
 

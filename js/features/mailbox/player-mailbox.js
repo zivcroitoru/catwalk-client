@@ -2,6 +2,7 @@
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
+  const socket = io();
 // NOTE: we rely on the socket.io client script included in mailbox.html
 // <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 // so we use the global `io()` function (no import of socket.io-client here).
@@ -187,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('Player mailbox client ready for user:', userId);
 });
+
 
 
 
