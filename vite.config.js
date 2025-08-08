@@ -31,6 +31,7 @@ export default defineConfig({
         choseUser: resolve(__dirname, 'cat-walk-admin/htmls/chose-user.html'),
         chosenMessage: resolve(__dirname, 'cat-walk-admin/htmls/chosen-message.html'),
         catDatabase: resolve(__dirname, 'cat-walk-admin/htmls/cat-database.html'),
+        mailbox: resolve(__dirname,'pages/mailbox.html'),
       },
       output: {
         assetFileNames: 'assets/[name][extname]',
