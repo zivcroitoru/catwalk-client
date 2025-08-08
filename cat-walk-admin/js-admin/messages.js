@@ -173,13 +173,8 @@ async function closeCurrentTicket() {
     alert('Error closing the ticket.');
   }
 }
-// ----------close ticket-------------
 
-function closeCurrentTicket() {
-  if (!currentTicketId) return;
 
-  socket.emit('closeTicket', { ticketId: currentTicketId });
-}
 
 // ───────────── UTILITIES ─────────────
 function scrollToBottom() {
