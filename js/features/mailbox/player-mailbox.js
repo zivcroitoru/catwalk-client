@@ -137,24 +137,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- Send message (use socket) ----------
   sendBtn.addEventListener('click', () => {
-    const message = messageBox.value.trim();
-    if (!message || !currentTicketId) return;
+  const message = messageBox.value.trim();
+  if (!message || !currentTicketId) return;
 
-    // show immediately in UI
-    addMessage('You', message);
-
-    // send to server via socket so server will persist and broadcast to room
-    socket.emit('playerMessage', {
-      ticketId: currentTicketId,
-      userId,
-      text: message
-    }, (ack) => {
-      // optional ack handling if server supports it
-    });
-
-    messageBox.value = '';
-    scrollToBottom();
+  socket.emit('playerMessage', {
+    ticketId: currentTicketId,
+    userId,
+    text: message
   });
+
+  messageBox.value = '';
+});
+
 
   // ---------- Create ticket button ----------
   createTicketBtn.addEventListener('click', (e) => {
@@ -163,19 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- Receive live messages (admin or user) ----------
-  socket.on('newMessage', (data) => {
-    // data: { sender, content, ticketId, userId? }
-    if (!data) return;
-    if (data.ticketId !== currentTicketId) {
-      // Optionally show a toast/notification if message is for another ticket
-      console.log('Incoming message for other ticket', data.ticketId);
-      return;
-    }
+socket.on('newMessage', (data) => {
+  if (data.senderSocketId === socket.id) return; // skip our own
+  if (data.ticketId !== currentTicketId) return;
 
-    // Map server sender to UI label
-    const label = data.sender === 'admin' ? 'Admin' : (data.sender === 'user' ? (String(data.userId) === String(userId) ? 'You' : 'User') : data.sender);
-    addMessage(label, data.content ?? data.text ?? '');
-  });
+  const label = data.sender === 'admin' ? 'Admin' : 'User';
+  addMessage(label, data.content ?? data.text ?? '');
+});
+;
 
   // Optional: listen for ticket close events from server if you emit them there
   socket.on('ticketClosed', ({ ticketId }) => {
