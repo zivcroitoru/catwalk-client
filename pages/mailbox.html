@@ -10,22 +10,9 @@
 </head>
 
 <body>
-  <header>
-    <h1 class="title">Mailbox</h1>
-    <a class="back" href="../pages/album.html">BACK</a>
-  </header>
-
-  <div class="content" id="chat-container">
-    <button id="createTicketBtn" style="display:none;">Create Support Ticket</button>
-
-    <div class="chat" id="chatBox" style="display:none;">
-      <div id="chatMessages" class="chat-messages"></div>
-      <div class="message-input">
-        <input type="text" id="messageBox" placeholder="Type your message..." />
-        <button id="sendBtn">Send</button>
-      </div>
-    </div>
-  </div>
-</body>
-
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+  </body>
 </html>
