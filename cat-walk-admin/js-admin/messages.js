@@ -141,11 +141,10 @@ function sendMessage() {
   const content = messageInput.value.trim();
   if (!content || !currentTicketId) return;
 
-  displayMessage({ sender: "Admin", content });
   messageInput.value = "";
   updateSendButtonState();
 
-  // Send message in real-time
+  // Only send via socket — no displayMessage here
   socket.emit('adminMessage', { ticketId: currentTicketId, text: content });
 }
 
