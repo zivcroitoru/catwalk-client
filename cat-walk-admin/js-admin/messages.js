@@ -228,21 +228,25 @@ function onSortChange(e) {
 
 socket.on('newTicketCreated', async (ticket) => {
   try {
+    console.log('Received newTicketCreated event:', ticket);
     const res = await fetch(`${APP_URL}/api/tickets/${ticket.ticket_id}`);
     if (res.ok) {
       const fullTicket = await res.json();
+      console.log('Fetched full ticket:', fullTicket);
       allTickets.push(fullTicket);
       renderTickets(allTickets);
     } else {
-      // fallback
+      console.warn('Failed to fetch full ticket:', await res.text());
       allTickets.push(ticket);
       renderTickets(allTickets);
     }
-  } catch {
+  } catch (error) {
+    console.error('Error fetching full ticket:', error);
     allTickets.push(ticket);
     renderTickets(allTickets);
   }
 });
+
 
 
 
