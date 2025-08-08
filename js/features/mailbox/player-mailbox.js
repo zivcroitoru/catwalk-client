@@ -2,7 +2,7 @@
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
-  const socket = io();
+const socket = io();
 // NOTE: we rely on the socket.io client script included in mailbox.html
 // <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 // so we use the global `io()` function (no import of socket.io-client here).
@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendBtn = document.getElementById('sendBtn');
   const messageBox = document.getElementById('messageBox');
   const chatMessages = document.getElementById('chatMessages');
+
+  const showPastTicketsBtn = document.getElementById('showPastTicketsBtn');
+  const pastTicketsList = document.getElementById('pastTicketsList');
   console.log("--------------2--------------");
 
   const userId = localStorage.getItem('userId');
@@ -72,10 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // no open ticket
         createTicketBtn.style.display = 'block';
         chatBox.style.display = 'none';
-              console.log("--------------55--------------");
+        console.log("--------------55--------------");
 
       } else if (res.ok) {
-              console.log("--------------5--------------");
+        console.log("--------------5--------------");
 
         const ticket = await res.json();
         openTicket(ticket.ticket_id, /*skipJoin=*/false);
@@ -137,17 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- Send message (use socket) ----------
   sendBtn.addEventListener('click', () => {
-  const message = messageBox.value.trim();
-  if (!message || !currentTicketId) return;
+    const message = messageBox.value.trim();
+    if (!message || !currentTicketId) return;
 
-  socket.emit('playerMessage', {
-    ticketId: currentTicketId,
-    userId,
-    text: message
+    socket.emit('playerMessage', {
+      ticketId: currentTicketId,
+      userId,
+      text: message
+    });
+
+    messageBox.value = '';
   });
-
-  messageBox.value = '';
-});
 
 
   // ---------- Create ticket button ----------
@@ -157,14 +160,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- Receive live messages (admin or user) ----------
-socket.on('newMessage', (data) => {
-  if (data.senderSocketId === socket.id) return; // skip our own
-  if (data.ticketId !== currentTicketId) return;
+  socket.on('newMessage', (data) => {
+    if (data.senderSocketId === socket.id) return; // skip our own
+    if (data.ticketId !== currentTicketId) return;
 
-  const label = data.sender === 'admin' ? 'Admin' : 'User';
-  addMessage(label, data.content ?? data.text ?? '');
-});
-;
+    const label = data.sender === 'admin' ? 'Admin' : 'User';
+    addMessage(label, data.content ?? data.text ?? '');
+  });
+  ;
 
   // Optional: listen for ticket close events from server if you emit them there
   socket.on('ticketClosed', ({ ticketId }) => {
@@ -178,159 +181,40 @@ socket.on('newMessage', (data) => {
   console.log('Player mailbox client ready for user:', userId);
 });
 
+showPastTicketsBtn.addEventListener('click', async () => {
+  try {
+    const res = await fetch(`${APP_URL}/api/tickets/user/${userId}/all`);
+    if (!res.ok) {
+      alert('Failed to load past tickets');
+      return;
+    }
+    const tickets = await res.json();
+    renderPastTickets(tickets);
+    pastTicketsList.style.display = 'block';
+  } catch (err) {
+    console.error('Error loading past tickets', err);
+    alert('Error loading past tickets');
+  }
+});
 
+function renderPastTickets(tickets) {
+  pastTicketsList.innerHTML = '';
+  if (tickets.length === 0) {
+    pastTicketsList.textContent = 'No past tickets found.';
+    return;
+  }
+  tickets.forEach(ticket => {
+    const div = document.createElement('div');
+    div.textContent = `#${ticket.ticket_id} (${ticket.status}) - Created: ${new Date(ticket.created_at).toLocaleString()}`;
+    div.style.cursor = 'pointer';
+    div.style.marginBottom = '5px';
 
+    div.onclick = () => {
+      openTicket(ticket.ticket_id, true); // skipJoin true because you might not want to join room for closed tickets
+      pastTicketsList.style.display = 'none';
+    };
 
+    pastTicketsList.appendChild(div);
+  });
+}
 
-
-
-
-
-// import { APP_URL } from '../../core/config.js';
-// console.log('APP_URL:', APP_URL);
-
-// import { io } from 'socket.io-client';
-// import { getAuthToken } from '../../core/auth/authentication.js';
-
-// const socket = io(APP_URL, {
-//   auth: {
-//     token: getAuthToken(),
-//   }
-// });
-
-// const userId = localStorage.getItem('userId');
-// const sendBtn = document.getElementById('sendBtn');
-// const messageBox = document.getElementById('messageBox');
-// const chatMessages = document.getElementById('chatMessages');
-// const createTicketBtn = document.getElementById('createTicketBtn');
-// const chatBox = document.getElementById('chatBox');
-
-// let currentTicketId = null;
-
-// socket.on('connect', () => {
-//   console.log('✅ Connected to Socket.IO server with ID:', socket.id);
-//   socket.emit('registerPlayer', userId);
-
-//   // Step 3: Check if user has open ticket
-//   checkOpenTicket();
-// });
-
-// socket.on('connect_error', (err) => {
-//   console.error('❌ Socket connection error:', err.message);
-// });
-
-// // Step 3: Check for open ticket on server
-// async function checkOpenTicket() {
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets/user/${userId}/open`);
-//     if (res.status === 404) {
-//       // No open ticket found → show create button
-//       showCreateTicketButton();
-//     } else if (res.ok) {
-//       const ticket = await res.json();
-//       openTicket(ticket.ticket_id);
-//     } else {
-//       console.error("Error checking open ticket", await res.text());
-//     }
-//   } catch (err) {
-//     console.error("Failed to check open ticket", err);
-//   }
-// }
-
-// // Show create ticket button & hide chat
-// function showCreateTicketButton() {
-//   createTicketBtn.style.display = 'block';
-//   chatBox.style.display = 'none';
-// }
-
-// // Hide create button & show chat box
-// function openTicket(ticketId) {
-//   currentTicketId = ticketId;
-//   createTicketBtn.style.display = 'none';
-//   chatBox.style.display = 'block';
-//   fetchChatHistory();
-// }
-
-// // Step 4: Create ticket button clicked
-// createTicketBtn.addEventListener('click', async () => {
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ user_id: userId })
-//     });
-//     if (res.ok) {
-//       const newTicket = await res.json();
-//       openTicket(newTicket.ticket_id);
-//     } else {
-//       alert('Failed to create ticket.');
-//     }
-//   } catch (err) {
-//     console.error('Error creating ticket', err);
-//   }
-// });
-
-// // Step 5: Fetch chat messages for current ticket
-// async function fetchChatHistory() {
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`);
-//     if (res.ok) {
-//       const messages = await res.json();
-//       chatMessages.innerHTML = '';
-//       messages.forEach(msg => addMessage(msg.sender, msg.content));
-//       scrollToBottom();
-//     } else {
-//       console.error('Failed to load chat messages');
-//     }
-//   } catch (err) {
-//     console.error('Error fetching chat history', err);
-//   }
-// }
-
-// // Step 6: Send message event
-// sendBtn.addEventListener('click', async () => {
-//   const message = messageBox.value.trim();
-//   if (!message || !currentTicketId) return;
-
-//   // Show message immediately
-//   addMessage('You', message);
-
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ sender: 'user', content: message })
-//     });
-
-//     if (!res.ok) {
-//       console.error('Failed to send message');
-//     }
-//   } catch (err) {
-//     console.error('Error sending message', err);
-//   }
-
-//   messageBox.value = '';
-//   scrollToBottom();
-// });
-
-// // Add message to chat UI
-// function addMessage(sender, text) {
-//   const p = document.createElement('p');
-//   p.textContent = `${sender}: ${text}`;
-//   chatMessages.appendChild(p);
-// }
-
-// // Scroll chat to bottom
-// function scrollToBottom() {
-//   chatMessages.scrollTop = chatMessages.scrollHeight;
-// }
-
-// // Optional: You can also listen on socket to get admin replies live and add them to chat here
-// socket.on('adminMessage', (data) => {
-//   if (data.ticketId === currentTicketId) {
-//     addMessage('Admin', data.text);
-//     scrollToBottom();
-//   }
-// });
-
-// console.log('✅ Player Mailbox initialized for user:', userId);
