@@ -149,30 +149,43 @@ function sendMessage() {
 }
 
 // ───────────── CLOSE TICKET ─────────────
-async function closeCurrentTicket() {
-  if (!currentTicketId) return;
+// Example: Closing a ticket
+socket.on('closeTicket', async (ticketId) => {
+    try {
+        // 1. Update DB to mark as closed
+        await DB.query(
+            'UPDATE tickets SET status = $1, closed_at = NOW() WHERE id = $2',
+            ['closed', ticketId]
+        );
 
-  try {
-    const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/close`, {
-      method: 'PATCH',
-    });
-    if (res.ok) {
-      alert(`Ticket #${currentTicketId} closed successfully.`);
-      closeBtn.disabled = true;
+        // 2. Find the user who owns the ticket
+        const result = await DB.query(
+            'SELECT user_id FROM tickets WHERE id = $1',
+            [ticketId]
+        );
 
-      const ticket = allTickets.find(t => t.ticket_id === currentTicketId);
-      if (ticket) ticket.status = 'closed';
-      renderTickets(allTickets);
-      updateSendButtonState();
-      document.getElementById("chatHeader").textContent += " [Closed]";
-    } else {
-      alert('Failed to close the ticket.');
+        if (result.rows.length > 0) {
+            const userId = result.rows[0].user_id;
+
+            // 3. Notify the user via Socket.IO
+            io.to(`user_${userId}`).emit('ticketClosed', {
+                ticketId,
+                message: 'Your ticket has been closed by an admin.'
+            });
+        }
+
+        // 4. Update the admin dashboard for all admins
+        io.to('admins').emit('ticketStatusUpdated', {
+            ticketId,
+            status: 'closed'
+        });
+
+    } catch (err) {
+        console.error('❌ Error closing ticket:', err);
+        socket.emit('error', { message: 'Failed to close ticket.' });
     }
-  } catch (err) {
-    console.error('Error closing ticket:', err);
-    alert('Error closing the ticket.');
-  }
-}
+});
+
 
 
 
