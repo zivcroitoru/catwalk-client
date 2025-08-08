@@ -229,6 +229,13 @@ function onSortChange(e) {
   renderTickets(sorted);
 }
 
+socket.on('newTicketCreated', (ticket) => {
+  console.log('New ticket created:', ticket);
+  allTickets.push(ticket);  // Add new ticket to your local array
+  renderTickets(allTickets); // Re-render the ticket list with new ticket
+});
+
+
 function updateSendButtonState() {
   sendButton.disabled = !currentTicketId || closeBtn.disabled;
 }
