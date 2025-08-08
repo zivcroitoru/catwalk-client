@@ -43,7 +43,7 @@ socket.on('newMessage', (data) => {
     console.log(`New message for ticket #${data.ticketId}:`, data.content);
     return;
   }
-  const label = data.sender === 'user' ? `USER:` : data.sender;
+  const label = data.sender === 'user' ? `Player #${data.userId}` : data.sender;
   displayMessage({ sender: label, content: data.content });
 });
 
@@ -124,7 +124,7 @@ async function fetchChatHistory(ticketId) {
     const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
     const messages = await res.json();
     messages.forEach(msg => {
-      const label = msg.sender === 'admin' ? 'ADMIN' : `Player #${msg.user_id}`;
+      const label = msg.sender === 'admin' ? 'ADMIN' : `PLAYER`;
       displayMessage({ sender: label, content: msg.content });
     });
     scrollToBottom();
