@@ -194,9 +194,6 @@ socket.on('closeTicket', async (ticketId) => {
   }
 });
 
-
-
-
 // ───────────── UTILITIES ─────────────
 function scrollToBottom() {
   const container = document.getElementById("chatMessages");
@@ -229,11 +226,24 @@ function onSortChange(e) {
   renderTickets(sorted);
 }
 
-socket.on('newTicketCreated', (ticket) => {
-  console.log('New ticket created:', ticket);
-  allTickets.push(ticket);  // Add new ticket to your local array
-  renderTickets(allTickets); // Re-render the ticket list with new ticket
+socket.on('newTicketCreated', async (ticket) => {
+  try {
+    const res = await fetch(`${APP_URL}/api/tickets/${ticket.ticket_id}`);
+    if (res.ok) {
+      const fullTicket = await res.json();
+      allTickets.push(fullTicket);
+      renderTickets(allTickets);
+    } else {
+      // fallback
+      allTickets.push(ticket);
+      renderTickets(allTickets);
+    }
+  } catch {
+    allTickets.push(ticket);
+    renderTickets(allTickets);
+  }
 });
+
 
 
 function updateSendButtonState() {
