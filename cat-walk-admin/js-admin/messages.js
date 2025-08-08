@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSendButtonState();
 });
 
+
+function closeCurrentTicket() {
+  if (!currentTicketId) return;
+
+  socket.emit('closeTicket', { ticketId: currentTicketId });
+}
+
 // ───────────── SOCKET EVENTS ─────────────
 
 // Register admin when socket connects
