@@ -31,7 +31,7 @@
     <div class="content">
         <div class="top-bar" style="flex-grow:1; display:flex; align-items:center;">
             <div class="search-bar" style="flex-grow:1;">
-                <input type="text" placeholder="search">
+                <input type="text" placeholder="search" id="searchInput">
             </div>
             <div class="filter-button">
                 <label for="sortSelect">SORT BY</label>
@@ -44,19 +44,22 @@
         </div>
         <div class="table">
             <div class="messages-container">
-    <!-- Sidebar for users -->
-    <div class="user-list" id="userList"></div>
+                <!-- Sidebar for users -->
+                <div class="ticket-list" id="ticketList"></div>
 
-    <!-- Chat box -->
-    <div class="chat-box">
-      <div class="chat-header" id="chatHeader">Select a user</div>
-      <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Type a message..." />
-        <button id="sendButton">Send</button>
-      </div>
-    </div>
-  </div>
+                <!-- Chat box -->
+                <div class="chat-box">
+                    
+                    <div class="chat-header" id="chatHeader">Select a user</div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Type a message..." />
+                        <button id="sendButton">Send</button>
+                    </div>
+                    <button id="closeTicketButton" disabled>Close Ticket</button>
+
+                </div>
+            </div>
         </div>
     </div>
     <p id="warning" style="color: red; margin-top: 10px;"></p>

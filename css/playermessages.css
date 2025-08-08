@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    height: 100%;
+    background-color: #a06601;
+    font-family: 'Press Start 2P', monospace;
+    image-rendering: pixelated;
+    padding-top: 111px;
+    /* Push content below the fixed header */
+}
+
+
+
+
+/* HEADER */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 111px;
+    background-color: #FFDE8C;
+    border: #5a3900 solid 5px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    justify-content: center;
+    /* centers horizontally */
+    align-items: center
+}
+
+.back {
+    position: absolute;
+    left: 20px;
+    text-decoration: none;
+    color: #5a3900;
+    font-size: 24px;
+    font-weight: 200;
+}
+
+
+.back:hover {
+    color: #c47d03;
+}
+
+.title {
+    font-size: 64px;
+    font-weight: 200;
+    color: #5a3900;
+}
+
+
+
+
+/*---------------------------------------------------------------------------------------------*/
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* align-items: flex-end; ⬅️ aligns children to the right */
+    position: center;
+    flex-grow: 1;
+    padding: 20px;
+    /* margin-bottom: 170px; */
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+    /* margin-right: 100px; */
+
+}
+
+
+.response {
+    width: 1465px;
+    height: 392px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    transform: scale(0.8);
+    position: relative;
+    top: 20px;
+    /* margin-left: auto;
+    margin-right: auto; */
+}
+
+.response p {
+    margin-left: 20px;
+    font-size: 36px;
+
+}
+
+.my-curr-response {
+    width: 1465px;
+    height: 392px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    transform: scale(0.8);
+    position: relative;
+    top: 20px;
+    margin-right: 38px;
+    /* margin-left: auto;
+    margin-right: auto; */
+}
+
+.my-curr-response[contenteditable="true"] {
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: text;
+    font-size: 30px;
+
+}
+
+
+
+.player-message,
+.response {
+    margin-right: 40px;
+}
+
+
+
+/* Chat messages area */
+.chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+
+/* Each message paragraph */
+.chat-messages p {
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 20px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* Style for player's messages (you) */
+.chat-messages p:nth-child(odd) {
+    background-color: #FFDE8C;
+    border: #5a3900 solid 3px;
+
+    align-self: flex-end;
+    text-align: right;
+}
+
+/* Style for admin messages */
+.chat-messages p:nth-child(even) {
+    background-color: #5a3900;
+    border: #5a3900 solid 3px;
+
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* Input area container */
+.message-input {
+    display: flex;
+    font-family: 'Press Start 2P', monospace;
+
+    padding: 10px;
+    background-color: #eee;
+    border-top: 1px solid #ddd;
+}
+
+/* Text input box */
+.message-input input[type="text"] {
+    flex-grow: 1;
+    font-family: 'Press Start 2P', monospace;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+    border: #5a3900 solid 3px;
+
+}
+
+/* Send button */
+.message-input button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #5a3900;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 200;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+
+    transition: background-color 0.2s ease;
+}
+
+.message-input button:hover {
+    background-color: #a26c0f;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    /* stack children vertically */
+    width: 1850px;
+    height: 100%;
+    /* or a fixed height in px if 100% isn't working */
+
+    border-radius: 30px;
+    padding: 20px;
+    /* optional, to add some inner spacing */
+    box-sizing: border-box;
+}
+
+/* Make chat-messages grow and fill available space */
+.chat-messages {
+    border: #5a3900 solid 5px;
+    font-family: 'Press Start 2P', monospace;
+
+    flex-grow: 1;
+    /* takes remaining vertical space */
+    overflow-y: auto;
+    /* scroll vertically if content overflows */
+    background: #fff4e2;
+    border-radius: 20px 20px 0px 0px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Input area stays fixed height */
+.message-input {
+    border: #5a3900 solid 5px;
+
+    flex-shrink: 0;
+    /* prevent shrinking */
+    padding: 10px;
+    font-family: 'Press Start 2P', monospace;
+
+    background-color: #FFDE8C;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+    border-radius: 0 0 30px 30px;
+    /* rounded bottom corners matching chat */
+}

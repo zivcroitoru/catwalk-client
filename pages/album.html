@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
   <script type="module" src="../js/core/auth/authentication.js"></script>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script type="module" src="../js/features/mailbox/player-mailbox.js"></script>
+  <script type="module" src="../js/features/mailbox/gotomail.js"></script>
 
 
 
@@ -69,8 +69,8 @@
         <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
       </div>
 
-      <div class="topbar-icon" title="Mailbox" onclick="toggleMailbox()">
-        <img src="../assets/icons/mail.png" alt="Mailbox" />
+      <div class="topbar-icon" title="Mailbox" >
+        <img src="../assets/icons/mail.png" alt="Mailbox" id="mailbox-icon" style="cursor: pointer;"/>
       </div>
       <div class="welcome-message" id="welcomeMessage">Welcome, </div>
 
@@ -78,133 +78,7 @@
     <!-- Title -->
     <h1 class="cats-title">MY CATS</h1>
     <!-- ✅ Mailbox Display -->
-    <div class="mailbox-display" id="mailboxDisplay">
-      <!-- Mailbox Navigation Buttons -->
-      <div class="mailbox-nav">
-        <button class="mailbox-btn active" data-tab="all">ALL MESSAGES</button>
-        <button class="mailbox-btn" data-tab="unread">UNREAD</button>
-        <button class="mailbox-btn" data-tab="sent">SENT</button>
-        <button class="mailbox-btn" data-tab="contact">CONTACT US</button>
-      </div>
-
-      <!-- Mailbox Content Area -->
-      <div class="mailbox-content">
-
-        <!-- Real-Time Chat Panel (initially hidden)/////////// -->
-         <button id="enableNotifications">🔔 Enable Notifications</button>
-
-        <div class="chat-panel hidden" id="chatPanel">
-          <div class="chat-messages" id="playerChatMessages"></div>
-          <div class="chat-input">
-            <input type="text" id="playerMessageInput" placeholder="Type a message...">
-            <button id="playerSendButton">Send</button>
-          </div>
-        </div>
-        <!-- Mailbox Popup ////////////////////////////////-->
-        <div id="mailboxPopup" class="popup">
-          <div id="messagesContainer" class="messages-container"></div>
-
-          <!-- Chat input area -->
-          <form id="messageForm">
-            <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off" required />
-            <button type="submit">Send</button>
-          </form>
-        </div>
-
-        <!-- ALL MESSAGES List View -->
-        <div class="message-list" id="allMessagesList">
-          <!-- Message Box 1 -->
-          <div class="message-box" data-message-id="1">
-            <div class="message-title">Welcome to CatWalk! Your fashion journey begins now.</div>
-            <div class="message-date">12/06/2025</div>
-          </div>
-
-          <!-- Message Box 2 -->
-          <div class="message-box" data-message-id="2">
-            <div class="message-title">New outfit collection available in the shop!</div>
-            <div class="message-date">12/05/2025</div>
-          </div>
-
-          <!-- Message Box 3 -->
-          <div class="message-box" data-message-id="3">
-            <div class="message-title">Your cat looks amazing in the latest fashion show!</div>
-            <div class="message-date">12/04/2025</div>
-          </div>
-
-          <!-- Message Box 4 -->
-          <div class="message-box" data-message-id="4">
-            <div class="message-title">Reminder: Don't forget to feed your cats daily.</div>
-            <div class="message-date">12/03/2025</div>
-          </div>
-
-          <!-- Message Box 5 -->
-          <div class="message-box" data-message-id="5">
-            <div class="message-title">System maintenance scheduled for tonight.</div>
-            <div class="message-date">12/02/2025</div>
-          </div>
-
-          <!-- Message Box 6 -->
-          <div class="message-box" data-message-id="6">
-            <div class="message-title">Special event: Double coins weekend starts tomorrow!</div>
-            <div class="message-date">12/01/2025</div>
-          </div>
-
-          <!-- Message Box 7 -->
-          <div class="message-box" data-message-id="7">
-            <div class="message-title">Got ideas for new outfits or features? Contact us!</div>
-            <div class="message-date">11/30/2025</div>
-          </div>
-
-          <!-- Message Box 8 -->
-          <div class="message-box" data-message-id="8">
-            <div class="message-title">Recent outfit loading bugs have been fixed.</div>
-            <div class="message-date">11/29/2025</div>
-          </div>
-        </div>
-
-        <!-- SENT MESSAGES List will be created dynamically by JavaScript -->
-
-        <!-- Message Detail View (Shared by ALL MESSAGES and SENT) -->
-        <div class="message-view" id="messageView">
-          <!-- Message Header (Title and Date) -->
-          <div class="message-view-header">
-            <div class="message-view-title" id="messageViewTitle">Message Title</div>
-            <div class="message-view-date" id="messageViewDate">12/06/2025</div>
-          </div>
-
-          <!-- Message Body -->
-          <div class="message-body" id="messageViewBody">
-            <p>Message content will appear here...</p>
-          </div>
-
-          <!-- Message Controls -->
-          <div class="message-controls">
-            <button class="back-btn" id="backToListBtn">←</button>
-          </div>
-        </div>
-
-        <!-- Contact Us View -->
-        <div class="contact-view" id="contactView">
-          <!-- Contact Header (Title and Date) -->
-          <div class="contact-view-header">
-            <input type="text" class="contact-view-title" id="contactSubjectInput"
-              placeholder="Type the subject here...">
-            <div class="contact-view-date" id="contactViewDate">12/06/2025</div>
-          </div>
-
-          <!-- Contact Input Area -->
-          <textarea class="contact-input-area" id="contactInput" placeholder="Type your message here..."></textarea>
-
-          <!-- Contact Controls -->
-          <div class="contact-controls">
-            <button class="send-btn" id="sendBtn">SEND</button>
-          </div>
-        </div>
-
-      </div>
-      Mailbox Content Area
-
-    </div>
+    
     <!-- Carousel Area -->
     <div class="wrapper">
       <div class="main-area">

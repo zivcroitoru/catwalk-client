@@ -3,106 +3,387 @@ console.log('APP_URL:', APP_URL);
 
 const socket = io(APP_URL);
 
-let currentUserId = null;
+let currentTicketId = null;
+let currentSelectedDiv = null;  // Track selected ticket div
+let allTickets = [];            // Store all fetched tickets
+
+const closeBtn = document.getElementById('closeTicketButton');
+const sendButton = document.getElementById('sendButton');
+const messageInput = document.getElementById('messageInput');
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetchChatUsers();
-  document.getElementById("sendButton").addEventListener("click", sendMessage);
+  fetchTickets();
+  sendButton.addEventListener("click", sendMessage);
+  document.getElementById("sortSelect").addEventListener("change", onSortChange);
+  document.getElementById("searchInput").addEventListener("input", onSearchInput);
+  closeBtn.addEventListener('click', closeCurrentTicket);
+  updateSendButtonState();
 });
 
-async function fetchChatUsers() {
+// Fetch tickets list from server and render
+async function fetchTickets() {
   try {
-    const res = await fetch(`${APP_URL}/api/messages/users`);
-    const users = await res.json();
-    const userList = document.getElementById("userList");
-    userList.innerHTML = "";
-
-    users.forEach(user => {
-      const div = document.createElement("div");
-      div.className = "user-entry";
-      div.textContent = user.username;
-      div.onclick = () => selectUser(user.id, user.username);
-      userList.appendChild(div);
-    });
+    const res = await fetch(`${APP_URL}/api/tickets`);
+    allTickets = await res.json();
+    renderTickets(allTickets);
   } catch (err) {
-    console.error("Failed to fetch chat users", err);
+    console.error("Failed to fetch tickets", err);
+    alert("Failed to fetch tickets from server.");
   }
 }
 
-async function selectUser(userId, username) {
-  currentUserId = userId;
-  document.getElementById("chatHeader").textContent = `Chat with ${username}`;
+// Render tickets in sidebar
+function renderTickets(tickets) {
+  const ticketList = document.getElementById("ticketList");
+  ticketList.innerHTML = "";
+
+  tickets.forEach(ticket => {
+    const div = document.createElement("div");
+    div.className = "ticket-entry";
+    div.textContent = `#${ticket.ticket_id} - ${ticket.username} (${ticket.status})`;
+
+    div.onclick = () => {
+      selectTicket(ticket.ticket_id, ticket.username);
+
+      // Highlight clicked ticket
+      if (currentSelectedDiv) {
+        currentSelectedDiv.classList.remove('selected');
+      }
+      div.classList.add('selected');
+      currentSelectedDiv = div;
+    };
+
+    // Keep highlight if this is currently selected ticket
+    if (ticket.ticket_id === currentTicketId) {
+      div.classList.add('selected');
+      currentSelectedDiv = div;
+    }
+
+    ticketList.appendChild(div);
+  });
+}
+
+// Handle ticket selection, load chat and enable close button if open
+async function selectTicket(ticketId, username) {
+  currentTicketId = ticketId;
+  document.getElementById("chatHeader").textContent = `Chat with ${username} (Ticket #${ticketId})`;
   document.getElementById("chatMessages").innerHTML = "";
 
-  // Admin joins the socket room
-  const roomId = `admin_user_${userId}`;
-  socket.emit("joinRoom", { roomId });
+  const ticket = allTickets.find(t => t.ticket_id === ticketId);
+  closeBtn.disabled = !(ticket && ticket.status === 'open');
+  updateSendButtonState();
 
-  fetchChatHistory(userId);
+  await fetchChatHistory(ticketId);
 }
 
-
-async function fetchChatHistory(userId) {
+// Fetch messages for selected ticket
+async function fetchChatHistory(ticketId) {
   try {
-    const res = await fetch(`${APP_URL}/api/messages/${userId}`);
+    const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
     const messages = await res.json();
     messages.forEach(displayMessage);
-    scrollToBottom(); // 💖 auto-scroll after loading history
+    scrollToBottom();
   } catch (err) {
     console.error("Failed to fetch chat history", err);
+    alert("Failed to load chat history.");
   }
 }
 
+// Show a message in chat area
 function displayMessage(msg) {
   const div = document.createElement("div");
   div.className = msg.sender === "admin" ? "message admin" : "message user";
   div.textContent = msg.content;
   document.getElementById("chatMessages").appendChild(div);
-  scrollToBottom(); // 💖 auto-scroll on each message
+  scrollToBottom();
 }
 
+// Send a message from admin
 async function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const content = input.value.trim();
-  if (!content || !currentUserId) return;
+  const content = messageInput.value.trim();
+  if (!content || !currentTicketId) return;
 
-  const msg = {
-    receiverId: currentUserId,
-    content
-  };
-
-  // Display it instantly
   displayMessage({ sender: "admin", content });
+  messageInput.value = "";
+  updateSendButtonState();
 
-  // Emit to socket room
-  socket.emit("sendMessage", {
-    roomId: `admin_user_${currentUserId}`,
-    senderId: 0,
-    message: content
-  });
-
-  // Save to DB
   try {
-    await fetch(`${APP_URL}/api/messages/send`, {
+    const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(msg)
+      body: JSON.stringify({ sender: "admin", content })
     });
+    if (!res.ok) {
+      alert("Failed to send message.");
+      console.error('Failed to send message');
+    }
   } catch (err) {
     console.error("Failed to send message", err);
+    alert("Failed to send message.");
   }
-
-  input.value = "";
 }
 
+// Close the currently selected ticket
+async function closeCurrentTicket() {
+  if (!currentTicketId) return;
 
-socket.on("userMessage", (msg) => {
-  if (msg.senderId === currentUserId) {
-    displayMessage({ sender: "user", content: msg.content });
+  try {
+    const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/close`, {
+      method: 'PATCH',
+    });
+    if (res.ok) {
+      alert(`Ticket #${currentTicketId} closed successfully.`);
+      closeBtn.disabled = true;
+
+      // Update local tickets and re-render list
+      const ticket = allTickets.find(t => t.ticket_id === currentTicketId);
+      if (ticket) ticket.status = 'closed';
+      renderTickets(allTickets);
+      updateSendButtonState();
+      // Optionally clear chat or mark it closed
+      document.getElementById("chatHeader").textContent += " [Closed]";
+    } else {
+      alert('Failed to close the ticket.');
+    }
+  } catch (err) {
+    console.error('Error closing ticket:', err);
+    alert('Error closing the ticket.');
   }
-});
+}
 
-function scrollToBottom() { // 💖 scroll helper
+// Scroll chat messages to bottom
+function scrollToBottom() {
   const container = document.getElementById("chatMessages");
   container.scrollTop = container.scrollHeight;
 }
+
+// Search input handler: filter tickets by ID or username
+function onSearchInput(e) {
+  const query = e.target.value.toLowerCase();
+  const filtered = allTickets.filter(ticket => {
+    const idMatch = ticket.ticket_id.toString().includes(query);
+    const usernameMatch = ticket.username.toLowerCase().includes(query);
+    return idMatch || usernameMatch;
+  });
+  renderTickets(filtered);
+}
+
+// Sort selection handler: sort tickets by ID asc/desc
+function onSortChange(e) {
+  const val = e.target.value;
+  if (!val) {
+    renderTickets(allTickets);
+    return;
+  }
+
+  const [field, order] = val.split('-'); // e.g. "ID-asc"
+  const sorted = [...allTickets].sort((a, b) => {
+    if (field === 'ID') {
+      return order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id;
+    }
+    return 0;
+  });
+
+  renderTickets(sorted);
+}
+
+// Disable send button if no ticket or ticket closed
+function updateSendButtonState() {
+  sendButton.disabled = !currentTicketId || closeBtn.disabled;
+}
+
+// Listen for ticket close event from socket to update UI
+socket.on('ticketClosed', ({ ticketId }) => {
+  const ticket = allTickets.find(t => t.ticket_id === ticketId);
+  if (ticket) {
+    ticket.status = 'closed';
+    if (ticketId === currentTicketId) {
+      closeBtn.disabled = true;
+      updateSendButtonState();
+      document.getElementById("chatHeader").textContent += " [Closed]";
+    }
+    renderTickets(allTickets);
+  }
+});
+
+
+
+
+
+
+
+
+// import { APP_URL } from "../../js/core/config.js";
+// console.log('APP_URL:', APP_URL);
+
+// const socket = io(APP_URL);
+
+// let currentTicketId = null;
+// let currentSelectedDiv = null;  // Track selected ticket div
+// let allTickets = [];            // Store all fetched tickets
+
+// const closeBtn = document.getElementById('closeTicketButton');
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   fetchTickets();
+//   document.getElementById("sendButton").addEventListener("click", sendMessage);
+//   document.getElementById("sortSelect").addEventListener("change", onSortChange);
+//   document.getElementById("searchInput").addEventListener("input", onSearchInput);
+//   closeBtn.addEventListener('click', closeCurrentTicket);
+// });
+
+// // Fetch tickets list from server and render
+// async function fetchTickets() {
+//   try {
+//     const res = await fetch(`${APP_URL}/api/tickets`);
+//     allTickets = await res.json();
+//     renderTickets(allTickets);
+//   } catch (err) {
+//     console.error("Failed to fetch tickets", err);
+//   }
+// }
+
+// // Render tickets in sidebar
+// function renderTickets(tickets) {
+//   const ticketList = document.getElementById("ticketList");
+//   ticketList.innerHTML = "";
+
+//   tickets.forEach(ticket => {
+//     const div = document.createElement("div");
+//     div.className = "ticket-entry";
+//     div.textContent = `#${ticket.ticket_id} - ${ticket.username} (${ticket.status})`;
+
+//     div.onclick = () => {
+//       selectTicket(ticket.ticket_id, ticket.username);
+
+//       // Highlight clicked ticket
+//       if (currentSelectedDiv) {
+//         currentSelectedDiv.classList.remove('selected');
+//       }
+//       div.classList.add('selected');
+//       currentSelectedDiv = div;
+//     };
+
+//     // Keep highlight if this is currently selected ticket
+//     if (ticket.ticket_id === currentTicketId) {
+//       div.classList.add('selected');
+//       currentSelectedDiv = div;
+//     }
+
+//     ticketList.appendChild(div);
+//   });
+// }
+
+// // Handle ticket selection, load chat and enable close button if open
+// async function selectTicket(ticketId, username) {
+//   currentTicketId = ticketId;
+//   document.getElementById("chatHeader").textContent = `Chat with ${username} (Ticket #${ticketId})`;
+//   document.getElementById("chatMessages").innerHTML = "";
+
+//   const ticket = allTickets.find(t => t.ticket_id === ticketId);
+//   closeBtn.disabled = !(ticket && ticket.status === 'open');
+
+//   fetchChatHistory(ticketId);
+// }
+
+// // Fetch messages for selected ticket
+// async function fetchChatHistory(ticketId) {
+//   try {
+//     const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
+//     const messages = await res.json();
+//     messages.forEach(displayMessage);
+//     scrollToBottom();
+//   } catch (err) {
+//     console.error("Failed to fetch chat history", err);
+//   }
+// }
+
+// // Show a message in chat area
+// function displayMessage(msg) {
+//   const div = document.createElement("div");
+//   div.className = msg.sender === "admin" ? "message admin" : "message user";
+//   div.textContent = msg.content;
+//   document.getElementById("chatMessages").appendChild(div);
+//   scrollToBottom();
+// }
+
+// // Send a message from admin
+// async function sendMessage() {
+//   const input = document.getElementById("messageInput");
+//   const content = input.value.trim();
+//   if (!content || !currentTicketId) return;
+
+//   displayMessage({ sender: "admin", content });
+
+//   try {
+//     await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ sender: "admin", content })
+//     });
+//     input.value = "";
+//   } catch (err) {
+//     console.error("Failed to send message", err);
+//   }
+// }
+
+// // Close the currently selected ticket
+// async function closeCurrentTicket() {
+//   if (!currentTicketId) return;
+
+//   try {
+//     const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/close`, {
+//       method: 'PATCH',
+//     });
+//     if (res.ok) {
+//       alert(`Ticket #${currentTicketId} closed successfully.`);
+//       closeBtn.disabled = true;
+
+//       // Update local tickets and re-render list
+//       const ticket = allTickets.find(t => t.ticket_id === currentTicketId);
+//       if (ticket) ticket.status = 'closed';
+//       renderTickets(allTickets);
+//     } else {
+//       alert('Failed to close the ticket.');
+//     }
+//   } catch (err) {
+//     console.error('Error closing ticket:', err);
+//     alert('Error closing the ticket.');
+//   }
+// }
+
+// // Scroll chat messages to bottom
+// function scrollToBottom() {
+//   const container = document.getElementById("chatMessages");
+//   container.scrollTop = container.scrollHeight;
+// }
+
+// // Search input handler: filter tickets by ID or username
+// function onSearchInput(e) {
+//   const query = e.target.value.toLowerCase();
+//   const filtered = allTickets.filter(ticket => {
+//     const idMatch = ticket.ticket_id.toString().includes(query);
+//     const usernameMatch = ticket.username.toLowerCase().includes(query);
+//     return idMatch || usernameMatch;
+//   });
+//   renderTickets(filtered);
+// }
+
+// // Sort selection handler: sort tickets by ID asc/desc
+// function onSortChange(e) {
+//   const val = e.target.value;
+//   if (!val) {
+//     renderTickets(allTickets);
+//     return;
+//   }
+
+//   const [field, order] = val.split('-'); // e.g. "ID-asc"
+//   const sorted = [...allTickets].sort((a, b) => {
+//     if (field === 'ID') {
+//       return order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id;
+//     }
+//     return 0;
+//   });
+
+//   renderTickets(sorted);
+// }

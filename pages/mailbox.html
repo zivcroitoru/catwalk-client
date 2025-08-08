@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Mailbox</title>
+  <link rel="stylesheet" href="../css/playermessages.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> <!-- no type=module here -->
+  <script defer src="../js/features/mailbox/player-mailbox.js" type="module"></script>
+</head>
+
+<body>
+  <header>
+    <h1 class="title">Mailbox</h1>
+    <a class="back" href="../pages/album.html">BACK</a>
+  </header>
+
+  <div class="content" id="chat-container">
+    <button id="createTicketBtn" style="display:none;">Create Support Ticket</button>
+
+    <div class="chat" id="chatBox" style="display:none;">
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="message-input">
+        <input type="text" id="messageBox" placeholder="Type your message..." />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

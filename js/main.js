@@ -3,9 +3,9 @@ console.log('🐱 MAIN.JS LOADED');
 // ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-import { setupSocket } from './features/mailbox/player-mailbox.js';
-import { toggleMailbox } from './features/mailbox/player-mailbox.js';//
-import { requestNotificationPermission } from './features/mailbox/player-mailbox.js';//
+// import { setupSocket } from './features/mailbox/player-mailbox.js';
+// import { toggleMailbox } from './features/mailbox/player-mailbox.js';//
+// import { requestNotificationPermission } from './features/mailbox/player-mailbox.js';//
 
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
@@ -43,9 +43,9 @@ if (userToken && playerId) {
 
 // ───────────── Notification Permission ─────────────//
 
-document.addEventListener('DOMContentLoaded', () => {
-  requestNotificationPermission(); // Call once on page load or after login
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//   requestNotificationPermission(); // Call once on page load or after login
+// });
 
 // ───────────── Init ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-  requestNotificationPermission();
+  // requestNotificationPermission();
   // Initialize mailbox (only once!)
   // await initializeMailbox();
 
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 Object.assign(window, {
   toggleShop,
   renderShopItems,
-  toggleMailbox,
+  // toggleMailbox,
   toggleVolume,
   signOut,
   scrollCarousel,

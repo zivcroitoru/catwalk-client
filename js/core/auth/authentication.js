@@ -85,6 +85,26 @@ export async function handleRegister(e) {
 window.handleRegister = handleRegister;
 
 // ───────────── login ─────────────
+// document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+//   e.preventDefault();
+//   const username = document.getElementById('usernameInput').value;
+//   const password = document.getElementById('passwordInput').value;
+//   console.log('🔐 Logging in:', username);
+
+//   try {
+//     await postJSON(`${APP_URL}/auth/login`, { username, password });
+
+//     console.log('✅ Login successful. Redirecting to album...');
+//     window.location.href = 'album.html';
+//   } catch (err) {
+//     console.error('❌ Login failed:', err);
+//     showError(err.message);
+//   }
+// });
+
+
+
+// ───────────── login ─────────────
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('usernameInput').value;
@@ -92,14 +112,22 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   console.log('🔐 Logging in:', username);
 
   try {
-    await postJSON(`${APP_URL}/auth/login`, { username, password });
+    const result = await postJSON(`${APP_URL}/auth/login`, { username, password });
+
+    // Save user ID in localStorage
+    if (result.user?.id) {
+      localStorage.setItem('userId', result.user.id);
+      console.log('💾 Saved user ID:', result.user.id);
+    }
+
     console.log('✅ Login successful. Redirecting to album...');
-    window.location.href = 'album.html';
+    window.location.href = 'album.html'; // or mailbox.html
   } catch (err) {
     console.error('❌ Login failed:', err);
     showError(err.message);
   }
 });
+
 
 // ───────────── welcome banner ─────────────
 document.addEventListener('DOMContentLoaded', async () => {
