@@ -1,85 +1,71 @@
-export function updateCatPreview(cat, container = document) {
-  if (!cat) { console.warn('[preview] No cat provided'); return; }
-  if (!container) { console.warn('[preview] No container provided'); return; }
+// Efficient, readable, with concise comments
+export function updateCatPreview(
+  cat,
+  container = document,
+  opts = {}
+) {
+  if (!cat || !container) return;
 
-  console.log('[preview] Render start', { catId: cat.id, container });
+  const {
+    shopItemsByCategory = window.shopItemsByCategory,
+    spriteByTemplate    = window.spriteByTemplate, // optional fast map: template -> sprite_url
+    appUrl              = (typeof APP_URL !== 'undefined') ? APP_URL : ''
+  } = opts;
 
-  // Normalize shape
-  cat.equipment = cat.equipment || { hat: null, top: null, eyes: null, accessories: [] };
+  // Normalize equipment shape once
+  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: [] };
 
+  // ---- Helpers ----
   const resolveUrl = (path) => {
     if (!path) return '';
     if (path.startsWith('data:') || path.startsWith('http') || path.startsWith('blob:')) return path;
-    const clean = path.startsWith('/') ? path.slice(1) : path;
-    // APP_URL must exist globally or import it here
-    const base = (typeof APP_URL !== 'undefined') ? APP_URL : '';
-    return base ? `${base}/${clean}` : clean;
+    const clean = path[0] === '/' ? path.slice(1) : path;
+    return appUrl ? `${appUrl}/${clean}` : clean;
   };
 
-  const setLayer = (cls, path) => {
-    const el = container.querySelector(`.${cls}`);
-    if (!el) { console.warn(`[preview] Missing element .${cls} in container`, container); return; }
+  const q = (cls) => container.querySelector(`.${cls}`);
 
-    if (!path) {
-      el.style.display = 'none';
-      console.log(`[preview] .${cls} -> hidden (no path)`);
-      return;
+  const setImg = (cls, src) => {
+    const el = q(cls);
+    if (!el) { console.warn(`[preview] Missing .${cls}`); return; }
+
+    if (!src) { el.style.display = 'none'; return; }
+
+    const finalSrc = resolveUrl(src);
+
+    // Only update when changed to avoid extra loads
+    if (el.src !== finalSrc) {
+      el.onerror = () => { el.style.display = 'none'; console.warn(`[preview] .${cls} failed`, { finalSrc }); };
+      el.onload  = () => { el.style.display = 'block'; };
+      el.src = finalSrc;
     }
-
-    const finalPath = resolveUrl(path);
-    // Force repaint even if same src
-    if (el.src === finalPath) {
-      el.style.display = 'block';
-      console.log(`[preview] .${cls} unchanged src (already set)`);
-      return;
-    }
-
-    el.onerror = () => {
-      console.warn(`[preview] .${cls} failed to load`, { requested: finalPath });
-      el.style.display = 'none';
-    };
-
-    el.onload = () => {
-      console.log(`[preview] .${cls} loaded`, { src: finalPath });
-    };
-
-    el.src = finalPath;
     el.style.display = 'block';
-    console.log(`[preview] .${cls} -> ${finalPath}`);
   };
 
-  const getSprite = (category, itemId) => {
+  const findSprite = (category, itemId) => {
     if (!itemId) return '';
-    const catMap = window.shopItemsByCategory;
-    if (!catMap) { console.warn('[preview] shopItemsByCategory not ready'); return ''; }
+    // Fast path by template
+    if (spriteByTemplate && spriteByTemplate[itemId]) return spriteByTemplate[itemId];
 
-    // NOTE: keys must match your loader: "hats","tops","eyes","accessories"
-    const list = catMap[category];
-    if (!Array.isArray(list)) { console.warn(`[preview] Missing category '${category}'`); return ''; }
+    if (!shopItemsByCategory || !Array.isArray(shopItemsByCategory[category])) {
+      console.warn(`[preview] Category missing: ${category}`);
+      return '';
+    }
+    const list = shopItemsByCategory[category];
 
-    const item = list.find(i => i.id === itemId || i.template === itemId);
+    // Match by template or id (string/number)
+    const item = list.find(i => i.template === itemId || i.id === itemId || String(i.id) === String(itemId));
     if (!item) {
-      console.warn(`[preview] Item not found in '${category}'`, { itemId });
+      console.warn('[preview] Item not found', { category, itemId, sample: list.slice(0, 3) });
       return '';
     }
     return item.sprite_url || '';
   };
 
-  // Base cat body
-  setLayer('carouselBase', cat.sprite_url);
-
-  // Equipment layers
-  const hat = cat.equipment?.hat;
-  setLayer('carouselHat', getSprite('hats', hat));
-
-  const top = cat.equipment?.top;
-  setLayer('carouselTop', getSprite('tops', top));
-
-  const eyes = cat.equipment?.eyes;
-  setLayer('carouselEyes', getSprite('eyes', eyes));
-
-  const accessory = cat.equipment?.accessories?.[0];
-  setLayer('carouselAccessory', getSprite('accessories', accessory));
-
-  console.log('[preview] Render end', { catId: cat.id });
+  // ---- Render ----
+  setImg('carouselBase', cat.sprite_url);
+  setImg('carouselHat',  findSprite('hats',        equip.hat));
+  setImg('carouselTop',  findSprite('tops',        equip.top));
+  setImg('carouselEyes', findSprite('eyes',        equip.eyes));
+  setImg('carouselAccessory', findSprite('accessories', equip.accessories?.[0]));
 }
