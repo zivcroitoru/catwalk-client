@@ -22,10 +22,6 @@ import {
 } from './core/init/dataLoader.js';
 import {
   updateUI,
-  getPlayerCats,
-  setCatEquipment,
-  loadPlayerItems,
-  unlockPlayerItem
 } from './core/storage.js';
 
 
@@ -67,6 +63,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindUI();
 
 
+  // 🔔 Listen for equipment updates from storage.js
+  document.addEventListener('cat:equipmentUpdated', (e) => {
+    const { catId, equipment } = e.detail;
+    console.log(`[MAIN] cat:equipmentUpdated for cat ${catId}`, equipment);
+
+    if (typeof window.updateCatCard === 'function') {
+      console.log(`[MAIN] Updating only cat card for ${catId}`);
+      window.updateCatCard(catId, equipment);
+    } else if (typeof window.renderCarousel === 'function') {
+      console.log(`[MAIN] Re-rendering carousel (all cats)`);
+      window.renderCarousel();
+    } else {
+      console.warn(`[MAIN] No UI update function found for cat equipment change`);
+    }
+  });
 
   // requestNotificationPermission();
   // Initialize mailbox (only once!)

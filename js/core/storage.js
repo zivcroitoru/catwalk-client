@@ -227,16 +227,27 @@ export async function addCatToUser(cat) {
 
 // ───────────── Public: Equipment Saver ─────────────
 export async function setCatEquipment(catId, newEquipment) {
+  console.log(`[storage] setCatEquipment called for cat ${catId}`, newEquipment);
+
   await updateCatItems(catId, newEquipment);
   const eq = mergeEquipment(newEquipment);
 
-  const idx = window.userCats.findIndex(c => c.id === catId);
-  if (idx !== -1) {
-    window.userCats[idx] = { ...window.userCats[idx], equipment: eq };
+  const i = window.userCats.findIndex(c => c.id === catId);
+  if (i !== -1) {
+    window.userCats[i] = { ...window.userCats[i], equipment: eq };
+    console.log(`[storage] Updated window.userCats[${i}]`, window.userCats[i]);
+  } else {
+    console.warn(`[storage] Cat ${catId} not found in window.userCats`);
   }
+
+  console.log(`[storage] Dispatching cat:equipmentUpdated event`);
+  document.dispatchEvent(new CustomEvent('cat:equipmentUpdated', {
+    detail: { catId, equipment: eq }
+  }));
 
   return eq;
 }
+
 
 // ───────────── Public: Sprite & Normalization ─────────────
 export function buildSpriteLookup(breedItems = {}) {
