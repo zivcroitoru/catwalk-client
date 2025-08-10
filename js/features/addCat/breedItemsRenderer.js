@@ -107,37 +107,32 @@ function showAddCatConfirmation(breed, variantData) {
 
   document.body.appendChild(confirmBox);
 
-  confirmBox.querySelector(".yes-btn").onclick = () => {
-    if (window.catAdded) return;
-    window.catAdded = true;
+confirmBox.querySelector(".yes-btn").onclick = async () => {
+  if (window.catAdded) return;
+  window.catAdded = true;
 
-    const newCat = {
-      id: crypto.randomUUID(),
+  try {
+    const payload = {
       template: `${breed}-${variant}-${palette}`,
-      name: `${breed} (${name})`,
-      birthdate: new Date().toISOString().split("T")[0],
-      description: "",
-      breed,
-      variant,
-      palette,
-      sprite_url,
-      selected: false,
-      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+      name: `${breed} (${variant})`,
+      breed, variant, palette, sprite_url
     };
 
-    addCatToUser(newCat);
-    window.userCats.push(newCat);
+    // 1) persist on server
+    const created = await addCatToUser(payload); // must return res.json()
 
-    console.log("🐱 Cat added:", newCat);
-    console.log(`📦 Total cats: ${window.userCats?.length}`);
+    // 2) refetch fresh (no cache) + rerender
+    window.userCats = await getPlayerCats({ noCache: true });
+    await renderCarousel();
 
-    updateUIAfterCatAddition(window.userCats.length);
-    toastCatAdded({ breed, name, sprite_url });
+    toastCatAdded({ breed, name: created.name ?? payload.name, sprite_url });
     window.closeAddCat?.();
+  } finally {
     confirmBox.remove();
+    window.catAdded = false;
+  }
+};
 
-    setTimeout(() => (window.catAdded = false), 300);
-  };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
