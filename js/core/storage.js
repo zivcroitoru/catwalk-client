@@ -160,17 +160,22 @@ export async function unlockPlayerItem(template) {
   updateUI();
 }
 
-export async function getPlayerCats({ noCache = false } = {}) {
-  const token = localStorage.getItem('token');
-  const url = `${PLAYER_CATS_API}${noCache ? `?t=${Date.now()}` : ''}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: 'no-store'
-  });
-  if (!res.ok) throw new Error('GET /cats failed');
-  return res.json();
-}
+export async function getPlayerCats() {
+  const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
 
+  const cats = await Promise.all(raw.map(async (c) => {
+    const base = normalizeCat(c, sprites);
+    let eqRes = null;
+    try {
+      eqRes = await apiGetCatItems(base.id);
+    } catch {}
+    const eq = mergeEquipment(eqRes?.equipment ?? c.equipment);
+    return { ...base, equipment: eq };
+  }));
+
+  window.userCats = cats;
+  return cats;
+}
 
 // ───────────── Public: Cat Management ─────────────
 export async function updateCat(catId, updates) {
