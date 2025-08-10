@@ -16,8 +16,8 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   const category = document.getElementById('clothes-category')?.textContent.trim();
   const price = document.getElementById('clothes-price')?.textContent.trim();
   const description = document.getElementById('clothes-description')?.textContent.trim();
-  const preview = document.getElementById('clothes-sprite-preview')?.textContent.trim();
-  const sprite_url = spriteImage?.src;
+const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.textContent.trim();  
+const sprite_url = spriteImage?.src;
 
   const clothesData = {
     template,
@@ -25,7 +25,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
     category,
     price,
     description,
-    preview,
+    sprite_url_preview,
     sprite_url,
   };
 
