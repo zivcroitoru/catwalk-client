@@ -60,7 +60,7 @@ const selectedCard = document.querySelector(`.cat-card[data-cat-id="${selectedCa
 selectCatCard(selectedCard);
 
 updateInventoryCount();
-
+}
 
 // ───────────── Build Cat Card ─────────────
 function buildCatCard(cat, spriteLookup) {
