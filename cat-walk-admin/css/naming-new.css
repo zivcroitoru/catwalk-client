@@ -135,7 +135,7 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     font-size: 32px;
     color: #4E5C4F;
     font-weight: 400;
@@ -158,9 +158,12 @@ body {
 }
 
 .clothes-sprite-preview {
+        white-space: nowrap;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
+    max-width: 200px;
+    /* adjust as needed */
+    display: inline-block;
 }
 
 .clothes-sprite-preview:hover,
