@@ -90,6 +90,7 @@ if (!catId || !selectedCat) {
         }
 
         alert('Cat deleted successfully.');
+        if (catImage) catImage.src = newSpriteUrl;
         window.location.href = 'cat-database.html';
       } catch (err) {
         console.error('Delete error:', err);
