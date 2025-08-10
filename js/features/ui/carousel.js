@@ -1,4 +1,4 @@
-// carousel.js – renders the user's cats with dressed thumbnails
+// carousel.js – renders the user's cats with dressed thumbnails + debug
 
 import { $, setDisplay } from '../../core/utils.js';
 import { state } from '../../core/state.js';
@@ -7,6 +7,9 @@ import { updateCatPreview } from '../catPreviewRenderer.js';
 import { showCatProfile } from '../user/cat_profile.js';
 import { getPlayerCats, buildSpriteLookup } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js';
+
+/* ───────────────── Debug toggle ───────────────── */
+const DEBUG_CAROUSEL = localStorage.getItem('debugCarousel') === '1';
 
 /* ───────────────── Helpers ───────────────── */
 // Normalize various id shapes (object/number/string) to a lookup key
@@ -17,6 +20,13 @@ const spriteOf = (v, map) => {
   const k = toKey(v);
   if (!k) return '';
   return map[k] ?? map[String(k)] ?? '';
+};
+
+// Shorten data URLs for logs
+const trimUrl = (u) => {
+  if (!u) return '';
+  if (u.startsWith('data:')) return `data:...[${u.length} chars]`;
+  return u.length > 120 ? u.slice(0, 117) + '...' : u;
 };
 
 // Fallback: build layered thumbnail from base template + equipment
@@ -34,13 +44,11 @@ function makeThumbLayersFallback(cat, sprites) {
     const src = spriteOf(acc, sprites);
     if (src) layers.push(src);
   }
-  // Filter out any falsy entries
   return layers.filter(Boolean);
 }
 
 // Render <img> layers into a container (base first, then clothes)
 function renderThumbLayers(containerEl, layers) {
-  // Keep background div if present; clear the rest
   const bg = containerEl.querySelector('.cat-bg');
   containerEl.innerHTML = '';
   if (bg) containerEl.appendChild(bg);
@@ -54,6 +62,42 @@ function renderThumbLayers(containerEl, layers) {
   }
 }
 
+/* ───────────── Debug per-cat ───────────── */
+function debugRenderedCat(cat, layers, sprites) {
+  const eq = cat.equipment || {};
+  const info = {
+    id: cat.id,
+    name: cat.name,
+    templateKey: toKey(cat.template),
+    baseURL: trimUrl(spriteOf(cat.template, sprites) || cat.sprite_url),
+    hatKey: toKey(eq.hat),
+    hatURL: trimUrl(spriteOf(eq.hat, sprites)),
+    topKey: toKey(eq.top),
+    topURL: trimUrl(spriteOf(eq.top, sprites)),
+    eyesKey: toKey(eq.eyes),
+    eyesURL: trimUrl(spriteOf(eq.eyes, sprites)),
+    accessoriesKeys: (eq.accessories || []).map(toKey),
+    accessoriesURLs: (eq.accessories || []).map(a => trimUrl(spriteOf(a, sprites))),
+    finalLayerCount: layers.length
+  };
+
+  console.groupCollapsed(
+    `🐾 Rendered "${info.name}" [id=${info.id}] · base=${info.templateKey} · layers=${info.finalLayerCount}`
+  );
+  console.log('Equipment keys:', {
+    hat: info.hatKey, top: info.topKey, eyes: info.eyesKey, accessories: info.accessoriesKeys
+  });
+  console.log('Resolved URLs:', {
+    base: info.baseURL,
+    hat: info.hatURL,
+    top: info.topURL,
+    eyes: info.eyesURL,
+    accessories: info.accessoriesURLs
+  });
+  console.log('Final layer order (top→bottom shown bottom→top in DOM):', layers.map(trimUrl));
+  console.groupEnd();
+}
+
 /* ───────────── Full Render ───────────── */
 export async function renderCarousel() {
   const container = document.getElementById('catCarousel');
@@ -65,11 +109,13 @@ export async function renderCarousel() {
     return;
   }
 
+  if (DEBUG_CAROUSEL) console.time('renderCarousel');
+
   // Load fresh cats (already normalized + hydrated by storage.getPlayerCats)
-  console.log('🔄 Loading player cats...');
+  if (DEBUG_CAROUSEL) console.log('🔄 Loading player cats...');
   window.userCats = await getPlayerCats();
   const hasCats = window.userCats.length > 0;
-  console.log(`📦 Found ${window.userCats.length} cats`);
+  if (DEBUG_CAROUSEL) console.log(`📦 Found ${window.userCats.length} cats`);
 
   // Show/hide main UI sections
   setDisplay('catAreaWrapper', hasCats);
@@ -82,16 +128,18 @@ export async function renderCarousel() {
   if (!hasCats) {
     toastNoCats();
     updateInventoryCount();
+    if (DEBUG_CAROUSEL) console.timeEnd('renderCarousel');
     return;
   }
 
-  // Clear any previous toast (optional)
   if (window.Toastify && Toastify.recent) {
     try { Toastify.recent.hideToast(); } catch {}
   }
 
   // Build sprite lookup once for fallbacks
   const spriteLookup = buildSpriteLookup(window.breedItems || {});
+  if (DEBUG_CAROUSEL) console.log('🔍 spriteLookup keys:', Object.keys(spriteLookup).length);
+
   const cats = window.userCats; // ✅ do NOT re-normalize here
 
   // Batch DOM work
@@ -117,6 +165,8 @@ export async function renderCarousel() {
 
     const thumbWrap = card.querySelector(`#cardPreview_${cat.id}`);
     renderThumbLayers(thumbWrap, layers);
+
+    if (DEBUG_CAROUSEL) debugRenderedCat(cat, layers, spriteLookup);
 
     // Select behavior
     card.addEventListener('click', () => {
@@ -148,6 +198,8 @@ export async function renderCarousel() {
   showCatProfile(firstCat);
   selectCatCard(document.querySelector('.cat-card'));
   updateInventoryCount();
+
+  if (DEBUG_CAROUSEL) console.timeEnd('renderCarousel');
 }
 
 /* ───────────── Card Select Highlight ───────────── */
