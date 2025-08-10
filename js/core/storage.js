@@ -9,6 +9,23 @@ const CAT_ITEMS_API = `${APP_URL}/api/cat_items`;
 
 let itemCache = null;
 
+// ───────────── Equipment merge helper ─────────────
+function mergeEquipment(incoming) {
+  // Normalized shape we expect across the app
+  const base = { hat: null, top: null, eyes: null, accessories: [] };
+  if (!incoming) return base;
+
+  // Accept both singular/plural keys defensively
+  const mapped = {
+    hat: incoming.hat ?? incoming.hats ?? null,
+    top: incoming.top ?? incoming.tops ?? null,
+    eyes: incoming.eyes ?? null,
+    accessories: Array.isArray(incoming.accessories) ? incoming.accessories : []
+  };
+  return { ...base, ...mapped };
+}
+
+
 // ───────────── REST helpers ─────────────
 async function apiGetItems() {
   const token = localStorage.getItem('token');
@@ -94,6 +111,24 @@ async function apiUpdateCat(catId, updates) {
   return res.json();
 }
 
+
+async function apiGetCatItems(catId) {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No auth token');
+
+  const res = await fetch(`${CAT_ITEMS_API}/${catId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!res.ok) {
+    // Non-fatal: we can still show the cat without equipment
+    return null;
+  }
+
+  // Expected shape: { catId, equipment }
+  return res.json();
+}
+
 async function updateCatItems(catId, equipment) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
@@ -165,7 +200,18 @@ function getSpriteLookup() {
 
 export async function getPlayerCats() {
   const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
-  const cats = raw.map(c => normalizeCat(c, sprites));
+
+  // Normalize and then hydrate equipment per cat
+  const cats = await Promise.all(raw.map(async (c) => {
+    const base = normalizeCat(c, sprites);
+    let eqRes = null;
+    try {
+      eqRes = await apiGetCatItems(base.id);
+    } catch {}
+    const eq = mergeEquipment(eqRes?.equipment ?? c.equipment);
+    return { ...base, equipment: eq };
+  }));
+
   window.userCats = cats;
   return cats;
 }
@@ -268,7 +314,7 @@ export function normalizeCat(cat, spriteByTemplate) {
     variant: cat.variant || variant,
     palette: cat.palette || palette,
     selected: false,
-    equipment: { hat: null, top: null, eyes: null, accessories: [] },
+    equipment: mergeEquipment(cat.equipment),
   };
 }
 
