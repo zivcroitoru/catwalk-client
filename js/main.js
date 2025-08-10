@@ -13,6 +13,7 @@ import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
 import { toggleAddCat } from './features/addCat/addCat.js';
 import { bindUI } from './features/ui/uiBinder.js';
 
+
 import { loadShopAndTemplates, loadUserCats } from './core/init/dataLoader.js';
 import { updateUI } from './core/storage.js';
 
