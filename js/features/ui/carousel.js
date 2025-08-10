@@ -6,15 +6,16 @@ import { showCatProfile } from '../user/cat_profile.js';
 import { getPlayerCats, buildSpriteLookup, normalizeCat } from '../../core/storage.js';
 import { toastNoCats } from '../../core/toast.js';
 
-// ───────────── Full Render ─────────────
 export async function renderCarousel(selectCatId = null) {
   const container = document.getElementById("catCarousel");
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
   if (!container) return;
 
+  // 1) Fetch – trust normalized shape from getPlayerCats()
   window.userCats = await getPlayerCats();
-  const hasCats = window.userCats.length > 0;
+  const cats = window.userCats; // already normalized
+  const hasCats = cats.length > 0;
 
   setDisplay("catAreaWrapper", hasCats);
   setDisplay("emptyState", !hasCats);
@@ -22,48 +23,53 @@ export async function renderCarousel(selectCatId = null) {
   podium?.classList.toggle("hidden", !hasCats);
   container.innerHTML = "";
 
-  if (!hasCats) {
-    toastNoCats();
-    updateInventoryCount();
-    return;
+  if (!hasCats) { toastNoCats(); updateInventoryCount(); return; }
+
+  if (window.Toastify?.recent) { try { Toastify.recent.hideToast(); } catch {} }
+
+  // 2) (Optional) cache sprite lookup once
+  window._spriteLookup ||= buildSpriteLookup(window.breedItems);
+
+  // 3) Render cards
+  const frag = document.createDocumentFragment();
+  cats.forEach(cat => frag.appendChild(buildCatCard(cat, window._spriteLookup)));
+  container.appendChild(frag);
+
+  // 4) Resolve selected cat (by ID or fallback to first)
+  const selectedCat = cats.find(c => c.id === selectCatId) || cats[0];
+  if (!selectedCat) return;
+
+  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+  window.selectedCat = selectedCat;
+
+  // 5) Update main display
+  updateCatPreview(selectedCat);
+  const mainCatImg = document.getElementById("carouselCat");
+  if (mainCatImg) {
+    mainCatImg.src = selectedCat.sprite_url;
+    mainCatImg.alt = selectedCat.name || "Cat";
+  }
+  showCatProfile(selectedCat);
+
+  // 6) Highlight & ensure visibility
+  const selectedCard = document.querySelector(`.cat-card[data-cat-id="${selectedCat.id}"]`);
+  if (selectedCard) {
+    selectCatCard(selectedCard);
+
+    // Move to the page that contains the selected card
+    const idx = Array.from(container.children).indexOf(selectedCard);
+    if (idx >= 0) {
+      const page = Math.floor(idx / CARDS_PER_PAGE);
+      state.currentPage = page;
+      scrollCarousel(0); // apply transform for the current page
+      selectedCard.scrollIntoView({ block: "nearest", inline: "center" });
+    }
   }
 
-  if (window.Toastify?.recent) {
-    try { Toastify.recent.hideToast(); } catch {}
-  }
-
-const spriteLookup = buildSpriteLookup(window.breedItems);
-const normalizedCats = window.userCats.map(cat => normalizeCat(cat, spriteLookup));
-
-const fragment = document.createDocumentFragment();
-normalizedCats.forEach(cat => fragment.appendChild(buildCatCard(cat, spriteLookup)));
-container.appendChild(fragment);
-
-// ✅ Choose selected cat
-const selectedCat = normalizedCats.find(c => c.id === selectCatId) || normalizedCats[0];
-if (!selectedCat) return; // edge case: no cats
-
-selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
-window.selectedCat = selectedCat;
-
-// ✅ Update display
-updateCatPreview(selectedCat);
-
-const mainCatImg = document.getElementById("carouselCat");
-if (mainCatImg) {
-  mainCatImg.src = selectedCat.sprite_url;
-  mainCatImg.alt = selectedCat.name || "Cat";
+  updateInventoryCount();
 }
 
-showCatProfile(selectedCat);
-const selectedCard = document.querySelector(`.cat-card[data-cat-id="${selectedCat.id}"]`);
-selectCatCard(selectedCard);
-
-updateInventoryCount();
-}
-
-// ───────────── Build Cat Card ─────────────
-function buildCatCard(cat, spriteLookup) {
+function buildCatCard(cat /*, spriteLookup */) {
   const card = document.createElement("div");
   card.className = "cat-card";
   card.dataset.catId = cat.id;
@@ -97,12 +103,9 @@ function buildCatCard(cat, spriteLookup) {
   return card;
 }
 
-// ───────────── Card Select Highlight ─────────────
 function selectCatCard(selectedCard) {
-  document.querySelectorAll('.cat-card').forEach(card =>
-    card.classList.remove('selected')
-  );
-  selectedCard.classList.add('selected');
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  if (selectedCard) selectedCard.classList.add('selected');
 }
 
 // ───────────── Scroll Carousel ─────────────
