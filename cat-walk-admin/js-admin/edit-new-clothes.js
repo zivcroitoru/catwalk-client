@@ -25,7 +25,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   document.getElementById('clothes-category').textContent = truncateText(categoryFull, 20);
   document.getElementById('clothes-price').textContent = truncateText(priceFull, 20);
   document.getElementById('clothes-description').textContent = truncateText(descriptionFull, 30);
-  // document.getElementById('clothes-sprite-preview').textContent = truncateText(previewFull, 30);
+  document.getElementById('clothes-sprite-preview').textContent = truncateText(previewFull, 30);
   const clothesData = {
     template,
     name,
