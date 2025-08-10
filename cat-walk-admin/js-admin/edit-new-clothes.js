@@ -16,8 +16,15 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   const category = document.getElementById('clothes-category')?.textContent.trim();
   const price = document.getElementById('clothes-price')?.textContent.trim();
   const description = document.getElementById('clothes-description')?.textContent.trim();
-const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.textContent.trim()  
-const sprite_url = spriteImage?.src;
+  const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.textContent.trim()
+  const sprite_url = spriteImage?.src;
+
+
+  document.getElementById('clothes-template').textContent = truncateText(templateFull, 20);
+  document.getElementById('clothes-name').textContent = truncateText(nameFull, 20);
+  document.getElementById('clothes-category').textContent = truncateText(categoryFull, 20);
+  document.getElementById('clothes-price').textContent = truncateText(priceFull, 20);
+  document.getElementById('clothes-description').textContent = truncateText(descriptionFull, 30);
 
   const clothesData = {
     template,
