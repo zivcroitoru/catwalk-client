@@ -1,6 +1,7 @@
 import { toastCatAdded, toastCancelled } from '../../core/toast.js';
 import { addCatToUser } from '../../core/storage.js';
 import { toPascalCase } from '../../core/utils.js';
+import { renderCarousel } from '../ui/carousel.js';
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
@@ -106,37 +107,34 @@ function showAddCatConfirmation(breed, variantData) {
 
   document.body.appendChild(confirmBox);
 
-  confirmBox.querySelector(".yes-btn").onclick = () => {
-    if (window.catAdded) return;
-    window.catAdded = true;
+confirmBox.querySelector(".yes-btn").onclick = async () => {
+  if (window.catAdded) return;
+  window.catAdded = true;
 
-    const newCat = {
-      id: crypto.randomUUID(),
+  try {
+    // Build payload for server; let server assign the id
+    const payload = {
       template: `${breed}-${variant}-${palette}`,
-      name: `${breed} (${name})`,
-      birthdate: new Date().toISOString().split("T")[0],
-      description: "",
-      breed,
-      variant,
-      palette,
-      sprite_url,
-      selected: false,
-      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+      name: `${breed} (${variant})`,
+      breed, variant, palette, sprite_url
     };
 
-    addCatToUser(newCat);
-    window.userCats.push(newCat);
+    // 1) Await the POST and use canonical server object
+    const created = await addCatToUser(payload); // ensure this returns res.json()
 
-    console.log("🐱 Cat added:", newCat);
-    console.log(`📦 Total cats: ${window.userCats?.length}`);
+    // 2) Refresh local data + UI (refetch to avoid drift & caching)
+    window.userCats = await getPlayerCats({ noCache: true }); // implement noCache in storage.js
+    await renderCarousel();
 
-    updateUIAfterCatAddition(window.userCats.length);
-    toastCatAdded({ breed, name, sprite_url });
+    // 3) UI niceties
+    toastCatAdded({ breed, name: created.name ?? payload.name, sprite_url });
     window.closeAddCat?.();
+  } finally {
     confirmBox.remove();
+    window.catAdded = false;
+  }
+};
 
-    setTimeout(() => (window.catAdded = false), 300);
-  };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
