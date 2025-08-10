@@ -146,6 +146,16 @@ body {
     gap: 10px;
 }
 
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* adjust as needed */
+  display: inline-block; /* or block depending on layout */
+}
+
+
 .clothes-name:hover,
 .clothes-category:hover,
 .clothes-description:hover,
