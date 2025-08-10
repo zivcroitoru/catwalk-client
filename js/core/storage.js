@@ -320,5 +320,22 @@ export function normalizeCat(cat, spriteByTemplate) {
 
 // ───────────── Export Everything ─────────────
 export {
-  updateCatItems
+  updateCatItems,
+    setCatEquipment
+
 };
+export async function setCatEquipment(catId, newEquipment) {
+  await updateCatItems(catId, newEquipment); // saves to DB
+
+  const eq = mergeEquipment(newEquipment);   // normalize it
+
+  const idx = window.userCats.findIndex(c => c.id === catId);
+  if (idx !== -1) {
+    window.userCats[idx] = {
+      ...window.userCats[idx],
+      equipment: eq
+    };
+  }
+
+  return eq;
+}

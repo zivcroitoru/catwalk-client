@@ -24,14 +24,6 @@ import { updateUI } from './core/storage.js';
 
 
 
-// ───────────── Socket Setup ─────────────
-// const userToken = localStorage.getItem('token');  // or wherever you store it
-// const playerId = localStorage.getItem('playerId'); // or your player ID
-
-// if (userToken && playerId) {
-//   setupSocket(userToken, `player_${playerId}`); // room name can be any string, e.g. player id prefixed
-// }
-
 
 const userToken = localStorage.getItem('token');
 const playerId = localStorage.getItem('playerId');
