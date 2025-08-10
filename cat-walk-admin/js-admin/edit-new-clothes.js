@@ -32,7 +32,7 @@ const sprite_url = spriteImage?.src;
   console.log('Sending clothes data:', clothesData);
 
   // Validate required fields
-  if (!template || !name || !category || !price || !description || !preview || !sprite_url) {
+  if (!template || !name || !category || !price || !description || !sprite_url_preview || !sprite_url) {
     alert("Please fill in all fields before submitting.");
     return;
   }
