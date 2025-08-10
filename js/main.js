@@ -25,21 +25,7 @@ function dispatch(name, detail) {
   document.dispatchEvent(new CustomEvent(name, { detail }));
 }
 
-/* Update only one card thumbnail (keeps window.userCats authoritative) */
-function updateCatCard(catId, equipment) {
-  const sel = `[data-cat-id="${escapeSelector(String(catId))}"]`;
-  const card = document.querySelector(sel);
-  if (!card) return;
 
-  const list = window.userCats || [];
-  const cat = list.find((c) => String(c.id) === String(catId));
-  if (!cat) return;
-
-  if (equipment) cat.equipment = equipment; // sync cache
-  if (typeof window.updateCatPreview === 'function') {
-    window.updateCatPreview(cat, card);
-  }
-}
 
 /* Bind runtime listeners that depend on the DOM */
 function wireRuntimeEvents() {

@@ -10,13 +10,9 @@ import { toastNoCats } from '../../core/toast.js';
 // ───────────── Full Render ─────────────
 export async function renderCarousel() {
   const container = document.getElementById("catCarousel");
-  const scroll = document.getElementById("catProfileScroll");
-  const podium = document.getElementById("catDisplay");
-
-  if (!container) {
-    console.warn('⚠️ Carousel container not found');
-    return;
-  }
+  const scroll    = document.getElementById("catProfileScroll");
+  const podium    = document.getElementById("catDisplay");
+  if (!container) { console.warn('⚠️ Carousel container not found'); return; }
 
   console.log('🔄 Loading player cats...');
   window.userCats = await getPlayerCats();
@@ -35,17 +31,19 @@ export async function renderCarousel() {
     return;
   }
 
-  if (window.Toastify && Toastify.recent) {
-    try { Toastify.recent.hideToast(); } catch { }
-  }
+  // Optional toast cleanup
+  if (window.Toastify && Toastify.recent) { try { Toastify.recent.hideToast(); } catch {} }
 
-  const spriteLookup = buildSpriteLookup(window.breedItems);
-  console.log('🔍 spriteLookup:', spriteLookup);
+  // Build base (breed) sprites for the cat’s coat (normalizeCat likely uses this)
+  const breedSprites = buildSpriteLookup(window.breedItems);
+  console.log('🔍 breedSprites:', breedSprites);
 
+  // Normalize cats (ensures sprite_url etc.)
   const normalizedCats = window.userCats.map(cat => {
-    const normalized = normalizeCat(cat, spriteLookup);
-    console.log(`🧪 Normalized cat: ${normalized.name}`, normalized);
-    return normalized;
+    const n = normalizeCat(cat, breedSprites);
+    n.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+    console.log(`🧪 Normalized cat: ${n.name}`, n);
+    return n;
   });
 
   const fragment = document.createDocumentFragment();
@@ -66,40 +64,25 @@ export async function renderCarousel() {
       <span>${cat.name}</span>
     `;
 
-    const baseLayer = card.querySelector(".carouselBase");
-    const hatLayer = card.querySelector(".carouselHat");
-    const topLayer = card.querySelector(".carouselTop");
-    const eyesLayer = card.querySelector(".carouselEyes");
-    const accLayer = card.querySelector(".carouselAccessory");
-
-    if (baseLayer) baseLayer.src = cat.sprite_url;
-
-    if (hatLayer && cat.equipment?.hat) {
-      console.log(`🎩 Hat for ${cat.name}: ${cat.equipment.hat} -> ${spriteLookup[cat.equipment.hat]}`);
-      hatLayer.src = spriteLookup[cat.equipment.hat] || '';
-    }
-
-    if (topLayer && cat.equipment?.top) {
-      console.log(`👕 Top for ${cat.name}: ${cat.equipment.top} -> ${spriteLookup[cat.equipment.top]}`);
-      topLayer.src = spriteLookup[cat.equipment.top] || '';
-    }
-
-    if (eyesLayer && cat.equipment?.eyes) {
-      console.log(`👁️ Eyes for ${cat.name}: ${cat.equipment.eyes} -> ${spriteLookup[cat.equipment.eyes]}`);
-      eyesLayer.src = spriteLookup[cat.equipment.eyes] || '';
-    }
-
-    if (accLayer && Array.isArray(cat.equipment?.accessories) && cat.equipment.accessories[0]) {
-      console.log(`🧢 Accessory for ${cat.name}: ${cat.equipment.accessories[0]} -> ${spriteLookup[cat.equipment.accessories[0]]}`);
-      accLayer.src = spriteLookup[cat.equipment.accessories[0]] || '';
-    }
+    const thumb = card.querySelector(`#cardPreview_${cat.id}`);
+    // Single source: preview resolves coat + clothes (uses spriteByTemplate/shopItemsByCategory)
+    updateCatPreview(cat, thumb, {
+      spriteByTemplate: window.spriteByTemplate,
+      shopItemsByCategory: window.shopItemsByCategory
+    });
 
     card.addEventListener("click", () => {
       const isSame = window.selectedCat?.id === cat.id;
       window.selectedCat = cat;
       selectCatCard(card);
       showCatProfile(cat);
-      if (!isSame) updateCatPreview(cat);
+      if (!isSame) {
+        // Update podium using the same maps for consistency
+        updateCatPreview(cat, document, {
+          spriteByTemplate: window.spriteByTemplate,
+          shopItemsByCategory: window.shopItemsByCategory
+        });
+      }
     });
 
     fragment.appendChild(card);
@@ -107,10 +90,14 @@ export async function renderCarousel() {
 
   container.appendChild(fragment);
 
+  // Select & render first cat in podium
   const firstCat = normalizedCats[0];
-  firstCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
   window.selectedCat = firstCat;
-  updateCatPreview(firstCat);
+
+  updateCatPreview(firstCat, document, {
+    spriteByTemplate: window.spriteByTemplate,
+    shopItemsByCategory: window.shopItemsByCategory
+  });
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
@@ -122,6 +109,7 @@ export async function renderCarousel() {
   selectCatCard(document.querySelector(".cat-card"));
   updateInventoryCount();
 }
+
 
 // ───────────── Card Select Highlight ─────────────
 function selectCatCard(selectedCard) {
