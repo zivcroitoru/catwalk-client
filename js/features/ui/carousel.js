@@ -1,12 +1,27 @@
+
+import { $, setDisplay } from '../../core/utils.js';
+import { state } from '../../core/state.js';
+import { CARDS_PER_PAGE } from '../../core/constants.js';
+import { updateCatPreview } from '../catPreviewRenderer.js';
+import { showCatProfile } from '../user/cat_profile.js';
+import { getPlayerCats, buildSpriteLookup, normalizeCat } from '../../core/storage.js';
+import { toastNoCats } from '../../core/toast.js';
+
 // ───────────── Full Render ─────────────
-export async function renderCarousel({ suppressSelect = false } = {}) {
+export async function renderCarousel() {
   const container = document.getElementById("catCarousel");
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
-  if (!container) return;
 
+  if (!container) {
+    console.warn('⚠️ Carousel container not found');
+    return;
+  }
+
+  console.log('🔄 Loading player cats...');
   window.userCats = await getPlayerCats();
   const hasCats = window.userCats.length > 0;
+  console.log(`📦 Found ${window.userCats.length} cats`);
 
   setDisplay("catAreaWrapper", hasCats);
   setDisplay("emptyState", !hasCats);
@@ -20,55 +35,72 @@ export async function renderCarousel({ suppressSelect = false } = {}) {
     return;
   }
 
-  // Dismiss recent toast
-  if (window.Toastify?.recent) {
-    try { Toastify.recent.hideToast(); } catch {}
+  if (window.Toastify && Toastify.recent) {
+    try { Toastify.recent.hideToast(); } catch { }
   }
 
-  const breedSprites = buildSpriteLookup(window.breedItems);
+  const spriteLookup = buildSpriteLookup(window.breedItems);
+  console.log('🔍 spriteLookup:', spriteLookup);
 
   const normalizedCats = window.userCats.map(cat => {
-    const n = normalizeCat(cat, breedSprites);
-    n.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
-    return n;
+    const normalized = normalizeCat(cat, spriteLookup);
+    console.log(`🧪 Normalized cat: ${normalized.name}`, normalized);
+    return normalized;
   });
 
   const fragment = document.createDocumentFragment();
-
-  normalizedCats.forEach(cat => {
+  normalizedCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
-    card.innerHTML = `
-      <div class="cat-thumbnail" id="cardPreview_${cat.id}">
-        <div class="cat-bg"></div>
-        <img class="cat-layer carouselBase" loading="lazy" />
-        <img class="cat-layer carouselHat" loading="lazy" />
-        <img class="cat-layer carouselTop" loading="lazy" />
-        <img class="cat-layer carouselEyes" loading="lazy" />
-        <img class="cat-layer carouselAccessory" loading="lazy" />
-      </div>
-      <span>${cat.name}</span>
-    `;
+// inside renderCarousel() when creating each card:
+card.innerHTML = `
+  <div class="cat-thumbnail" id="cardPreview_${cat.id}">
+    <div class="cat-bg"></div>
+    <img class="cat-layer carouselBase" loading="lazy" />
+    <img class="cat-layer carouselHat" loading="lazy" />
+    <img class="cat-layer carouselTop" loading="lazy" />
+    <img class="cat-layer carouselEyes" loading="lazy" />
+    <img class="cat-layer carouselAccessory" loading="lazy" />
+  </div>
+  <span>${cat.name}</span>
+`;
 
-    const thumb = card.querySelector(`#cardPreview_${cat.id}`);
-    updateCatPreview(cat, thumb, {
-      spriteByTemplate: window.spriteByTemplate,
-      shopItemsByCategory: window.shopItemsByCategory
-    });
+const thumb = card.querySelector(`#cardPreview_${cat.id}`);
+updateCatPreview(cat, thumb, {
+  spriteByTemplate: window.spriteByTemplate,
+  shopItemsByCategory: window.shopItemsByCategory
+});
+
+    if (baseLayer) baseLayer.src = cat.sprite_url;
+
+    if (hatLayer && cat.equipment?.hat) {
+      console.log(`🎩 Hat for ${cat.name}: ${cat.equipment.hat} -> ${spriteLookup[cat.equipment.hat]}`);
+      hatLayer.src = spriteLookup[cat.equipment.hat] || '';
+    }
+
+    if (topLayer && cat.equipment?.top) {
+      console.log(`👕 Top for ${cat.name}: ${cat.equipment.top} -> ${spriteLookup[cat.equipment.top]}`);
+      topLayer.src = spriteLookup[cat.equipment.top] || '';
+    }
+
+    if (eyesLayer && cat.equipment?.eyes) {
+      console.log(`👁️ Eyes for ${cat.name}: ${cat.equipment.eyes} -> ${spriteLookup[cat.equipment.eyes]}`);
+      eyesLayer.src = spriteLookup[cat.equipment.eyes] || '';
+    }
+
+    if (accLayer && Array.isArray(cat.equipment?.accessories) && cat.equipment.accessories[0]) {
+      console.log(`🧢 Accessory for ${cat.name}: ${cat.equipment.accessories[0]} -> ${spriteLookup[cat.equipment.accessories[0]]}`);
+      accLayer.src = spriteLookup[cat.equipment.accessories[0]] || '';
+    }
 
     card.addEventListener("click", () => {
       const isSame = window.selectedCat?.id === cat.id;
       window.selectedCat = cat;
       selectCatCard(card);
       showCatProfile(cat);
-      if (!isSame) {
-        updateCatPreview(cat, document, {
-          spriteByTemplate: window.spriteByTemplate,
-          shopItemsByCategory: window.shopItemsByCategory
-        });
-      }
+      if (!isSame) updateCatPreview(cat);
     });
 
     fragment.appendChild(card);
@@ -76,26 +108,19 @@ export async function renderCarousel({ suppressSelect = false } = {}) {
 
   container.appendChild(fragment);
 
-  // 🔁 Only auto-select first cat if not suppressed
-  if (!suppressSelect) {
-    const firstCat = normalizedCats[0];
-    window.selectedCat = firstCat;
+  const firstCat = normalizedCats[0];
+  firstCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+  window.selectedCat = firstCat;
+  updateCatPreview(firstCat);
 
-    updateCatPreview(firstCat, document, {
-      spriteByTemplate: window.spriteByTemplate,
-      shopItemsByCategory: window.shopItemsByCategory
-    });
-
-    const mainCatImg = document.getElementById("carouselCat");
-    if (mainCatImg) {
-      mainCatImg.src = firstCat.sprite_url;
-      mainCatImg.alt = firstCat.name || "Cat";
-    }
-
-    showCatProfile(firstCat);
-    selectCatCard(document.querySelector(".cat-card"));
+  const mainCatImg = document.getElementById("carouselCat");
+  if (mainCatImg) {
+    mainCatImg.src = firstCat.sprite_url;
+    mainCatImg.alt = firstCat.name || "Cat";
   }
 
+  showCatProfile(firstCat);
+  selectCatCard(document.querySelector(".cat-card"));
   updateInventoryCount();
 }
 
@@ -131,5 +156,3 @@ export function updateInventoryCount() {
   const inventoryUI = document.getElementById("inventoryCount");
   if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
 }
-
-window.renderCarousel = renderCarousel;
