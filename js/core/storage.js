@@ -257,7 +257,7 @@ export async function addCatToUser(cat) {
     })
   });
 
-  if (!res.ok) throw new Error('Failed to add cat');
+  if (!res.ok) throw new Error('Failed to add a cat');
   const result = await res.json();
   await loadPlayerItems(true);
   updateUI();
