@@ -56,8 +56,12 @@ if (!catId || !selectedCat) {
             if (!response.ok) {
               throw new Error('Failed to update sprite_url');
             }
-
+            
+            alert('Changes saved successfully!');
             console.log('Sprite URL updated successfully');
+
+            if (catImage) catImage.src = newSpriteUrl;
+
           } catch (err) {
             console.error('Error saving to server:', err);
             alert('Failed to save sprite URL to the database.');
@@ -89,9 +93,7 @@ if (!catId || !selectedCat) {
           throw new Error(errorData.error || 'Failed to delete the cat');
         }
 
-        const data = await response.json();
-        alert('Cat deleted successfully!', data);
-        if (catImage) catImage.src = newSpriteUrl;
+        alert('Cat deleted successfully!');
         window.location.href = 'cat-database.html';
       } catch (err) {
         console.error('Delete error:', err);
