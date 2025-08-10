@@ -89,7 +89,8 @@ if (!catId || !selectedCat) {
           throw new Error(errorData.error || 'Failed to delete the cat');
         }
 
-        alert('Cat deleted successfully.');
+        const data = await response.json();
+        alert('Cat deleted successfully!', data);
         if (catImage) catImage.src = newSpriteUrl;
         window.location.href = 'cat-database.html';
       } catch (err) {
