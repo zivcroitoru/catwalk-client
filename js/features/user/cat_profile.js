@@ -117,6 +117,7 @@ export function setupEditMode() {
     finishEdit();
   };
 
+
 deleteBtn.onclick = () => {
   if (!window.currentCat) return;
 
