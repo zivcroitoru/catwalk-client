@@ -135,7 +135,7 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     font-size: 32px;
     color: #4E5C4F;
     font-weight: 400;
@@ -146,6 +146,27 @@ body {
     gap: 10px;
 }
 
+
+.truncate {
+    white-space: nowrap;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
+    max-width: 200px;
+    /* adjust as needed */
+    display: inline-block;
+    /* or block depending on layout */
+}
+
+.clothes-sprite-preview {
+        white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    /* adjust as needed */
+    display: inline-block;
+}
+
+.clothes-sprite-preview:hover,
 .clothes-name:hover,
 .clothes-category:hover,
 .clothes-description:hover,

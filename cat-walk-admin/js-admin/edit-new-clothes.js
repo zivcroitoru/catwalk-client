@@ -16,7 +16,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   const category = document.getElementById('clothes-category')?.textContent.trim();
   const price = document.getElementById('clothes-price')?.textContent.trim();
   const description = document.getElementById('clothes-description')?.textContent.trim();
-  const preview = document.getElementById('clothes-sprite-preview')?.textContent.trim();
+  const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.textContent.trim()
   const sprite_url = spriteImage?.src;
 
   const clothesData = {
@@ -25,20 +25,20 @@ document.querySelector('.next-button').addEventListener('click', async () => {
     category,
     price,
     description,
-    preview,
+    sprite_url_preview,
     sprite_url,
   };
 
   console.log('Sending clothes data:', clothesData);
 
   // Validate required fields
-  if (!template || !name || !category || !price || !description || !preview || !sprite_url) {
+  if (!template || !name || !category || !price || !description || !sprite_url_preview || !sprite_url) {
     alert("Please fill in all fields before submitting.");
     return;
   }
 
   try {
-    const response = await fetch(`${APP_URL}/api/clothes/clothesadd`, {
+    const response = await fetch(`${APP_URL}/api/shop/clothesadd`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

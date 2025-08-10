@@ -63,6 +63,8 @@ clothSprite.addEventListener('click', () => {
         const data = await response.json();
         console.log('Clothes updated successfully:', data);
         alert('Changes saved successfully!');
+        if (clothImage) clothImage.src = selectedCloth.sprite_url_preview;
+
       } catch (err) {
         console.error('Save error:', err);
         alert('Failed to save changes.');
