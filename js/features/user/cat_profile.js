@@ -120,57 +120,59 @@ export function setupEditMode() {
 
 deleteBtn.onclick = () => {
   if (!window.currentCat) return;
-toastConfirmDelete(window.currentCat, async () => {
-  const deletingId = window.currentCat?.id;
-  console.log("🗑️ Deletion confirmed:", deletingId);
 
-  try {
-    await deleteCat(deletingId);
-    console.log("✅ Deleted on backend");
+  toastConfirmDelete(window.currentCat, async () => {
+    console.log("🗑️ Deletion confirmed for cat:", window.currentCat);
 
-    // Remove locally
-    const idx = window.userCats.findIndex(c => c.id === deletingId);
-    if (idx === -1) {
-      console.warn("⚠️ Not in local list");
-      await window.renderCarousel(null); // refresh anyway
+    try {
+      await deleteCat(window.currentCat.id);
+      console.log("✅ Cat deleted from backend");
+
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      console.log("📍 Found cat index in userCats:", idx);
+      if (idx === -1) {
+        console.warn("⚠️ Cat not found in userCats");
+        toastSimple('Cat deleted!', '#ffcc66');
+        return;
+      }
+
+      window.userCats.splice(idx, 1);
+      console.log("🧹 Removed cat from userCats. Remaining:", window.userCats.length);
+
+      if (typeof window.renderCarousel === 'function') {
+        console.log("⏳ Rendering carousel…");
+        await window.renderCarousel();
+        console.log("🔄 Carousel rendered");
+
+        const hasCats = window.userCats.length > 0;
+        const nextIndex = Math.max(0, idx - 1); // always prefer previous
+        const newCat = hasCats ? window.userCats[nextIndex] : null;
+        const mainImg = document.getElementById('carouselCat');
+
+        if (hasCats) {
+          console.log("📌 Showing next cat profile:", newCat);
+          window.selectedCat = newCat;
+          showCatProfile(newCat);
+          setDisplay('catProfileScroll', true);
+          if (mainImg) mainImg.src = newCat.sprite_url;
+        } else {
+          console.log("📭 No cats left. Showing placeholder");
+          setDisplay('catProfileScroll', false);
+          if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+        }
+      } else {
+        console.warn("⚠️ window.renderCarousel is not defined");
+      }
+
       toastSimple('Cat deleted!', '#ffcc66');
-      return;
+
+    } catch (err) {
+      console.error('❌ Delete flow error:', err);
+      toastSimple('Delete failed', '#ff6666');
     }
-    window.userCats.splice(idx, 1);
-    updateInventoryCount?.();
+  });
+};
 
-    // Prefer previous card; else first
-    const prevIndex = idx - 1;
-    const nextIndex = prevIndex >= 0 ? prevIndex : 0;
-    const nextCat   = window.userCats[nextIndex] || null;
-    const nextId    = nextCat?.id ?? null;
-
-    // Re-render and let carousel select & page to it
-    if (typeof window.renderCarousel === 'function') {
-      console.log("⏳ Rendering carousel… select:", nextId);
-      await window.renderCarousel(nextId);
-      console.log("🔄 Carousel rendered");
-    } else {
-      console.warn("⚠️ window.renderCarousel is not defined");
-    }
-
-    // When no cats left, clear selected & show placeholder
-    if (!nextId) {
-      window.selectedCat = null;
-      setDisplay('catProfileScroll', false);
-      const mainImg = document.getElementById('carouselCat');
-      if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
-    }
-
-    toastSimple('Cat deleted!', '#ffcc66');
-
-  } catch (err) {
-    console.error('❌ Delete flow error:', err);
-    toastSimple('Delete failed', '#ff6666');
-  }
-});
-
-}
   function finishEdit() {
     nameInput.disabled = true;
     descInput.readOnly = true;
