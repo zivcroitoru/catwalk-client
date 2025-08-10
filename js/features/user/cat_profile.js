@@ -6,7 +6,6 @@ import { $, setDisplay, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
-import { renderCarousel } from '../../features/ui/carousel.js';
 
 
 export async function showCatProfile(cat) {
