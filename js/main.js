@@ -29,12 +29,6 @@ function dispatch(name, detail) {
 
 /* Bind runtime listeners that depend on the DOM */
 function wireRuntimeEvents() {
-  // Equipment changes -> refresh one card (or whole carousel as a fallback)
-  document.addEventListener('cat:equipmentUpdated', (e) => {
-    const { catId, equipment } = e.detail || {};
-    if (typeof updateCatCard === 'function') updateCatCard(catId, equipment);
-    else if (typeof window.renderCarousel === 'function') window.renderCarousel();
-  });
 
   // “Add Cat” empty-state shortcut
   document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
@@ -130,5 +124,4 @@ Object.assign(window, {
   toggleDetails,
   toggleAddCat,
   renderCarousel,
-  updateCatCard, // expose for targeted refreshes
 });
