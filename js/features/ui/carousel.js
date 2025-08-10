@@ -1,4 +1,3 @@
-
 import { $, setDisplay } from '../../core/utils.js';
 import { state } from '../../core/state.js';
 import { CARDS_PER_PAGE } from '../../core/constants.js';
@@ -13,15 +12,10 @@ export async function renderCarousel() {
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
 
-  if (!container) {
-    console.warn('⚠️ Carousel container not found');
-    return;
-  }
+  if (!container) return;
 
-  console.log('🔄 Loading player cats...');
   window.userCats = await getPlayerCats();
   const hasCats = window.userCats.length > 0;
-  console.log(`📦 Found ${window.userCats.length} cats`);
 
   setDisplay("catAreaWrapper", hasCats);
   setDisplay("emptyState", !hasCats);
@@ -35,65 +29,41 @@ export async function renderCarousel() {
     return;
   }
 
-  if (window.Toastify && Toastify.recent) {
-    try { Toastify.recent.hideToast(); } catch { }
+  if (window.Toastify?.recent) {
+    try { Toastify.recent.hideToast(); } catch {}
   }
 
   const spriteLookup = buildSpriteLookup(window.breedItems);
-  console.log('🔍 spriteLookup:', spriteLookup);
 
   const normalizedCats = window.userCats.map(cat => {
     const normalized = normalizeCat(cat, spriteLookup);
-    console.log(`🧪 Normalized cat: ${normalized.name}`, normalized);
     return normalized;
   });
 
   const fragment = document.createDocumentFragment();
+
   normalizedCats.forEach((cat) => {
     const card = document.createElement("div");
     card.className = "cat-card";
     card.dataset.catId = cat.id;
 
-// inside renderCarousel() when creating each card:
-card.innerHTML = `
-  <div class="cat-thumbnail" id="cardPreview_${cat.id}">
-    <div class="cat-bg"></div>
-    <img class="cat-layer carouselBase" loading="lazy" />
-    <img class="cat-layer carouselHat" loading="lazy" />
-    <img class="cat-layer carouselTop" loading="lazy" />
-    <img class="cat-layer carouselEyes" loading="lazy" />
-    <img class="cat-layer carouselAccessory" loading="lazy" />
-  </div>
-  <span>${cat.name}</span>
-`;
+    card.innerHTML = `
+      <div class="cat-thumbnail" id="cardPreview_${cat.id}">
+        <div class="cat-bg"></div>
+        <img class="cat-layer carouselBase" loading="lazy" />
+        <img class="cat-layer carouselHat" loading="lazy" />
+        <img class="cat-layer carouselTop" loading="lazy" />
+        <img class="cat-layer carouselEyes" loading="lazy" />
+        <img class="cat-layer carouselAccessory" loading="lazy" />
+      </div>
+      <span>${cat.name}</span>
+    `;
 
-const thumb = card.querySelector(`#cardPreview_${cat.id}`);
-updateCatPreview(cat, thumb, {
-  spriteByTemplate: window.spriteByTemplate,
-  shopItemsByCategory: window.shopItemsByCategory
-});
-
-    if (baseLayer) baseLayer.src = cat.sprite_url;
-
-    if (hatLayer && cat.equipment?.hat) {
-      console.log(`🎩 Hat for ${cat.name}: ${cat.equipment.hat} -> ${spriteLookup[cat.equipment.hat]}`);
-      hatLayer.src = spriteLookup[cat.equipment.hat] || '';
-    }
-
-    if (topLayer && cat.equipment?.top) {
-      console.log(`👕 Top for ${cat.name}: ${cat.equipment.top} -> ${spriteLookup[cat.equipment.top]}`);
-      topLayer.src = spriteLookup[cat.equipment.top] || '';
-    }
-
-    if (eyesLayer && cat.equipment?.eyes) {
-      console.log(`👁️ Eyes for ${cat.name}: ${cat.equipment.eyes} -> ${spriteLookup[cat.equipment.eyes]}`);
-      eyesLayer.src = spriteLookup[cat.equipment.eyes] || '';
-    }
-
-    if (accLayer && Array.isArray(cat.equipment?.accessories) && cat.equipment.accessories[0]) {
-      console.log(`🧢 Accessory for ${cat.name}: ${cat.equipment.accessories[0]} -> ${spriteLookup[cat.equipment.accessories[0]]}`);
-      accLayer.src = spriteLookup[cat.equipment.accessories[0]] || '';
-    }
+    const thumb = card.querySelector(`#cardPreview_${cat.id}`);
+    updateCatPreview(cat, thumb, {
+      spriteByTemplate: window.spriteByTemplate,
+      shopItemsByCategory: window.shopItemsByCategory
+    });
 
     card.addEventListener("click", () => {
       const isSame = window.selectedCat?.id === cat.id;
