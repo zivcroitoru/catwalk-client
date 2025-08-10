@@ -107,34 +107,40 @@ function showAddCatConfirmation(breed, variantData) {
 
   document.body.appendChild(confirmBox);
 
-confirmBox.querySelector(".yes-btn").onclick = async () => {
-  if (window.catAdded) return;
-  window.catAdded = true;
+  confirmBox.querySelector(".yes-btn").onclick = () => {
+    if (window.catAdded) return;
+    window.catAdded = true;
 
-  try {
-    // Build payload for server; let server assign the id
-    const payload = {
+    const newCat = {
+      id: crypto.randomUUID(),
       template: `${breed}-${variant}-${palette}`,
-      name: `${breed} (${variant})`,
-      breed, variant, palette, sprite_url
+      name: `${breed} (${name})`,
+      birthdate: new Date().toISOString().split("T")[0],
+      description: "",
+      breed,
+      variant,
+      palette,
+      sprite_url,
+      selected: false,
+      equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
 
-    // 1) Await the POST and use canonical server object
-    const created = await addCatToUser(payload); // ensure this returns res.json()
+    addCatToUser(newCat);
+    window.userCats.push(newCat);
 
-    // 2) Refresh local data + UI (refetch to avoid drift & caching)
-    window.userCats = await getPlayerCats({ noCache: true }); // implement noCache in storage.js
-    await renderCarousel();
+    console.log("🐱 Cat added:", newCat);
+    renderCarousel();
+    console.log(`📦 Total cats: ${window.userCats?.length}`);
 
-    // 3) UI niceties
-    toastCatAdded({ breed, name: created.name ?? payload.name, sprite_url });
+    updateUIAfterCatAddition(window.userCats.length);
+    toastCatAdded({ breed, name, sprite_url });
+    renderCarousel();
     window.closeAddCat?.();
-  } finally {
+    
     confirmBox.remove();
-    window.catAdded = false;
-  }
-};
 
+    setTimeout(() => (window.catAdded = false), 300);
+  };
 
   confirmBox.querySelector(".no-btn").onclick = () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
