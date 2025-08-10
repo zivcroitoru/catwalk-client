@@ -2,7 +2,7 @@
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
-const socket = io();
+  const socket = io();
 // NOTE: we rely on the socket.io client script included in mailbox.html
 // <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 // so we use the global `io()` function (no import of socket.io-client here).
@@ -13,9 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendBtn = document.getElementById('sendBtn');
   const messageBox = document.getElementById('messageBox');
   const chatMessages = document.getElementById('chatMessages');
-
-  const showPastTicketsBtn = document.getElementById('showPastTicketsBtn');
-  const pastTicketsList = document.getElementById('pastTicketsList');
+  
   console.log("--------------2--------------");
 
   const userId = localStorage.getItem('userId');
@@ -75,10 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // no open ticket
         createTicketBtn.style.display = 'block';
         chatBox.style.display = 'none';
-        console.log("--------------55--------------");
+              console.log("--------------55--------------");
 
       } else if (res.ok) {
-        console.log("--------------5--------------");
+              console.log("--------------5--------------");
 
         const ticket = await res.json();
         openTicket(ticket.ticket_id, /*skipJoin=*/false);
@@ -140,17 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- Send message (use socket) ----------
   sendBtn.addEventListener('click', () => {
-    const message = messageBox.value.trim();
-    if (!message || !currentTicketId) return;
+  const message = messageBox.value.trim();
+  if (!message || !currentTicketId) return;
 
-    socket.emit('playerMessage', {
-      ticketId: currentTicketId,
-      userId,
-      text: message
-    });
-
-    messageBox.value = '';
+  socket.emit('playerMessage', {
+    ticketId: currentTicketId,
+    userId,
+    text: message
   });
+
+  messageBox.value = '';
+});
 
 
   // ---------- Create ticket button ----------
@@ -160,14 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- Receive live messages (admin or user) ----------
-  socket.on('newMessage', (data) => {
-    if (data.senderSocketId === socket.id) return; // skip our own
-    if (data.ticketId !== currentTicketId) return;
+socket.on('newMessage', (data) => {
+  if (data.senderSocketId === socket.id) return; // skip our own
+  if (data.ticketId !== currentTicketId) return;
 
-    const label = data.sender === 'admin' ? 'Admin' : 'User';
-    addMessage(label, data.content ?? data.text ?? '');
-  });
-  ;
+  const label = data.sender === 'admin' ? 'Admin' : 'User';
+  addMessage(label, data.content ?? data.text ?? '');
+});
+;
 
   // Optional: listen for ticket close events from server if you emit them there
   socket.on('ticketClosed', ({ ticketId }) => {
@@ -181,40 +179,4 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Player mailbox client ready for user:', userId);
 });
 
-showPastTicketsBtn.addEventListener('click', async () => {
-  try {
-    const res = await fetch(`${APP_URL}/api/tickets/user/${userId}/all`);
-    if (!res.ok) {
-      alert('Failed to load past tickets');
-      return;
-    }
-    const tickets = await res.json();
-    renderPastTickets(tickets);
-    pastTicketsList.style.display = 'block';
-  } catch (err) {
-    console.error('Error loading past tickets', err);
-    alert('Error loading past tickets');
-  }
-});
-
-function renderPastTickets(tickets) {
-  pastTicketsList.innerHTML = '';
-  if (tickets.length === 0) {
-    pastTicketsList.textContent = 'No past tickets found.';
-    return;
-  }
-  tickets.forEach(ticket => {
-    const div = document.createElement('div');
-    div.textContent = `#${ticket.ticket_id} (${ticket.status}) - Created: ${new Date(ticket.created_at).toLocaleString()}`;
-    div.style.cursor = 'pointer';
-    div.style.marginBottom = '5px';
-
-    div.onclick = () => {
-      openTicket(ticket.ticket_id, true); // skipJoin true because you might not want to join room for closed tickets
-      pastTicketsList.style.display = 'none';
-    };
-
-    pastTicketsList.appendChild(div);
-  });
-}
 

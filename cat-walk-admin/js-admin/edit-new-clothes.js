@@ -38,7 +38,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   }
 
   try {
-    const response = await fetch(`${APP_URL}/api/clothes/clothesadd`, {
+    const response = await fetch(`${APP_URL}/api/shop/clothesadd`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
