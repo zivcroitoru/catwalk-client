@@ -1,34 +1,71 @@
-const catKeyMap = { hat:'hats', top:'tops', eyes:'eyes', accessory:'accessories' };
+// Efficient, readable, with concise comments
+export function updateCatPreview(
+  cat,
+  container = document,
+  opts = {}
+) {
+  if (!cat || !container) return;
 
-const getSprite = (category, itemId) => {
-  if (!itemId) return '';
+  const {
+    shopItemsByCategory = window.shopItemsByCategory,
+    spriteByTemplate    = window.spriteByTemplate, // optional fast map: template -> sprite_url
+    appUrl              = (typeof APP_URL !== 'undefined') ? APP_URL : ''
+  } = opts;
 
-  // normalize id (strip accidental prefixes like 'hats/' etc.)
-  const cleanId = String(itemId).replace(/^[a-z]+\/+/i, '');
+  // Normalize equipment shape once
+  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: [] };
 
-  // 1) Fast path
-  if (window.spriteByTemplate && window.spriteByTemplate[cleanId]) {
-    return window.spriteByTemplate[cleanId];
-  }
+  // ---- Helpers ----
+  const resolveUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('data:') || path.startsWith('http') || path.startsWith('blob:')) return path;
+    const clean = path[0] === '/' ? path.slice(1) : path;
+    return appUrl ? `${appUrl}/${clean}` : clean;
+  };
 
-  // 2) Fallback: scan category list
-  const catMap = window.shopItemsByCategory;
-  if (!catMap) { console.warn('[preview] shopItemsByCategory not ready'); return ''; }
+  const q = (cls) => container.querySelector(`.${cls}`);
 
-  const key = catMap[category] ? category : (catKeyMap[category] || category);
-  const list = catMap[key];
-  if (!Array.isArray(list)) { console.warn(`[preview] Missing category '${key}'`); return ''; }
+  const setImg = (cls, src) => {
+    const el = q(cls);
+    if (!el) { console.warn(`[preview] Missing .${cls}`); return; }
 
-  const item = list.find(i =>
-    String(i.template ?? i.id ?? '') === cleanId
-  );
+    if (!src) { el.style.display = 'none'; return; }
 
-  if (!item) {
-    console.warn('[preview] Item not found', { category:key, itemId:cleanId, sample:list.slice(0,3) });
-    return '';
-  }
+    const finalSrc = resolveUrl(src);
 
-  const sprite = item.sprite_url ?? item.sprite ?? item.image_url ?? item.image ?? '';
-  if (!sprite) console.warn('[preview] Item has no sprite field', { item });
-  return sprite;
-};
+    // Only update when changed to avoid extra loads
+    if (el.src !== finalSrc) {
+      el.onerror = () => { el.style.display = 'none'; console.warn(`[preview] .${cls} failed`, { finalSrc }); };
+      el.onload  = () => { el.style.display = 'block'; };
+      el.src = finalSrc;
+    }
+    el.style.display = 'block';
+  };
+
+  const findSprite = (category, itemId) => {
+    if (!itemId) return '';
+    // Fast path by template
+    if (spriteByTemplate && spriteByTemplate[itemId]) return spriteByTemplate[itemId];
+
+    if (!shopItemsByCategory || !Array.isArray(shopItemsByCategory[category])) {
+      console.warn(`[preview] Category missing: ${category}`);
+      return '';
+    }
+    const list = shopItemsByCategory[category];
+
+    // Match by template or id (string/number)
+    const item = list.find(i => i.template === itemId || i.id === itemId || String(i.id) === String(itemId));
+    if (!item) {
+      console.warn('[preview] Item not found', { category, itemId, sample: list.slice(0, 3) });
+      return '';
+    }
+    return item.sprite_url || '';
+  };
+
+  // ---- Render ----
+  setImg('carouselBase', cat.sprite_url);
+  setImg('carouselHat',  findSprite('hats',        equip.hat));
+  setImg('carouselTop',  findSprite('tops',        equip.top));
+  setImg('carouselEyes', findSprite('eyes',        equip.eyes));
+  setImg('carouselAccessory', findSprite('accessories', equip.accessories?.[0]));
+}
