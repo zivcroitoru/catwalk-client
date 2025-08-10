@@ -139,7 +139,14 @@ toastConfirmDelete(window.currentCat, async () => {
     console.log("🧹 Removed cat from userCats. Remaining:", window.userCats.length);
 
     console.log("⏳ Rendering carousel…");
-    await renderCarousel(); // <-- important
+if (typeof window.renderCarousel === 'function') {
+  console.log("⏳ Rendering carousel…");
+  await window.renderCarousel();
+  console.log("🔄 Carousel rendered");
+} else {
+  console.warn("⚠️ window.renderCarousel is not defined");
+}
+
     console.log("🔄 Carousel rendered");
 
     const hasCats = window.userCats.length > 0;

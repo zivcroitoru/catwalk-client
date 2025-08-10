@@ -143,3 +143,4 @@ export function updateInventoryCount() {
   const inventoryUI = document.getElementById("inventoryCount");
   if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
 }
+window.renderCarousel = renderCarousel;
