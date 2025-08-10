@@ -126,7 +126,7 @@ export function setupEditMode() {
         window.userCats.splice(idx, 1);
 
         if (typeof window.renderCarousel === 'function') {
-          await window.renderCarousel();
+          await window.renderCarousel({ suppressSelect: true });
 
           const hasCats = window.userCats.length > 0;
           const nextIndex = Math.min(idx, window.userCats.length - 1);
