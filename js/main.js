@@ -20,7 +20,14 @@ import {
   loadShopAndTemplates,
   loadUserCats
 } from './core/init/dataLoader.js';
-import { updateUI } from './core/storage.js';
+import {
+  updateUI,
+  getPlayerCats,
+  setCatEquipment,
+  loadPlayerItems,
+  unlockPlayerItem
+} from './core/storage.js';
+
 
 
 
