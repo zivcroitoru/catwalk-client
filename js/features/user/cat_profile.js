@@ -161,7 +161,7 @@ toastConfirmDelete(window.currentCat, async () => {
 
   toastSimple('Cat deleted!', '#ffcc66');
 });
-
+  }
   function finishEdit() {
     nameInput.disabled = true;
     descInput.readOnly = true;
