@@ -145,7 +145,7 @@ deleteBtn.onclick = () => {
         console.log("🔄 Carousel rendered");
 
         const hasCats = window.userCats.length > 0;
-        const nextIndex = Math.min(idx, window.userCats.length - 1); // prefer same index if possible
+        const nextIndex = Math.max(0, idx - 1); // always prefer previous
         const newCat = hasCats ? window.userCats[nextIndex] : null;
         const mainImg = document.getElementById('carouselCat');
 

@@ -7,11 +7,10 @@ import { getPlayerCats, buildSpriteLookup, normalizeCat } from '../../core/stora
 import { toastNoCats } from '../../core/toast.js';
 
 // ───────────── Full Render ─────────────
-export async function renderCarousel() {
+export async function renderCarousel({ selectCatId = null } = {}) {
   const container = document.getElementById("catCarousel");
   const scroll = document.getElementById("catProfileScroll");
   const podium = document.getElementById("catDisplay");
-
   if (!container) return;
 
   window.userCats = await getPlayerCats();
@@ -34,64 +33,66 @@ export async function renderCarousel() {
   }
 
   const spriteLookup = buildSpriteLookup(window.breedItems);
-
-  const normalizedCats = window.userCats.map(cat => {
-    const normalized = normalizeCat(cat, spriteLookup);
-    return normalized;
-  });
+  const normalizedCats = window.userCats.map(cat => normalizeCat(cat, spriteLookup));
 
   const fragment = document.createDocumentFragment();
-
-  normalizedCats.forEach((cat) => {
-    const card = document.createElement("div");
-    card.className = "cat-card";
-    card.dataset.catId = cat.id;
-
-    card.innerHTML = `
-      <div class="cat-thumbnail" id="cardPreview_${cat.id}">
-        <div class="cat-bg"></div>
-        <img class="cat-layer carouselBase" loading="lazy" />
-        <img class="cat-layer carouselHat" loading="lazy" />
-        <img class="cat-layer carouselTop" loading="lazy" />
-        <img class="cat-layer carouselEyes" loading="lazy" />
-        <img class="cat-layer carouselAccessory" loading="lazy" />
-      </div>
-      <span>${cat.name}</span>
-    `;
-
-    const thumb = card.querySelector(`#cardPreview_${cat.id}`);
-    updateCatPreview(cat, thumb, {
-      spriteByTemplate: window.spriteByTemplate,
-      shopItemsByCategory: window.shopItemsByCategory
-    });
-
-    card.addEventListener("click", () => {
-      const isSame = window.selectedCat?.id === cat.id;
-      window.selectedCat = cat;
-      selectCatCard(card);
-      showCatProfile(cat);
-      if (!isSame) updateCatPreview(cat);
-    });
-
-    fragment.appendChild(card);
-  });
-
+  normalizedCats.forEach(cat => fragment.appendChild(buildCatCard(cat, spriteLookup)));
   container.appendChild(fragment);
 
-  const firstCat = normalizedCats[0];
-  firstCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
-  window.selectedCat = firstCat;
-  updateCatPreview(firstCat);
+  const selectedCat = selectCatId
+    ? normalizedCats.find(c => c.id === selectCatId)
+    : normalizedCats[0];
+
+  if (!selectedCat) return;
+
+  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+  window.selectedCat = selectedCat;
+  updateCatPreview(selectedCat);
 
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
-    mainCatImg.src = firstCat.sprite_url;
-    mainCatImg.alt = firstCat.name || "Cat";
+    mainCatImg.src = selectedCat.sprite_url;
+    mainCatImg.alt = selectedCat.name || "Cat";
   }
 
-  showCatProfile(firstCat);
-  selectCatCard(document.querySelector(".cat-card"));
+  showCatProfile(selectedCat);
+  selectCatCard(document.querySelector(`.cat-card[data-cat-id="${selectedCat.id}"]`));
   updateInventoryCount();
+}
+
+// ───────────── Build Cat Card ─────────────
+function buildCatCard(cat, spriteLookup) {
+  const card = document.createElement("div");
+  card.className = "cat-card";
+  card.dataset.catId = cat.id;
+
+  card.innerHTML = `
+    <div class="cat-thumbnail" id="cardPreview_${cat.id}">
+      <div class="cat-bg"></div>
+      <img class="cat-layer carouselBase" loading="lazy" />
+      <img class="cat-layer carouselHat" loading="lazy" />
+      <img class="cat-layer carouselTop" loading="lazy" />
+      <img class="cat-layer carouselEyes" loading="lazy" />
+      <img class="cat-layer carouselAccessory" loading="lazy" />
+    </div>
+    <span>${cat.name}</span>
+  `;
+
+  const thumb = card.querySelector(`#cardPreview_${cat.id}`);
+  updateCatPreview(cat, thumb, {
+    spriteByTemplate: window.spriteByTemplate,
+    shopItemsByCategory: window.shopItemsByCategory
+  });
+
+  card.addEventListener("click", () => {
+    const isSame = window.selectedCat?.id === cat.id;
+    window.selectedCat = cat;
+    selectCatCard(card);
+    showCatProfile(cat);
+    if (!isSame) updateCatPreview(cat);
+  });
+
+  return card;
 }
 
 // ───────────── Card Select Highlight ─────────────

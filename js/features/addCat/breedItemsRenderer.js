@@ -127,7 +127,7 @@ confirmBox.querySelector(".yes-btn").onclick = async () => {
 
   await addCatToUser(newCat);
   window.userCats.push(newCat);
-  renderCarousel();
+await renderCarousel({ selectCatId: newCat.id });
 
   console.log("🐱 Cat added:", newCat);
   console.log(`📦 Total cats: ${window.userCats?.length}`);
@@ -148,12 +148,7 @@ confirmBox.querySelector(".yes-btn").onclick = async () => {
   };
 }
 
-function updateUIAfterCatAddition(catCount) {
-  renderCarousel();
-  console.log("rendering carousel again..");
-  window.renderCarousel?.();
-  updateInventoryCount(catCount);
-}
+
 
 function updateInventoryCount(count) {
   const inventoryCount = document.getElementById("inventoryCount");
