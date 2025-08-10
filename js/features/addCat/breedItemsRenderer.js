@@ -111,32 +111,34 @@ confirmBox.querySelector(".yes-btn").onclick = async () => {
   if (window.catAdded) return;
   window.catAdded = true;
 
-  const payload = {
+  const newCat = {
+    id: crypto.randomUUID(),
     template: `${breed}-${variant}-${palette}`,
     name: `${breed} (${name})`,
     birthdate: new Date().toISOString().split("T")[0],
     description: "",
-    breed, variant, palette, sprite_url,
+    breed,
+    variant,
+    palette,
+    sprite_url,
     selected: false,
     equipment: { hat: null, top: null, eyes: null, accessories: [] }
   };
 
-  // Save first, trust server id
-  const saved = await addCatToUser(payload);           // <- expect { id, ... }
-  const catId = saved?.id ?? payload.id;               // fallback if API echoes
+  await addCatToUser(newCat);
+  window.userCats.push(newCat);
+  renderCarousel();
 
-  // Optional: keep local state in sync if you keep pushing:
-  if (saved) window.userCats.push(saved);
-
-  await renderCarousel(catId);                         // <- pass string id
+  console.log("🐱 Cat added:", newCat);
+  console.log(`📦 Total cats: ${window.userCats?.length}`);
 
   updateUIAfterCatAddition(window.userCats.length);
   toastCatAdded({ breed, name, sprite_url });
   window.closeAddCat?.();
   confirmBox.remove();
+
   setTimeout(() => (window.catAdded = false), 300);
 };
-
 
 
   confirmBox.querySelector(".no-btn").onclick = () => {
@@ -145,8 +147,6 @@ confirmBox.querySelector(".yes-btn").onclick = async () => {
     confirmBox.remove();
   };
 }
-
-
 
 function updateInventoryCount(count) {
   const inventoryCount = document.getElementById("inventoryCount");
