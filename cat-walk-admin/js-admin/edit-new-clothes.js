@@ -27,19 +27,19 @@ document.querySelector('.next-button').addEventListener('click', async () => {
   document.getElementById('clothes-description').textContent = truncateText(descriptionFull, 30);
   document.getElementById('clothes-sprite-preview').textContent = truncateText(previewFull, 30);
   const clothesData = {
-    template,
-    name,
-    category,
-    price,
-    description,
-    sprite_url_preview,
+    template: templateFull,
+    name: nameFull,
+    category: categoryFull,
+    price: priceFull,
+    description: descriptionFull,
+    sprite_url_preview: previewFull,
     sprite_url,
   };
 
   console.log('Sending clothes data:', clothesData);
 
   // Validate required fields
-  if (!template || !name || !category || !price || !description || !sprite_url_preview || !sprite_url) {
+  if (!templateFull || !nameFull || !categoryFull || !priceFull || !descriptionFull || !previewFull || !sprite_url) {
     alert("Please fill in all fields before submitting.");
     return;
   }
