@@ -318,12 +318,6 @@ export function normalizeCat(cat, spriteByTemplate) {
   };
 }
 
-// ───────────── Export Everything ─────────────
-export {
-  updateCatItems,
-    setCatEquipment
-
-};
 export async function setCatEquipment(catId, newEquipment) {
   await updateCatItems(catId, newEquipment); // saves to DB
 
@@ -339,3 +333,10 @@ export async function setCatEquipment(catId, newEquipment) {
 
   return eq;
 }
+
+// ───────────── Export Everything ─────────────
+export {
+  updateCatItems,
+  setCatEquipment
+};
+
