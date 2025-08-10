@@ -1,79 +1,85 @@
 export function updateCatPreview(cat, container = document) {
-  if (!cat) {
-    console.warn('⚠️ No cat provided to updateCatPreview');
-    return;
-  }
+  if (!cat) { console.warn('[preview] No cat provided'); return; }
+  if (!container) { console.warn('[preview] No container provided'); return; }
 
-  // Ensure cat has standardized structure
+  console.log('[preview] Render start', { catId: cat.id, container });
+
+  // Normalize shape
   cat.equipment = cat.equipment || { hat: null, top: null, eyes: null, accessories: [] };
 
+  const resolveUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('data:') || path.startsWith('http') || path.startsWith('blob:')) return path;
+    const clean = path.startsWith('/') ? path.slice(1) : path;
+    // APP_URL must exist globally or import it here
+    const base = (typeof APP_URL !== 'undefined') ? APP_URL : '';
+    return base ? `${base}/${clean}` : clean;
+  };
+
   const setLayer = (cls, path) => {
-    console.log("Setting layer", cls, "with path", path);
-    
     const el = container.querySelector(`.${cls}`);
-    if (!el) return;
-    
-    // Handle empty or invalid paths
+    if (!el) { console.warn(`[preview] Missing element .${cls} in container`, container); return; }
+
     if (!path) {
-      el.style.display = "none";
+      el.style.display = 'none';
+      console.log(`[preview] .${cls} -> hidden (no path)`);
       return;
     }
 
-    // Process the path based on type
-    if (!path) return null;
-
-    let finalPath = path;
-    if (!path.startsWith('data:') &&  // Don't modify data URLs
-        !path.startsWith('http') &&    // Don't modify absolute URLs
-        !path.startsWith('blob:')) {   // Don't modify blob URLs
-      // For relative or root-relative paths, ensure proper formatting
-      const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-      finalPath = `${APP_URL}/${cleanPath}`;
+    const finalPath = resolveUrl(path);
+    // Force repaint even if same src
+    if (el.src === finalPath) {
+      el.style.display = 'block';
+      console.log(`[preview] .${cls} unchanged src (already set)`);
+      return;
     }
 
-    // Handle image load errors
     el.onerror = () => {
-      console.warn(`⚠️ Failed to load image: ${path}`);
-      el.style.display = "none";
+      console.warn(`[preview] .${cls} failed to load`, { requested: finalPath });
+      el.style.display = 'none';
     };
-    
+
+    el.onload = () => {
+      console.log(`[preview] .${cls} loaded`, { src: finalPath });
+    };
+
     el.src = finalPath;
-    el.style.display = "block";
+    el.style.display = 'block';
+    console.log(`[preview] .${cls} -> ${finalPath}`);
   };
-
-  // Always use normalized equipment structure
-  cat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
-
-  setLayer("carouselBase", cat.sprite_url);
 
   const getSprite = (category, itemId) => {
-    if (!itemId || !window.shopItemsByCategory) return "";
+    if (!itemId) return '';
+    const catMap = window.shopItemsByCategory;
+    if (!catMap) { console.warn('[preview] shopItemsByCategory not ready'); return ''; }
 
-    // Check if the category exists in shopItemsByCategory
-    if (!window.shopItemsByCategory[category]) {
-      console.warn(`⚠️ Missing shop category in shopItemsByCategory: ${category}`);
-      return "";
+    // NOTE: keys must match your loader: "hats","tops","eyes","accessories"
+    const list = catMap[category];
+    if (!Array.isArray(list)) { console.warn(`[preview] Missing category '${category}'`); return ''; }
+
+    const item = list.find(i => i.id === itemId || i.template === itemId);
+    if (!item) {
+      console.warn(`[preview] Item not found in '${category}'`, { itemId });
+      return '';
     }
-
-    const item = window.shopItemsByCategory[category].find(
-      i => i.id === itemId || i.template === itemId
-    );
-    return item?.sprite_url || "";
+    return item.sprite_url || '';
   };
 
+  // Base cat body
+  setLayer('carouselBase', cat.sprite_url);
+
+  // Equipment layers
   const hat = cat.equipment?.hat;
-  const hatSprite = getSprite("hats", hat);
-  setLayer("carouselHat", hatSprite);
+  setLayer('carouselHat', getSprite('hats', hat));
 
   const top = cat.equipment?.top;
-  const topSprite = getSprite("tops", top);
-  setLayer("carouselTop", topSprite);
+  setLayer('carouselTop', getSprite('tops', top));
 
   const eyes = cat.equipment?.eyes;
-  const eyesSprite = getSprite("eyes", eyes);
-  setLayer("carouselEyes", eyesSprite);
+  setLayer('carouselEyes', getSprite('eyes', eyes));
 
   const accessory = cat.equipment?.accessories?.[0];
-  const accSprite = getSprite("accessories", accessory);
-  setLayer("carouselAccessory", accSprite);
+  setLayer('carouselAccessory', getSprite('accessories', accessory));
+
+  console.log('[preview] Render end', { catId: cat.id });
 }

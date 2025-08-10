@@ -78,6 +78,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.warn(`[MAIN] No UI update function found for cat equipment change`);
     }
   });
+  // Targeted re-render for a single card
+window.updateCatCard = (catId, equipment) => {
+  const sel = `[data-cat-id="${CSS.escape(String(catId))}"]`;
+  const card = document.querySelector(sel);
+  console.log('[MAIN] updateCatCard →', { catId, sel, found: !!card });
+
+  if (!card) return;
+
+  const cat = window.userCats?.find(c => c.id === catId);
+  if (!cat) { console.warn('[MAIN] Cat not in cache', catId); return; }
+
+  if (equipment) cat.equipment = equipment; // sync cache for this cat
+  // Uses your existing renderer:
+  updateCatPreview(cat, card);
+};
+
 
   // requestNotificationPermission();
   // Initialize mailbox (only once!)
