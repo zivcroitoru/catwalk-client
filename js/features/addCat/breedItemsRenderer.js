@@ -107,45 +107,50 @@ function showAddCatConfirmation(breed, variantData) {
 
   document.body.appendChild(confirmBox);
 
-confirmBox.querySelector(".yes-btn").onclick = async () => {
-  if (window.catAdded) return;
-  window.catAdded = true;
+  confirmBox.querySelector(".yes-btn").onclick = () => {
+    if (window.catAdded) return;
+    window.catAdded = true;
 
-  const newCat = {
-    id: crypto.randomUUID(),
-    template: `${breed}-${variant}-${palette}`,
-    name: `${breed} (${name})`,
-    birthdate: new Date().toISOString().split("T")[0],
-    description: "",
-    breed,
-    variant,
-    palette,
-    sprite_url,
-    selected: false,
-    equipment: { hat: null, top: null, eyes: null, accessories: [] }
+    const newCat = {
+      id: crypto.randomUUID(),
+      template: `${breed}-${variant}-${palette}`,
+      name: `${breed} (${name})`,
+      birthdate: new Date().toISOString().split("T")[0],
+      description: "",
+      breed,
+      variant,
+      palette,
+      sprite_url,
+      selected: false,
+      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+    };
+
+    addCatToUser(newCat);
+    window.userCats.push(newCat);
+
+    console.log("🐱 Cat added:", newCat);
+    console.log(`📦 Total cats: ${window.userCats?.length}`);
+
+    updateUIAfterCatAddition(window.userCats.length);
+    toastCatAdded({ breed, name, sprite_url });
+    window.closeAddCat?.();
+    confirmBox.remove();
+    renderCarousel();
+    setTimeout(() => (window.catAdded = false), 300);
   };
-
-  await addCatToUser(newCat);
-  window.userCats.push(newCat);
-  renderCarousel();
-
-  console.log("🐱 Cat added:", newCat);
-  console.log(`📦 Total cats: ${window.userCats?.length}`);
-
-  updateUIAfterCatAddition(window.userCats.length);
-  toastCatAdded({ breed, name, sprite_url });
-  window.closeAddCat?.();
-  confirmBox.remove();
-
-  setTimeout(() => (window.catAdded = false), 300);
-};
-
 
   confirmBox.querySelector(".no-btn").onclick = () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
     toastCancelled();
     confirmBox.remove();
   };
+}
+
+function updateUIAfterCatAddition(catCount) {
+  renderCarousel();
+  console.log("rendering carousel again..");
+  window.renderCarousel?.();
+  updateInventoryCount(catCount);
 }
 
 function updateInventoryCount(count) {
