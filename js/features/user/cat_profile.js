@@ -118,38 +118,49 @@ export function setupEditMode() {
 
   deleteBtn.onclick = () => {
     if (!window.currentCat) return;
+toastConfirmDelete(window.currentCat, async () => {
+  console.log("🗑️ Deletion confirmed for cat:", window.currentCat);
 
-    toastConfirmDelete(window.currentCat, async () => {
-      try {
-        await deleteCat(window.currentCat.id); // 🔥 DELETE from backend
-      } catch (err) {
-        console.error('❌ Failed to delete cat:', err);
-        toastSimple('Delete failed', '#ff6666');
-        return;
-      }
+  try {
+    await deleteCat(window.currentCat.id);
+    console.log("✅ Cat deleted from backend");
+  } catch (err) {
+    console.error('❌ Failed to delete cat:', err);
+    toastSimple('Delete failed', '#ff6666');
+    return;
+  }
 
-      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx === -1) return;
+  const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+  console.log("📍 Found cat index in userCats:", idx);
 
-      window.userCats.splice(idx, 1);
-      window.renderCarousel();
+  if (idx === -1) {
+    console.warn("⚠️ Cat not found in userCats");
+    return;
+  }
 
-      const hasCats = window.userCats.length > 0;
-      const newCat = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
-      const mainImg = document.getElementById('carouselCat');
+  window.userCats.splice(idx, 1);
+  console.log("🧹 Removed cat from userCats. Remaining:", window.userCats.length);
 
-      if (hasCats) {
-        showCatProfile(newCat);
-        setDisplay('catProfileScroll', true);
-        if (mainImg) mainImg.src = newCat.sprite_url;
-      } else {
-        setDisplay('catProfileScroll', false);
-        if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
-      }
+  renderCarousel();
+  console.log("🔄 Carousel rendered");
 
-      toastSimple('Cat deleted!', '#ffcc66');
-    });
-  };
+  const hasCats = window.userCats.length > 0;
+  const newCat = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
+  const mainImg = document.getElementById('carouselCat');
+
+  if (hasCats) {
+    console.log("📌 Showing previous cat profile:", newCat);
+    showCatProfile(newCat);
+    setDisplay('catProfileScroll', true);
+    if (mainImg) mainImg.src = newCat.sprite_url;
+  } else {
+    console.log("📭 No cats left. Showing placeholder");
+    setDisplay('catProfileScroll', false);
+    if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+  }
+
+  toastSimple('Cat deleted!', '#ffcc66');
+});
 
   function finishEdit() {
     nameInput.disabled = true;
