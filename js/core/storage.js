@@ -327,4 +327,3 @@ export async function updateUI() {
   const catCountEl = document.getElementById('cat-count');
   if (catCountEl) catCountEl.textContent = `Inventory: ${cat_count}/25`;
 }
-export { updateCatItems };
