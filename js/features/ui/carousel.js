@@ -150,5 +150,5 @@ export function scrollCarousel(direction) {
 export function updateInventoryCount() {
   const count = window.userCats?.length || 0;
   const inventoryUI = document.getElementById("inventoryCount");
-  if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
+  if (inventoryUI) inventoryUI.textContent = `Cats: ${count}/25`;
 }
