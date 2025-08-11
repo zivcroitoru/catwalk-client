@@ -82,15 +82,29 @@ toastConfirmAddCat(
       selected: false,
       equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
+addCatToUser(newCat);
+console.log("📦 Cat added to local storage");
 
-    addCatToUser(newCat);
-    window.userCats.push(newCat);
+window.userCats.push(newCat);
+console.log("🐱 Cat pushed to window.userCats:", window.userCats.length, "cats total");
 
-    window.renderCarousel = renderCarousel;r
-    window.updateInventoryCount();
-    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
-    window.closeAddCat?.();
-    setTimeout(() => (window.catAdded = false), 300);
+console.log("🔄 Calling renderCarousel()");
+renderCarousel();
+
+console.log("🔢 Updating inventory count");
+updateInventoryCount();
+
+console.log("📢 Showing toast: Cat Added");
+toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+
+console.log("❌ Closing Add Cat popup");
+window.closeAddCat?.();
+
+setTimeout(() => {
+  window.catAdded = false;
+  console.log("⏱️ Reset catAdded flag");
+}, 300);
+
   },
   () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
