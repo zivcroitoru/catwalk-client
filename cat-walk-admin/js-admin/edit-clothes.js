@@ -89,6 +89,7 @@ clothSprite.addEventListener('click', () => {
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.log(template);
           throw new Error(errorData.error || 'Failed to delete the clothing item');
         }
 
