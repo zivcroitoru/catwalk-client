@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
   shopItemsRenderer.js – async + DB
 -----------------------------------------------------------------------------*/
-import { getItemState, handleShopClick } from './shopLogic.js';
+import { getItemState, handleShopClick, updateCatItems } from './shopLogic.js';
 import {
   loadPlayerItems,
   updateCatItems,

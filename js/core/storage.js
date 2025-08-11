@@ -130,7 +130,8 @@ async function apiGetCatItems(catId) {
   return res.json();
 }
 
-async function updateCatItems(catId, equipment) {
+// ───────────── REST: Equipment ─────────────
+export async function updateCatItems(catId, equipment) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
 
@@ -146,6 +147,7 @@ async function updateCatItems(catId, equipment) {
   if (!res.ok) throw new Error('Failed to update cat_items');
   return res.json();
 }
+
 
 // ───────────── Public: Data Loaders ─────────────
 export async function loadPlayerItems(force = false) {
