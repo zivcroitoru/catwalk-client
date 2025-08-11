@@ -34,6 +34,15 @@ function onCatsReady(cats) {
   bindUI();
   wireRuntimeEvents();
 }
+function wireRuntimeEvents() {
+  document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
+    document.getElementById('emptyState')?.classList.add('hidden');
+    document.getElementById('addCatBtn')?.click();
+  });
+
+  const catFactBtn = document.getElementById('catFactToggle');
+  if (catFactBtn) catFactBtn.addEventListener('click', toastCatFact);
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {

@@ -3,10 +3,11 @@ import { initBreedTabs } from "./breedTabs.js";
 import { renderBreedItems } from "./breedItemsRenderer.js";
 
 export function toggleAddCat() {
-  console.log("🔄 Starting Add Cat toggle...");
-  if (window.Toastify?.recent) {
-    try { Toastify.recent.hideToast(); } catch {}
-  }
+  // close any toast
+  if (window.Toastify?.recent) { try { Toastify.recent.hideToast(); } catch {} }
+
+  // hide the empty-state card when opening popup
+  document.getElementById('emptyState')?.classList.add('hidden');
   // Get required elements
   const popup   = document.getElementById("addCatPopup");
   const blocker = document.getElementById("addCatOverlayBlocker");

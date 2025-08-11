@@ -27,11 +27,13 @@ export async function renderCarousel(selectCatId = null) {
 // If no cats → show toast only when add popup is closed
 if (!hasCats) {
   const addPopup = document.getElementById("addCatPopup");
-  const isOpen =
-    addPopup && !addPopup.classList.contains("hidden") && addPopup.style.display !== "none";
+  const isOpen = addPopup && !addPopup.classList.contains("hidden")
+               && addPopup.style.display !== "none";
+
+  // show empty-state only if popup is NOT open
+  setDisplay("emptyState", !isOpen);
 
   if (!isOpen) toastNoCats();
-
   updateInventoryCount();
   return;
 }
