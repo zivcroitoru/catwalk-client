@@ -352,5 +352,3 @@ export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes
 
   return toast;
 }
-
-
