@@ -325,5 +325,5 @@ export async function updateUI() {
   if (coinEl) coinEl.textContent = coins;
 
   const catCountEl = document.getElementById('cat-count');
-  if (catCountEl) catCountEl.textContent = `Inventory: ${userCats.length}/25`;
+  if (catCountEl) catCountEl.textContent = `Cats: ${userCats.length}/25`;
 }
