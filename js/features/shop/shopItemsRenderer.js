@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
   shopItemsRenderer.js – async + DB
 -----------------------------------------------------------------------------*/
-import { getItemState, handleShopClick, updateCatItems } from './shopLogic.js';
+import { getItemState, handleShopClick } from './shopLogic.js';
 import {
   loadPlayerItems,
   updateCatItems,
@@ -21,12 +21,17 @@ const EQUIPMENT_KEY_MAP = {
   accessories: 'accessories'
 };
 
+/**
+ * Render all shop items for the selected category.
+ */
 export async function renderShopItems(activeCategory) {
   activeCategory = activeCategory.toLowerCase();
   console.log(`🎨 Rendering shop items for category: ${activeCategory}`);
 
   const container = document.getElementById('shopItems');
-  if (!window.shopItemsByCategory || !container || !window.shopItemsByCategory[activeCategory]) {
+  const items = window.shopItemsByCategory?.[activeCategory];
+
+  if (!items || !container) {
     console.warn('⚠️ Missing shop items or container');
     return;
   }
@@ -37,10 +42,9 @@ export async function renderShopItems(activeCategory) {
   const equipKey = EQUIPMENT_KEY_MAP[activeCategory];
   const equipped = selectedCat?.equipment?.[equipKey] || null;
 
-  console.log('📦 ownedItems:', playerItems.ownedItems);
   container.innerHTML = '';
 
-  window.shopItemsByCategory[activeCategory].forEach(({ name, sprite_url_preview, price, template }) => {
+  for (const { name, sprite_url_preview, price, template } of items) {
     const id = template;
     const state = getItemState(id, activeCategory, playerItems);
     const isBuy = state === 'buy';
@@ -50,6 +54,7 @@ export async function renderShopItems(activeCategory) {
     const card = document.createElement('div');
     card.className = 'shop-card';
     card.dataset.category = activeCategory;
+
     if (equipped === id) card.classList.add('equipped');
     else if (ownedSet.has(id)) card.classList.add('owned');
 
@@ -66,39 +71,41 @@ export async function renderShopItems(activeCategory) {
       ? card.querySelector('.shop-price-bar')
       : card.querySelector('.shop-btn');
 
-    clickTarget.onclick = async () => {
-      const item = { id, name, img: sprite_url_preview, price, category: activeCategory, template };
-      console.log(`🛍️ handleShopClick | ${state} | ${id}`);
-
-      if (isBuy) {
-        showBuyConfirmation(item, playerItems, activeCategory);
-        return;
-      }
-
-      const result = await handleShopClick(item, playerItems);
-      console.log(`✅ Equip result: ${result}`);
-
-      await updateCoinCount();
-      await loadPlayerItems(true); // refresh inventory
-
-      if (selectedCat && equipKey) {
-        selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
-        selectedCat.equipment[equipKey] = result === 'equipped' ? id : null;
-
-        console.log(`🎯 Updating equipment slot '${equipKey}' to:`, selectedCat.equipment[equipKey]);
-
-        await updateCatItems(selectedCat.id, selectedCat.equipment);
-        console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
-      }
-
-      toastEquipResult(name, result);
-      renderShopItems(activeCategory); // refresh UI
-    };
+    clickTarget.onclick = () =>
+      isBuy
+        ? showBuyConfirmation({ id, name, img: sprite_url_preview, price, category: activeCategory, template }, playerItems, activeCategory)
+        : handleEquipClick({ id, name, category: activeCategory, template }, playerItems, selectedCat, equipKey, activeCategory);
 
     container.appendChild(card);
-  });
+  }
 }
 
+/**
+ * Handle equipping or unequipping an item.
+ */
+async function handleEquipClick(item, playerItems, selectedCat, equipKey, activeCategory) {
+  const result = await handleShopClick(item, playerItems);
+  console.log(`✅ Equip result: ${result}`);
+
+  await updateCoinCount();
+  await loadPlayerItems(true); // refresh inventory
+
+  if (selectedCat && equipKey) {
+    selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: null };
+    selectedCat.equipment[equipKey] = result === 'equipped' ? item.id : null;
+
+    console.log(`🎯 Updating equipment slot '${equipKey}' to:`, selectedCat.equipment[equipKey]);
+    await updateCatItems(selectedCat.id, selectedCat.equipment);
+    console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
+  }
+
+  toastEquipResult(item.name, result);
+  renderShopItems(activeCategory); // refresh UI
+}
+
+/**
+ * Show buy confirmation popup.
+ */
 async function showBuyConfirmation(item, playerItems, activeCategory) {
   const box = document.createElement('div');
   box.className = 'confirm-toast';
