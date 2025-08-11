@@ -64,6 +64,15 @@ toastConfirmAddCat(
     if (window.catAdded) return;
     window.catAdded = true;
 
+    console.log("✅ Matched variant selected:", matched);
+
+    // Defensive check
+    if (!matched.variant || !matched.palette) {
+      console.error("❌ Missing 'variant' or 'palette' in matched:", matched);
+      window.catAdded = false;
+      return;
+    }
+
     const newCat = {
       id: crypto.randomUUID(),
       template: `${breed}-${matched.variant}-${matched.palette}`,
@@ -75,9 +84,10 @@ toastConfirmAddCat(
       palette: matched.palette,
       sprite_url: matched.sprite_url,
       selected: false,
-      // use an array for accessories to match the rest of the app’s shape
       equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
+
+    console.log("📦 New cat to add:", newCat);
 
     addCatToUser(newCat);
     window.userCats.push(newCat);
@@ -93,5 +103,6 @@ toastConfirmAddCat(
     toastCancelled();
   }
 );
+
 }
 
