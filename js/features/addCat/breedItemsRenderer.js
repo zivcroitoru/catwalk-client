@@ -1,6 +1,5 @@
-import { toastCatAdded, toastCancelled } from '../../core/toast.js';
+import { toastCatAdded, toastCancelled , toPascalCase} from '../../core/toast.js';
 import { addCatToUser } from '../../core/storage.js';
-import { toPascalCase } from '../../core/utils.js';
 import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
 
 export function renderBreedItems(breed) {

@@ -285,7 +285,6 @@ export async function toastCatFact() {
   }
 }
 // toast.js
-import { toPascalCase } from './utils.js';
 
 export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes, onCancel) {
   const wrapper = document.createElement("div");
