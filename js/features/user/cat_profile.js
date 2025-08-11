@@ -7,6 +7,7 @@ import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadPlayerItems as loadUserItems, updateCat, deleteCat } from '../../core/storage.js';
 
+
 export async function showCatProfile(cat) {
   const nameInput = $('catName');
   const descInput = $('catDesc');
@@ -116,40 +117,61 @@ export function setupEditMode() {
     finishEdit();
   };
 
-  deleteBtn.onclick = () => {
-    if (!window.currentCat) return;
 
-    toastConfirmDelete(window.currentCat, async () => {
-      try {
-        await deleteCat(window.currentCat.id); // 🔥 DELETE from backend
-      } catch (err) {
-        console.error('❌ Failed to delete cat:', err);
-        toastSimple('Delete failed', '#ff6666');
+deleteBtn.onclick = () => {
+  if (!window.currentCat) return;
+
+  toastConfirmDelete(window.currentCat, async () => {
+    console.log("🗑️ Deletion confirmed for cat:", window.currentCat);
+
+    try {
+      await deleteCat(window.currentCat.id);
+      console.log("✅ Cat deleted from backend");
+
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      console.log("📍 Found cat index in userCats:", idx);
+      if (idx === -1) {
+        console.warn("⚠️ Cat not found in userCats");
+        toastSimple('Cat deleted!', '#ffcc66');
         return;
       }
 
-      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx === -1) return;
-
       window.userCats.splice(idx, 1);
-      window.renderCarousel();
+      console.log("🧹 Removed cat from userCats. Remaining:", window.userCats.length);
 
-      const hasCats = window.userCats.length > 0;
-      const newCat = hasCats ? window.userCats[Math.max(0, idx - 1)] : null;
-      const mainImg = document.getElementById('carouselCat');
+      if (typeof window.renderCarousel === 'function') {
+        console.log("⏳ Rendering carousel…");
+        await window.renderCarousel();
+        console.log("🔄 Carousel rendered");
 
-      if (hasCats) {
-        showCatProfile(newCat);
-        setDisplay('catProfileScroll', true);
-        if (mainImg) mainImg.src = newCat.sprite_url;
+        const hasCats = window.userCats.length > 0;
+        const nextIndex = Math.max(0, idx - 1); // always prefer previous
+        const newCat = hasCats ? window.userCats[nextIndex] : null;
+        const mainImg = document.getElementById('carouselCat');
+
+        if (hasCats) {
+          console.log("📌 Showing next cat profile:", newCat);
+          window.selectedCat = newCat;
+          showCatProfile(newCat);
+          setDisplay('catProfileScroll', true);
+          if (mainImg) mainImg.src = newCat.sprite_url;
+        } else {
+          console.log("📭 No cats left. Showing placeholder");
+          setDisplay('catProfileScroll', false);
+          if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+        }
       } else {
-        setDisplay('catProfileScroll', false);
-        if (mainImg) mainImg.src = '../assets/cats/placeholder.png';
+        console.warn("⚠️ window.renderCarousel is not defined");
       }
 
       toastSimple('Cat deleted!', '#ffcc66');
-    });
-  };
+
+    } catch (err) {
+      console.error('❌ Delete flow error:', err);
+      toastSimple('Delete failed', '#ff6666');
+    }
+  });
+};
 
   function finishEdit() {
     nameInput.disabled = true;

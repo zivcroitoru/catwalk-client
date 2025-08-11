@@ -1,6 +1,7 @@
 import { toastCatAdded, toastCancelled } from '../../core/toast.js';
 import { addCatToUser } from '../../core/storage.js';
 import { toPascalCase } from '../../core/utils.js';
+import { renderCarousel } from '../ui/carousel.js';
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
@@ -134,7 +135,7 @@ function showAddCatConfirmation(breed, variantData) {
     toastCatAdded({ breed, name, sprite_url });
     window.closeAddCat?.();
     confirmBox.remove();
-
+    renderCarousel();
     setTimeout(() => (window.catAdded = false), 300);
   };
 
@@ -146,6 +147,8 @@ function showAddCatConfirmation(breed, variantData) {
 }
 
 function updateUIAfterCatAddition(catCount) {
+  renderCarousel();
+  console.log("rendering carousel again..");
   window.renderCarousel?.();
   updateInventoryCount(catCount);
 }

@@ -1,97 +1,48 @@
-console.log('🐱 MAIN.JS LOADED');
+// main.js
+console.log('🐱 main.js');
 
-// ───────────── Imports ─────────────
 import { toggleShop } from './features/shop/shop.js';
 import { renderShopItems } from './features/shop/shopItemsRenderer.js';
-// import { setupSocket } from './features/mailbox/player-mailbox.js';
-// import { toggleMailbox } from './features/mailbox/player-mailbox.js';//
-// import { requestNotificationPermission } from './features/mailbox/player-mailbox.js';//
 
 import { toggleVolume } from './core/sound.js';
 import { signOut } from './core/auth/authentication.js';
 import { renderCarousel, scrollCarousel } from './features/ui/carousel.js';
-import { scrollShop, setupShopTabs } from './features/shop/shopTabs.js';
+import { setupShopTabs } from './features/shop/shopTabs.js';
 import { showCatProfile, setupEditMode } from './features/user/cat_profile.js';
 import { toggleUploadCat, toggleDetails } from './features/ui/popups.js';
 import { toggleAddCat } from './features/addCat/addCat.js';
-
 import { bindUI } from './features/ui/uiBinder.js';
-import {
-  loadShopAndTemplates,
-  loadUserCats
-} from './core/init/dataLoader.js';
+
+
+import { loadShopAndTemplates, loadUserCats } from './core/init/dataLoader.js';
 import { updateUI } from './core/storage.js';
 
+/* ───────────────── helpers ───────────────── */
 
+const escapeSelector = (s) =>
+  window.CSS?.escape ? window.CSS.escape(s) : s.replace(/["\\#.:]/g, '\\$&');
 
-// ───────────── Socket Setup ─────────────
-// const userToken = localStorage.getItem('token');  // or wherever you store it
-// const playerId = localStorage.getItem('playerId'); // or your player ID
-
-// if (userToken && playerId) {
-//   setupSocket(userToken, `player_${playerId}`); // room name can be any string, e.g. player id prefixed
-// }
-
-
-const userToken = localStorage.getItem('token');
-const playerId = localStorage.getItem('playerId');
-
-if (userToken && playerId) {
-  setupSocket(userToken, playerId); // just pass the real playerId
+function dispatch(name, detail) {
+  document.dispatchEvent(new CustomEvent(name, { detail }));
 }
 
 
-// ───────────── Notification Permission ─────────────//
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   requestNotificationPermission(); // Call once on page load or after login
-// });
+/* Bind runtime listeners that depend on the DOM */
+function wireRuntimeEvents() {
 
-// ───────────── Init ─────────────
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('✅ DOMContentLoaded');
+  // “Add Cat” empty-state shortcut
+  document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
+    document.getElementById('addCatBtn')?.click();
+  });
 
-  try {
-    /* STEP A then STEP B */
-    await loadShopAndTemplates();
-    await loadUserCats();
-  } catch (err) {
-    console.error('❌ Data load failed:', err);
-    return; // bail before touching UI
-  }
-
-  /* UI init – safe to read breedItems & userCats from here */
-  await updateUI();
-  renderCarousel();
-  setupShopTabs();
-  setupEditMode();
-  bindUI();
-
-
-
-  // requestNotificationPermission();
-  // Initialize mailbox (only once!)
-  // await initializeMailbox();
-
-  // “Add Cat” from empty-state shortcut
-  document.getElementById('addCatBtnEmpty')
-    ?.addEventListener('click', () =>
-      document.getElementById('addCatBtn')?.click()
-    );
-
-  console.log('✅ Systems initialized');
-
-  /* ───────────── CAT FACT BUTTON (with debug logs) ───────────── */
+  // Optional Cat Fact button (safe if element missing)
   const catFactBtn = document.getElementById('catFactToggle');
   if (catFactBtn) {
     catFactBtn.addEventListener('click', async () => {
-      console.log('🐞 Cat fact button clicked!');
       try {
-        console.log('🐞 Fetching cat fact...');
         const res = await fetch('https://catfact.ninja/fact');
-        console.log('🐞 API response:', res);
         const { fact } = await res.json();
-        console.log('🐞 Cat fact loaded:', fact);
         Toastify({
           text: `🐾 ${fact}`,
           duration: 5000,
@@ -102,11 +53,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             color: '#000',
             fontFamily: "'Press Start 2P', monospace",
             fontSize: '10px',
-            border: '2px solid #000'
-          }
+            border: '2px solid #000',
+          },
         }).showToast();
-      } catch (error) {
-        console.error('🐞 Error fetching cat fact:', error);
+      } catch {
         Toastify({
           text: 'Failed to load cat fact 😿',
           duration: 3000,
@@ -117,21 +67,56 @@ document.addEventListener('DOMContentLoaded', async () => {
             color: '#000',
             fontFamily: "'Press Start 2P', monospace",
             fontSize: '10px',
-            border: '2px solid #000'
-          }
+            border: '2px solid #000',
+          },
         }).showToast();
       }
     });
-  } else {
-    console.warn('⚠️ Cat fact button (#catFactToggle) not found!');
+  }
+}
+
+/* One-time UI render after cats are hydrated */
+function onCatsReady(cats) {
+  // Ensure a shared source of truth for all components
+  if (Array.isArray(cats)) window.userCats = cats;
+
+  updateUI();       // should render podium from window.userCats
+  renderCarousel(); // cards read the same data used by podium
+
+  setupShopTabs();
+  setupEditMode();
+  bindUI();
+
+  wireRuntimeEvents();
+}
+
+/* ───────────────── boot ───────────────── */
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // If you re-enable mailbox sockets, import and guard:
+    // const token = localStorage.getItem('token');
+    // const playerId = localStorage.getItem('playerId');
+    // if (token && playerId && typeof setupSocket === 'function') {
+    //   setupSocket(token, playerId);
+    // }
+
+    // 1) Load shop metadata/templates first, then cats (hydrated with equipment)
+    await loadShopAndTemplates();
+    const cats = await loadUserCats(); // expect array; if your function returns void, ensure it still populates window.userCats
+
+    // 2) Single barrier: render everything only after cats are ready
+    onCatsReady(cats || window.userCats || []);
+    console.log('✅ Systems initialized');
+  } catch (err) {
+    console.error('❌ Data load failed:', err);
   }
 });
 
-// ───────────── Expose to Window (for inline HTML handlers) ─────────────
+/* ───────────────── window exports (for inline handlers) ───────────────── */
 Object.assign(window, {
   toggleShop,
   renderShopItems,
-  // toggleMailbox,
   toggleVolume,
   signOut,
   scrollCarousel,
@@ -139,7 +124,5 @@ Object.assign(window, {
   toggleUploadCat,
   toggleDetails,
   toggleAddCat,
-  renderCarousel
+  renderCarousel,
 });
-
-

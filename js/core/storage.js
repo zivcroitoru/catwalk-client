@@ -1,32 +1,39 @@
-/*-----------------------------------------------------------------------------
-  storage.js – DB-backed player inventory & cats
------------------------------------------------------------------------------*/
 import { APP_URL } from './config.js';
 
+// ───────────── API Routes ─────────────
 const PLAYER_ITEMS_API = `${APP_URL}/api/playerItems`;
 const PLAYER_CATS_API = `${APP_URL}/api/cats`;
-const CAT_ITEMS_API = `${APP_URL}/api/cat_items`;
+const CAT_ITEMS_API    = `${APP_URL}/api/cat_items`;
 
 let itemCache = null;
 
-// ───────────── Equipment merge helper ─────────────
+// ───────────── Equipment Helper ─────────────
 function mergeEquipment(incoming) {
-  // Normalized shape we expect across the app
   const base = { hat: null, top: null, eyes: null, accessories: [] };
   if (!incoming) return base;
 
-  // Accept both singular/plural keys defensively
-  const mapped = {
+  return {
+    ...base,
     hat: incoming.hat ?? incoming.hats ?? null,
     top: incoming.top ?? incoming.tops ?? null,
     eyes: incoming.eyes ?? null,
     accessories: Array.isArray(incoming.accessories) ? incoming.accessories : []
   };
-  return { ...base, ...mapped };
 }
 
+// ───────────── JWT Helpers ─────────────
+function getPlayerIdFromToken() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
 
-// ───────────── REST helpers ─────────────
+  try {
+    return JSON.parse(atob(token.split('.')[1])).id;
+  } catch {
+    return null;
+  }
+}
+
+// ───────────── REST: Items ─────────────
 async function apiGetItems() {
   const token = localStorage.getItem('token');
   const res = await fetch(PLAYER_ITEMS_API, {
@@ -68,6 +75,7 @@ async function apiPatchItem(template) {
   return res.json();
 }
 
+// ───────────── REST: Cats ─────────────
 async function apiGetCats() {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
@@ -103,15 +111,11 @@ async function apiUpdateCat(catId, updates) {
     body: JSON.stringify(updates)
   });
 
-  if (!res.ok) {
-    console.error('Failed to update cat:', res.status, res.statusText);
-    throw new Error('Failed to update cat');
-  }
-
+  if (!res.ok) throw new Error('Failed to update cat');
   return res.json();
 }
 
-
+// ───────────── REST: Equipment ─────────────
 async function apiGetCatItems(catId) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
@@ -120,12 +124,7 @@ async function apiGetCatItems(catId) {
     headers: { 'Authorization': `Bearer ${token}` }
   });
 
-  if (!res.ok) {
-    // Non-fatal: we can still show the cat without equipment
-    return null;
-  }
-
-  // Expected shape: { catId, equipment }
+  if (!res.ok) return null; // non-fatal
   return res.json();
 }
 
@@ -142,15 +141,11 @@ async function updateCatItems(catId, equipment) {
     body: JSON.stringify({ equipment })
   });
 
-  if (!res.ok) {
-    console.error('Failed to update cat_items:', res.status, res.statusText);
-    throw new Error('Failed to update cat_items');
-  }
-
+  if (!res.ok) throw new Error('Failed to update cat_items');
   return res.json();
 }
 
-// ───────────── Load & Save ─────────────
+// ───────────── Public: Data Loaders ─────────────
 export async function loadPlayerItems(force = false) {
   if (!force && itemCache) return itemCache;
 
@@ -165,43 +160,9 @@ export async function unlockPlayerItem(template) {
   updateUI();
 }
 
-// ───────────── JWT Helpers ─────────────
-function getPlayerIdFromToken() {
-  const token = localStorage.getItem('token');
-  if (!token) return null;
-
-  try {
-    return JSON.parse(atob(token.split('.')[1])).id;
-  } catch {
-    return null;
-  }
-}
-
-// ───────────── Cats Access ─────────────
-export function buildSpriteLookup(breedItems = {}) {
-  return Object.values(breedItems).flat().reduce((acc, v) => {
-    const key = v.id ?? v.template;
-    acc[key] = v.sprite_url;
-    return acc;
-  }, {});
-}
-
-let cachedSpriteLookup = null;
-export function resetSpriteLookup() {
-  cachedSpriteLookup = null;
-}
-
-function getSpriteLookup() {
-  if (!cachedSpriteLookup) {
-    cachedSpriteLookup = buildSpriteLookup(window.breedItems || {});
-  }
-  return cachedSpriteLookup;
-}
-
 export async function getPlayerCats() {
   const [raw, sprites] = await Promise.all([apiGetCats(), getSpriteLookup()]);
 
-  // Normalize and then hydrate equipment per cat
   const cats = await Promise.all(raw.map(async (c) => {
     const base = normalizeCat(c, sprites);
     let eqRes = null;
@@ -216,8 +177,8 @@ export async function getPlayerCats() {
   return cats;
 }
 
+// ───────────── Public: Cat Management ─────────────
 export async function updateCat(catId, updates) {
-
   const updatedCat = await apiUpdateCat(catId, updates);
   const idx = window.userCats.findIndex(c => c.id === catId);
   if (idx !== -1) {
@@ -260,11 +221,74 @@ export async function addCatToUser(cat) {
   if (!res.ok) throw new Error('Failed to add a cat');
   const result = await res.json();
   await loadPlayerItems(true);
-  updateUI();
   return result.cat;
 }
 
-// ───────────── UI Update Helpers ─────────────
+// ───────────── Public: Equipment Saver ─────────────
+export async function setCatEquipment(catId, newEquipment) {
+  console.log(`[storage] setCatEquipment called for cat ${catId}`, newEquipment);
+
+  await updateCatItems(catId, newEquipment);
+  const eq = mergeEquipment(newEquipment);
+
+  const i = window.userCats.findIndex(c => c.id === catId);
+  if (i !== -1) {
+    window.userCats[i] = { ...window.userCats[i], equipment: eq };
+    console.log(`[storage] Updated window.userCats[${i}]`, window.userCats[i]);
+  } else {
+    console.warn(`[storage] Cat ${catId} not found in window.userCats`);
+  }
+
+  console.log(`[storage] Dispatching cat:equipmentUpdated event`);
+  document.dispatchEvent(new CustomEvent('cat:equipmentUpdated', {
+    detail: { catId, equipment: eq }
+  }));
+
+  return eq;
+}
+
+
+// ───────────── Public: Sprite & Normalization ─────────────
+export function buildSpriteLookup(breedItems = {}) {
+  return Object.values(breedItems).flat().reduce((acc, v) => {
+    const key = v.id ?? v.template;
+    acc[key] = v.sprite_url;
+    return acc;
+  }, {});
+}
+
+let cachedSpriteLookup = null;
+
+export function resetSpriteLookup() {
+  cachedSpriteLookup = null;
+}
+
+function getSpriteLookup() {
+  if (!cachedSpriteLookup) {
+    cachedSpriteLookup = buildSpriteLookup(window.breedItems || {});
+  }
+  return cachedSpriteLookup;
+}
+
+export function normalizeCat(cat, spriteByTemplate) {
+  const template = cat.template;
+  const [breed, variant, palette] = template?.split('-') ?? [];
+  return {
+    id: cat.cat_id ?? cat.id,
+    template,
+    name: cat.name ?? 'Unnamed Cat',
+    birthdate: cat.birthdate,
+    description: cat.description ?? '',
+    sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
+    breed: cat.breed || breed,
+    variant: cat.variant || variant,
+    palette: cat.palette || palette,
+    selected: false,
+    equipment: mergeEquipment(cat.equipment),
+  };
+}
+
+// ───────────── Public: UI Helpers ─────────────
 export async function updateCoinCount() {
   const token = localStorage.getItem('token');
   const playerId = getPlayerIdFromToken();
@@ -299,26 +323,4 @@ export async function updateUI() {
   const catCountEl = document.getElementById('cat-count');
   if (catCountEl) catCountEl.textContent = `Inventory: ${cat_count}/25`;
 }
-
-export function normalizeCat(cat, spriteByTemplate) {
-  const template = cat.template;
-  const [breed, variant, palette] = template?.split('-') ?? [];
-  return {
-    id: cat.cat_id ?? cat.id,
-    template,
-    name: cat.name ?? 'Unnamed Cat',
-    birthdate: cat.birthdate,
-    description: cat.description ?? '',
-    sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
-    breed: cat.breed || breed,
-    variant: cat.variant || variant,
-    palette: cat.palette || palette,
-    selected: false,
-    equipment: mergeEquipment(cat.equipment),
-  };
-}
-
-// ───────────── Export Everything ─────────────
-export {
-  updateCatItems
-};
+export { updateCatItems };
