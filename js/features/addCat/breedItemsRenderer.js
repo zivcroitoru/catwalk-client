@@ -1,4 +1,5 @@
-import { toastCatAdded, toastCancelled , toPascalCase} from '../../core/toast.js';
+import { toastCatAdded, toastCancelled} from '../../core/toast.js';
+import { toPascalCase } from '../../core/utils.js';
 import { addCatToUser } from '../../core/storage.js';
 import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
 
