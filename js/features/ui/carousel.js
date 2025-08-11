@@ -24,11 +24,17 @@ export async function renderCarousel(selectCatId = null) {
   container.innerHTML = "";
 
   // If no cats → show toast and stop
-  if (!hasCats) {
-    toastNoCats();
-    updateInventoryCount();
-    return;
-  }
+// If no cats → show toast only when add popup is closed
+if (!hasCats) {
+  const addPopup = document.getElementById("addCatPopup");
+  const isOpen =
+    addPopup && !addPopup.classList.contains("hidden") && addPopup.style.display !== "none";
+
+  if (!isOpen) toastNoCats();
+
+  updateInventoryCount();
+  return;
+}
 
   // Close any existing toast
   if (window.Toastify?.recent) {

@@ -23,19 +23,6 @@ function dispatch(name, detail) {
   document.dispatchEvent(new CustomEvent(name, { detail }));
 }
 
-// Attach listeners that depend on DOM elements
-function wireRuntimeEvents() {
-  document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
-    document.getElementById('emptyState')?.classList.add('hidden');
-    document.getElementById('addCatBtn')?.click();
-  });
-
-  const catFactBtn = document.getElementById('catFactToggle');
-  if (catFactBtn) {
-    catFactBtn.addEventListener('click', toastCatFact);
-  }
-}
-
 // Run after cats are loaded
 function onCatsReady(cats) {
   if (Array.isArray(cats)) window.userCats = cats;
