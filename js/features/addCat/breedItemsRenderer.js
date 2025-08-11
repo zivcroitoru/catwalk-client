@@ -58,43 +58,40 @@ function showAddCatConfirmation(breed, variantData) {
     return;
   }
 
-  toastConfirmAddCat({
-    breed,
-    variantData: matched,
-    onConfirm: () => {
-      if (window.catAdded) return;
-      window.catAdded = true;
+toastConfirmAddCat(
+  matched, // <-- pass the variant object directly
+  () => {  // onYes
+    if (window.catAdded) return;
+    window.catAdded = true;
 
-      const newCat = {
-        id: crypto.randomUUID(),
-        template: `${breed}-${matched.variant}-${matched.palette}`,
-        name: `${breed} (${matched.name})`,
-        birthdate: new Date().toISOString().split("T")[0],
-        description: "",
-        breed,
-        variant: matched.variant,
-        palette: matched.palette,
-        sprite_url: matched.sprite_url,
-        selected: false,
-        equipment: { hat: null, top: null, eyes: null, accessories: null }
-      };
+    const newCat = {
+      id: crypto.randomUUID(),
+      template: `${breed}-${matched.variant}-${matched.palette}`,
+      name: `${breed} (${matched.name})`,
+      birthdate: new Date().toISOString().split("T")[0],
+      description: "",
+      breed,
+      variant: matched.variant,
+      palette: matched.palette,
+      sprite_url: matched.sprite_url,
+      selected: false,
+      // use an array for accessories to match the rest of the app’s shape
+      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+    };
 
-      addCatToUser(newCat);
-      window.userCats.push(newCat);
+    addCatToUser(newCat);
+    window.userCats.push(newCat);
 
-      console.log("🐱 Cat added:", newCat);
-      console.log(`📦 Total cats: ${window.userCats?.length}`);
-
-      renderCarousel();
-      updateInventoryCount();
-      toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
-      window.closeAddCat?.();
-      setTimeout(() => (window.catAdded = false), 300);
-    },
-    onCancel: () => {
-      document.querySelector(".shop-card.selected")?.classList.remove("selected");
-      toastCancelled();
-    }
-  });
+    renderCarousel();
+    updateInventoryCount();
+    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+    window.closeAddCat?.();
+    setTimeout(() => (window.catAdded = false), 300);
+  },
+  () => {  // onCancel
+    document.querySelector(".shop-card.selected")?.classList.remove("selected");
+    toastCancelled();
+  }
+);
 }
 

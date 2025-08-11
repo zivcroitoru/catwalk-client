@@ -284,7 +284,6 @@ export async function toastCatFact() {
     }).showToast();
   }
 }
-// toast.js
 
 export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes, onCancel) {
   const wrapper = document.createElement("div");
