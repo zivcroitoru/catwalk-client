@@ -26,7 +26,7 @@ if (!catId || !selectedCat) {
     if (catName) catName.textContent = selectedCat.template;
     if (catBreed) catBreed.textContent = `BREED: ${selectedCat.breed}`;
     if (catVariant) catVariant.textContent = `VARIANT: ${selectedCat.variant}`;
-    if (catColor) catColor.textContent = `PALLETE: ${selectedCat.pallete}`;
+    if (catColor) catColor.textContent = `PALETTE: ${selectedCat.palette}`;
     if (catSprite) {
       catSprite.textContent = `SPRITE URL: ${selectedCat.sprite_url}`;
 
@@ -75,7 +75,6 @@ if (!catId || !selectedCat) {
       });
     }
 
-    // ✅ Moved OUTSIDE the catSprite click block
     cancelBtn?.addEventListener('click', () => {
       window.location.href = 'cat-database.html';
     });
