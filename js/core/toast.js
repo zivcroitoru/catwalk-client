@@ -236,4 +236,38 @@ export function toastNoCats() {
     document.getElementById("addCatBtnToast")?.addEventListener("click", window.__addCatBtnToastHandler);
   });
 }
+export async function toastCatFact() {
+  try {
+    const res = await fetch('https://catfact.ninja/fact');
+    const { fact } = await res.json();
+    Toastify({
+      text: `🐾 ${fact}`,
+      duration: 5000,
+      gravity: 'bottom',
+      position: 'right',
+      style: {
+        background: '#fff2d9',
+        color: '#000',
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '10px',
+        border: '2px solid #000',
+      },
+    }).showToast();
+  } catch {
+    Toastify({
+      text: 'Failed to load cat fact 😿',
+      duration: 3000,
+      gravity: 'bottom',
+      position: 'right',
+      style: {
+        background: '#fdd',
+        color: '#000',
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '10px',
+        border: '2px solid #000',
+      },
+    }).showToast();
+  }
+}
+
 
