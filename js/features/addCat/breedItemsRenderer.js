@@ -156,6 +156,6 @@ function updateUIAfterCatAddition(catCount) {
 function updateInventoryCount(count) {
   const inventoryCount = document.getElementById("inventoryCount");
   if (inventoryCount) {
-    inventoryCount.textContent = `Inventory: ${count}/25`;
+    inventoryCount.textContent = `Inventory: ${window.userCats.length}/25`;
   }
 }
