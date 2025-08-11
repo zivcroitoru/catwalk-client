@@ -13,7 +13,9 @@ export async function renderCarousel(selectCatId = null) {
   if (!container) return;
 
   // Fetch player cats
+if (!window.userCats || window.userCats.length === 0) {
   window.userCats = await getPlayerCats();
+}
   const cats = window.userCats;
   const hasCats = cats.length > 0;
 

@@ -47,7 +47,7 @@ export function renderBreedItems(breed) {
   console.log(`🎨 Rendered ${variants.length} variants for ${breed}`);
 }
 
-function showAddCatConfirmation(breed, variantData) {
+async function showAddCatConfirmation(breed, variantData) {
   const allVariants = window.breedItems?.[breed] || [];
   const matched = allVariants.find(v =>
     v.name === variantData.name && v.sprite_url === variantData.sprite_url
@@ -60,7 +60,7 @@ function showAddCatConfirmation(breed, variantData) {
 
 toastConfirmAddCat(
   matched,
-  () => {
+  async () => {  // ✅ async callback
     if (window.catAdded) return;
     window.catAdded = true;
 
@@ -82,34 +82,35 @@ toastConfirmAddCat(
       selected: false,
       equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
-addCatToUser(newCat);
-console.log("📦 Cat added to local storage");
 
-window.userCats.push(newCat);
-console.log("🐱 Cat pushed to window.userCats:", window.userCats.length, "cats total");
+    await addCatToUser(newCat);
+    console.log("📦 Cat added to storage");
 
-console.log("🔄 Calling renderCarousel()");
-renderCarousel();
+    window.userCats = await getPlayerCats();
+    console.log("📥 Refreshed userCats:", window.userCats.length);
 
-console.log("🔢 Updating inventory count");
-updateInventoryCount();
+    renderCarousel();
+    console.log("🔄 Carousel re-rendered");
 
-console.log("📢 Showing toast: Cat Added");
-toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+    updateInventoryCount();
+    console.log("🔢 Inventory updated");
 
-console.log("❌ Closing Add Cat popup");
-window.closeAddCat?.();
+    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+    console.log("📢 Toast shown");
 
-setTimeout(() => {
-  window.catAdded = false;
-  console.log("⏱️ Reset catAdded flag");
-}, 300);
+    window.closeAddCat?.();
+    console.log("❌ Popup closed");
 
+    setTimeout(() => {
+      window.catAdded = false;
+      console.log("⏱️ Reset catAdded flag");
+    }, 300);
   },
   () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
     toastCancelled();
   }
 );
+
 }
 
