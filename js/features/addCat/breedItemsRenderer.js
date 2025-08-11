@@ -1,7 +1,6 @@
-import { toastCatAdded, toastCancelled } from '../../core/toast.js';
-import { addCatToUser } from '../../core/storage.js';
-import { toPascalCase } from '../../core/utils.js';
-import { renderCarousel } from '../ui/carousel.js';
+import { toastCatAdded, toastCancelled, toastConfirmAddCat } from '../../core/toast.js';
+import { addCatToUser, getPlayerCats } from '../../core/storage.js';
+import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
@@ -26,8 +25,6 @@ export function renderBreedItems(breed) {
       return;
     }
 
-    console.log('Rendering breed item:', { name, sprite_url });
-
     const card = document.createElement("div");
     card.className = "shop-card";
     card.innerHTML = `
@@ -41,7 +38,6 @@ export function renderBreedItems(breed) {
       if (selectedCard) selectedCard.classList.remove("selected");
       selectedCard = card;
       card.classList.add("selected");
-
       showAddCatConfirmation(breed, variantData);
     });
 
@@ -51,111 +47,70 @@ export function renderBreedItems(breed) {
   console.log(`🎨 Rendered ${variants.length} variants for ${breed}`);
 }
 
-function showAddCatConfirmation(breed, variantData) {
-  console.log('🎭 Showing confirmation for:', { breed, variantData });
-
-  // Re-fetch the variant from the breedItems to get accurate data (esp. palette)
+async function showAddCatConfirmation(breed, variantData) {
   const allVariants = window.breedItems?.[breed] || [];
-  const matchedVariant = allVariants.find(v =>
+  const matched = allVariants.find(v =>
     v.name === variantData.name && v.sprite_url === variantData.sprite_url
   );
 
-  if (!matchedVariant) {
+  if (!matched) {
     console.error('❌ Variant not found in breedItems for:', variantData.name);
     return;
   }
 
-  const { name, variant, palette, sprite_url } = matchedVariant;
-
-  const confirmBox = document.createElement("div");
-  confirmBox.className = "confirm-toast";
-  confirmBox.innerHTML = `
-    <div style="
-      font-family: 'Press Start 2P', monospace;
-      text-align: center;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 31px;
-      font-size: 14px;">
-      
-      <div style="font-size: 16px; font-weight: bold; color: #222;">Add This Cat?</div>
-
-      <img src="${sprite_url}" alt="Cat" style="
-        width: 64px;
-        height: 64px;
-        transform: scale(2);
-        transform-origin: center;
-        image-rendering: pixelated;
-        margin-top: -30px;
-        margin-bottom: 4px;"
-        onerror="console.warn('Failed to load preview:', '${sprite_url}'); this.style.display='none';" />
-
-      <div style="font-size: 13px; color: #333; margin-top: 12px;">
-        <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
-      </div>
-
-      <div style="font-size: 12px; margin-top: -4px;">Add to your collection?</div>
-
-      <div class="confirm-buttons" style="display: flex; gap: 24px; margin-top: 16px;">
-        <button class="yes-btn" style="padding: 6px 14px;">✅ Yes</button>
-        <button class="no-btn" style="padding: 6px 14px;">❌ No</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(confirmBox);
-
-  confirmBox.querySelector(".yes-btn").onclick = () => {
+toastConfirmAddCat(
+  matched,
+  async () => {  // ✅ async callback
     if (window.catAdded) return;
     window.catAdded = true;
 
+    if (!matched.variant || !matched.palette) {
+      window.catAdded = false;
+      return;
+    }
+
     const newCat = {
       id: crypto.randomUUID(),
-      template: `${breed}-${variant}-${palette}`,
-      name: `${breed} (${name})`,
+      template: `${breed}-${matched.variant}-${matched.palette}`,
+      name: `${breed} (${matched.name})`,
       birthdate: new Date().toISOString().split("T")[0],
       description: "",
       breed,
-      variant,
-      palette,
-      sprite_url,
+      variant: matched.variant,
+      palette: matched.palette,
+      sprite_url: matched.sprite_url,
       selected: false,
       equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
 
-    addCatToUser(newCat);
-    window.userCats.push(newCat);
+    await addCatToUser(newCat);
+    console.log("📦 Cat added to storage");
 
-    console.log("🐱 Cat added:", newCat);
-    console.log(`📦 Total cats: ${window.userCats?.length}`);
+    window.userCats = await getPlayerCats();
+    console.log("📥 Refreshed userCats:", window.userCats.length);
 
-    updateUIAfterCatAddition(window.userCats.length);
-    toastCatAdded({ breed, name, sprite_url });
+    await renderCarousel();
+    console.log("🔄 Carousel re-rendered");
+
+    updateInventoryCount();
+    console.log("🔢 Inventory updated");
+
+    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+    console.log("📢 Toast shown");
+
     window.closeAddCat?.();
-    confirmBox.remove();
-    renderCarousel();
-    setTimeout(() => (window.catAdded = false), 300);
-  };
+    console.log("❌ Popup closed");
 
-  confirmBox.querySelector(".no-btn").onclick = () => {
+    setTimeout(() => {
+      window.catAdded = false;
+      console.log("⏱️ Reset catAdded flag");
+    }, 300);
+  },
+  () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
     toastCancelled();
-    confirmBox.remove();
-  };
-}
-
-function updateUIAfterCatAddition(catCount) {
-  renderCarousel();
-  console.log("rendering carousel again..");
-  window.renderCarousel?.();
-  updateInventoryCount(catCount);
-}
-
-function updateInventoryCount(count) {
-  const inventoryCount = document.getElementById("inventoryCount");
-  if (inventoryCount) {
-    inventoryCount.textContent = `Inventory: ${count}/25`;
   }
+);
+
 }
+

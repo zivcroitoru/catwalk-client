@@ -1,4 +1,6 @@
 // /js/core/toast.js
+import { toPascalCase } from './utils.js';
+
 
 export function toastCatAdded({ breed, name, sprite_url }) {
   Toastify({
@@ -182,7 +184,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
 }
 
 export function toastNoCats() {
-  Toastify({
+  const toast = Toastify({
     node: (() => {
       const wrapper = document.createElement("div");
       wrapper.style.cssText = `
@@ -212,7 +214,7 @@ export function toastNoCats() {
       `;
       return wrapper;
     })(),
-    duration: -1, // Stays until user clicks
+    duration: -1, // stays until user closes it
     gravity: "top",
     position: "center",
     style: {
@@ -224,16 +226,128 @@ export function toastNoCats() {
       zIndex: 999999,
     },
     callback: () => {
-      document.getElementById("addCatBtnToast")?.removeEventListener("click", window.__addCatBtnToastHandler);
+      document.getElementById("addCatBtnToast")
+        ?.removeEventListener("click", window.__addCatBtnToastHandler);
     }
-  }).showToast();
+  });
 
-  // Add button click triggers the real Add Cat popup
+  // Track the toast so we can close it later
+  window.Toastify = window.Toastify || {};
+  window.Toastify.recent = toast;
+
+  toast.showToast();
+
+  // Button click closes toast & opens Add Cat popup
   window.__addCatBtnToastHandler = () => {
+    if (window.Toastify?.recent) {
+      try { window.Toastify.recent.hideToast(); } catch {}
+    }
     document.getElementById("addCatBtn")?.click();
   };
+
   requestAnimationFrame(() => {
-    document.getElementById("addCatBtnToast")?.addEventListener("click", window.__addCatBtnToastHandler);
+    document.getElementById("addCatBtnToast")
+      ?.addEventListener("click", window.__addCatBtnToastHandler);
   });
 }
 
+export async function toastCatFact() {
+  try {
+    const res = await fetch('https://catfact.ninja/fact');
+    const { fact } = await res.json();
+    Toastify({
+      text: `🐾 ${fact}`,
+      duration: 5000,
+      gravity: 'bottom',
+      position: 'right',
+      style: {
+        background: '#fff2d9',
+        color: '#000',
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '10px',
+        border: '2px solid #000',
+      },
+    }).showToast();
+  } catch {
+    Toastify({
+      text: 'Failed to load cat fact 😿',
+      duration: 3000,
+      gravity: 'bottom',
+      position: 'right',
+      style: {
+        background: '#fdd',
+        color: '#000',
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '10px',
+        border: '2px solid #000',
+      },
+    }).showToast();
+  }
+}
+
+export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes, onCancel) {
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
+      <div style="font-size:16px; font-weight:bold; color:#222; margin-bottom:10px;">Add This Cat?</div>
+
+      <img src="${sprite_url}" alt="Cat"
+        style="width:64px; height:64px; image-rendering:pixelated; transform:scale(2); transform-origin:center; margin: -8px 0 6px 0;"
+        onerror="this.style.display='none'; console.warn('❌ Failed to load preview:', this.src);" />
+
+      <div style="font-size:13px; color:#333; margin-top:8px;">
+        <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
+      </div>
+      <div style="font-size:12px; margin-top:2px;">Add to your collection?</div>
+
+      <div style="display:flex; gap:24px; justify-content:center; margin-top:16px;">
+        <button id="confirmAddYes" style="padding:6px 14px;">✅ Yes</button>
+        <button id="confirmAddNo" style="padding:6px 14px;">❌ No</button>
+      </div>
+    </div>
+  `;
+
+  const toast = Toastify({
+    node: wrapper,
+    duration: -1,
+    gravity: "top",
+    position: "center",
+    style: {
+      background: "#fffbe7",
+      border: "4px solid black",
+      color: "#000",
+      padding: "28px",
+      width: "420px",
+      maxWidth: "90vw",
+      fontSize: "16px",
+      fontFamily: "'Press Start 2P', monospace",
+      boxShadow: "8px 8px #000",
+      textAlign: "center",
+      zIndex: 999999,
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+    callback: () => {
+      document.getElementById("confirmAddYes")?.removeEventListener("click", onYes);
+      document.getElementById("confirmAddNo")?.removeEventListener("click", onCancel);
+    }
+  });
+
+  toast.showToast();
+
+  // bind after mount
+  requestAnimationFrame(() => {
+    document.getElementById("confirmAddYes")?.addEventListener("click", () => {
+      toast.hideToast();
+      onYes?.();
+    });
+    document.getElementById("confirmAddNo")?.addEventListener("click", () => {
+      toast.hideToast();
+      onCancel?.();
+    });
+  });
+
+  return toast;
+}

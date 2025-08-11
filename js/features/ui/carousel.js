@@ -12,37 +12,59 @@ export async function renderCarousel(selectCatId = null) {
   const podium = document.getElementById("catDisplay");
   if (!container) return;
 
-  // 1) Fetch – trust normalized shape from getPlayerCats()
+  // Fetch player cats
+if (!window.userCats || window.userCats.length === 0) {
   window.userCats = await getPlayerCats();
-  const cats = window.userCats; // already normalized
+}
+  const cats = window.userCats;
   const hasCats = cats.length > 0;
 
+  // Show/hide main UI areas
   setDisplay("catAreaWrapper", hasCats);
-  setDisplay("emptyState", !hasCats);
   scroll?.classList.toggle("hidden", !hasCats);
   podium?.classList.toggle("hidden", !hasCats);
   container.innerHTML = "";
 
-  if (!hasCats) { toastNoCats(); updateInventoryCount(); return; }
 
-  if (window.Toastify?.recent) { try { Toastify.recent.hideToast(); } catch {} }
+if (!hasCats) {
+  const addPopup = document.getElementById("addCatPopup");
+  const isOpen = addPopup && !addPopup.classList.contains("hidden") &&
+                 addPopup.style.display !== "none";
 
-  // 2) (Optional) cache sprite lookup once
+  // Only show toast if popup is NOT open
+  if (!isOpen) {
+    if (window.Toastify?.recent) {
+      try { Toastify.recent.hideToast(); } catch {}
+    }
+    toastNoCats();
+  }
+
+  updateInventoryCount();
+  return;
+}
+
+
+  // Close any existing toast
+  if (window.Toastify?.recent) {
+    try { Toastify.recent.hideToast(); } catch {}
+  }
+
+  // Cache sprite lookup
   window._spriteLookup ||= buildSpriteLookup(window.breedItems);
 
-  // 3) Render cards
+  // Render cards
   const frag = document.createDocumentFragment();
   cats.forEach(cat => frag.appendChild(buildCatCard(cat, window._spriteLookup)));
   container.appendChild(frag);
 
-  // 4) Resolve selected cat (by ID or fallback to first)
+  // Select current or first cat
   const selectedCat = cats.find(c => c.id === selectCatId) || cats[0];
   if (!selectedCat) return;
 
-  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: null };
   window.selectedCat = selectedCat;
 
-  // 5) Update main display
+  // Update podium
   updateCatPreview(selectedCat);
   const mainCatImg = document.getElementById("carouselCat");
   if (mainCatImg) {
@@ -51,17 +73,17 @@ export async function renderCarousel(selectCatId = null) {
   }
   showCatProfile(selectedCat);
 
-  // 6) Highlight & ensure visibility
+  // Highlight selected card
   const selectedCard = document.querySelector(`.cat-card[data-cat-id="${selectedCat.id}"]`);
   if (selectedCard) {
     selectCatCard(selectedCard);
 
-    // Move to the page that contains the selected card
+    // Scroll to page containing selected card
     const idx = Array.from(container.children).indexOf(selectedCard);
     if (idx >= 0) {
       const page = Math.floor(idx / CARDS_PER_PAGE);
       state.currentPage = page;
-      scrollCarousel(0); // apply transform for the current page
+      scrollCarousel(0);
       selectedCard.scrollIntoView({ block: "nearest", inline: "center" });
     }
   }
@@ -69,7 +91,7 @@ export async function renderCarousel(selectCatId = null) {
   updateInventoryCount();
 }
 
-function buildCatCard(cat /*, spriteLookup */) {
+function buildCatCard(cat) {
   const card = document.createElement("div");
   card.className = "cat-card";
   card.dataset.catId = cat.id;
@@ -108,7 +130,6 @@ function selectCatCard(selectedCard) {
   if (selectedCard) selectedCard.classList.add('selected');
 }
 
-// ───────────── Scroll Carousel ─────────────
 export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
   if (!carousel) return;
@@ -126,9 +147,8 @@ export function scrollCarousel(direction) {
   carousel.style.transform = `translateX(-${offset}px)`;
 }
 
-// ───────────── Inventory Counter ─────────────
 export function updateInventoryCount() {
   const count = window.userCats?.length || 0;
   const inventoryUI = document.getElementById("inventoryCount");
-  if (inventoryUI) inventoryUI.textContent = `Inventory: ${count}/25`;
+  if (inventoryUI) inventoryUI.textContent = `Cats: ${count}/25`;
 }

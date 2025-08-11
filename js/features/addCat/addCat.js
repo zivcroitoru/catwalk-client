@@ -3,8 +3,11 @@ import { initBreedTabs } from "./breedTabs.js";
 import { renderBreedItems } from "./breedItemsRenderer.js";
 
 export function toggleAddCat() {
-  console.log("🔄 Starting Add Cat toggle...");
+  // close any toast
+  if (window.Toastify?.recent) { try { Toastify.recent.hideToast(); } catch {} }
 
+  // hide the empty-state card when opening popup
+  document.getElementById('emptyState')?.classList.add('hidden');
   // Get required elements
   const popup   = document.getElementById("addCatPopup");
   const blocker = document.getElementById("addCatOverlayBlocker");
@@ -42,12 +45,19 @@ export function toggleAddCat() {
 export function closeAddCat() {
   console.log("❌ Closing Add Cat popup");
 
+  // Hide the empty-state card if it’s still showing
+  document.getElementById("emptyState")?.classList.add("hidden");
+
   document.getElementById("addCatPopup").classList.add("hidden");
   document.getElementById("addCatOverlayBlocker").classList.add("hidden");
   document.body.classList.remove("shop-lock");
 
   console.log("✅ Popup closed");
+  if (window.Toastify?.recent) {
+  try { Toastify.recent.hideToast(); } catch {}
 }
+}
+
 
 // 👇 Make callable from HTML
 window.toggleAddCat = toggleAddCat;

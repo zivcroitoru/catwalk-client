@@ -13,7 +13,7 @@ export function updateCatPreview(
   } = opts;
 
   // Normalize equipment shape once
-  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: [] };
+  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: null };
 
   // ---- Helpers ----
   const resolveUrl = (path) => {
@@ -63,9 +63,10 @@ export function updateCatPreview(
   };
 
   // ---- Render ----
-  setImg('carouselBase', cat.sprite_url);
-  setImg('carouselHat',  findSprite('hats',        equip.hat));
-  setImg('carouselTop',  findSprite('tops',        equip.top));
-  setImg('carouselEyes', findSprite('eyes',        equip.eyes));
-  setImg('carouselAccessory', findSprite('accessories', equip.accessories?.[0]));
+// ---- Render ----
+setImg('carouselBase', cat.sprite_url);
+setImg('carouselHat',  findSprite('hats',        equip.hat));
+setImg('carouselTop',  findSprite('tops',        equip.top));
+setImg('carouselEyes', findSprite('eyes',        equip.eyes));
+setImg('carouselAccessory', findSprite('accessories', equip.accessories));
 }

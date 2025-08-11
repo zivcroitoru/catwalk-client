@@ -52,18 +52,11 @@
         ...
       </div>
     </div> <!-- ✅ END of #catAreaWrapper -->
-    <div id="emptyState" class="hidden empty-state-message">
-      <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
-      <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
-      <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-        <img src="../assets/ui/plus.png" alt="Add Cat" />
-      </button>
-    </div>
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-icon coin-icon" title="Coins">
         <img src="../assets/icons/coin.png" alt="Coins" />
-        <span class="coin-count">500</span>
+        <span class="coin-count"></span>
       </div>
       <div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
         <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
@@ -96,16 +89,10 @@
           </div>
           <!-- 🧾 Floating Info -->
           <div class="floating-actions">
-            <div class="inventory-box" id="cat-count">Inventory: 0/25</div>
+<div class="inventory-box">
+  <span id="inventoryCount">Cats: 0/25</span>
+</div>
           </div>
-        </div>
-        <!-- 🐱 Empty State Message -->
-        <div id="emptyState" class="hidden empty-state-message" style="text-align:center; margin-top: 2rem;">
-          <h1 class="cats-title" style="margin-bottom: 0.5rem;">No cats :(</h1>
-          <div style="font-size: 1.2rem; color: #666;">Press below to add one!</div>
-          <button id="addCatBtnEmpty" class="add-cat-btn" style="margin-top: 1rem;">
-            <img src="../assets/ui/plus.png" alt="Add Cat" />
-          </button>
         </div>
         <!-- 🧾 Right Pane: Profile + Shop -->
         <div class="right-pane">

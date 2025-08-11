@@ -9,7 +9,7 @@ let itemCache = null;
 
 // ───────────── Equipment Helper ─────────────
 function mergeEquipment(incoming) {
-  const base = { hat: null, top: null, eyes: null, accessories: [] };
+  const base = { hat: null, top: null, eyes: null, accessories: null };
   if (!incoming) return base;
 
   return {
@@ -17,9 +17,11 @@ function mergeEquipment(incoming) {
     hat: incoming.hat ?? incoming.hats ?? null,
     top: incoming.top ?? incoming.tops ?? null,
     eyes: incoming.eyes ?? null,
-    accessories: Array.isArray(incoming.accessories) ? incoming.accessories : []
+    accessories: incoming.accessories ?? null
   };
 }
+
+
 
 // ───────────── JWT Helpers ─────────────
 function getPlayerIdFromToken() {
@@ -128,7 +130,8 @@ async function apiGetCatItems(catId) {
   return res.json();
 }
 
-async function updateCatItems(catId, equipment) {
+// ───────────── REST: Equipment ─────────────
+export async function updateCatItems(catId, equipment) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No auth token');
 
@@ -144,6 +147,7 @@ async function updateCatItems(catId, equipment) {
   if (!res.ok) throw new Error('Failed to update cat_items');
   return res.json();
 }
+
 
 // ───────────── Public: Data Loaders ─────────────
 export async function loadPlayerItems(force = false) {
@@ -321,6 +325,5 @@ export async function updateUI() {
   if (coinEl) coinEl.textContent = coins;
 
   const catCountEl = document.getElementById('cat-count');
-  if (catCountEl) catCountEl.textContent = `Inventory: ${cat_count}/25`;
+  if (catCountEl) catCountEl.textContent = `Cats: ${userCats.length}/25`;
 }
-export { updateCatItems };

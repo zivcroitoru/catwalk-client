@@ -1,8 +1,6 @@
-/*-----------------------------------------------------------------------------
-  shopLogic.js – DB version, no localStorage
------------------------------------------------------------------------------*/
+// shopLogic.js
+import { updateCatItems, loadPlayerItems, unlockPlayerItem } from '../../core/storage.js';
 import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadPlayerItems, unlockPlayerItem, updateCatItems } from '../../core/storage.js';
 
 const previewKeyMap = {
   hats: 'hat',
@@ -11,83 +9,66 @@ const previewKeyMap = {
   eyes: 'eyes'
 };
 
+/**
+ * Determine if an item is owned, equipped, or needs to be bought.
+ */
 export function getItemState(id, category, playerItems) {
   const equippedKey = previewKeyMap[category];
-  const owned       = playerItems.ownedItems?.includes(id);
-  const equipped    = window.selectedCat?.equipment?.[equippedKey];
-  if (!owned)            return 'buy';
-  if (equipped === id)   return 'unequip';
+  const templateId  = window.shopTemplateById?.[id] ?? id; // map ID to template if available
+
+  const owned    = playerItems.ownedItems?.includes(templateId);
+  const equipped = window.selectedCat?.equipment?.[equippedKey];
+
+  if (!owned) return 'buy';
+  if (equipped === templateId) return 'unequip';
   return 'equip';
 }
 
+/**
+ * Handles buying, equipping, and unequipping shop items.
+ */
 export async function handleShopClick(item, playerItems) {
   const state      = getItemState(item.id, item.category, playerItems);
   const previewKey = previewKeyMap[item.category];
+  const templateId = item.template;
+
   console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
-  // ───── buy ─────
+  // ── Buy ──
   if (state === 'buy') {
     if (playerItems.coins < item.price) return 'not_enough';
 
-    await unlockPlayerItem(item.template);
+    await unlockPlayerItem(templateId);
 
-    if (!Array.isArray(playerItems.ownedItems)) {
-      playerItems.ownedItems = [];
-    }
-
+    if (!Array.isArray(playerItems.ownedItems)) playerItems.ownedItems = [];
     const updated = await loadPlayerItems(true);
     playerItems.ownedItems = updated.ownedItems;
-    playerItems.coins = updated.coins;
+    playerItems.coins      = updated.coins;
 
     return 'bought';
   }
 
-  // ───── equip / unequip ─────
-  if (!window.selectedCat.equipment) {
-    console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
-    window.selectedCat.equipment = {
-      hat: null,
-      top: null,
-      eyes: null,
-      accessories: []
-    };
-  }
+  // Ensure structures exist
+  window.selectedCat.equipment ??= { hat: null, top: null, eyes: null, accessories: null };
+  playerItems.equippedItems    ??= {};
 
-  if (!playerItems.equippedItems) {
-    console.warn('⚠️ equippedItems was undefined. Initializing...');
-    playerItems.equippedItems = {};
-  }
-
-  // Equip
+  // ── Equip ──
   if (state === 'equip') {
-    playerItems.equippedItems[item.category] = item.id;
-
-    if (previewKey === 'accessories') {
-      window.selectedCat.equipment.accessories = [item.template];
-    } else {
-      window.selectedCat.equipment[previewKey] = item.template;
-    }
+    playerItems.equippedItems[item.category] = templateId;
+    window.selectedCat.equipment[previewKey] = templateId;
   }
 
-  // Unequip
+  // ── Unequip ──
   if (state === 'unequip') {
     delete playerItems.equippedItems[item.category];
-
-    if (previewKey === 'accessories') {
-      window.selectedCat.equipment.accessories = [];
-    } else {
-      window.selectedCat.equipment[previewKey] = null;
-    }
+    window.selectedCat.equipment[previewKey] = null;
   }
 
-  // Send cleaned equipment to server
-  await updateCatItems(
-    window.selectedCat.id,
-    cleanEquipment(window.selectedCat.equipment)
-  );
+  // Save to server
+  await updateCatItems(window.selectedCat.id, cleanEquipment(window.selectedCat.equipment));
 
+  // Refresh previews
   updateCatPreview(window.selectedCat);
-
   const thumb = document.querySelector(
     `.cat-card[data-cat-id="${window.selectedCat.id}"] .cat-thumbnail`
   );
@@ -96,15 +77,13 @@ export async function handleShopClick(item, playerItems) {
   return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// ───────────── Helper: Filter invalid entries ─────────────
+/**
+ * Remove empty or invalid equipment fields.
+ */
 function cleanEquipment(raw) {
   const cleaned = {};
-
-  for (const [key, value] of Object.entries(raw)) {
-    if (typeof value === 'string' && value.trim() !== '') {
-      cleaned[key] = value;
-    }
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === 'string' && v.trim() !== '') cleaned[k] = v;
   }
-
   return cleaned;
 }
