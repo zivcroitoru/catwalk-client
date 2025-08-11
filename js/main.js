@@ -37,12 +37,19 @@ function onCatsReady(cats) {
 function wireRuntimeEvents() {
   document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
     document.getElementById('emptyState')?.classList.add('hidden');
+
+    // Close any toast if it's showing
+    if (window.Toastify?.recent) {
+      try { Toastify.recent.hideToast(); } catch {}
+    }
+
     document.getElementById('addCatBtn')?.click();
   });
 
   const catFactBtn = document.getElementById('catFactToggle');
   if (catFactBtn) catFactBtn.addEventListener('click', toastCatFact);
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
