@@ -1,5 +1,5 @@
 import { toastCatAdded, toastCancelled, toastConfirmAddCat } from '../../core/toast.js';
-import { addCatToUser } from '../../core/storage.js';
+import { addCatToUser, getPlayerCats } from '../../core/storage.js';
 import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
 
 export function renderBreedItems(breed) {
