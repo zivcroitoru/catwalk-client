@@ -1,9 +1,3 @@
-/*-----------------------------------------------------------------------------
-  shopLogic.js – DB version, no localStorage
------------------------------------------------------------------------------*/
-import { updateCatPreview } from '../catPreviewRenderer.js';
-import { loadPlayerItems, unlockPlayerItem, updateCatItems } from '../../core/storage.js';
-
 const previewKeyMap = {
   hats: 'hat',
   tops: 'top',
@@ -13,10 +7,18 @@ const previewKeyMap = {
 
 export function getItemState(id, category, playerItems) {
   const equippedKey = previewKeyMap[category];
-  const owned       = playerItems.ownedItems?.includes(id);
-  const equipped    = window.selectedCat?.equipment?.[equippedKey];
+
+  // Use template everywhere for consistency
+  const owned    = playerItems.ownedItems?.includes(window.shopTemplateById?.[id] ?? id)
+                || playerItems.ownedItems?.includes(window.lastItemTemplate ?? id); // fallback if you already have the template
+  const equipped = window.selectedCat?.equipment?.[equippedKey];
+
+  // If you have direct access to `item.template`, prefer:
+  // const owned = playerItems.ownedItems?.includes(item.template);
+  // const equipped = window.selectedCat?.equipment?.[equippedKey];
+
   if (!owned)            return 'buy';
-  if (equipped === id)   return 'unequip';
+  if (equipped === (window.shopTemplateById?.[id] ?? id)) return 'unequip';
   return 'equip';
 }
 
@@ -25,66 +27,37 @@ export async function handleShopClick(item, playerItems) {
   const previewKey = previewKeyMap[item.category];
   console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
-  // ───── buy ─────
   if (state === 'buy') {
     if (playerItems.coins < item.price) return 'not_enough';
 
+    // Unlock by template
     await unlockPlayerItem(item.template);
 
-    if (!Array.isArray(playerItems.ownedItems)) {
-      playerItems.ownedItems = [];
-    }
-
+    if (!Array.isArray(playerItems.ownedItems)) playerItems.ownedItems = [];
     const updated = await loadPlayerItems(true);
-    playerItems.ownedItems = updated.ownedItems;
-    playerItems.coins = updated.coins;
-
+    playerItems.ownedItems = updated.ownedItems; // should be templates
+    playerItems.coins      = updated.coins;
     return 'bought';
   }
 
-  // ───── equip / unequip ─────
-  if (!window.selectedCat.equipment) {
-    console.warn('⚠️ selectedCat.equipment was undefined. Initializing...');
-    window.selectedCat.equipment = {
-      hat: null,
-      top: null,
-      eyes: null,
-      accessories: null
-    };
-  }
+  // Ensure objects exist
+  window.selectedCat.equipment ??= { hat:null, top:null, eyes:null, accessories:null };
+  playerItems.equippedItems   ??= {};
 
-  if (!playerItems.equippedItems) {
-    console.warn('⚠️ equippedItems was undefined. Initializing...');
-    playerItems.equippedItems = {};
-  }
-
-  // Equip
+  // Equip → store template (single string for all slots, including accessories)
   if (state === 'equip') {
-    playerItems.equippedItems[item.category] = item.id;
-
-    if (previewKey === 'accessories') {
-      window.selectedCat.equipment.accessories = [item.template];
-    } else {
-      window.selectedCat.equipment[previewKey] = item.template;
-    }
+    playerItems.equippedItems[item.category] = item.template;   // keep templates
+    window.selectedCat.equipment[previewKey] = item.template;   // single string
   }
 
   // Unequip
   if (state === 'unequip') {
     delete playerItems.equippedItems[item.category];
-
-    if (previewKey === 'accessories') {
-      window.selectedCat.equipment.accessories = [];
-    } else {
-      window.selectedCat.equipment[previewKey] = null;
-    }
+    window.selectedCat.equipment[previewKey] = null;
   }
 
-  // Send cleaned equipment to server
-  await updateCatItems(
-    window.selectedCat.id,
-    cleanEquipment(window.selectedCat.equipment)
-  );
+  // Persist (arrays would be dropped anyway by cleanEquipment)
+  await updateCatItems(window.selectedCat.id, cleanEquipment(window.selectedCat.equipment));
 
   updateCatPreview(window.selectedCat);
 
@@ -96,15 +69,11 @@ export async function handleShopClick(item, playerItems) {
   return state === 'equip' ? 'equipped' : 'unequipped';
 }
 
-// ───────────── Helper: Filter invalid entries ─────────────
+// Keep only string fields (matches our single-string schema)
 function cleanEquipment(raw) {
   const cleaned = {};
-
-  for (const [key, value] of Object.entries(raw)) {
-    if (typeof value === 'string' && value.trim() !== '') {
-      cleaned[key] = value;
-    }
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === 'string' && v.trim() !== '') cleaned[k] = v;
   }
-
   return cleaned;
 }
