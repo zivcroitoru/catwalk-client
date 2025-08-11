@@ -59,16 +59,12 @@ function showAddCatConfirmation(breed, variantData) {
   }
 
 toastConfirmAddCat(
-  matched, // <-- pass the variant object directly
-  () => {  // onYes
+  matched,
+  () => {
     if (window.catAdded) return;
     window.catAdded = true;
 
-    console.log("✅ Matched variant selected:", matched);
-
-    // Defensive check
     if (!matched.variant || !matched.palette) {
-      console.error("❌ Missing 'variant' or 'palette' in matched:", matched);
       window.catAdded = false;
       return;
     }
@@ -87,22 +83,19 @@ toastConfirmAddCat(
       equipment: { hat: null, top: null, eyes: null, accessories: [] }
     };
 
-    console.log("📦 New cat to add:", newCat);
-
     addCatToUser(newCat);
     window.userCats.push(newCat);
 
-    renderCarousel();
+    window.renderCarousel = renderCarousel;r
     updateInventoryCount();
     toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
     window.closeAddCat?.();
     setTimeout(() => (window.catAdded = false), 300);
   },
-  () => {  // onCancel
+  () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
     toastCancelled();
   }
 );
-
 }
 
