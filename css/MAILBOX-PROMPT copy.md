@@ -1737,8 +1737,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* UI init – safe to read breedItems & userCats from here */
-  await updateUI();
   renderCarousel();
+  await updateUI();
   setupShopTabs();
   setupEditMode();
   bindUI();
