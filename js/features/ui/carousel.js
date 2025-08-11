@@ -39,7 +39,7 @@ export async function renderCarousel(selectCatId = null) {
   const selectedCat = cats.find(c => c.id === selectCatId) || cats[0];
   if (!selectedCat) return;
 
-  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: [] };
+  selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: null };
   window.selectedCat = selectedCat;
 
   // 5) Update main display

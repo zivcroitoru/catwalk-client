@@ -122,7 +122,7 @@ function showAddCatConfirmation(breed, variantData) {
       palette,
       sprite_url,
       selected: false,
-      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+      equipment: { hat: null, top: null, eyes: null, accessories: null }
     };
 
     addCatToUser(newCat);

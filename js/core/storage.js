@@ -9,7 +9,7 @@ let itemCache = null;
 
 // ───────────── Equipment Helper ─────────────
 function mergeEquipment(incoming) {
-  const base = { hat: null, top: null, eyes: null, accessories: [] };
+  const base = { hat: null, top: null, eyes: null, accessories: null };
   if (!incoming) return base;
 
   return {
@@ -17,9 +17,11 @@ function mergeEquipment(incoming) {
     hat: incoming.hat ?? incoming.hats ?? null,
     top: incoming.top ?? incoming.tops ?? null,
     eyes: incoming.eyes ?? null,
-    accessories: Array.isArray(incoming.accessories) ? incoming.accessories : []
+    accessories: incoming.accessories ?? null
   };
 }
+
+
 
 // ───────────── JWT Helpers ─────────────
 function getPlayerIdFromToken() {

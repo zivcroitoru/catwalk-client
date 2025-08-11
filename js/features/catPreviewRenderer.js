@@ -13,7 +13,7 @@ export function updateCatPreview(
   } = opts;
 
   // Normalize equipment shape once
-  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: [] };
+  const equip = cat.equipment ?? { hat: null, top: null, eyes: null, accessories: null };
 
   // ---- Helpers ----
   const resolveUrl = (path) => {

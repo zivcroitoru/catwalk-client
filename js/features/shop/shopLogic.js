@@ -49,7 +49,7 @@ export async function handleShopClick(item, playerItems) {
       hat: null,
       top: null,
       eyes: null,
-      accessories: []
+      accessories: null
     };
   }
 
