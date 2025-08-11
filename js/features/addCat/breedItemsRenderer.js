@@ -89,7 +89,7 @@ toastConfirmAddCat(
     window.userCats = await getPlayerCats();
     console.log("📥 Refreshed userCats:", window.userCats.length);
 
-    renderCarousel();
+    await renderCarousel();
     console.log("🔄 Carousel re-rendered");
 
     updateInventoryCount();
