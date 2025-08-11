@@ -87,7 +87,7 @@ toastConfirmAddCat(
     window.userCats.push(newCat);
 
     window.renderCarousel = renderCarousel;r
-    updateInventoryCount();
+    window.updateInventoryCount();
     toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
     window.closeAddCat?.();
     setTimeout(() => (window.catAdded = false), 300);
