@@ -182,7 +182,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
 }
 
 export function toastNoCats() {
-  Toastify({
+  const toast = Toastify({
     node: (() => {
       const wrapper = document.createElement("div");
       wrapper.style.cssText = `
@@ -212,7 +212,7 @@ export function toastNoCats() {
       `;
       return wrapper;
     })(),
-    duration: -1, // Stays until user clicks
+    duration: -1, // stays until user closes it
     gravity: "top",
     position: "center",
     style: {
@@ -224,18 +224,31 @@ export function toastNoCats() {
       zIndex: 999999,
     },
     callback: () => {
-      document.getElementById("addCatBtnToast")?.removeEventListener("click", window.__addCatBtnToastHandler);
+      document.getElementById("addCatBtnToast")
+        ?.removeEventListener("click", window.__addCatBtnToastHandler);
     }
-  }).showToast();
+  });
 
-  // Add button click triggers the real Add Cat popup
+  // Track the toast so we can close it later
+  window.Toastify = window.Toastify || {};
+  window.Toastify.recent = toast;
+
+  toast.showToast();
+
+  // Button click closes toast & opens Add Cat popup
   window.__addCatBtnToastHandler = () => {
+    if (window.Toastify?.recent) {
+      try { window.Toastify.recent.hideToast(); } catch {}
+    }
     document.getElementById("addCatBtn")?.click();
   };
+
   requestAnimationFrame(() => {
-    document.getElementById("addCatBtnToast")?.addEventListener("click", window.__addCatBtnToastHandler);
+    document.getElementById("addCatBtnToast")
+      ?.addEventListener("click", window.__addCatBtnToastHandler);
   });
 }
+
 export async function toastCatFact() {
   try {
     const res = await fetch('https://catfact.ninja/fact');
