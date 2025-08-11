@@ -45,12 +45,19 @@ export function toggleAddCat() {
 export function closeAddCat() {
   console.log("❌ Closing Add Cat popup");
 
+  // Hide the empty-state card if it’s still showing
+  document.getElementById("emptyState")?.classList.add("hidden");
+
   document.getElementById("addCatPopup").classList.add("hidden");
   document.getElementById("addCatOverlayBlocker").classList.add("hidden");
   document.body.classList.remove("shop-lock");
 
   console.log("✅ Popup closed");
+  if (window.Toastify?.recent) {
+  try { Toastify.recent.hideToast(); } catch {}
 }
+}
+
 
 // 👇 Make callable from HTML
 window.toggleAddCat = toggleAddCat;
