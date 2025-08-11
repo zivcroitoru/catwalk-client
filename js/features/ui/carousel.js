@@ -23,7 +23,7 @@ export async function renderCarousel(selectCatId = null) {
   podium?.classList.toggle("hidden", !hasCats);
   container.innerHTML = "";
 
-  // If no cats → show toast and stop
+
 // If no cats → show toast only when add popup is closed
 if (!hasCats) {
   const addPopup = document.getElementById("addCatPopup");

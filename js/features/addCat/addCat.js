@@ -4,7 +4,9 @@ import { renderBreedItems } from "./breedItemsRenderer.js";
 
 export function toggleAddCat() {
   console.log("🔄 Starting Add Cat toggle...");
-
+  if (window.Toastify?.recent) {
+    try { Toastify.recent.hideToast(); } catch {}
+  }
   // Get required elements
   const popup   = document.getElementById("addCatPopup");
   const blocker = document.getElementById("addCatOverlayBlocker");
