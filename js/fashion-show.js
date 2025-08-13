@@ -1,6 +1,30 @@
+import { APP_URL } from '../../core/config.js';
+import { getAuthToken } from '../../core/auth/authentication.js';
+console.log("using: ", APP_URL);
+
+  // Connect socket (use auth token if you have one)
+  const socket = io(APP_URL, {
+    auth: {
+      token: (typeof getAuthToken === 'function') ? getAuthToken() : undefined
+
+    }
+  });
+
+  socket.on('connect', () => {
+    console.log('Socket connected:', socket.id);
+    // register player so server can map sockets -> user and join existing ticket rooms
+    socket.emit('registerPlayer', userId);
+    console.log("-------------11--------------");
+  });
+
+  socket.on('connect_error', (err) => {
+    console.error('Socket connect_error:', err);
+  });
+
+
 // console.log('🚨 FASHION SHOW FILE LOADED - timestamp:', Date.now());
 
-// // Import Socket.IO from CDN using dynamic import
+// Import Socket.IO from CDN using dynamic import
 // import { getLoggedInUserInfo } from "./core/utils.js";
 
 // // Global variables
