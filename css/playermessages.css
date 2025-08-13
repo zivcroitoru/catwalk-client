@@ -152,22 +152,48 @@ header {
 }
 
 /* Style for player's messages (you) */
-.chat-messages p:nth-child(odd) {
+/* .chat-messages p:nth-child(odd) {
     background-color: #FFDE8C;
     border: #5a3900 solid 3px;
 
     align-self: flex-end;
     text-align: right;
-}
+} */
 
 /* Style for admin messages */
-.chat-messages p:nth-child(even) {
+/* .chat-messages p:nth-child(even) {
     background-color: #5a3900;
     border: #5a3900 solid 3px;
 
     align-self: flex-start;
     text-align: left;
+} */
+
+
+
+.player-message {
+    background-color: #FFDE8C;
+    border: #281900 solid 3px;
+    align-self: flex-start;
+    text-align: left;
 }
+
+.admin-message {
+    background-color: #5a3900;
+    color: white;
+    border: #281900 solid 3px;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.system-message {
+    background-color: #ccc;
+    border: #999 solid 2px;
+    color: black;
+    text-align: center;
+}
+
+
 
 /* Input area container */
 .message-input {

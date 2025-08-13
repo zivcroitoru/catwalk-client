@@ -50,12 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- UI helpers ----------
-  function addMessage(senderLabel, text) {
-    const p = document.createElement('p');
-    p.textContent = `${senderLabel}: ${text}`;
-    chatMessages.appendChild(p);
-    scrollToBottom();
+function addMessage(senderLabel, text) {
+  const p = document.createElement('p');
+  p.textContent = `${senderLabel}: ${text}`;
+
+  if (senderLabel.toLowerCase() === 'you' || senderLabel.toLowerCase() === 'user') {
+    p.classList.add('player-message');
+  } else if (senderLabel.toLowerCase() === 'admin') {
+    p.classList.add('admin-message');
+  } else {
+    p.classList.add('system-message'); // optional for system notices
   }
+
+  chatMessages.appendChild(p);
+  scrollToBottom();
+}
+
 
   function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
