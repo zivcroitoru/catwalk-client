@@ -96,8 +96,9 @@ type ResultsMessage = {
 
 
 ## 4. Your Task
-Look at the attached JS file: this is the code that I wrote - and that is fully working visually - using stub logic.
-Please rewrite it in a JavaScript canvas to support the socket.io flow that I described, while trying to only change what's needed.
+Look at the attached JS file: this is an older version code that I wrote - and that doesn't match our current idea- we need to keep the socket logic, but the other logic doesn't fit, I want to rewrite it.
+I want us to analyse C:\dev\catwalk-client\js\fashion-show.js together - what parts are good? problematic? need removing?
+After a disscussion, rewrite it in a JavaScript canvas to support the socket.io flow that I described, while trying to only change what's needed.
 
 Additional notes:
 - This project should be as simple as possible, we're not "looking for more work". 
@@ -105,3 +106,7 @@ Additional notes:
 - Error handling: As for now, we will not be adding error message types for various failure scenarios. As long as we don't have specific errors, talking about this is irrelevant
 - Game ID / Room ID: For now, let's not add this at all. Note that if the WS is disconnected, the player will have no way of re-entering the room.
 - Rooms Management: There should not be any persistence of game results, everything is purely in-memory and singleton
+
+IMPORTANT NOTE: WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We first want to make sure we have a connection, then we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increaces only with more players joining. WE FIRST LOOK AT WAITING ROOM ONLY, IGNORING THE OTHER PHASES FOR NOW.
+
+
