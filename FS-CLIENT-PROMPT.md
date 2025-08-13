@@ -95,10 +95,6 @@ type ResultsMessage = {
 ```
 
 
-## 4. Your Task
-Look at the attached JS file: this is an older version code that I wrote - and that doesn't match our current idea- we need to keep the socket logic, but the other logic doesn't fit, I want to rewrite it.
-I want us to analyse C:\dev\catwalk-client\js\fashion-show.js together - what parts are good? problematic? need removing?
-After a disscussion, rewrite it in a JavaScript canvas to support the socket.io flow that I described, while trying to only change what's needed.
 
 Additional notes:
 - This project should be as simple as possible, we're not "looking for more work". 
@@ -107,6 +103,60 @@ Additional notes:
 - Game ID / Room ID: For now, let's not add this at all. Note that if the WS is disconnected, the player will have no way of re-entering the room.
 - Rooms Management: There should not be any persistence of game results, everything is purely in-memory and singleton
 
-IMPORTANT NOTE: WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We first want to make sure we have a connection, then we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increaces only with more players joining. WE FIRST LOOK AT WAITING ROOM ONLY, IGNORING THE OTHER PHASES FOR NOW.
+We are currently working on local host:
 
+Server terminal:
+```
+PS C:\dev\catwalk-server> npm run dev    
+
+> catwalk-server@1.0.0 dev
+> nodemon index.js
+
+[nodemon] 3.1.10
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,cjs,json
+[nodemon] starting `node index.js`
+[dotenv@17.2.0] injecting env (6) from .env (tip: 🔐 encrypt with dotenvx: https://dotenvx.com)
+catwalk-server running on http://localhost:3001
+🔧 Allowed CORS origins: [
+  'http://localhost:3000',
+  'https://catwalk.onrender.com',
+  'https://catwalk-server-eu.onrender.com',
+  'https://catwalk.onrender.com'
+]
+Received login request: { username: 'peleg', password: '123456' }
+Login successful, token generated
+Authenticated user: { id: 47, username: 'peleg', iat: 1755107581, exp: 1755712381 }
+Authenticated user: 47
+GET /api/cats hit by player ID: 47
+User connected: YJ2vTkFKqJiNvgXUAAAB
+User disconnected: YJ2vTkFKqJiNvgXUAAAB
+User connected: nS8ySdQILbQb1ss6AAAD
+User disconnected: nS8ySdQILbQb1ss6AAAD
+User connected: Ln5xeGwPxm6e2N-pAAAF
+```
+
+Client terminal:
+```
+PS C:\dev\catwalk-client> npm run dev
+
+> catwalk-client@1.0.0 dev
+> vite
+
+
+  VITE v7.0.5  ready in 1192 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
+
+## IMPORTANT NOTE: 
+WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We first want to make sure we have a connection, then we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increaces only with more players joining. WE FIRST LOOK AT WAITING ROOM ONLY, IGNORING THE OTHER PHASES FOR NOW.
+
+
+# CURRENT TASK:
+
+Before continueing to other areas, let's first take care of the player and cat data being fetched properly.
 
