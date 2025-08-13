@@ -1,6 +1,6 @@
 console.log('🚨 FASHION SHOW FILE LOADED - timestamp:', Date.now());
 
-import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+// Import Socket.IO from CDN using dynamic import
 import { getLoggedInUserInfo } from "./core/utils.js";
 
 // Global variables
@@ -13,9 +13,9 @@ let userCats = [];
 // Constants
 const PARTICIPANTS_IN_ROOM = 5;
 
-// Get the correct server URL from the same source as other parts of the app
-const SERVER_URL = "https://catwalk-server-eu.onrender.com"; // Updated to match your actual server
-console.log('🔧 SERVER_URL set to:', SERVER_URL); // Debug log to verify URL is correct
+// FIXED: Use explicit Socket.IO connection URL
+const SERVER_URL = "https://catwalk-server-eu.onrender.com";
+console.log('🔧 SERVER_URL set to:', SERVER_URL);
 
 // Utility function to update counter display
 function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
@@ -27,14 +27,46 @@ function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM)
 }
 
 // Initialize socket connection
-function initializeSocket() {
+async function initializeSocket() {
   console.log('🔧 Initializing socket connection to:', SERVER_URL);
-  console.log('🔧 About to create socket with io() function...');
+  console.log('🔧 Current page URL:', window.location.href);
+  console.log('🔧 Current page origin:', window.location.origin);
+  
+  // FIXED: Access the global io function that should be loaded from CDN
+  if (typeof window.io === 'undefined') {
+    console.error('❌ Socket.IO not loaded! Checking if script is available...');
+    // Wait a bit and try again
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (typeof window.io === 'undefined') {
+      console.error('❌ Socket.IO still not available after waiting');
+      return;
+    }
+  }
+  
+  console.log('✅ Socket.IO found, creating connection...');
+  console.log('🔧 About to call window.io() with URL:', SERVER_URL);
+  
+  // Create socket with explicit URL - NO MATTER WHAT, use our server URL
+  try {
+    socket = window.io(SERVER_URL, {
+      transports: ['websocket', 'polling'],
+      timeout: 20000,
+      forceNew: true,
+      autoConnect: false // Don't auto-connect, we'll do it manually
+    });
 
-  // Connect to the correct server URL
-  socket = io(SERVER_URL);
-
-  console.log('🔧 Socket object created:', socket);
+    console.log('🔧 Socket object created with URL:', SERVER_URL);
+    console.log('🔧 Socket instance:', socket);
+    console.log('🔧 Socket.io property:', socket.io);
+    console.log('🔧 Socket.io.uri:', socket.io?.uri);
+    
+    // Manually connect with explicit URL verification
+    console.log('🔧 Manually connecting socket...');
+    socket.connect();
+    
+  } catch (error) {
+    console.error('❌ Error creating socket:', error);
+  }
 
   socket.on('connect', () => {
     console.log('✅ Connected to fashion show server');
@@ -50,12 +82,14 @@ function initializeSocket() {
     joinFashionShow();
   });
 
-    socket.on('disconnect', (reason) => {
+  socket.on('disconnect', (reason) => {
     console.log('🔌 Disconnected from fashion show server. Reason:', reason);
   });
 
-    socket.on('connect_error', (error) => {
+  socket.on('connect_error', (error) => {
     console.error('❌ Connection error:', error);
+    console.error('❌ Error details:', error.message);
+    console.error('❌ Error type:', error.type);
   });
 
   // STEP 1 FOCUS: Only handle participant updates for now
@@ -91,25 +125,25 @@ function joinFashionShow() {
   };
   console.log('📤 Sending join message:', joinMessage);
 
-    socket.emit('join', joinMessage);
-    console.log('✅ Join message sent successfully');
+  socket.emit('join', joinMessage);
+  console.log('✅ Join message sent successfully');
 }
 
 function handleParticipantUpdate(message) {
   participants = message.participants;
-    console.log('👥 Updated participants list:', participants);
+  console.log('👥 Updated participants list:', participants);
 
   updateCounterDisplay(participants.length, message.maxCount);
 
-    // TODO: In later steps, handle transition to voting phase
-      if (participants.length >= PARTICIPANTS_IN_ROOM) {
+  // TODO: In later steps, handle transition to voting phase
+  if (participants.length >= PARTICIPANTS_IN_ROOM) {
     console.log('🚀 Room is full, should transition to voting...');
     // This will happen automatically from server via voting_phase event
   }
 }
 
 // Initialize page when ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('🎭 Fashion Show page DOM loaded');
 
   // Get URL parameters to extract cat ID
@@ -137,12 +171,24 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn('🎭 Using fallback player ID:', playerId);
   }
 
-  // Load user cats and find selected cat
-  fetch("../data/usercats.json")
-    .then(res => res.json())
+  // FIXED: Load user cats from API instead of static JSON
+  // This matches your existing app pattern
+  fetch(`${SERVER_URL}/api/cats/user-cats`, {
+    method: 'GET',
+    credentials: 'include', // Important for authentication
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(data => {
       userCats = data;
-      console.log('📚 Loaded user cats:', userCats.length, 'cats');
+      console.log('📚 Loaded user cats from API:', userCats.length, 'cats');
 
       // Find the selected cat by ID from URL parameter
       selectedCat = userCats.find(cat => cat.id === catId);
@@ -162,10 +208,32 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("🐾 Selected cat from URL parameter:", selectedCat);
 
       // Initialize socket connection now that we have all required data
-      initializeSocket();
+      await initializeSocket();
     })
     .catch(err => {
-      console.error("❌ Failed to load usercats.json", err);
+      console.error("❌ Failed to load user cats from API", err);
+      // Fallback: try the static JSON file as before
+      console.log("🔧 Trying fallback to static JSON...");
+      
+      fetch("../data/usercats.json")
+        .then(res => res.json())
+        .then(data => {
+          userCats = data;
+          console.log('📚 Loaded user cats from fallback JSON:', userCats.length, 'cats');
+
+          selectedCat = userCats.find(cat => cat.id === catId);
+          if (!selectedCat && userCats.length > 0) {
+            selectedCat = userCats[0];
+          }
+
+          if (selectedCat) {
+            console.log("🐾 Selected cat from fallback:", selectedCat);
+            await initializeSocket();
+          }
+        })
+        .catch(fallbackErr => {
+          console.error("❌ Both API and fallback JSON failed", fallbackErr);
+        });
     });
 });
 

@@ -11,11 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="../css/fashion-show.css" />
-<!-- ✅ Load Socket.IO client before your script -->
- 
-<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-<script type="module" src="../js/fashion-show.js"></script>
-
 </head>
 <body>
   <main>
@@ -37,5 +32,20 @@
   </main>
   
   <a href="album.html" class="album-button">←</a>
+
+  <!-- ✅ Load Socket.IO client FIRST and ensure it's global -->
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  
+  <!-- Debug script to check if io is available -->
+  <script>
+    console.log('🔧 Socket.IO loaded check:', typeof io !== 'undefined' ? '✅ Available' : '❌ Not found');
+    if (typeof io !== 'undefined') {
+      console.log('🔧 Socket.IO version:', io.version);
+      window.io = io; // Ensure it's on window object
+    }
+  </script>
+  
+  <!-- Load your fashion show script AFTER Socket.IO is confirmed -->
+  <script type="module" src="../js/fashion-show.js"></script>
 </body>
 </html>
