@@ -24,28 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Toggle broadcast mode
-let isBroadcastMode = false;
-const toggleBtn = document.getElementById('toggleModeButton');
-const ticketModeDiv = document.getElementById('ticketMode');
-const broadcastModeDiv = document.getElementById('broadcastMode');
-
-toggleBtn.addEventListener('click', () => {
-  isBroadcastMode = !isBroadcastMode;
-  ticketModeDiv.style.display = isBroadcastMode ? 'none' : 'flex';
-  broadcastModeDiv.style.display = isBroadcastMode ? 'flex' : 'none';
-  toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
-});
-
-// Send broadcast
-document.getElementById('sendBroadcastButton').addEventListener('click', () => {
-  const msg = document.getElementById('broadcastMessage').value.trim();
-  if (!msg) return alert('Please enter a message.');
-
-  socket.emit('adminBroadcast', { message: msg });
-  document.getElementById('broadcastMessage').value = '';
-  alert('Broadcast sent!');
-});
 
 
 
@@ -293,4 +271,26 @@ function updateSendButtonState() {
 
 
 
+// Toggle broadcast mode
+let isBroadcastMode = false;
+const toggleBtn = document.getElementById('toggleModeButton');
+const ticketModeDiv = document.getElementById('ticketMode');
+const broadcastModeDiv = document.getElementById('broadcastMode');
+
+toggleBtn.addEventListener('click', () => {
+  isBroadcastMode = !isBroadcastMode;
+  ticketModeDiv.style.display = isBroadcastMode ? 'none' : 'flex';
+  broadcastModeDiv.style.display = isBroadcastMode ? 'flex' : 'none';
+  toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
+});
+
+// Send broadcast
+document.getElementById('sendBroadcastButton').addEventListener('click', () => {
+  const msg = document.getElementById('broadcastMessage').value.trim();
+  if (!msg) return alert('Please enter a message.');
+
+  socket.emit('adminBroadcast', { message: msg });
+  document.getElementById('broadcastMessage').value = '';
+  alert('Broadcast sent!');
+});
 
