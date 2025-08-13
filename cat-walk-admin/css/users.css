@@ -73,6 +73,26 @@ body {
 
 }
 
+.toggleModeButton {
+  margin-left: 50px;
+  margin-bottom: 40px;
+  font-size: 16px;
+  background-color: #4E5C4F;
+  color: white;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  width: 200px;
+  height: 40px;
+}
+
+
+.toggleModeButton:hover {
+  background-color: #232a24;
+
+}
+
 .table {
   width: 100%;
   height: calc(100vh - 120px);
@@ -140,9 +160,9 @@ body {
   width: 30%;
   color: #ffffff;
   border-right: 1px solid #838E84;
-background-color: #3e483f;
+  background-color: #3e483f;
   overflow-y: auto;
-    border-radius: 15px 0px 0px 15px;
+  border-radius: 15px 0px 0px 15px;
 
 }
 
@@ -153,7 +173,7 @@ background-color: #3e483f;
 }
 
 .ticket-entry.selected {
-  background-color: #838E84; 
+  background-color: #838E84;
   font-weight: bold;
 }
 
@@ -163,10 +183,12 @@ background-color: #3e483f;
 }
 
 .chat-box {
+  flex-grow: 2;
   width: 70%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  
+
 }
 
 .chat-header {
@@ -177,6 +199,13 @@ background-color: #3e483f;
 }
 
 .chat-messages {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+.chat-messages-broadcast {
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;

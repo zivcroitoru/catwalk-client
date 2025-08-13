@@ -2,15 +2,17 @@ import { APP_URL } from '../js/core/config.js';
 import { getAuthToken } from '../js/core/auth/authentication.js';
 console.log("using: ", APP_URL);
 
+const userId = localStorage.getItem('userId');
+
   // Connect socket (use auth token if you have one)
-  const socket = io(APP_URL, {
+const socket = io(APP_URL, {
     auth: {
       token: (typeof getAuthToken === 'function') ? getAuthToken() : undefined
 
     }
   });
 
-  socket.on('connect', () => {
+socket.on('connect', () => {
     console.log('Socket connected:', socket.id);
     // register player so server can map sockets -> user and join existing ticket rooms
     socket.emit('registerPlayer', userId);

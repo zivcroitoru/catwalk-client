@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendBtn = document.getElementById('sendBtn');
   const messageBox = document.getElementById('messageBox');
   const chatMessages = document.getElementById('chatMessages');
-  
+
   console.log("--------------2--------------");
 
   const userId = localStorage.getItem('userId');
@@ -50,21 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---------- UI helpers ----------
-function addMessage(senderLabel, text) {
-  const p = document.createElement('p');
-  p.textContent = `${senderLabel}: ${text}`;
+  function addMessage(senderLabel, text) {
+    const p = document.createElement('p');
+    p.textContent = `${senderLabel}: ${text}`;
 
-  if (senderLabel.toLowerCase() === 'you' || senderLabel.toLowerCase() === 'user') {
-    p.classList.add('player-message');
-  } else if (senderLabel.toLowerCase() === 'admin') {
-    p.classList.add('admin-message');
-  } else {
-    p.classList.add('system-message'); // optional for system notices
+    if (senderLabel.toLowerCase() === 'you' || senderLabel.toLowerCase() === 'user') {
+      p.classList.add('player-message');
+    } else if (senderLabel.toLowerCase() === 'admin') {
+      p.classList.add('admin-message');
+    } else {
+      p.classList.add('system-message'); // optional for system notices
+    }
+
+    chatMessages.appendChild(p);
+    scrollToBottom();
   }
-
-  chatMessages.appendChild(p);
-  scrollToBottom();
-}
 
 
   function scrollToBottom() {
@@ -83,10 +83,10 @@ function addMessage(senderLabel, text) {
         // no open ticket
         createTicketBtn.style.display = 'block';
         chatBox.style.display = 'none';
-              console.log("--------------55--------------");
+        console.log("--------------55--------------");
 
       } else if (res.ok) {
-              console.log("--------------5--------------");
+        console.log("--------------5--------------");
 
         const ticket = await res.json();
         openTicket(ticket.ticket_id, /*skipJoin=*/false);
@@ -148,17 +148,17 @@ function addMessage(senderLabel, text) {
 
   // ---------- Send message (use socket) ----------
   sendBtn.addEventListener('click', () => {
-  const message = messageBox.value.trim();
-  if (!message || !currentTicketId) return;
+    const message = messageBox.value.trim();
+    if (!message || !currentTicketId) return;
 
-  socket.emit('playerMessage', {
-    ticketId: currentTicketId,
-    userId,
-    text: message
+    socket.emit('playerMessage', {
+      ticketId: currentTicketId,
+      userId,
+      text: message
+    });
+
+    messageBox.value = '';
   });
-
-  messageBox.value = '';
-});
 
 
   // ---------- Create ticket button ----------
@@ -168,14 +168,14 @@ function addMessage(senderLabel, text) {
   });
 
   // ---------- Receive live messages (admin or user) ----------
-socket.on('newMessage', (data) => {
-  if (data.senderSocketId === socket.id) return; // skip our own
-  if (data.ticketId !== currentTicketId) return;
+  socket.on('newMessage', (data) => {
+    if (data.senderSocketId === socket.id) return; // skip our own
+    if (data.ticketId !== currentTicketId) return;
 
-  const label = data.sender === 'admin' ? 'Admin' : 'User';
-  addMessage(label, data.content ?? data.text ?? '');
-});
-;
+    const label = data.sender === 'admin' ? 'Admin' : 'User';
+    addMessage(label, data.content ?? data.text ?? '');
+  });
+  ;
 
   // Optional: listen for ticket close events from server if you emit them there
   socket.on('ticketClosed', ({ ticketId }) => {

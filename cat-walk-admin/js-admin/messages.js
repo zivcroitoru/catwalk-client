@@ -12,6 +12,8 @@ const closeBtn = document.getElementById('closeTicketButton');
 const sendButton = document.getElementById('sendButton');
 const messageInput = document.getElementById('messageInput');
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
   fetchTickets();
   sendButton.addEventListener("click", sendMessage);
@@ -20,6 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
   closeBtn.addEventListener('click', closeCurrentTicket);
   updateSendButtonState();
 });
+
+
+// Toggle broadcast mode
+let isBroadcastMode = false;
+const toggleBtn = document.getElementById('toggleModeButton');
+const ticketModeDiv = document.getElementById('ticketMode');
+const broadcastModeDiv = document.getElementById('broadcastMode');
+
+toggleBtn.addEventListener('click', () => {
+  isBroadcastMode = !isBroadcastMode;
+  ticketModeDiv.style.display = isBroadcastMode ? 'none' : 'flex';
+  broadcastModeDiv.style.display = isBroadcastMode ? 'flex' : 'none';
+  toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
+});
+
+// Send broadcast
+document.getElementById('sendBroadcastButton').addEventListener('click', () => {
+  const msg = document.getElementById('broadcastMessage').value.trim();
+  if (!msg) return alert('Please enter a message.');
+
+  socket.emit('adminBroadcast', { message: msg });
+  document.getElementById('broadcastMessage').value = '';
+  alert('Broadcast sent!');
+});
+
 
 
 function closeCurrentTicket() {
@@ -60,6 +87,7 @@ socket.on('ticketClosed', ({ ticketId }) => {
     renderTickets(allTickets);
   }
 });
+
 
 // ───────────── FETCH & RENDER TICKETS ─────────────
 async function fetchTickets() {
@@ -213,18 +241,27 @@ function onSearchInput(e) {
 function onSortChange(e) {
   const val = e.target.value;
   if (!val) {
-    renderTickets(allTickets);
+    renderTickets(allTickets); // show all if nothing selected
     return;
   }
+
   const [field, order] = val.split('-');
-  const sorted = [...allTickets].sort((a, b) => {
-    if (field === 'ID') {
-      return order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id;
-    }
-    return 0;
-  });
-  renderTickets(sorted);
+
+  if (field === 'ID') {
+    const sorted = [...allTickets].sort((a, b) =>
+      order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id
+    );
+    renderTickets(sorted);
+  }
+  else if (field === 'status') {
+    // Filter instead of sorting
+    const filtered = allTickets.filter(ticket => 
+      ticket.status.toLowerCase() === order
+    );
+    renderTickets(filtered);
+  }
 }
+
 
 socket.on('newTicketCreated', async (ticket) => {
   try {
@@ -257,181 +294,3 @@ function updateSendButtonState() {
 
 
 
-
-
-
-
-// import { APP_URL } from "../../js/core/config.js";
-// console.log('APP_URL:', APP_URL);
-
-// const socket = io(APP_URL);
-
-// let currentTicketId = null;
-// let currentSelectedDiv = null;  // Track selected ticket div
-// let allTickets = [];            // Store all fetched tickets
-
-// const closeBtn = document.getElementById('closeTicketButton');
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   fetchTickets();
-//   document.getElementById("sendButton").addEventListener("click", sendMessage);
-//   document.getElementById("sortSelect").addEventListener("change", onSortChange);
-//   document.getElementById("searchInput").addEventListener("input", onSearchInput);
-//   closeBtn.addEventListener('click', closeCurrentTicket);
-// });
-
-// // Fetch tickets list from server and render
-// async function fetchTickets() {
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets`);
-//     allTickets = await res.json();
-//     renderTickets(allTickets);
-//   } catch (err) {
-//     console.error("Failed to fetch tickets", err);
-//   }
-// }
-
-// // Render tickets in sidebar
-// function renderTickets(tickets) {
-//   const ticketList = document.getElementById("ticketList");
-//   ticketList.innerHTML = "";
-
-//   tickets.forEach(ticket => {
-//     const div = document.createElement("div");
-//     div.className = "ticket-entry";
-//     div.textContent = `#${ticket.ticket_id} - ${ticket.username} (${ticket.status})`;
-
-//     div.onclick = () => {
-//       selectTicket(ticket.ticket_id, ticket.username);
-
-//       // Highlight clicked ticket
-//       if (currentSelectedDiv) {
-//         currentSelectedDiv.classList.remove('selected');
-//       }
-//       div.classList.add('selected');
-//       currentSelectedDiv = div;
-//     };
-
-//     // Keep highlight if this is currently selected ticket
-//     if (ticket.ticket_id === currentTicketId) {
-//       div.classList.add('selected');
-//       currentSelectedDiv = div;
-//     }
-
-//     ticketList.appendChild(div);
-//   });
-// }
-
-// // Handle ticket selection, load chat and enable close button if open
-// async function selectTicket(ticketId, username) {
-//   currentTicketId = ticketId;
-//   document.getElementById("chatHeader").textContent = `Chat with ${username} (Ticket #${ticketId})`;
-//   document.getElementById("chatMessages").innerHTML = "";
-
-//   const ticket = allTickets.find(t => t.ticket_id === ticketId);
-//   closeBtn.disabled = !(ticket && ticket.status === 'open');
-
-//   fetchChatHistory(ticketId);
-// }
-
-// // Fetch messages for selected ticket
-// async function fetchChatHistory(ticketId) {
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
-//     const messages = await res.json();
-//     messages.forEach(displayMessage);
-//     scrollToBottom();
-//   } catch (err) {
-//     console.error("Failed to fetch chat history", err);
-//   }
-// }
-
-// // Show a message in chat area
-// function displayMessage(msg) {
-//   const div = document.createElement("div");
-//   div.className = msg.sender === "admin" ? "message admin" : "message user";
-//   div.textContent = msg.content;
-//   document.getElementById("chatMessages").appendChild(div);
-//   scrollToBottom();
-// }
-
-// // Send a message from admin
-// async function sendMessage() {
-//   const input = document.getElementById("messageInput");
-//   const content = input.value.trim();
-//   if (!content || !currentTicketId) return;
-
-//   displayMessage({ sender: "admin", content });
-
-//   try {
-//     await fetch(`${APP_URL}/api/tickets/${currentTicketId}/messages`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ sender: "admin", content })
-//     });
-//     input.value = "";
-//   } catch (err) {
-//     console.error("Failed to send message", err);
-//   }
-// }
-
-// // Close the currently selected ticket
-// async function closeCurrentTicket() {
-//   if (!currentTicketId) return;
-
-//   try {
-//     const res = await fetch(`${APP_URL}/api/tickets/${currentTicketId}/close`, {
-//       method: 'PATCH',
-//     });
-//     if (res.ok) {
-//       alert(`Ticket #${currentTicketId} closed successfully.`);
-//       closeBtn.disabled = true;
-
-//       // Update local tickets and re-render list
-//       const ticket = allTickets.find(t => t.ticket_id === currentTicketId);
-//       if (ticket) ticket.status = 'closed';
-//       renderTickets(allTickets);
-//     } else {
-//       alert('Failed to close the ticket.');
-//     }
-//   } catch (err) {
-//     console.error('Error closing ticket:', err);
-//     alert('Error closing the ticket.');
-//   }
-// }
-
-// // Scroll chat messages to bottom
-// function scrollToBottom() {
-//   const container = document.getElementById("chatMessages");
-//   container.scrollTop = container.scrollHeight;
-// }
-
-// // Search input handler: filter tickets by ID or username
-// function onSearchInput(e) {
-//   const query = e.target.value.toLowerCase();
-//   const filtered = allTickets.filter(ticket => {
-//     const idMatch = ticket.ticket_id.toString().includes(query);
-//     const usernameMatch = ticket.username.toLowerCase().includes(query);
-//     return idMatch || usernameMatch;
-//   });
-//   renderTickets(filtered);
-// }
-
-// // Sort selection handler: sort tickets by ID asc/desc
-// function onSortChange(e) {
-//   const val = e.target.value;
-//   if (!val) {
-//     renderTickets(allTickets);
-//     return;
-//   }
-
-//   const [field, order] = val.split('-'); // e.g. "ID-asc"
-//   const sorted = [...allTickets].sort((a, b) => {
-//     if (field === 'ID') {
-//       return order === 'asc' ? a.ticket_id - b.ticket_id : b.ticket_id - a.ticket_id;
-//     }
-//     return 0;
-//   });
-
-//   renderTickets(sorted);
-// }

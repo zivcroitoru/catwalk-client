@@ -37,19 +37,23 @@
                 <label for="sortSelect">SORT BY</label>
                 <select id="sortSelect">
                     <option value="">-- Select --</option>
-                    <option value="ID-asc">ID(low to high)</option>
-                    <option value="ID-desc">ID(high to low)</option>
+                    <option value="ID-asc">ID (low to high)</option>
+                    <option value="ID-desc">ID (high to low)</option>
+                    <option value="status-open">Open tickets</option>
+                    <option value="status-closed">Closed tickets</option>
                 </select>
             </div>
-        </div>
-        <div class="table">
-            <div class="messages-container">
+            <button class="toggleModeButton" id="toggleModeButton" style="margin-left:10px;">Switch to Broadcast</button>
+    </div>
+
+    <div class="table">
+            <div class="messages-container" sstyle="display:flex; height: 80vh;">
                 <!-- Sidebar for users -->
+                 
                 <div class="ticket-list" id="ticketList"></div>
 
-                <!-- Chat box -->
-                <div class="chat-box">
-                    
+                <!-- Ticket Chat Mode -->
+                <div class="chat-box" id="ticketMode">
                     <div class="chat-header" id="chatHeader">Select a user</div>
                     <div class="chat-messages" id="chatMessages"></div>
                     <div class="chat-input">
@@ -57,14 +61,24 @@
                         <button id="sendButton">Send</button>
                     </div>
                     <button id="closeTicketButton" disabled>Close Ticket</button>
+                </div>
 
+                <!-- Broadcast Mode -->
+                <div class="chat-box" id="broadcastMode" style="display:none;">
+                    <div class="chat-header">Broadcast to All Players</div>
+                                        <div class="chat-messages" id="chatMessages"></div>
+
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Type a message..." />
+                        <button id="sendButton">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <p id="warning" style="color: red; margin-top: 10px;"></p>
+
 </body>
-
-
 
 </html>
