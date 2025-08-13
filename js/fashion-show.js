@@ -1,5 +1,5 @@
-import { APP_URL } from '../../core/config.js';
-import { getAuthToken } from '../../core/auth/authentication.js';
+import { APP_URL } from '../js/core/config.js';
+import { getAuthToken } from '../js/core/auth/authentication.js';
 console.log("using: ", APP_URL);
 
   // Connect socket (use auth token if you have one)
