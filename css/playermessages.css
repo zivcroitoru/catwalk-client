@@ -193,6 +193,27 @@ header {
     text-align: center;
 }
 
+#broadcastBox {
+  background: #f9f1d6;
+  border-right: 4px solid #5a3900;
+  /* padding: 10px; */
+  /* margin-top: 10px; */
+}
+
+#broadcastBox h2{
+    color: #5a3900;
+    font-size: 25px;
+    margin-left: 5px;
+    height: 50px;
+
+}
+.broadcast-message {
+  background: #fff9e6;
+  border-left: 4px solid #d4a017;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
 
 
 /* Input area container */

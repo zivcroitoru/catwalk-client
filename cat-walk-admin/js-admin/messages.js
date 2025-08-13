@@ -48,7 +48,7 @@ socket.on('newMessage', (data) => {
     console.log(`New message for ticket #${data.ticketId}:`, data.content);
     return;
   }
-  const label = data.sender === 'user' ? `Player #${data.userId}` : data.sender;
+  const label = data.sender === 'user' ? `PLAYER` : `ADMIN`;
   displayMessage({ sender: label, content: data.content });
 });
 
@@ -284,6 +284,22 @@ toggleBtn.addEventListener('click', () => {
   toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
 });
 
+
+socket.on('adminBroadcast', (data) => {
+  let stored = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
+  stored.push({
+    text: data.message,
+    date: data.date || new Date().toISOString()
+  });
+  localStorage.setItem('broadcastMessages', JSON.stringify(stored));
+  broadcastMessages = stored;
+  renderBroadcasts();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
+  renderBroadcasts();
+});
 // Send broadcast
 document.getElementById('sendBroadcastButton').addEventListener('click', () => {
   const msg = document.getElementById('broadcastMessage').value.trim();

@@ -4,27 +4,27 @@ console.log('APP_URL:', APP_URL);
 
 
 const designWidth = 1920;
-    const designHeight = 1080;
+const designHeight = 1080;
 
-    function scaleToFitScreen() {
-      const scaleX = window.innerWidth / designWidth;
-      const scaleY = window.innerHeight / designHeight;
-      const scale = Math.min(scaleX, scaleY);
+function scaleToFitScreen() {
+  const scaleX = window.innerWidth / designWidth;
+  const scaleY = window.innerHeight / designHeight;
+  const scale = Math.min(scaleX, scaleY);
 
-      const wrapper = document.querySelector('.scale-wrapper');
-      if (wrapper) {
-        wrapper.style.transform = `scale(${scale})`;
+  const wrapper = document.querySelector('.scale-wrapper');
+  if (wrapper) {
+    wrapper.style.transform = `scale(${scale})`;
 
-        // Center the wrapper in the viewport
-        const left = (window.innerWidth - designWidth * scale) / 2;
-        const top = (window.innerHeight - designHeight * scale) / 2;
-        wrapper.style.left = `${left}px`;
-        wrapper.style.top = `${top}px`;
-      }
-    }
+    // Center the wrapper in the viewport
+    const left = (window.innerWidth - designWidth * scale) / 2;
+    const top = (window.innerHeight - designHeight * scale) / 2;
+    wrapper.style.left = `${left}px`;
+    wrapper.style.top = `${top}px`;
+  }
+}
 
-    window.addEventListener('resize', scaleToFitScreen);
-    window.addEventListener('DOMContentLoaded', scaleToFitScreen);
+window.addEventListener('resize', scaleToFitScreen);
+window.addEventListener('DOMContentLoaded', scaleToFitScreen);
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loginButton.addEventListener('click', async () => {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
+
+    
+    if (data.admin?.id) {
+      localStorage.setItem('adminId', data.admin.id);
+      console.log('💾 Saved admin ID:', data.admin.id);
+    }
 
     // Clear previous warning
     warning.textContent = '';

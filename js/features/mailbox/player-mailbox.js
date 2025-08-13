@@ -187,6 +187,35 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   console.log('Player mailbox client ready for user:', userId);
+
+  // Broadcast messages array
+  let broadcastMessages = [];
+
+  // Listen for broadcast messages
+  socket.on('adminBroadcast', (data) => {
+    console.log("Broadcast received:", data);
+
+    // Store in array (could be saved in localStorage if you want persistence)
+    broadcastMessages.push({
+      text: data.message,
+      date: data.date || new Date().toISOString()
+    });
+
+    // Render them in a separate broadcast box
+    renderBroadcasts();
+  });
+
+  function renderBroadcasts() {
+    const container = document.getElementById('broadcastMessages');
+    container.innerHTML = "";
+    broadcastMessages.forEach(msg => {
+      const p = document.createElement('p');
+      p.classList.add('broadcast-message');
+      p.textContent = `[Broadcast] ${msg.text}`;
+      container.appendChild(p);
+    });
+  }
+
 });
 
 
