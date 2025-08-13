@@ -1,272 +1,320 @@
-import { APP_URL } from '../js/core/config.js';
-import { getAuthToken } from '../js/core/auth/authentication.js';
-console.log("using: ", APP_URL);
+import { APP_URL } from './core/config.js';
+import { getAuthToken } from './core/auth/authentication.js';
 
-const userId = localStorage.getItem('userId');
+console.log("🎭 Fashion Show - using APP_URL:", APP_URL);
 
-  // Connect socket (use auth token if you have one)
-const socket = io(APP_URL, {
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('🎭 Fashion Show page DOM loaded');
+
+  // Step 1A: Get required data
+  // 1. Get userId from localStorage (like mailbox does)
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    console.error('❌ No userId in localStorage - user must be logged in');
+    alert('Please log in to access the fashion show');
+    window.location.href = '/'; // Redirect to main page
+    return;
+  }
+  console.log('✅ Retrieved userId:', userId);
+
+  // 2. Get catId from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const catIdFromUrl = urlParams.get('catId');
+  if (!catIdFromUrl) {
+    console.error('❌ No catId provided in URL');
+    alert('No cat selected for fashion show');
+    window.location.href = '/'; // Redirect to main page
+    return;
+  }
+  const catId = parseInt(catIdFromUrl);
+  console.log('✅ Retrieved catId from URL:', catId);
+
+  // 3. Get user info (for username) - we'll use a simple approach for now
+  let username = 'Unknown Player'; // fallback
+  try {
+    // Try to get username from any available source
+    // This might need adjustment based on your auth system
+    const authToken = getAuthToken();
+    if (authToken) {
+      // For now, let's just use a simple username
+      username = `Player_${userId}`;
+    }
+  } catch (err) {
+    console.warn('⚠️ Could not get username, using fallback:', username);
+  }
+  console.log('✅ Using username:', username);
+
+  // 4. Get cat name - we'll fetch from API
+  let catName = `Cat_${catId}`; // fallback
+  try {
+    const response = await fetch(`${APP_URL}/api/cats/user-cats`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      }
+    });
+    
+    if (response.ok) {
+      const userCats = await response.json();
+      const selectedCat = userCats.find(cat => cat.id === catId);
+      if (selectedCat && selectedCat.name) {
+        catName = selectedCat.name;
+      }
+    }
+  } catch (err) {
+    console.warn('⚠️ Could not fetch cat name, using fallback:', catName);
+  }
+  console.log('✅ Using catName:', catName);
+
+  // Step 1A: Summary of retrieved data
+  const playerData = {
+    playerId: userId,
+    username: username,
+    catId: catId,
+    catName: catName
+  };
+  console.log('🎯 Step 1A - Complete player data:', playerData);
+
+  // Step 1A: Initialize socket connection with all required data
+  initializeSocket(playerData);
+});
+
+function initializeSocket(playerData) {
+  console.log('🔧 Initializing socket connection...');
+  
+  // Connect socket (use auth token if available)
+  const socket = io(APP_URL, {
     auth: {
       token: (typeof getAuthToken === 'function') ? getAuthToken() : undefined
-
     }
   });
 
-socket.on('connect', () => {
-    console.log('Socket connected:', socket.id);
-    // register player so server can map sockets -> user and join existing ticket rooms
-    socket.emit('registerPlayer', userId);
-    console.log("-------------11--------------");
+  socket.on('connect', () => {
+    console.log('✅ Socket connected:', socket.id);
+    console.log('🎯 Ready to join fashion show with data:', playerData);
+
+    // Step 1B: Send join message to server
+    const joinMessage = {
+      playerId: playerData.playerId,
+      catId: playerData.catId
+    };
+    console.log('📤 Step 1B - Sending join message:', joinMessage);
+    
+    socket.emit('join', joinMessage);
+    console.log('✅ Join message sent to server');
   });
 
   socket.on('connect_error', (err) => {
-    console.error('Socket connect_error:', err);
+    console.error('❌ Socket connect_error:', err);
   });
 
+  socket.on('disconnect', (reason) => {
+    console.log('🔌 Socket disconnected:', reason);
+  });
 
-// console.log('🚨 FASHION SHOW FILE LOADED - timestamp:', Date.now());
-
-// Import Socket.IO from CDN using dynamic import
-// import { getLoggedInUserInfo } from "./core/utils.js";
-
-// // Global variables
-// let socket = null;
-// let participants = [];
-// let playerId = null;
-// let selectedCat = null;
-// let userCats = [];
-
-// // Constants
-// const PARTICIPANTS_IN_ROOM = 5;
-
-// // FIXED: Use explicit Socket.IO connection URL
-// const SERVER_URL = "https://catwalk-server-eu.onrender.com";
-// console.log('🔧 SERVER_URL set to:', SERVER_URL);
-
-// // Utility function to update counter display
-// function updateCounterDisplay(currentCount = 1, maxCount = PARTICIPANTS_IN_ROOM) {
-//   const counterElement = document.getElementById('player-counter');
-//   if (counterElement) {
-//     counterElement.textContent = `${currentCount}/${maxCount}`;
-//     console.log(`📊 Updated counter: ${currentCount}/${maxCount}`);
-//   }
-// }
-
-// // Initialize socket connection
-// async function initializeSocket() {
-//   console.log('🔧 Initializing socket connection to:', SERVER_URL);
-//   console.log('🔧 Current page URL:', window.location.href);
-//   console.log('🔧 Current page origin:', window.location.origin);
-  
-//   // FIXED: Access the global io function that should be loaded from CDN
-//   if (typeof window.io === 'undefined') {
-//     console.error('❌ Socket.IO not loaded! Checking if script is available...');
-//     // Wait a bit and try again
-//     await new Promise(resolve => setTimeout(resolve, 1000));
-//     if (typeof window.io === 'undefined') {
-//       console.error('❌ Socket.IO still not available after waiting');
-//       return;
-//     }
-//   }
-  
-//   console.log('✅ Socket.IO found, creating connection...');
-//   console.log('🔧 About to call window.io() with URL:', SERVER_URL);
-  
-//   // Create socket with explicit URL - NO MATTER WHAT, use our server URL
-//   try {
-//     socket = window.io(SERVER_URL, {
-//       transports: ['websocket', 'polling'],
-//       timeout: 20000,
-//       forceNew: true,
-//       autoConnect: false // Don't auto-connect, we'll do it manually
-//     });
-
-//     console.log('🔧 Socket object created with URL:', SERVER_URL);
-//     console.log('🔧 Socket instance:', socket);
-//     console.log('🔧 Socket.io property:', socket.io);
-//     console.log('🔧 Socket.io.uri:', socket.io?.uri);
+  // Step 1C - Waiting room participant updates
+  socket.on('participant_update', (message) => {
+    console.log('📥 Step 1C - Received participant_update:', message);
     
-//     // Manually connect with explicit URL verification
-//     console.log('🔧 Manually connecting socket...');
-//     socket.connect();
+    // Extract data from message
+    const { participants, maxCount } = message;
+    const currentCount = participants.length;
     
-//   } catch (error) {
-//     console.error('❌ Error creating socket:', error);
-//   }
+    console.log(`👥 Step 1C - Waiting room: ${currentCount}/${maxCount} participants`);
+    console.log('👥 Step 1C - Participants:', participants.map(p => `${p.playerId} (cat: ${p.catId})`));
+    
+    // Step 1D: Update UI
+    updateWaitingRoomUI(currentCount, maxCount, participants, playerData);
+  });
 
-//   socket.on('connect', () => {
-//     console.log('✅ Connected to fashion show server');
-//     console.log('🔧 Socket ID:', socket.id);
+  // Step 2A - Voting phase transition
+  socket.on('voting_phase', (message) => {
+    console.log('📥 Step 2A - Received voting_phase:', message);
+    
+    // Extract data from message
+    const { participants, timerSeconds } = message;
+    
+    console.log(`🗳️ Step 2A - Entering voting phase with ${participants.length} participants`);
+    console.log('🗳️ Step 2A - Timer:', timerSeconds, 'seconds');
+    
+    // Step 2B: Transition UI from waiting room to voting
+    transitionToVotingPhase(participants, timerSeconds, playerData);
+  });
 
-//     // Ensure we have both cat and player data before joining
-//     if (!selectedCat || !playerId) {
-//       console.error('❌ Missing data - selectedCat:', selectedCat, 'playerId:', playerId);
-//       return;
-//     }
+  socket.on('voting_update', (message) => {
+    console.log('📥 Received voting_update:', message);
+    // TODO: Handle voting updates in later steps
+  });
 
-//     console.log('🔧 About to join fashion show...');
-//     joinFashionShow();
-//   });
+  socket.on('results', (message) => {
+    console.log('📥 Received results:', message);
+    // TODO: Handle results in later steps
+  });
+}
 
-//   socket.on('disconnect', (reason) => {
-//     console.log('🔌 Disconnected from fashion show server. Reason:', reason);
-//   });
+// Step 1D: Update waiting room UI
+function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
+  console.log(`🎨 Step 1D - Updating UI: ${currentCount}/${maxCount}`);
+  
+  // Update the player counter
+  const playerCounterElement = document.getElementById('player-counter');
+  if (playerCounterElement) {
+    playerCounterElement.textContent = `${currentCount}/${maxCount}`;
+    console.log(`✅ Updated player counter to: ${currentCount}/${maxCount}`);
+  } else {
+    console.warn('⚠️ Could not find player-counter element');
+  }
+  
+  // Update waiting message visibility
+  const waitingMessageElement = document.querySelector('.waiting-message');
+  if (waitingMessageElement) {
+    if (currentCount < maxCount) {
+      waitingMessageElement.style.display = 'block';
+      console.log('✅ Showing waiting message');
+    } else {
+      // Room is full - this means we're about to enter voting phase
+      console.log('🎯 Room is full! Waiting for voting phase...');
+      // Keep waiting message visible until voting phase starts
+    }
+  } else {
+    console.warn('⚠️ Could not find waiting-message element');
+  }
+  
+  // Debug: Log our own participant data
+  const ourParticipant = participants.find(p => p.playerId === playerData.playerId);
+  if (ourParticipant) {
+    console.log('✅ Found our participant in the list:', ourParticipant);
+  } else {
+    console.warn('⚠️ Could not find our participant in the list');
+  }
+  
+  // Debug: Show all participants
+  console.log('👥 All participants in room:');
+  participants.forEach((participant, index) => {
+    const isOurs = participant.playerId === playerData.playerId;
+    console.log(`  ${index + 1}. ${participant.playerId} (cat: ${participant.catId})${isOurs ? ' ← YOU' : ''}`);
+  });
+}
 
-//   socket.on('connect_error', (error) => {
-//     console.error('❌ Connection error:', error);
-//     console.error('❌ Error details:', error.message);
-//     console.error('❌ Error type:', error.type);
-//   });
+// Step 2B: Transition from waiting room to voting phase
+function transitionToVotingPhase(participants, timerSeconds, playerData) {
+  console.log('🎨 Step 2B - Transitioning to voting phase...');
+  
+  // Hide waiting message
+  const waitingMessageElement = document.querySelector('.waiting-message');
+  if (waitingMessageElement) {
+    waitingMessageElement.style.display = 'none';
+    console.log('✅ Hidden waiting message');
+  }
+  
+  // Show cat display area
+  const catDisplayElement = document.querySelector('.cat-display');
+  if (catDisplayElement) {
+    catDisplayElement.style.display = 'flex'; // Use flex as defined in CSS
+    console.log('✅ Showing cat display area');
+  }
+  
+  // Show timer section
+  const timerSectionElement = document.querySelector('.timer-section');
+  if (timerSectionElement) {
+    timerSectionElement.style.display = 'flex'; // Use flex as defined in CSS
+    console.log('✅ Showing timer section');
+  }
+  
+  // Step 2C: Populate stage bases with participant data
+  populateStageBasesWithParticipants(participants, playerData);
+  
+  // Step 2D: Start countdown timer
+  startCountdownTimer(timerSeconds);
+  
+  console.log('✅ Step 2B - Voting phase transition complete');
+}
 
-//   // STEP 1 FOCUS: Only handle participant updates for now
-//   socket.on('participant_update', (message) => {
-//     console.log('🔧 Received event: participant_update', message);
-//     try {
-//       console.log('👥 Participant update received:', message);
-//       handleParticipantUpdate(message);
-//       console.log('✅ Participant update handled successfully');
-//     } catch (error) {
-//       console.error('❌ Error handling participant update:', error);
-//     }
-//   });
+// Step 2C: Populate each stage base with participant data
+function populateStageBasesWithParticipants(participants, playerData) {
+  console.log('🎨 Step 2C - Populating stage bases...');
+  
+  const stageBases = document.querySelectorAll('.stage-base');
+  
+  participants.forEach((participant, index) => {
+    if (index >= stageBases.length) {
+      console.warn(`⚠️ Not enough stage bases for participant ${index + 1}`);
+      return;
+    }
+    
+    const stageBase = stageBases[index];
+    const isOwnCat = participant.playerId === playerData.playerId && participant.catId === playerData.catId;
+    
+    console.log(`🎨 Step 2C - Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
+    
+    // Show cat sprite (placeholder for now - we'll need actual cat images later)
+    const catSprite = stageBase.querySelector('.cat-sprite');
+    if (catSprite) {
+      // For now, use a placeholder or the same image for all cats
+      catSprite.src = '../assets/cat-placeholder.png'; // We'll need to add actual cat images
+      catSprite.style.display = 'block';
+    }
+    
+    // Set cat name
+    const catNameElement = stageBase.querySelector('.cat-name');
+    if (catNameElement) {
+      catNameElement.textContent = `Cat ${participant.catId}`; // Simple name for now
+    }
+    
+    // Set username
+    const usernameElement = stageBase.querySelector('.username');
+    if (usernameElement) {
+      usernameElement.textContent = `Player ${participant.playerId}`;
+    }
+    
+    // Mark own cat for special styling
+    if (isOwnCat) {
+      stageBase.classList.add('own-cat');
+      console.log(`🏷️ Marked stage ${index + 1} as own cat`);
+    }
+    
+    // Store participant data on the element for click handling
+    stageBase.dataset.participantId = participant.playerId;
+    stageBase.dataset.catId = participant.catId;
+  });
+  
+  console.log('✅ Step 2C - Stage bases populated');
+}
 
-//   // TODO: Add other event handlers in later steps
-//   socket.on('voting_phase', (message) => {
-//     console.log('🔧 Received voting_phase event (not implemented yet):', message);
-//   });
+// Step 2D: Start countdown timer
+function startCountdownTimer(initialSeconds) {
+  console.log('⏰ Step 2D - Starting countdown timer:', initialSeconds, 'seconds');
+  
+  const timerTextElement = document.getElementById('timer-text');
+  if (!timerTextElement) {
+    console.warn('⚠️ Timer text element not found');
+    return;
+  }
+  
+  let remainingSeconds = initialSeconds;
+  
+  // Update timer display immediately
+  timerTextElement.textContent = `${remainingSeconds} s`;
+  
+  // Start countdown
+  const timerInterval = setInterval(() => {
+    remainingSeconds--;
+    timerTextElement.textContent = `${remainingSeconds} s`;
+    
+    console.log(`⏰ Timer: ${remainingSeconds}s remaining`);
+    
+    if (remainingSeconds <= 0) {
+      clearInterval(timerInterval);
+      console.log('⏰ Timer reached zero');
+      // Note: Server handles timeout logic, client just displays
+    }
+  }, 1000);
+  
+  console.log('✅ Step 2D - Countdown timer started');
+}
 
-//   socket.on('voting_update', (message) => {
-//     console.log('🔧 Received voting_update event (not implemented yet):', message);
-//   });
-
-//   socket.on('results', (message) => {
-//     console.log('🔧 Received results event (not implemented yet):', message);
-//   });
-// }
-
-// function joinFashionShow() {
-//   const joinMessage = {
-//     playerId: playerId,
-//     catId: selectedCat.id
-//   };
-//   console.log('📤 Sending join message:', joinMessage);
-
-//   socket.emit('join', joinMessage);
-//   console.log('✅ Join message sent successfully');
-// }
-
-// function handleParticipantUpdate(message) {
-//   participants = message.participants;
-//   console.log('👥 Updated participants list:', participants);
-
-//   updateCounterDisplay(participants.length, message.maxCount);
-
-//   // TODO: In later steps, handle transition to voting phase
-//   if (participants.length >= PARTICIPANTS_IN_ROOM) {
-//     console.log('🚀 Room is full, should transition to voting...');
-//     // This will happen automatically from server via voting_phase event
-//   }
-// }
-
-// // Initialize page when ready
-// document.addEventListener('DOMContentLoaded', async () => {
-//   console.log('🎭 Fashion Show page DOM loaded');
-
-//   // Get URL parameters to extract cat ID
-//   const urlParams = new URLSearchParams(window.location.search);
-//   const catIdFromUrl = urlParams.get('catId');
-
-//   if (!catIdFromUrl) {
-//     console.error('❌ No catId provided in URL');
-//     // TODO: Redirect back to album
-//     return;
-//   }
-
-//   const catId = parseInt(catIdFromUrl);
-//   console.log('🐾 Cat ID from URL:', catId);
-
-//   // Get authenticated player ID
-//   try {
-//     const userInfo = getLoggedInUserInfo();
-//     playerId = userInfo.userId;
-//     console.log('🎭 Using authenticated player ID:', playerId);
-//   } catch (error) {
-//     console.error('❌ Failed to get user info:', error);
-//     // Fallback for development
-//     playerId = `dev_player_${Math.random().toString(36).substr(2, 5)}`;
-//     console.warn('🎭 Using fallback player ID:', playerId);
-//   }
-
-//   // FIXED: Load user cats from API instead of static JSON
-//   // This matches your existing app pattern
-//   fetch(`${SERVER_URL}/api/cats/user-cats`, {
-//     method: 'GET',
-//     credentials: 'include', // Important for authentication
-//     headers: {
-//       'Content-Type': 'application/json'
-//     }
-//   })
-//     .then(res => {
-//       if (!res.ok) {
-//         throw new Error(`HTTP error! status: ${res.status}`);
-//       }
-//       return res.json();
-//     })
-//     .then(data => {
-//       userCats = data;
-//       console.log('📚 Loaded user cats from API:', userCats.length, 'cats');
-
-//       // Find the selected cat by ID from URL parameter
-//       selectedCat = userCats.find(cat => cat.id === catId);
-
-//       if (!selectedCat) {
-//         console.error(`❌ Cat with ID ${catId} not found in user cats`);
-//         // Fallback to first available cat for testing
-//         if (userCats.length > 0) {
-//           selectedCat = userCats[0];
-//           console.warn('🐾 Using fallback cat:', selectedCat);
-//         } else {
-//           console.error('❌ No cats available at all');
-//           return;
-//         }
-//       }
-
-//       console.log("🐾 Selected cat from URL parameter:", selectedCat);
-
-//       // Initialize socket connection now that we have all required data
-//       await initializeSocket();
-//     })
-//     .catch(err => {
-//       console.error("❌ Failed to load user cats from API", err);
-//       // Fallback: try the static JSON file as before
-//       console.log("🔧 Trying fallback to static JSON...");
-      
-//       fetch("../data/usercats.json")
-//         .then(res => res.json())
-//         .then(data => {
-//           userCats = data;
-//           console.log('📚 Loaded user cats from fallback JSON:', userCats.length, 'cats');
-
-//           selectedCat = userCats.find(cat => cat.id === catId);
-//           if (!selectedCat && userCats.length > 0) {
-//             selectedCat = userCats[0];
-//           }
-
-//           if (selectedCat) {
-//             console.log("🐾 Selected cat from fallback:", selectedCat);
-//             await initializeSocket();
-//           }
-//         })
-//         .catch(fallbackErr => {
-//           console.error("❌ Both API and fallback JSON failed", fallbackErr);
-//         });
-//     });
-// });
-
-// // Handle page unload - disconnect from socket
-// window.addEventListener('beforeunload', () => {
-//   if (socket) {
-//     console.log('🔌 Disconnecting socket on page unload');
-//     socket.disconnect();
-//   }
-// });
+// Handle page unload - disconnect socket
+window.addEventListener('beforeunload', () => {
+  console.log('🔌 Page unloading - will disconnect socket');
+});

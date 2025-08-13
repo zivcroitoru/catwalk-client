@@ -14,26 +14,112 @@
 </head>
 <body>
   <main>
+    <!-- Main title -->
     <h1>FASHION SHOW!</h1>
     
-    <!-- Waiting message in center -->
+    <!-- Waiting message (visible during waiting room phase) -->
     <div class="waiting-message">
       WAITING FOR MORE<br>
       PLAYERS TO JOIN<br>
       <span id="player-counter">1/5</span>
     </div>
 
-    <!-- Timer section (hidden initially) -->
+    <!-- Cat display area (visible during voting and results phases) -->
+    <div class="cat-display" style="display: none;">
+      <!-- Stage bases for 5 participants -->
+      <div class="stage-base" data-participant-index="0">
+        <img src="../assets/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+        <div class="cat-name"></div>
+        <div class="username"></div>
+        <!-- Gold base for results phase -->
+        <div class="gold-base" style="display: none;"></div>
+        <div class="reward-text" style="display: none;"></div>
+      </div>
+      
+      <div class="stage-base" data-participant-index="1">
+        <img src="../assets/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+        <div class="cat-name"></div>
+        <div class="username"></div>
+        <div class="gold-base" style="display: none;"></div>
+        <div class="reward-text" style="display: none;"></div>
+      </div>
+      
+      <div class="stage-base" data-participant-index="2">
+        <img src="../assets/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+        <div class="cat-name"></div>
+        <div class="username"></div>
+        <div class="gold-base" style="display: none;"></div>
+        <div class="reward-text" style="display: none;"></div>
+      </div>
+      
+      <div class="stage-base" data-participant-index="3">
+        <img src="../assets/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+        <div class="cat-name"></div>
+        <div class="username"></div>
+        <div class="gold-base" style="display: none;"></div>
+        <div class="reward-text" style="display: none;"></div>
+      </div>
+      
+      <div class="stage-base" data-participant-index="4">
+        <img src="../assets/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+        <div class="cat-name"></div>
+        <div class="username"></div>
+        <div class="gold-base" style="display: none;"></div>
+        <div class="reward-text" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Timer section (visible during voting phase) -->
     <div class="timer-section" style="display: none;">
       <img src="../assets/icons/timer.png" alt="Timer" class="timer-icon">
       <span id="timer-text">60 s</span>
     </div>
 
+    <!-- Warning message for voting on own cat -->
+    <div class="warning-message" style="display: none;">
+      YOU CAN'T<br>
+      VOTE FOR<br>
+      YOUR OWN<br>
+      CAT!
+    </div>
+
+    <!-- Announcement text for transitions -->
+    <div class="announcement-text" style="display: none;">
+      CALCULATING VOTES, PLEASE WAIT . . .
+    </div>
+
+    <!-- Results buttons (visible during results phase) -->
+    <div class="results-buttons" style="display: none;">
+      <a href="#" class="results-button" id="play-again-btn">PLAY AGAIN</a>
+      <a href="album.html" class="results-button" id="go-home-btn">GO HOME</a>
+    </div>
+
   </main>
   
+  <!-- Back to album button (always visible) -->
   <a href="album.html" class="album-button">←</a>
 
-  <!-- ✅ Load Socket.IO client FIRST and ensure it's global -->
+  <!-- Exit confirmation dialog (hidden by default) -->
+  <div class="exit-overlay" style="display: none;">
+    <div class="exit-dialog">
+      <div class="exit-dialog-title">
+        ARE YOU SURE YOU<br>
+        WANT TO LEAVE THE<br>
+        FASHION SHOW?
+      </div>
+      <div class="exit-dialog-buttons">
+        <button class="exit-dialog-button" id="stay-btn">STAY</button>
+        <button class="exit-dialog-button" id="leave-btn">LEAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Socket.IO client FIRST -->
   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   
   <!-- Debug script to check if io is available -->
@@ -45,7 +131,7 @@
     }
   </script>
   
-  <!-- Load your fashion show script AFTER Socket.IO is confirmed -->
+  <!-- Load fashion show script AFTER Socket.IO -->
   <script type="module" src="../js/fashion-show.js"></script>
 </body>
 </html>
