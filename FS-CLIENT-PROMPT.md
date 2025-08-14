@@ -243,6 +243,97 @@ PS C:\dev\catwalk-client> npm run dev
 WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We have a connection with 2 players, now we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increases only with more players joining.
 
 
-# CURRENT TASK:
-Before continueing to other areas, let's first take care of the player and cat data being fetched properly - speecificly the cat + items worn visuals. We can look at other files as references. 
 
+# TASKS
+
+## ✅ **WHAT WORKS - ACCOMPLISHED SO FAR:**
+
+### **Phase 1: Core Infrastructure** ✅ COMPLETE
+- ✅ Socket.IO connection between client and server
+- ✅ Waiting room system (participants join and leave)
+- ✅ Participant counter display (X/2 players)
+- ✅ Room cycling (when full, creates new game room + resets waiting room)
+
+### **Phase 2: Enhanced Data & Visuals** ✅ COMPLETE  
+- ✅ Enhanced participant creation with database queries
+- ✅ Real cat sprite URLs fetched from `cat_templates` table
+- ✅ Real usernames fetched from `players` table  
+- ✅ Real cat names fetched from `player_cats` table
+- ✅ Worn items data fetched from `cat_items` + `itemtemplate` tables
+- ✅ Client displays real cat sprites (not placeholders)
+- ✅ Client displays worn items layered on cats
+- ✅ Transition from waiting room to voting phase UI
+- ✅ 60-second countdown timer display
+
+### **Phase 3: Basic Voting Structure** ✅ COMPLETE
+- ✅ Server sends `voting_phase` message with participant data
+- ✅ Client shows voting interface with cat stages
+- ✅ Client countdown timer runs locally
+- ✅ Server has voting timeout handler (basic structure)
+
+---
+
+## 🎯 **CURRENT STEP: Voting Logic Implementation**
+
+### **Step 4A: Timer-Based Vote Calculation** ⏳ IN PROGRESS
+**Goal:** Move to calculating votes screen only when timer reaches end
+
+**Sub-steps:**
+1. ✅ Timer countdown working on client  
+2. 🔄 **CURRENT:** Server triggers vote calculation when timer ends
+3. ⏸️ Log vote results (don't apply to DB yet)
+4. ⏸️ Send calculation screen to clients
+
+### **Step 4B: Interactive Voting** ⏸️ PLANNED
+**Goal:** Players can click cats to vote (ignore self-voting rule temporarily)
+
+**Sub-steps:**
+1. Add click handlers to cat stages during voting phase
+2. Send vote messages to server
+3. Server tracks votes per participant  
+4. Allow vote changes while timer running
+5. Visual feedback for selected cat
+
+### **Step 4C: Self-Voting Prevention** ⏸️ PLANNED
+**Goal:** Implement "no voting for own cat" rule
+
+**Sub-steps:**
+1. Server validates votes (reject if voting for own cat)
+2. Client shows warning message
+3. Visual styling for own cat (non-clickable)
+
+### **Step 4D: Auto-Vote Logic** ⏸️ PLANNED  
+**Goal:** Handle missing votes and disconnections
+
+**Sub-steps:**
+1. Random vote assignment for non-voters when timer ends
+2. Handle player disconnection → mark as dummy → auto-vote
+3. Early voting phase end if all players voted legally
+
+### **Step 4E: Vote Calculation & Rewards** ⏸️ PLANNED
+**Goal:** Calculate and distribute coin rewards
+
+**Sub-steps:**
+1. Count votes per cat: `votesReceived = votes[catId] || 0`
+2. Calculate coins: `coinsEarned = votesReceived * 25`  
+3. Update real players' coins in database
+4. Skip DB updates for dummy participants
+5. Send results to clients
+
+---
+
+## 🎮 **COMPLETE GAME FLOW STATUS:**
+
+1. ✅ **Waiting Room** - Players join and see counter
+2. ✅ **Voting Phase Start** - Timer starts, cats displayed  
+3. 🔄 **Voting Interaction** - Current step
+4. ⏸️ **Vote Calculation** - Planned next
+5. ⏸️ **Results Display** - Planned
+6. ⏸️ **Play Again/Go Home** - Planned
+
+---
+
+## 📋 **IMMEDIATE NEXT ACTION:**
+**Focus on Step 4A.2:** Make server properly trigger vote calculation when 60-second timer ends, with detailed logging to see the vote calculation process.
+
+**Question for you:** Should we start with implementing the timer-end vote calculation trigger, or would you prefer to begin with the clickable voting interaction first?
