@@ -248,23 +248,40 @@ function populateStageBasesWithParticipants(participants, playerData) {
     
     console.log(`🎨 Step 2C - Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
     
-    // Show cat sprite (placeholder for now - we'll need actual cat images later)
+    // Show real cat sprite using server data
     const catSprite = stageBase.querySelector('.cat-sprite');
     if (catSprite) {
-      catSprite.src = '../assets/cat-placeholder.png';
+      if (participant.catSpriteUrl) {
+        catSprite.src = participant.catSpriteUrl;
+        console.log(`✅ Set cat sprite URL for stage ${index + 1}:`, participant.catSpriteUrl.substring(0, 50) + '...');
+      } else {
+        // Fallback to placeholder if no sprite URL
+        catSprite.src = '../assets/cat-placeholder.png';
+        console.warn(`⚠️ No sprite URL for stage ${index + 1}, using placeholder`);
+      }
       catSprite.style.display = 'block';
     }
     
-    // FIXED: Always use the server-provided data from participant object
+    // Set cat name using server data
     const catNameElement = stageBase.querySelector('.cat-name');
     if (catNameElement) {
-      catNameElement.textContent = participant.catName; // ✅ Always use server data
+      catNameElement.textContent = participant.catName;
+      console.log(`✅ Set cat name for stage ${index + 1}:`, participant.catName);
     }
     
-    // FIXED: Always use the server-provided data from participant object  
+    // Set username using server data  
     const usernameElement = stageBase.querySelector('.username');
     if (usernameElement) {
-      usernameElement.textContent = participant.username; // ✅ Always use server data
+      usernameElement.textContent = participant.username;
+      console.log(`✅ Set username for stage ${index + 1}:`, participant.username);
+    }
+    
+    // TASK 3: Render worn items on top of cat sprite
+    if (participant.wornItems && participant.wornItems.length > 0) {
+      console.log(`👔 Stage ${index + 1} has ${participant.wornItems.length} worn items:`, participant.wornItems);
+      renderWornItems(stageBase, participant.wornItems, index);
+    } else {
+      console.log(`ℹ️ Stage ${index + 1} has no worn items`);
     }
     
     // Mark own cat for special styling
@@ -280,6 +297,67 @@ function populateStageBasesWithParticipants(participants, playerData) {
   
   console.log('✅ Step 2C - Stage bases populated');
 }
+
+// Worn Items Renderer for fashion-show.js
+
+// Function to render worn items on top of cat sprite
+function renderWornItems(stageBase, wornItems, stageIndex) {
+  console.log(`👔 TASK 3 - Rendering ${wornItems.length} worn items for stage ${stageIndex + 1}`);
+  
+  // Remove any existing worn item elements first
+  const existingItems = stageBase.querySelectorAll('.worn-item');
+  existingItems.forEach(item => item.remove());
+  
+  if (!wornItems || wornItems.length === 0) {
+    console.log(`ℹ️ No worn items to render for stage ${stageIndex + 1}`);
+    return;
+  }
+  
+  // Get the cat sprite element as reference for positioning
+  const catSprite = stageBase.querySelector('.cat-sprite');
+  if (!catSprite) {
+    console.warn(`⚠️ No cat sprite found for stage ${stageIndex + 1}, cannot render items`);
+    return;
+  }
+  
+  wornItems.forEach((item, itemIndex) => {
+    console.log(`👔 Rendering item ${itemIndex + 1} for stage ${stageIndex + 1}:`, item);
+    
+    if (!item.spriteUrl) {
+      console.warn(`⚠️ No sprite URL for item ${itemIndex + 1} on stage ${stageIndex + 1}`);
+      return;
+    }
+    
+    // Create worn item image element
+    const wornItemElement = document.createElement('img');
+    wornItemElement.src = item.spriteUrl;
+    wornItemElement.alt = `${item.category} item`;
+    wornItemElement.classList.add('worn-item', `worn-${item.category}`);
+    
+    // Position the worn item to overlay on the cat sprite
+    // Use the same positioning as cat sprite but with higher z-index
+    wornItemElement.style.position = 'absolute';
+    wornItemElement.style.top = '80px'; // Same as cat sprite
+    wornItemElement.style.left = '0';
+    wornItemElement.style.width = '100%'; // Same width as cat sprite
+    wornItemElement.style.height = 'auto'; // Maintain aspect ratio
+    wornItemElement.style.zIndex = '10'; // Above cat sprite (cat sprite has default z-index)
+    wornItemElement.style.pointerEvents = 'none'; // Don't interfere with clicking
+    
+    // Crisp pixel rendering (same as cat sprite)
+    wornItemElement.style.imageRendering = 'pixelated';
+    wornItemElement.style.imageRendering = '-moz-crisp-edges';
+    wornItemElement.style.imageRendering = 'crisp-edges';
+    
+    // Add to stage base (same container as cat sprite)
+    stageBase.appendChild(wornItemElement);
+    
+    console.log(`✅ Added ${item.category} item to stage ${stageIndex + 1}`);
+  });
+  
+  console.log(`✅ Finished rendering worn items for stage ${stageIndex + 1}`);
+}
+
 
 // Step 2D: Start countdown timer
 function startCountdownTimer(initialSeconds) {

@@ -1,5 +1,3 @@
-
-
 # cat walk - a fashion show matchmaking system
 
 ## 1. User-story
@@ -94,9 +92,103 @@ type ResultsMessage = {
 }
 ```
 
+## Our relevant DB tables.
+
+\d players 
+->
+```
+Table "public.players"
+Column	Type	Collation	Nullable	Default
+id	integer		not null	nextval('players_id_seq'::regclass)
+username	character varying(50)		not null	
+created_at	date			CURRENT_TIMESTAMP
+coins	integer		not null	500
+cat_count	integer			0
+daily_upload_count	integer			0
+last_upload_reset	timestamp without time zone			CURRENT_TIMESTAMP
+last_logged_in	timestamp without time zone			
+password_hash	character varying(255)			
+Indexes:
+"players_pkey" PRIMARY KEY, btree (id)
+"players_username_key" UNIQUE CONSTRAINT, btree (username)
+Referenced by:
+TABLE "cat_items" CONSTRAINT "fk_cat_items_player" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+TABLE "player_cats" CONSTRAINT "fk_player_cats_player_id" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+TABLE "player_items" CONSTRAINT "fk_player_items_player" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+TABLE "tickets" CONSTRAINT "tickets_player_id_fkey" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+```
+
+\d player_cats 
+->
+```
+Table "public.player_cats"
+Column	Type	Collation	Nullable	Default
+cat_id	integer		not null	nextval('player_cats_player_cat_id_seq'::regclass)
+player_id	integer		not null	
+template	character varying(200)		not null	
+name	character varying(100)			
+description	text			
+uploaded_photo_url	text		not null	
+created_at	timestamp without time zone			CURRENT_TIMESTAMP
+last_updated	timestamp without time zone			CURRENT_TIMESTAMP
+birthdate	date			
+Indexes:
+"player_cats_pkey" PRIMARY KEY, btree (cat_id)
+Foreign-key constraints:
+"fk_player_cats_player_id" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+"fk_player_cats_template" FOREIGN KEY (template) REFERENCES cat_templates(template) ON DELETE CASCADE
+Referenced by:
+TABLE "cat_items" CONSTRAINT "fk_cat_items_cat" FOREIGN KEY (cat_id) REFERENCES player_cats(cat_id) ON DELETE CASCADE
+Triggers:
+cat_count_trigger AFTER INSERT OR DELETE ON player_cats FOR EACH ROW EXECUTE FUNCTION update_cat_count()
+```
+
+\d cat_templates
+->
+```
+Table "public.cat_templates"
+Column	Type	Collation	Nullable	Default
+template	character varying(200)		not null	
+breed	character varying(50)		not null	
+variant	character varying(50)		not null	
+palette	character varying(50)		not null	
+sprite_url	text			
+description	text			
+created_at	timestamp without time zone			CURRENT_TIMESTAMP
+last_updated_at	timestamp without time zone			CURRENT_TIMESTAMP
+cat_id	integer		not null	nextval('cat_templates_cat_id_seq'::regclass)
+Indexes:
+"cat_templates_pkey" PRIMARY KEY, btree (template)
+Referenced by:
+TABLE "player_cats" CONSTRAINT "fk_player_cats_template" FOREIGN KEY (template) REFERENCES cat_templates(template) ON DELETE CASCADE
+```
+
+\d cat_items
+
+->
+```
+Table "public.cat_items"
+Column	Type	Collation	Nullable	Default
+cat_item_id	integer		not null	nextval('cat_items_cat_item_id_seq'::regclass)
+cat_id	integer		not null	
+player_id	integer		not null	
+template	character varying(100)		not null	
+category	character varying(50)		not null	
+Indexes:
+"cat_items_pkey" PRIMARY KEY, btree (cat_item_id)
+"cat_items_cat_id_category_key" UNIQUE CONSTRAINT, btree (cat_id, category)
+"idx_cat_items_cat_id" btree (cat_id)
+"idx_cat_items_player_id" btree (player_id)
+"unique_cat_category" UNIQUE CONSTRAINT, btree (cat_id, category)
+Foreign-key constraints:
+"fk_cat_items_cat" FOREIGN KEY (cat_id) REFERENCES player_cats(cat_id) ON DELETE CASCADE
+"fk_cat_items_category" FOREIGN KEY (category) REFERENCES itemcategory(category_name) ON DELETE RESTRICT
+"fk_cat_items_player" FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
+"fk_cat_items_template" FOREIGN KEY (template) REFERENCES itemtemplate(template) ON DELETE CASCADE
+```
 
 
-Additional notes:
+## Additional notes:
 - This project should be as simple as possible, we're not "looking for more work". 
 - Voting timer updates: The server sends to the client the value of the timer, and the clients handle the countdown locally. We won't send periodic sync updates
 - Error handling: As for now, we will not be adding error message types for various failure scenarios. As long as we don't have specific errors, talking about this is irrelevant
@@ -148,10 +240,9 @@ PS C:\dev\catwalk-client> npm run dev
 ```
 
 ## IMPORTANT NOTE: 
-WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We first want to make sure we have a connection, then we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increases only with more players joining. WE FIRST LOOK AT WAITING ROOM ONLY, IGNORING THE OTHER PHASES FOR NOW.
+WE NEED TO TAKE IT ONE STEP AT A TIME, NOT CHANGE THE WHOLE CODE AT ONCE. Let's build a list of tasks, complete one each time, add debugging, run the game. We have a connection with 2 players, now we want to see the player and their data in the logging when entering the waiting room, then waiting room counter increases only with more players joining.
 
 
 # CURRENT TASK:
-
-Before continueing to other areas, let's first take care of the player and cat data being fetched properly. Maybe we can look at `C:\dev\catwalk-client\js\features\mailbox\player-mailbox.js` and `C:\dev\catwalk-client\js\core\init\dataLoader.js` as references.
+Before continueing to other areas, let's first take care of the player and cat data being fetched properly - speecificly the cat + items worn visuals. We can look at other files as references. 
 

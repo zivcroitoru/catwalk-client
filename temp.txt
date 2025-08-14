@@ -1,3 +1,5 @@
+
+// Updated populateStageBasesWithParticipants function with worn items support
 function populateStageBasesWithParticipants(participants, playerData) {
   console.log('🎨 Step 2C - Populating stage bases...');
   
@@ -14,23 +16,40 @@ function populateStageBasesWithParticipants(participants, playerData) {
     
     console.log(`🎨 Step 2C - Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
     
-    // Show cat sprite (placeholder for now - we'll need actual cat images later)
+    // Show real cat sprite using server data
     const catSprite = stageBase.querySelector('.cat-sprite');
     if (catSprite) {
-      catSprite.src = '../assets/cat-placeholder.png';
+      if (participant.catSpriteUrl) {
+        catSprite.src = participant.catSpriteUrl;
+        console.log(`✅ Set cat sprite URL for stage ${index + 1}:`, participant.catSpriteUrl.substring(0, 50) + '...');
+      } else {
+        // Fallback to placeholder if no sprite URL
+        catSprite.src = '../assets/cat-placeholder.png';
+        console.warn(`⚠️ No sprite URL for stage ${index + 1}, using placeholder`);
+      }
       catSprite.style.display = 'block';
     }
     
-    // FIXED: Always use the server-provided data from participant object
+    // Set cat name using server data
     const catNameElement = stageBase.querySelector('.cat-name');
     if (catNameElement) {
-      catNameElement.textContent = participant.catName; // ✅ Always use server data
+      catNameElement.textContent = participant.catName;
+      console.log(`✅ Set cat name for stage ${index + 1}:`, participant.catName);
     }
     
-    // FIXED: Always use the server-provided data from participant object  
+    // Set username using server data  
     const usernameElement = stageBase.querySelector('.username');
     if (usernameElement) {
-      usernameElement.textContent = participant.username; // ✅ Always use server data
+      usernameElement.textContent = participant.username;
+      console.log(`✅ Set username for stage ${index + 1}:`, participant.username);
+    }
+    
+    // TASK 3: Render worn items on top of cat sprite
+    if (participant.wornItems && participant.wornItems.length > 0) {
+      console.log(`👔 Stage ${index + 1} has ${participant.wornItems.length} worn items:`, participant.wornItems);
+      renderWornItems(stageBase, participant.wornItems, index);
+    } else {
+      console.log(`ℹ️ Stage ${index + 1} has no worn items`);
     }
     
     // Mark own cat for special styling
