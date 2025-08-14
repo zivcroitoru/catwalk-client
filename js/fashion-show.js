@@ -1,5 +1,6 @@
 import { APP_URL } from './core/config.js';
 import { getAuthToken } from './core/auth/authentication.js';
+import { getPlayerCats } from './core/storage.js'; // Import the existing function
 
 console.log("🎭 Fashion Show - using APP_URL:", APP_URL);
 
@@ -29,41 +30,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   const catId = parseInt(catIdFromUrl);
   console.log('✅ Retrieved catId from URL:', catId);
 
-  // 3. Get user info (for username) - we'll use a simple approach for now
+  // 3. Get user info (for username) - use the same approach as mailbox
   let username = 'Unknown Player'; // fallback
   try {
-    // Try to get username from any available source
-    // This might need adjustment based on your auth system
-    const authToken = getAuthToken();
-    if (authToken) {
-      // For now, let's just use a simple username
+    // Try to get username from localStorage first (like mailbox does)
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      username = storedUsername;
+      console.log('✅ Got username from localStorage:', username);
+    } else {
+      // Fallback to simple format
       username = `Player_${userId}`;
+      console.log('⚠️ No stored username, using fallback:', username);
     }
   } catch (err) {
     console.warn('⚠️ Could not get username, using fallback:', username);
   }
-  console.log('✅ Using username:', username);
 
-  // 4. Get cat name - we'll fetch from API
+  // 4. Get cat name - use the existing getPlayerCats function like dataLoader does
   let catName = `Cat_${catId}`; // fallback
   try {
-    const response = await fetch(`${APP_URL}/api/cats/user-cats`, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
-    });
+    console.log('🔄 Fetching user cats using existing storage function...');
+    const userCats = await getPlayerCats(); // Use the existing function
+    console.log('✅ Retrieved user cats:', userCats);
     
-    if (response.ok) {
-      const userCats = await response.json();
-      const selectedCat = userCats.find(cat => cat.id === catId);
-      if (selectedCat && selectedCat.name) {
-        catName = selectedCat.name;
-      }
+    const selectedCat = userCats.find(cat => cat.id === catId);
+    if (selectedCat && selectedCat.name) {
+      catName = selectedCat.name;
+      console.log('✅ Found selected cat:', selectedCat);
+    } else {
+      console.warn('⚠️ Cat not found in user cats, using fallback name');
     }
   } catch (err) {
-    console.warn('⚠️ Could not fetch cat name, using fallback:', catName);
+    console.warn('⚠️ Could not fetch cat data, using fallback:', err);
   }
   console.log('✅ Using catName:', catName);
 
@@ -83,10 +82,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initializeSocket(playerData) {
   console.log('🔧 Initializing socket connection...');
   
-  // Connect socket (use auth token if available)
+  // Connect socket (use auth token if available, like mailbox does)
+  const authToken = getAuthToken();
   const socket = io(APP_URL, {
     auth: {
-      token: (typeof getAuthToken === 'function') ? getAuthToken() : undefined
+      token: authToken
     }
   });
 
@@ -251,21 +251,20 @@ function populateStageBasesWithParticipants(participants, playerData) {
     // Show cat sprite (placeholder for now - we'll need actual cat images later)
     const catSprite = stageBase.querySelector('.cat-sprite');
     if (catSprite) {
-      // For now, use a placeholder or the same image for all cats
-      catSprite.src = '../assets/cat-placeholder.png'; // We'll need to add actual cat images
+      catSprite.src = '../assets/cat-placeholder.png';
       catSprite.style.display = 'block';
     }
     
-    // Set cat name
+    // FIXED: Always use the server-provided data from participant object
     const catNameElement = stageBase.querySelector('.cat-name');
     if (catNameElement) {
-      catNameElement.textContent = `Cat ${participant.catId}`; // Simple name for now
+      catNameElement.textContent = participant.catName; // ✅ Always use server data
     }
     
-    // Set username
+    // FIXED: Always use the server-provided data from participant object  
     const usernameElement = stageBase.querySelector('.username');
     if (usernameElement) {
-      usernameElement.textContent = `Player ${participant.playerId}`;
+      usernameElement.textContent = participant.username; // ✅ Always use server data
     }
     
     // Mark own cat for special styling
