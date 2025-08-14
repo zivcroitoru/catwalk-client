@@ -1,0 +1,41 @@
+/* pc_overrides.css — desktop-only polish (1280–2560px) */
+
+/* Keep the whole scene centered and bounded on wide monitors */
+#game {
+  width: min(1600px, 95vw);
+  min-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Make vw-sized controls sane across laptop → 2K monitors */
+.topbar-icon { width: clamp(56px, 4.4vw, 84px); height: clamp(40px, 3.33vw, 64px); }  /* was vw only */ /* 2_layout.css */
+.coin-icon   { width: clamp(96px, 7.8vw, 140px); }                                      /* 2_layout.css */
+.scroll-btn  { width: clamp(28px, 2.2vw, 44px); height: clamp(28px, 2.2vw, 44px); font-size: clamp(18px, 1.67vw, 28px); } /* 5_carousel.css */
+.cat-card    { width: clamp(72px, 6.25vw, 120px); }                                      /* 5_carousel.css */
+.cat-thumbnail { width: clamp(68px, 6vw, 116px); height: clamp(68px, 6vw, 116px); }      /* 5_carousel.css */
+
+/* Shop: allow scrolling and cap width (two definitions exist in your CSS) */
+.shop-scroll-wrapper { max-height: 65vh; overflow: auto !important; } /* was hidden */    /* 7_shop.css */
+.shop-popup, #shopPopup {
+  max-width: min(960px, 90vw);  /* unify conflicting rules */
+}
+
+/* Add-Cat grid: adapt to desktop widths (instead of hard 4 cols) */
+#breedItems { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; }  /* 4_add_cat.css */
+
+/* Carousel block: keep it within the content width */
+.carousel-wrapper { width: 90%; left: 50%; transform: translateX(-50%); }                 /* 2_layout.css */
+
+/* Profile scroll: keep readable on smaller laptops */
+.cat-profile-scroll { transform: scale(0.9); transform-origin: top right; }               /* 8_profile.css */
+
+/* Tweak the podium only for small laptops so it doesn't crowd the carousel */
+@media (min-width: 1280px) and (max-width: 1536px) {
+  .ellipse-podium { transform: translate(-12vw, 18vw) scale(4.2); }                       /* was translate(-200px,315px) scale(5) */ /* 2_layout.css */
+}
+
+/* And give ultra-wide a touch more presence */
+@media (min-width: 1920px) {
+  .ellipse-podium { transform: translate(-10vw, 16vw) scale(5.4); }                        /* 2_layout.css */
+}
