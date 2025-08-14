@@ -317,4 +317,4 @@ function startCountdownTimer(initialSeconds) {
 // Handle page unload - disconnect socket
 window.addEventListener('beforeunload', () => {
   console.log('🔌 Page unloading - will disconnect socket');
-});
+});  
