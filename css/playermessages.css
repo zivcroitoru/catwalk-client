@@ -193,28 +193,25 @@ header {
     text-align: center;
 }
 
-#broadcastBox {
-  background: #f9f1d6;
-  border-right: 4px solid #5a3900;
-  /* padding: 10px; */
-  /* margin-top: 10px; */
-}
-
-#broadcastBox h2{
-    color: #5a3900;
-    font-size: 25px;
-    margin-left: 5px;
-    height: 50px;
-
-}
 .broadcast-message {
-  background: #fff9e6;
-  border-left: 4px solid #d4a017;
-  padding: 5px;
-  margin-bottom: 5px;
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    border-radius: 3px;
 }
 
-
+#broadcastContainer {
+    border: 4px solid #5a3900;
+    border-top: #fff4e2;
+    padding: 10px;
+    background-color: #fff4e2;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    width: 500px;
+    height: 100%;
+}
 
 /* Input area container */
 .message-input {

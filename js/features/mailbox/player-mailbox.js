@@ -2,10 +2,7 @@
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
-// const socket = io();
-// NOTE: we rely on the socket.io client script included in mailbox.html
-// <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-// so we use the global `io()` function (no import of socket.io-client here).
+
 console.log("--------------1--------------");
 document.addEventListener('DOMContentLoaded', () => {
   const createTicketBtn = document.getElementById('createTicketBtn');
@@ -25,6 +22,30 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+
+  // Fetch past broadcasts from DB
+  async function loadBroadcasts() {
+    try {
+      const res = await fetch(`${APP_URL}/api/messages/broadcasts`);
+      if (res.ok) {
+        const past = await res.json();
+        broadcastMessages = past.map(b => ({ text: b.body, date: b.sent_at }));
+        localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+        renderBroadcasts();
+      } else {
+        console.warn('Failed to fetch past broadcasts', await res.text());
+      }
+    } catch (err) {
+      console.error('Error fetching past broadcasts:', err);
+    }
+  }
+
+  // Call it on page load
+  loadBroadcasts();
+
+
+
+
   // Connect socket (use auth token if you have one)
   const socket = io(APP_URL, {
     auth: {
@@ -34,6 +55,37 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   let currentTicketId = null;
+  // ---------- BROADCAST SETUP ----------
+  let broadcastMessages = [];
+  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+  // Render broadcasts function
+  function renderBroadcasts() {
+    const container = document.getElementById('broadcastMessages'); // <--- Make sure you have this div in HTML
+    if (!container) return;
+    container.innerHTML = "";
+    broadcastMessages.forEach(msg => {
+      const p = document.createElement('p');
+      p.classList.add('broadcast-message');
+      p.textContent = `[Broadcast] ${msg.text} (${new Date(msg.date).toLocaleString()})`;
+      container.appendChild(p);
+    });
+  }
+
+
+  renderBroadcasts();
+
+  // Receive broadcast from server
+  socket.on('adminBroadcast', (data) => {
+    console.log("Broadcast received:", data);
+    broadcastMessages.push({
+      text: data.message,
+      date: data.sent_at || new Date().toISOString()
+    });
+    localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages)); // <--- Added: store in localStorage
+    renderBroadcasts();
+  });
+  // ---------- END BROADCAST SETUP ----------
+
 
   socket.on('connect', () => {
     console.log('Socket connected:', socket.id);
@@ -121,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function openTicket(ticketId, skipJoin = false) {
     currentTicketId = ticketId;
     createTicketBtn.style.display = 'none';
-    chatBox.style.display = 'block';
+    chatBox.style.display = 'flex';
 
     if (!skipJoin) {
       socket.emit('joinTicketRoom', { ticketId }); // server will socket.join(room)
@@ -188,8 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('Player mailbox client ready for user:', userId);
 
-  // Broadcast messages array
-  let broadcastMessages = [];
 
   // Listen for broadcast messages
   socket.on('adminBroadcast', (data) => {
@@ -217,5 +267,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
-
 

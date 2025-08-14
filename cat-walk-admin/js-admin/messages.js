@@ -7,6 +7,8 @@ const socket = io(APP_URL);
 let currentTicketId = null;
 let currentSelectedDiv = null;
 let allTickets = [];
+let broadcastMessages = [];
+
 
 const closeBtn = document.getElementById('closeTicketButton');
 const sendButton = document.getElementById('sendButton');
@@ -22,10 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   closeBtn.addEventListener('click', closeCurrentTicket);
   updateSendButtonState();
 });
-
-
-
-
 
 function closeCurrentTicket() {
   if (!currentTicketId) return;
@@ -296,17 +294,50 @@ socket.on('adminBroadcast', (data) => {
   renderBroadcasts();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+
   broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
   renderBroadcasts();
-});
+
+
+// ───────────── RENDER BROADCASTS ─────────────
+function renderBroadcasts() {
+  const container = document.getElementById('broadcastList'); // make sure you have a div with this id
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  broadcastMessages.forEach(broadcast => {
+    const div = document.createElement('div');
+    div.className = 'broadcast-entry';
+    const date = new Date(broadcast.date).toLocaleString();
+    div.textContent = `[${date}] ${broadcast.text}`;
+    container.appendChild(div);
+  });
+
+  // Optional: scroll to bottom
+  container.scrollTop = container.scrollHeight;
+}
+
+
+
 // Send broadcast
-document.getElementById('sendBroadcastButton').addEventListener('click', () => {
+document.getElementById('sendBroadcastButton').addEventListener('click', async () => {
   const msg = document.getElementById('broadcastMessage').value.trim();
   if (!msg) return alert('Please enter a message.');
 
-  socket.emit('adminBroadcast', { message: msg });
-  document.getElementById('broadcastMessage').value = '';
-  alert('Broadcast sent!');
-});
+  try {
+    const res = await fetch(`${APP_URL}/api/messages/broadcasts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
 
+    if (!res.ok) throw new Error('Failed to save broadcast');
+
+    document.getElementById('broadcastMessage').value = '';
+    alert('Broadcast sent and saved!');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to send broadcast.');
+  }
+});

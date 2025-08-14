@@ -235,6 +235,15 @@ body {
   outline: none;
 }
 
+#broadcastMessage{
+    flex-grow: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+}
+
+#sendBroadcastButton,
 #sendButton {
   padding: 10px 20px;
   background-color: #3e483f;
