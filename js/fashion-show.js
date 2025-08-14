@@ -120,6 +120,12 @@ function initializeSocket(playerData) {
     // TODO: Handle voting updates
   });
 
+    socket.on('calculating_announcement', (message) => {
+    console.log('📥 Received calculating_announcement:', message);
+    showCalculatingScreen(message.message);
+  });
+
+
   socket.on('results', (message) => {
     console.log('📥 Received results:', message);
     // TODO: Handle results
@@ -312,18 +318,60 @@ function startCountdownTimer(initialSeconds) {
   
   let remainingSeconds = initialSeconds;
   timerTextElement.textContent = `${remainingSeconds} s`;
-  
+    
+  console.log(`⏰ Timer started at ${new Date().toLocaleTimeString()}`);
+  console.log(`⏰ Timer will end at ${new Date(Date.now() + initialSeconds * 1000).toLocaleTimeString()}`);
+
   const timerInterval = setInterval(() => {
     remainingSeconds--;
     timerTextElement.textContent = `${remainingSeconds} s`;
     
+    // Log significant timer events
+    if (remainingSeconds === 30) {
+      console.log('⏰ 30 seconds remaining');
+    } else if (remainingSeconds === 10) {
+      console.log('⏰ 10 seconds remaining - voting will end soon!');
+    } else if (remainingSeconds <= 5 && remainingSeconds > 0) {
+      console.log(`⏰ ${remainingSeconds} seconds remaining`);
+    }
+    
     if (remainingSeconds <= 0) {
       clearInterval(timerInterval);
-      console.log('⏰ Timer reached zero');
+      console.log(`⏰ TIMER ENDED at ${new Date().toLocaleTimeString()}`);
+      console.log('⏰ Server should now be calculating votes...');
+      
+      // Hide timer and show waiting message
+      const timerSection = document.querySelector('.timer-section');
+      if (timerSection) {
+        timerSection.style.display = 'none';
+      }
     }
   }, 1000);
   
   console.log('✅ Countdown timer started');
+}
+
+function showCalculatingScreen(message) {
+  console.log('🧮 Showing calculating votes screen');
+  
+  // Hide voting elements
+  const catDisplay = document.querySelector('.cat-display');
+  const timerSection = document.querySelector('.timer-section');
+  const warningMessage = document.querySelector('.warning-message');
+  
+  if (catDisplay) catDisplay.style.display = 'none';
+  if (timerSection) timerSection.style.display = 'none';
+  if (warningMessage) warningMessage.style.display = 'none';
+  
+  // Show announcement
+  const announcementElement = document.querySelector('.announcement-text');
+  if (announcementElement) {
+    announcementElement.textContent = message;
+    announcementElement.style.display = 'block';
+    console.log('✅ Showing announcement:', message);
+  } else {
+    console.warn('⚠️ Announcement element not found');
+  }
 }
 
 // Handle page unload
