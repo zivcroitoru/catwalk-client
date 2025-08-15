@@ -310,7 +310,7 @@ function renderWornItems(stageBase, wornItems, stageIndex) {
   console.log(`✅ Rendered worn items for stage ${stageIndex + 1}`);
 }
 
-// Start countdown timer
+// Start countdown timer with urgency states
 function startCountdownTimer(initialSeconds) {
   console.log('⏰ Starting countdown timer:', initialSeconds, 'seconds');
   
@@ -322,6 +322,9 @@ function startCountdownTimer(initialSeconds) {
   
   let remainingSeconds = initialSeconds;
   timerTextElement.textContent = `${remainingSeconds} s`;
+  
+  // Show voting progress message using announcement text
+  showVotingProgressMessage();
     
   console.log(`⏰ Timer started at ${new Date().toLocaleTimeString()}`);
   console.log(`⏰ Timer will end at ${new Date(Date.now() + initialSeconds * 1000).toLocaleTimeString()}`);
@@ -329,14 +332,20 @@ function startCountdownTimer(initialSeconds) {
   const timerInterval = setInterval(() => {
     remainingSeconds--;
     timerTextElement.textContent = `${remainingSeconds} s`;
+
+    // Add urgent styling when ≤ 10 seconds
+    if (remainingSeconds <= 10 && remainingSeconds > 0) {
+      timerTextElement.classList.add('urgent');
+      if (remainingSeconds <= 5) {
+        console.log(`⏰ ${remainingSeconds} seconds remaining - URGENT!`);
+      }
+    }
     
     // Log significant timer events
     if (remainingSeconds === 30) {
       console.log('⏰ 30 seconds remaining');
     } else if (remainingSeconds === 10) {
       console.log('⏰ 10 seconds remaining - voting will end soon!');
-    } else if (remainingSeconds <= 5 && remainingSeconds > 0) {
-      console.log(`⏰ ${remainingSeconds} seconds remaining`);
     }
     
     if (remainingSeconds <= 0) {
@@ -344,15 +353,28 @@ function startCountdownTimer(initialSeconds) {
       console.log(`⏰ TIMER ENDED at ${new Date().toLocaleTimeString()}`);
       console.log('⏰ Server should now be calculating votes...');
       
-      // Hide timer and show waiting message
+      // Hide timer section when voting ends
       const timerSection = document.querySelector('.timer-section');
       if (timerSection) {
         timerSection.style.display = 'none';
       }
+      // Keep announcement text visible - server will update it to "calculating votes"
     }
   }, 1000);
   
   console.log('✅ Countdown timer started');
+}
+
+// Show voting progress message using the announcement text element
+function showVotingProgressMessage() {
+  const announcementElement = document.querySelector('.announcement-text');
+  if (announcementElement) {
+    announcementElement.textContent = 'Waiting for all players to vote . . .';
+    announcementElement.style.display = 'block';
+    console.log('✅ Voting progress message displayed using announcement text');
+  } else {
+    console.warn('⚠️ Announcement element not found');
+  }
 }
 
 // Enable voting interactions
@@ -705,13 +727,12 @@ function transformToResultsMode(participants) {
       renderWornItemsResults(stageBase, participant.wornItems, goldHeight);
     }
     
-    // Show reward text (no ranking emojis, just coins)
+    // Show reward text (simplified format - just coins)
     if (rewardText) {
-      rewardText.textContent = `${participant.votesReceived} votes = ${participant.coinsEarned} coins`;
+      rewardText.textContent = `${participant.coinsEarned} coins`;
       rewardText.style.display = 'block';
       console.log(`💰 Stage ${stageIndex + 1} reward text: ${rewardText.textContent}`);
     }
-    
     console.log(`✅ Stage ${stageIndex + 1} updated with results (staying in original position)`);
   });
   

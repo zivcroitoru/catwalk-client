@@ -112,3 +112,27 @@
 - ✅ **Robust error handling** for disconnections and timeouts
 
 **The core game is fully functional! Now we're polishing the experience.** 🎮✨
+
+
+# Step 6A
+
+- The fact that we have 3 cats in the pictures is fine, it makes the testing easier
+- Issue 1 -> Image 1: How the back arrow and timer CURRENTLY look like, image 2: How the back arrow and timer SHOULD look like
+  - The timer and countdown seconds are not positioned well
+  - Missing text "Waiting for all players to vote . . ."
+  - When timer reaches 10 - the numbers should become red, and slightly bigger
+- Issue 2 -> Image 3: How the self vote warning message CURRENTLY look like, image 2: How the self vote warning message SHOULD look like
+  - The self vote warning should only appear as text, not in a white box with an outline
+  - The self vote warning should be on the right side of our cream stages base, not hidden behind it
+  - The self vote warning's container should be be more vertical
+- Issue 3 -> Image 5: How the rewards phase CURRENTLY look like, image 2: How the rewards phase SHOULD look like
+  - In the rewards phase we don't need the walkway stage image any more
+  - In the rewards phase we don't need the "X votes =", only "Y coins" in white with no outline
+
+
+# Step 6A
+
+- The fact that we have 3 cats in the pictures is fine, it makes the testing easier
+- Image 1: How the rewards phase CURRENTLY look like, image 2: How the rewards phase SHOULD look like
+  - In the rewards phase we don't need the walkway stage image any more
+  - In the rewards phase we don't need the "X votes =", only "Y coins" in white with no outline

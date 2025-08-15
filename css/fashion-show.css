@@ -153,7 +153,7 @@ h1 {
 /* Timer Section */
 .timer-section {
     position: fixed;
-    left: 30px;
+    left: 150px;
     bottom: 30px;
     width: 150px;
     height: 60px;
@@ -164,36 +164,12 @@ h1 {
     
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+        justify-content: space-between;
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 .timer-icon {
-    /* Fixed position within the salmon box */
-    position: absolute;
-    left: 15px; /* Fixed 15px from left edge */
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Perfect vertical centering */
-    
-    width: 32px;
-    height: 32px;
-    
-    /* Prevent distortion - maintain aspect ratio */
-    object-fit: contain;
-    
-    /* Crisp pixel rendering */
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-}
-
-#timer-text {
-    /* Fixed position within the salmon box */
-    position: absolute;
-    right: 20px; /* Fixed 15px from right edge */
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Perfect vertical centering */
-    
     width: 32px;
     height: 32px;
     
@@ -216,6 +192,16 @@ h1 {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+
+    /* Transition for color change */
+    transition: all 0.3s ease;
+}
+
+/* Timer text urgent state (10 seconds or less) */
+#timer-text.urgent {
+    color: var(--color-red);
+    font-size: var(--font-size-xs); /* 36px - bigger when urgent */
+    font-weight: bold;
 }
 
 /* Ensure cat display has proper stacking */
@@ -289,6 +275,10 @@ h1 {
     cursor: not-allowed; /* Show that this cat cannot be voted for */
 }
 
+.voting-active .stage-base.own-cat {
+    cursor: not-allowed; /* Show that this cat cannot be voted for */
+}
+
 .voting-active .stage-base.own-cat:hover {
     outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline for own cat */
     outline-offset: 0;
@@ -296,6 +286,22 @@ h1 {
     box-shadow: 0 2px 4px rgba(251, 11, 11, 0.3); /* Red glow */
 }
 
+.stage-base.own-cat:not(.voting-active .stage-base) {
+    cursor: default; /* Normal cursor when not voting */
+}
+
+.stage-base.own-cat:hover:not(.voting-active .stage-base) {
+    outline: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.cat-display:not(.voting-active) .stage-base.own-cat:hover {
+    outline: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: default !important;
+}
 /* OWN CAT SELECTED STATE - Red outline when clicked on owned cat (with warning) */
 .stage-base.own-cat-selected {
     outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
@@ -331,6 +337,12 @@ h1 {
 
     animation: resultsTransition 0.8s ease-out;
 }
+
+/* 1. Hide walkway stage image in results mode */
+.stage-base.results-mode .stage-walkway {
+    display: none;
+}
+
 
 @keyframes resultsTransition {
     0% {
@@ -440,16 +452,16 @@ h1 {
     }
 }
 
-/* Reward text styling for results phase */
+/* 2. Updated reward text styling - simplified, white text, no outline */
 .reward-text {
     position: absolute;
-    top: 0px; /* Moved higher from 10px to 5px */
+    top: 0px; 
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
 
     font-family: var(--font-main);
-    font-size: var(--font-size-xs); /* 36px - increased from 24px */
+    font-size: var(--font-size-xs); /* 36px */
     color: var(--color-white); /* White text */
     text-align: center;
     font-weight: normal;
@@ -459,19 +471,12 @@ h1 {
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
 
-    /* Black stroke outside - using text-shadow for outside effect */
-    text-shadow: 
-    -2px -2px 0 var(--color-black),
-    2px -2px 0 var(--color-black),
-    -2px 2px 0 var(--color-black),
-    2px 2px 0 var(--color-black),
-    -2px 0 0 var(--color-black),
-    2px 0 0 var(--color-black),
-    0 -2px 0 var(--color-black),
-    0 2px 0 var(--color-black);
+    /* NO text-shadow outline for cleaner look */
+    text-shadow: none;
 
     animation: rewardAppear 1s ease-out 0.9s both;
-    /* Enhanced styling for better visibility */
+    
+    /* Background for visibility */
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     padding: 8px 12px;
@@ -479,9 +484,9 @@ h1 {
     max-width: 180px;
     word-wrap: break-word;
     line-height: 1.2;
-
 }
 
+/* Keep existing animation */
 @keyframes rewardAppear {
     0% {
         opacity: 0;
@@ -708,20 +713,15 @@ h1 {
 .warning-message {
     position: absolute;
     right: var(--spacing-lg);
-    top: 250px;
-   width: 200px; /* Increased width for better readability */
+    top: 250px; /* Positioned to align with cat display area */
+    width: 120px; /* Narrower width for more vertical, compact layout */
     
     font-family: var(--font-main);
     font-size: var(--font-size-xs); /* 36px */
     color: var(--color-red);
     text-align: center;
-    line-height: 1.4;
+    line-height: 1.2; /* Tighter line height for vertical layout */
     
-    /* Enhanced visibility */
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border: 3px solid var(--color-red);
-    border-radius: 8px;
 
     /* Animation */
     animation: fadeInOut 3s ease-in-out;
