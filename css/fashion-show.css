@@ -12,7 +12,6 @@
   --color-blue: #57B9FF;
   --color-light-purple: #F8C4FF;
   --color-purple: #B70EFF;
-  --color-purple: #F8C4FF;
   
   /* Typography */
   --font-main: 'Jersey 10', monospace;
@@ -42,7 +41,6 @@
 /* Fashion Show Styles */
 body {
     background-color: var(--color-light-purple); /* Light pink/purple background */
-    background-color: var(--color-purple); /* Light pink/purple background */
     margin: 0;
     padding: 0;
     height: 100vh; /* Full viewport height */
@@ -220,23 +218,27 @@ h1 {
     font-smooth: never;
 }
 
-/* Cat Display Area */
+/* Ensure cat display has proper stacking */
 .cat-display {
     position: absolute;
-    top: 200px; /* Below the title */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Perfect centering */
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 1050px;
     height: 420px;
-    background-color: var(--color-cream); /* #FFEEC3 */
+    background-color: var(--color-cream);
     
     /* Add flexbox for stage bases layout */
     display: flex;
-    align-items: flex-end; /* Align stage bases to bottom */
+    align-items: flex-end;
     justify-content: space-between;
-    padding: var(--spacing-sm); /* 20px padding on all sides */
-    box-sizing: border-box; /* Include padding in dimensions */
+    padding: var(--spacing-sm);
+    box-sizing: border-box;
+
+    /* Ensure proper z-index for voting interactions */
+    z-index: 10;
 }
+
 
 /* Stage Base - Basic Styling */
 .stage-base {
@@ -245,6 +247,12 @@ h1 {
     background-color: var(--color-brown); /* #DAAB6E */
     position: relative; /* For positioning the walkway image */
     cursor: default; /* Default cursor when not clickable */
+    
+    /* Smooth transitions for visual feedback */
+    transition: all 0.2s ease;
+    
+    /* Ensure outline renders outside */
+    outline-offset: 0;
 }
 
 /* CLICKABLE FUNCTIONALITY - Only works during voting phase */
@@ -254,27 +262,52 @@ h1 {
 }
 
 /* HOVER STATE - Purple outline when hovering (but NOT if already selected OR if it's own cat) */
-.voting-active .stage-base:hover:not(.selected):not(.own-cat-hover) {
+.voting-active .stage-base:hover:not(.selected):not(.own-cat):not(.own-cat-hover) {
     outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
     outline-offset: 0; /* No gap between outline and element */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 4px 8px rgba(183, 14, 255, 0.3); /* Purple glow */
 }
 
-/* OWN CAT HOVER STATE - Red outline when hovering over owned cat */
-.stage-base.own-cat-hover {
-    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
-    outline-offset: 0; /* No gap between outline and element */
+/* OWN CAT STYLING - Mark own cat as non-interactive */
+.stage-base.own-cat {
+    cursor: not-allowed; /* Show that this cat cannot be voted for */
+}
+
+.voting-active .stage-base.own-cat:hover {
+    outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline for own cat */
+    outline-offset: 0;
+    transform: none; /* No lift effect for own cat */
+    box-shadow: 0 2px 4px rgba(251, 11, 11, 0.3); /* Red glow */
 }
 
 /* OWN CAT SELECTED STATE - Red outline when clicked on owned cat (with warning) */
 .stage-base.own-cat-selected {
     outline: var(--stroke-thick) solid var(--color-red); /* 7px red outline OUTSIDE */
-    outline-offset: 0; /* No gap between outline and element */
+    outline-offset: 0;
+    animation: shake 0.5s ease-in-out; /* Shake animation for error feedback */
 }
 
 /* SELECTED STATE - Purple outline when selected (works even when voting disabled) */
 .stage-base.selected {
     outline: var(--stroke-thick) solid var(--color-purple); /* 7px purple outline OUTSIDE */
-    outline-offset: 0; /* No gap between outline and element */
+    outline-offset: 0;
+    transform: translateY(-3px); /* More pronounced lift for selection */
+    box-shadow: 0 6px 12px rgba(183, 14, 255, 0.4); /* Stronger purple glow */
+}
+
+/* Keep selected state even on hover */
+.stage-base.selected:hover {
+    outline: var(--stroke-thick) solid var(--color-purple);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(183, 14, 255, 0.4);
+}
+
+/* Shake animation for own cat error */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
 /* Results mode - make brown base 1/3 height */
@@ -472,18 +505,6 @@ h1 {
     opacity: 0.9;
 }
 
-/* Voting Interface Styles */
-.cat-display {
-    position: absolute;
-    top: 150px; /* Below the title */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Perfect centering */
-    width: 1050px;
-    height: 420px;
-    background-color: var(--color-cream); /* #FFEEC3 */
-    /* Removed border completely */
-}
-
 .announcement-text {
     position: absolute;
     bottom: var(--spacing-md); /* Lower than before (was 100px) */
@@ -505,23 +526,40 @@ h1 {
     font-smooth: never;
 }
 
+/* Enhanced warning message visibility */
 .warning-message {
     position: absolute;
     right: var(--spacing-lg);
     top: 250px;
-    width: 100px;
+   width: 200px; /* Increased width for better readability */
     
-    font-family: var(--font-main); /* Changed to Jersey 10 */
-    font-size: var(--font-size-xxs); /* 24px */
-    font-size: var(--font-size-xxs); /* 36px */
-    color: var(--color-red); /* #FB0B0B */
+    font-family: var(--font-main);
+    font-size: var(--font-size-xs); /* 36px */
+    color: var(--color-red);
     text-align: center;
     line-height: 1.4;
+    
+    /* Enhanced visibility */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border: 3px solid var(--color-red);
+    border-radius: 8px;
+
+    /* Animation */
+    animation: fadeInOut 3s ease-in-out;
     
     /* Sharp pixel font rendering */
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+}
+
+/* Warning message animation */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: scale(0.8); }
+    20% { opacity: 1; transform: scale(1.05); }
+    80% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
 }
 
 /* EXIT CONFIRMATION DIALOG STYLES */
