@@ -3,7 +3,6 @@ import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
 
-console.log("--------------1--------------");
 document.addEventListener('DOMContentLoaded', () => {
   const createTicketBtn = document.getElementById('createTicketBtn');
   const chatBox = document.getElementById('chatBox');
@@ -11,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const messageBox = document.getElementById('messageBox');
   const chatMessages = document.getElementById('chatMessages');
 
-  console.log("--------------2--------------");
 
   const userId = localStorage.getItem('userId');
   if (!userId) {
@@ -23,10 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+  let broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages')) || [];
+
+
+
   // Fetch past broadcasts from DB
+  function renderBroadcasts() {
+    const container = document.getElementById('broadcastMessages');
+    if (!container) return;
+    container.innerHTML = "";
+    broadcastMessages.forEach(msg => {
+      const p = document.createElement('p');
+      p.classList.add('broadcast-message');
+      const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '';
+      p.textContent = `[Broadcast] ${msg.text}`;
+      container.appendChild(p);
+    });
+  }
+
+  // Fetch past broadcasts from API
   async function loadBroadcasts() {
     try {
-      const res = await fetch(`${APP_URL}/api/messages/broadcasts`);
+      const res = await fetch(`${APP_URL}/api/broadcasts`);
       if (res.ok) {
         const past = await res.json();
         broadcastMessages = past.map(b => ({ text: b.body, date: b.sent_at }));
@@ -40,11 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Call it on page load
+  // Initial render from localStorage, then refresh from server
+  renderBroadcasts();
   loadBroadcasts();
-
-
-
 
   // Connect socket (use auth token if you have one)
   const socket = io(APP_URL, {
@@ -54,52 +68,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  let currentTicketId = null;
-  // ---------- BROADCAST SETUP ----------
-  let broadcastMessages = [];
-  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
-  // Render broadcasts function
-  function renderBroadcasts() {
-    const container = document.getElementById('broadcastMessages'); // <--- Make sure you have this div in HTML
-    if (!container) return;
-    container.innerHTML = "";
-    broadcastMessages.forEach(msg => {
-      const p = document.createElement('p');
-      p.classList.add('broadcast-message');
-      p.textContent = `[Broadcast] ${msg.text} (${new Date(msg.date).toLocaleString()})`;
-      container.appendChild(p);
-    });
-  }
-
-
-  renderBroadcasts();
-
-  // Receive broadcast from server
-  socket.on('adminBroadcast', (data) => {
-    console.log("Broadcast received:", data);
-    broadcastMessages.push({
-      text: data.message,
-      date: data.sent_at || new Date().toISOString()
-    });
-    localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages)); // <--- Added: store in localStorage
-    renderBroadcasts();
-  });
-  // ---------- END BROADCAST SETUP ----------
-
 
   socket.on('connect', () => {
     console.log('Socket connected:', socket.id);
     // register player so server can map sockets -> user and join existing ticket rooms
     socket.emit('registerPlayer', userId);
-    console.log("-------------11--------------");
 
-    // Optionally check for an existing open ticket on page load (HTTP route assumed to exist)
     checkOpenTicket(); // will show create button or open chat accordingly
   });
 
   socket.on('connect_error', (err) => {
     console.error('Socket connect_error:', err);
   });
+
+  // ---------- BROADCAST SETUP ----------
+
+  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+  // Render broadcasts function
+
+
+
+  renderBroadcasts();
+
+  // Receive broadcast from server
+  socket.on('adminBroadcast', (data) => {
+    console.log("📢 Broadcast received:", data);
+    broadcastMessages.push({
+      text: data.message,
+      date: data.date || new Date().toISOString()
+    });
+    localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+    renderBroadcasts();
+  });
+
+
+  let currentTicketId = null;
+
 
   // ---------- UI helpers ----------
   function addMessage(senderLabel, text) {
@@ -123,23 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
+
+
   // ---------- Check if user already has an open ticket (HTTP) ----------
   async function checkOpenTicket() {
     try {
-      console.log("-------------4-------------");
-
       const res = await fetch(`${APP_URL}/api/tickets/user/${userId}/open`);
-      console.log("--------------3--------------");
-
       if (res.status === 404) {
         // no open ticket
         createTicketBtn.style.display = 'block';
         chatBox.style.display = 'none';
-        console.log("--------------55--------------");
-
       } else if (res.ok) {
-        console.log("--------------5--------------");
-
         const ticket = await res.json();
         openTicket(ticket.ticket_id, /*skipJoin=*/false);
       } else {
@@ -149,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Failed to check open ticket', err);
     }
   }
+
+
 
   // ---------- Open or create ticket using Socket.IO ----------
   async function openOrCreateTicket() {
@@ -240,31 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('Player mailbox client ready for user:', userId);
 
-
-  // Listen for broadcast messages
-  socket.on('adminBroadcast', (data) => {
-    console.log("Broadcast received:", data);
-
-    // Store in array (could be saved in localStorage if you want persistence)
-    broadcastMessages.push({
-      text: data.message,
-      date: data.date || new Date().toISOString()
-    });
-
-    // Render them in a separate broadcast box
-    renderBroadcasts();
-  });
-
-  function renderBroadcasts() {
-    const container = document.getElementById('broadcastMessages');
-    container.innerHTML = "";
-    broadcastMessages.forEach(msg => {
-      const p = document.createElement('p');
-      p.classList.add('broadcast-message');
-      p.textContent = `[Broadcast] ${msg.text}`;
-      container.appendChild(p);
-    });
-  }
 
 });
 

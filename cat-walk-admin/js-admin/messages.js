@@ -268,12 +268,12 @@ function updateSendButtonState() {
 }
 
 
-
-// Toggle broadcast mode
+// ───────────── BROADCAST MODE ─────────────
 let isBroadcastMode = false;
 const toggleBtn = document.getElementById('toggleModeButton');
 const ticketModeDiv = document.getElementById('ticketMode');
 const broadcastModeDiv = document.getElementById('broadcastMode');
+const broadcastListContainer = document.getElementById('broadcastList');
 
 toggleBtn.addEventListener('click', () => {
   isBroadcastMode = !isBroadcastMode;
@@ -282,51 +282,49 @@ toggleBtn.addEventListener('click', () => {
   toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
 });
 
+// Load stored broadcasts from localStorage at startup
+broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
+renderBroadcasts();
 
+// Listen for broadcasts in real-time
 socket.on('adminBroadcast', (data) => {
-  let stored = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
-  stored.push({
+  console.log("Broadcast received:", data);
+  
+  const newBroadcast = {
     text: data.message,
     date: data.date || new Date().toISOString()
-  });
-  localStorage.setItem('broadcastMessages', JSON.stringify(stored));
-  broadcastMessages = stored;
+  };
+
+  broadcastMessages.push(newBroadcast);
+  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
   renderBroadcasts();
 });
 
-
-  broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages') || '[]');
-  renderBroadcasts();
-
-
-// ───────────── RENDER BROADCASTS ─────────────
+// Render all broadcasts in the list
 function renderBroadcasts() {
-  const container = document.getElementById('broadcastList'); // make sure you have a div with this id
-  if (!container) return;
-
-  container.innerHTML = '';
+  if (!broadcastListContainer) return;
+  broadcastListContainer.innerHTML = '';
 
   broadcastMessages.forEach(broadcast => {
     const div = document.createElement('div');
     div.className = 'broadcast-entry';
-    const date = new Date(broadcast.date).toLocaleString();
-    div.textContent = `[${date}] ${broadcast.text}`;
-    container.appendChild(div);
+    const dateStr = new Date(broadcast.date).toLocaleString();
+    div.textContent = `[${dateStr}] ${broadcast.text}`;
+    broadcastListContainer.appendChild(div);
   });
 
-  // Optional: scroll to bottom
-  container.scrollTop = container.scrollHeight;
+  // Keep scroll at bottom to see the newest broadcast
+  broadcastListContainer.scrollTop = broadcastListContainer.scrollHeight;
 }
 
-
-
-// Send broadcast
+// Send broadcast to server
 document.getElementById('sendBroadcastButton').addEventListener('click', async () => {
-  const msg = document.getElementById('broadcastMessage').value.trim();
+  const msgInput = document.getElementById('broadcastMessage');
+  const msg = msgInput.value.trim();
   if (!msg) return alert('Please enter a message.');
 
   try {
-    const res = await fetch(`${APP_URL}/api/messages/broadcasts`, {
+    const res = await fetch(`${APP_URL}/api/broadcasts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: msg })
@@ -334,7 +332,7 @@ document.getElementById('sendBroadcastButton').addEventListener('click', async (
 
     if (!res.ok) throw new Error('Failed to save broadcast');
 
-    document.getElementById('broadcastMessage').value = '';
+    msgInput.value = '';
     alert('Broadcast sent and saved!');
   } catch (err) {
     console.error(err);

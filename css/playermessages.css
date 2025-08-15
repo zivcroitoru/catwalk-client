@@ -195,7 +195,6 @@ header {
 
 .broadcast-message {
     background-color: #f8f9fa;
-    border-left: 3px solid #007bff;
     padding: 5px 10px;
     margin-bottom: 5px;
     font-size: 0.9rem;
@@ -204,7 +203,7 @@ header {
 
 #broadcastContainer {
     border: 4px solid #5a3900;
-    border-top: #fff4e2;
+    border-top: #5a3900;
     padding: 10px;
     background-color: #fff4e2;
     margin-bottom: 10px;
