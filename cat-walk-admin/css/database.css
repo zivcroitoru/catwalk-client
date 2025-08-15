@@ -167,7 +167,7 @@ body {
 .rectangle-clothes {
     width: 765px;
     height: 765px;
-      cursor: pointer;
+    cursor: pointer;
 
     background-color: #ffffff;
     border-radius: 30px;
@@ -181,53 +181,63 @@ body {
 
 
 .user-cat {
-  display: flex;
-  flex-direction: column; /* stack image and label vertically */
-  align-items: center;    /* center horizontally */
-  text-align: center;
-  gap: 10px;              /* spacing between image and text */
+    display: flex;
+    flex-direction: column;
+    /* stack image and label vertically */
+    align-items: center;
+    /* center horizontally */
+    text-align: center;
+    gap: 10px;
+    /* spacing between image and text */
 }
 
 .cat-pic-data {
-  width: 600px;
-  height: 600px;
-  position: static;       /* remove absolute positioning */
-  transform: none;        /* remove translate(-50%, -50%) */
-  image-rendering: pixelated;
+    width: 600px;
+    height: 600px;
+    position: static;
+    /* remove absolute positioning */
+    transform: none;
+    /* remove translate(-50%, -50%) */
+    image-rendering: pixelated;
 }
 
 .catype {
-  margin: 0;              /* optional spacing */
-  font-weight: 400;
-  font-size: 32px;
-  color: #333;
-  text-align: center;
-  margin-top: 150px;
+    margin: 0;
+    /* optional spacing */
+    font-weight: 400;
+    font-size: 32px;
+    color: #333;
+    text-align: center;
+    margin-top: 150px;
 }
 
 
 .user-clothes {
-  display: flex;
-  flex-direction: column; /* stack image and label vertically */
-  align-items: center;
-  text-align: center;
-  gap: 10px; /* spacing between image and label */
+    display: flex;
+    flex-direction: column;
+    /* stack image and label vertically */
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    /* spacing between image and label */
 }
 
 .clothes-pic-data {
-  width: 600px;
-  height: 600px;
-  position: static; /* important! remove absolute */
-  transform: none;  /* remove translate */
-  image-rendering: pixelated;
+    width: 600px;
+    height: 600px;
+    position: static;
+    /* important! remove absolute */
+    transform: none;
+    /* remove translate */
+    image-rendering: pixelated;
 }
 
 .clothesype {
-  font-weight: 400;
-  font-size: 48px;
-  color: #333;
-  text-align: center;
-  margin: 0;
+    font-weight: 400;
+    font-size: 48px;
+    color: #333;
+    text-align: center;
+    margin: 0;
     margin-top: 150px;
 
 }
@@ -279,9 +289,10 @@ body {
     margin-left: x;
 }
 
-.grid-wrapper-clothes{
+.grid-wrapper-clothes {
     display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 columns */
     column-gap: 10px;
     /* Keep horizontal spacing */
     row-gap: 10px;
@@ -300,19 +311,19 @@ body {
     image-rendering: pixelated;
     /* or 2 for grid-wrapper-cats */
     margin-left: x;
-transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 
 
 
 .grid-wrapper-clothes img {
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #D9D9D9;
-  transition: transform 0.2s;
-  
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #D9D9D9;
+    transition: transform 0.2s;
+
 }
 
 
@@ -342,16 +353,18 @@ transform: scale(1.1);
 }
 
 .cat-card {
-  width: 160px;           /* fixed square width */
-  height: 160px;          /* fixed square height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
-  /* transition: transform 0.2s; */
-  background-color: #D9D9D9;
+    width: 160px;
+    /* fixed square width */
+    height: 160px;
+    /* fixed square height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+    /* transition: transform 0.2s; */
+    background-color: #D9D9D9;
 }
 
 
@@ -383,9 +396,8 @@ transform: scale(1.1);
     z-index: 10;
 }
 
-.pages-clothes
-{
-        position: fixed;
+.pages-clothes {
+    position: fixed;
     /* bottom: 10px; */
     /* left: 10; */
     display: flex;
@@ -401,8 +413,7 @@ transform: scale(1.1);
 }
 
 .pages p,
-.pages-clothes p
-{
+.pages-clothes p {
     margin: 0;
     font-weight: 200;
 }
