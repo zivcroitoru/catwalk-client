@@ -4,7 +4,7 @@ console.log('APP_URL:', APP_URL);
 let clothesData = [];
 let filteredClothes = [];
 let currentPage = 1;
-const clothesPerPage = 6;
+const clothesPerPage = 9;
 let selectedCloth = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function renderClothesPage() {
   const gridWrapper = document.querySelector('.grid-wrapper-clothes');
-  const pageDisplay = document.querySelector('.pages p');
+  const pageDisplay = document.querySelector('.pages-clothes p');
   const bigImg = document.querySelector('.clothes-pic-data');
   const clothTypeLabel = document.querySelector('.clothesype');
 

@@ -4,6 +4,7 @@ import { getAuthToken } from '../../core/auth/authentication.js';
 console.log("using: ", APP_URL);
 
 document.addEventListener('DOMContentLoaded', () => {
+
   const createTicketBtn = document.getElementById('createTicketBtn');
   const chatBox = document.getElementById('chatBox');
   const sendBtn = document.getElementById('sendBtn');
@@ -22,8 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   let broadcastMessages = JSON.parse(localStorage.getItem('broadcastMessages')) || [];
-
-
 
   // Fetch past broadcasts from DB
   function renderBroadcasts() {
@@ -101,14 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBroadcasts();
 
   // Receive broadcast from server
-socket.on('adminBroadcast', (data) => {
-  broadcastMessages.push({
-    text: data.message,
-    date: data.date || new Date().toISOString()
+  socket.on('adminBroadcast', (data) => {
+    broadcastMessages.push({
+      text: data.message,
+      date: data.date || new Date().toISOString()
+    });
+    localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+    renderBroadcasts();
   });
-  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
-  renderBroadcasts();
-});
 
 
 
@@ -116,8 +115,18 @@ socket.on('adminBroadcast', (data) => {
   let currentTicketId = null;
 
 
+  
+  const lastTicketId = localStorage.getItem('lastTicketId');
+  if (lastTicketId) {
+    // Try to open the ticket even if admin closed it
+    openTicket(lastTicketId, /*skipJoin=*/true);
+  } else {
+    checkOpenTicket();
+  }
+
+
   // ---------- UI helpers ----------
-  function addMessage(senderLabel, text) {
+  function addMessage(senderLabel, text, save = true) {
     const p = document.createElement('p');
     p.textContent = `${senderLabel}: ${text}`;
 
@@ -126,12 +135,20 @@ socket.on('adminBroadcast', (data) => {
     } else if (senderLabel.toLowerCase() === 'admin') {
       p.classList.add('admin-message');
     } else {
-      p.classList.add('system-message'); // optional for system notices
+      p.classList.add('system-message'); // optional
     }
 
     chatMessages.appendChild(p);
     scrollToBottom();
+
+    // Save locally
+    if (save && currentTicketId) {
+      let savedMessages = JSON.parse(localStorage.getItem(`ticket_${currentTicketId}_messages`)) || [];
+      savedMessages.push({ sender: senderLabel, text });
+      localStorage.setItem(`ticket_${currentTicketId}_messages`, JSON.stringify(savedMessages));
+    }
   }
+
 
 
   function scrollToBottom() {
@@ -147,7 +164,7 @@ socket.on('adminBroadcast', (data) => {
       if (res.status === 404) {
         // no open ticket
         createTicketBtn.style.display = 'block';
-        chatBox.style.display = 'none';
+        chatBox.style.display = 'flex';
       } else if (res.ok) {
         const ticket = await res.json();
         openTicket(ticket.ticket_id, /*skipJoin=*/false);
@@ -181,33 +198,44 @@ socket.on('adminBroadcast', (data) => {
   }
 
   // openTicket: set UI, join room (optionally) and load history
-  async function openTicket(ticketId, skipJoin = false) {
-    currentTicketId = ticketId;
-    createTicketBtn.style.display = 'none';
-    chatBox.style.display = 'flex';
+async function openTicket(ticketId, skipJoin = false) {
+  currentTicketId = ticketId;
+  localStorage.setItem('lastTicketId', ticketId);  
 
-    if (!skipJoin) {
-      socket.emit('joinTicketRoom', { ticketId }); // server will socket.join(room)
-      console.log('Emitted joinTicketRoom for', ticketId);
-    }
+  createTicketBtn.style.display = 'none';
+  chatBox.style.display = 'flex';
 
-    // Load existing messages via your HTTP endpoint:
-    try {
-      const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
-      if (res.ok) {
-        const messages = await res.json();
-        chatMessages.innerHTML = '';
-        messages.forEach(msg => {
-          const label = msg.sender === 'admin' ? 'Admin' : (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
-          addMessage(label, msg.content);
-        });
-      } else {
-        console.warn('Failed to fetch chat history', await res.text());
-      }
-    } catch (err) {
-      console.error('Error fetching chat history', err);
-    }
+  if (!skipJoin) {
+    socket.emit('joinTicketRoom', { ticketId });
+    console.log('Emitted joinTicketRoom for', ticketId);
   }
+
+  // 1️⃣ Load messages from localStorage first
+  const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
+  chatMessages.innerHTML = ''; // clear only once before loading
+  savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
+
+  // 2️⃣ Fetch existing messages from the server
+  try {
+    const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
+    if (res.ok) {
+      const messages = await res.json();
+
+      messages.forEach(msg => {
+        const label = msg.sender === 'admin' ? 'Admin' :
+                      (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
+        // Only add messages that aren't already in localStorage
+        const alreadySaved = savedMessages.some(m => m.sender === label && m.text === msg.content);
+        if (!alreadySaved) addMessage(label, msg.content);
+      });
+    } else {
+      console.warn('Failed to fetch chat history', await res.text());
+    }
+  } catch (err) {
+    console.error('Error fetching chat history', err);
+  }
+}
+
 
   // ---------- Send message (use socket) ----------
   sendBtn.addEventListener('click', () => {
@@ -246,6 +274,10 @@ socket.on('adminBroadcast', (data) => {
       addMessage('System', `Ticket #${ticketId} was closed by admin.`);
       // disable input
       sendBtn.disabled = true;
+          createTicketBtn.style.display = 'block';
+
+      
+
     }
   });
 
@@ -253,4 +285,3 @@ socket.on('adminBroadcast', (data) => {
 
 
 });
-

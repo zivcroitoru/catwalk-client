@@ -4,7 +4,7 @@ console.log('APP_URL:', APP_URL);
 let catsData = [];
 let filteredCats = [];
 let currentPage = 1;
-const catsPerPage = 6;
+const catsPerPage = 9;
 let selectedCat = null;
 
 document.addEventListener('DOMContentLoaded', async () => {

@@ -160,10 +160,15 @@ body {
 
 /*---------big cat/clothes-----------*/
 
+
+
+
 .rectangle-cat,
 .rectangle-clothes {
     width: 765px;
     height: 765px;
+      cursor: pointer;
+
     background-color: #ffffff;
     border-radius: 30px;
     transform: scale(0.8);
@@ -174,44 +179,72 @@ body {
     border: 50px solid #838E84;
 }
 
-.catype {
-    position: absolute;
-    bottom: 0;
-    font-weight: lighter;
-    margin-bottom: 20px;
-    right: 200px;
-    color: #333;
-    font-family: 'Nunito', sans-serif;
-    font-size: 32px;
-    font-weight: 400;
+
+.user-cat {
+  display: flex;
+  flex-direction: column; /* stack image and label vertically */
+  align-items: center;    /* center horizontally */
+  text-align: center;
+  gap: 10px;              /* spacing between image and text */
 }
-
-.clothesype {
-    position: absolute;
-    bottom: 0;
-    font-weight: lighter;
-    margin-bottom: 20px;
-    right: 200px;
-    color: #333;
-    font-family: 'Nunito', sans-serif;
-    font-size: 48px;
-    font-weight: 400;
-}
-
-
-
 
 .cat-pic-data {
-    width: 600px;
-    height: 600px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    image-rendering: pixelated;
+  width: 600px;
+  height: 600px;
+  position: static;       /* remove absolute positioning */
+  transform: none;        /* remove translate(-50%, -50%) */
+  image-rendering: pixelated;
+}
+
+.catype {
+  margin: 0;              /* optional spacing */
+  font-weight: 400;
+  font-size: 32px;
+  color: #333;
+  text-align: center;
+  margin-top: 150px;
+}
+
+
+.user-clothes {
+  display: flex;
+  flex-direction: column; /* stack image and label vertically */
+  align-items: center;
+  text-align: center;
+  gap: 10px; /* spacing between image and label */
 }
 
 .clothes-pic-data {
+  width: 600px;
+  height: 600px;
+  position: static; /* important! remove absolute */
+  transform: none;  /* remove translate */
+  image-rendering: pixelated;
+}
+
+.clothesype {
+  font-weight: 400;
+  font-size: 48px;
+  color: #333;
+  text-align: center;
+  margin: 0;
+    margin-top: 150px;
+
+}
+
+
+
+/* .cat-pic-data {
+    width: 600px;
+    height: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+} */
+
+/* .clothes-pic-data {
     width: 600px;
     height: 600px;
     position: absolute;
@@ -220,7 +253,7 @@ body {
     transform: translate(-50%, -50%);
     image-rendering: pixelated;
 
-}
+} */
 
 
 /*--------------grid--------------*/
@@ -248,18 +281,18 @@ body {
 
 .grid-wrapper-clothes{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 100px;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    column-gap: 10px;
     /* Keep horizontal spacing */
-    row-gap: 50px;
+    row-gap: 10px;
     justify-items: center;
     align-items: center;
     padding: 20px;
-    padding-bottom: 100px;
+    /* padding-bottom: 100px; */
     position: absolute;
     top: 0;
-    margin-top: 50px;
-    margin-left: 25px;
+    margin-top: 100px;
+    margin-left: 60px;
     left: 0;
     /* width: 300px;
     height: 300px; */
@@ -267,20 +300,37 @@ body {
     image-rendering: pixelated;
     /* or 2 for grid-wrapper-cats */
     margin-left: x;
+transform: scale(1.1);
 }
+
+
+
+
+.grid-wrapper-clothes img {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #D9D9D9;
+  transition: transform 0.2s;
+  
+}
+
+
+
 .grid-wrapper-cats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 100px;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
     /* Keep horizontal spacing */
-    row-gap: 50px;
+    row-gap: 20px;
     justify-items: center;
     align-items: center;
     padding: 20px;
     padding-bottom: 100px;
     position: absolute;
     top: 0;
-    margin-left: 15px;
+    margin-top: 100px;
+    margin-left: 60px;
     left: 0;
     /* width: 300px;
     height: 300px; */
@@ -291,7 +341,21 @@ body {
 
 }
 
-.users-stuff-clothes{
+.cat-card {
+  width: 160px;           /* fixed square width */
+  height: 160px;          /* fixed square height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  /* transition: transform 0.2s; */
+  background-color: #D9D9D9;
+}
+
+
+/* .users-stuff-clothes{
         gap: 200px;
         margin-top: 50px;
     object-fit: cover;
@@ -299,7 +363,7 @@ body {
 .users-stuff {
     gap: 200px;
     object-fit: cover;
-}
+} */
 
 /*--------------pages--------------*/
 
@@ -311,7 +375,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 20px;
-    padding-left: 145px;
+    padding-left: 240px;
     border-radius: 20px;
     font-size: 32px;
     color: #838E84;
@@ -319,11 +383,32 @@ body {
     z-index: 10;
 }
 
-.pages p {
+.pages-clothes
+{
+        position: fixed;
+    /* bottom: 10px; */
+    /* left: 10; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding-left: 240px;
+    border-radius: 20px;
+    font-size: 32px;
+    color: #838E84;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.pages p,
+.pages-clothes p
+{
     margin: 0;
     font-weight: 200;
 }
 
+.pages-clothes .arrow-left,
+.pages-clothes .arrow-right,
 .pages .arrow-left,
 .pages .arrow-right {
     cursor: pointer;
