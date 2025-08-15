@@ -1,24 +1,21 @@
-// Voting phase transition
-  socket.on('voting_phase', (message) => {
-    console.log('📥 Received voting_phase:', message);
+/* Enhanced Stage Base Voting Styles - Add/Update these in fashion-show.css */
+/* Ensure cat display has proper stacking */
+.cat-display {
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1050px;
+    height: 420px;
+    background-color: var(--color-cream);
     
-    const { participants, timerSeconds } = message;
-    console.log(`🗳️ Entering voting phase with ${participants.length} participants, timer: ${timerSeconds}s`);
+    /* Add flexbox for stage bases layout */
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: var(--spacing-sm);
+    box-sizing: border-box;
     
-    transitionToVotingPhase(participants, timerSeconds, playerData);
-  });
-
-  socket.on('voting_update', (message) => {
-    console.log('📥 Received voting_update:', message);
-    // TODO: Handle voting updates
-  });
-
-  socket.on('calculating_announcement', (message) => {
-    console.log('📥 Received calculating_announcement:', message);
-    showCalculatingScreen(message.message);
-  });
-
-  socket.on('results', (message) => {
-    console.log('📥 Received results:', message);
-    // TODO: Handle results
-  });
+    /* Ensure proper z-index for voting interactions */
+    z-index: 10;
+}

@@ -4,6 +4,12 @@ import { getPlayerCats } from './core/storage.js';
 
 console.log("🎭 Fashion Show - using APP_URL:", APP_URL);
 
+// Global voting state
+let isVotingActive = false;
+let selectedCatId = null;
+let currentSocket = null;
+let currentPlayerData = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('🎭 Fashion Show page DOM loaded');
 
@@ -75,6 +81,10 @@ function initializeSocket(playerData) {
     auth: { token: authToken }
   });
 
+  // Store socket reference globally for voting
+  currentSocket = socket;
+  currentPlayerData = playerData;
+
   socket.on('connect', () => {
     console.log('✅ Socket connected:', socket.id);
 
@@ -92,6 +102,7 @@ function initializeSocket(playerData) {
 
   socket.on('disconnect', (reason) => {
     console.log('🔌 Socket disconnected:', reason);
+    disableVotingInteractions(); // Disable voting when disconnected
   });
 
   // Waiting room participant updates
@@ -115,20 +126,40 @@ function initializeSocket(playerData) {
     transitionToVotingPhase(participants, timerSeconds, playerData);
   });
 
+  // Voting updates (when someone votes)
   socket.on('voting_update', (message) => {
     console.log('📥 Received voting_update:', message);
-    // TODO: Handle voting updates
+    
+    const { participants } = message;
+    
+    // Count how many have voted
+    const votedCount = participants.filter(p => p.votedCatId).length;
+    const totalCount = participants.length;
+    
+    console.log(`🗳️ Voting progress: ${votedCount}/${totalCount} participants have voted`);
+    
+    // Update UI to show voting progress (optional - can be implemented later)
+    // For now, just log the progress
   });
 
+  // Calculating announcement
     socket.on('calculating_announcement', (message) => {
     console.log('📥 Received calculating_announcement:', message);
     showCalculatingScreen(message.message);
   });
 
-
+  // Final results
   socket.on('results', (message) => {
     console.log('📥 Received results:', message);
-    // TODO: Handle results
+    
+    const { participants } = message;
+    console.log('🏆 Final results received:');
+    participants.forEach((p, index) => {
+      console.log(`  ${index + 1}. ${p.catName} (${p.username}): ${p.votesReceived} votes = ${p.coinsEarned} coins`);
+    });
+    
+    // TODO: Show results screen (Step 5)
+    console.log('📺 Results screen display - TO BE IMPLEMENTED');
   });
 }
 
@@ -166,33 +197,7 @@ function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
   });
 }
 
-// Transition from waiting room to voting phase
-function transitionToVotingPhase(participants, timerSeconds, playerData) {
-  console.log('🎨 Transitioning to voting phase...');
-  
-  // Hide waiting message
-  const waitingMessageElement = document.querySelector('.waiting-message');
-  if (waitingMessageElement) {
-    waitingMessageElement.style.display = 'none';
-  }
-  
-  // Show cat display area
-  const catDisplayElement = document.querySelector('.cat-display');
-  if (catDisplayElement) {
-    catDisplayElement.style.display = 'flex';
-  }
-  
-  // Show timer section
-  const timerSectionElement = document.querySelector('.timer-section');
-  if (timerSectionElement) {
-    timerSectionElement.style.display = 'flex';
-  }
-  
-  populateStageBasesWithParticipants(participants, playerData);
-  startCountdownTimer(timerSeconds);
-  
-  console.log('✅ Voting phase transition complete');
-}
+
 
 // Populate each stage base with participant data
 function populateStageBasesWithParticipants(participants, playerData) {
@@ -210,6 +215,10 @@ function populateStageBasesWithParticipants(participants, playerData) {
     const isOwnCat = participant.playerId === playerData.playerId && participant.catId === playerData.catId;
     
     console.log(`🎨 Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
+    
+    // Store participant data for click handling - IMPORTANT!
+    stageBase.dataset.participantId = participant.playerId.toString();
+    stageBase.dataset.catId = participant.catId.toString();
     
     // Show cat sprite
     const catSprite = stageBase.querySelector('.cat-sprite');
@@ -242,14 +251,10 @@ function populateStageBasesWithParticipants(participants, playerData) {
       renderWornItems(stageBase, participant.wornItems, index);
     }
     
-    // Mark own cat for special styling
-    if (isOwnCat) {
-      stageBase.classList.add('own-cat');
-    }
+    // Clear any previous voting-related classes
+    stageBase.classList.remove('own-cat', 'selected', 'own-cat-selected');
     
-    // Store participant data for click handling
-    stageBase.dataset.participantId = participant.playerId;
-    stageBase.dataset.catId = participant.catId;
+    console.log(`✅ Stage ${index + 1} populated with data attributes: playerId=${participant.playerId}, catId=${participant.catId}`);
   });
   
   console.log('✅ Stage bases populated');
@@ -351,8 +356,222 @@ function startCountdownTimer(initialSeconds) {
   console.log('✅ Countdown timer started');
 }
 
+// Enable voting interactions
+function enableVotingInteractions(socket, playerData) {
+  console.log('🗳️ Enabling voting interactions');
+  
+  isVotingActive = true;
+  currentSocket = socket;
+  currentPlayerData = playerData;
+  
+  // Add voting-active class to cat display
+  const catDisplay = document.querySelector('.cat-display');
+  if (catDisplay) {
+    catDisplay.classList.add('voting-active');
+    console.log('✅ Added voting-active class to cat display');
+  }
+  
+  // Add click handlers and mark own cat
+  const stageBases = document.querySelectorAll('.stage-base');
+  stageBases.forEach((stageBase, index) => {
+    // Remove any existing event listeners
+    stageBase.removeEventListener('click', handleStageClick);
+    stageBase.removeEventListener('mouseenter', handleStageMouseEnter);
+    stageBase.removeEventListener('mouseleave', handleStageMouseLeave);
+    
+    // Check if this is the player's own cat
+    const targetCatId = parseInt(stageBase.dataset.catId);
+    const targetPlayerId = stageBase.dataset.participantId;
+    const isOwnCat = (targetCatId === currentPlayerData.catId && 
+                     targetPlayerId === currentPlayerData.playerId.toString());
+    
+    if (isOwnCat) {
+      stageBase.classList.add('own-cat');
+      console.log(`🚫 Stage ${index + 1} marked as own cat (non-votable)`);
+    } else {
+      stageBase.classList.remove('own-cat');
+    }
+    
+    // Add event listeners
+    stageBase.addEventListener('click', handleStageClick);
+    stageBase.addEventListener('mouseenter', handleStageMouseEnter);
+    stageBase.addEventListener('mouseleave', handleStageMouseLeave);
+    
+    console.log(`✅ Added interaction handlers to stage ${index + 1}`);
+  });
+  
+  console.log('✅ Voting interactions enabled');
+}
+
+// Handle mouse enter for hover effects
+function handleStageMouseEnter(event) {
+  if (!isVotingActive) return;
+  
+  const stageBase = event.currentTarget;
+  const targetCatId = parseInt(stageBase.dataset.catId);
+  const targetPlayerId = stageBase.dataset.participantId;
+  
+  // Check if this is own cat
+  const isOwnCat = (targetCatId === currentPlayerData.catId && 
+                   targetPlayerId === currentPlayerData.playerId.toString());
+  
+  if (isOwnCat) {
+    // Don't add hover class - CSS will handle the red outline
+    console.log('🚫 Hovering over own cat');
+  } else {
+    console.log(`👆 Hovering over votable cat ${targetCatId}`);
+  }
+}
+
+// Handle mouse leave
+function handleStageMouseLeave(event) {
+  // CSS handles the hover state removal automatically
+}
+
+// Handle clicking on a stage base to vote
+function handleStageClick(event) {
+  if (!isVotingActive) {
+    console.log('⚠️ Voting not active - ignoring click');
+    return;
+  }
+  
+  const stageBase = event.currentTarget;
+  const targetCatId = parseInt(stageBase.dataset.catId);
+  const targetPlayerId = stageBase.dataset.participantId;
+  
+  console.log(`🖱️ Clicked on stage - Player: ${targetPlayerId}, Cat: ${targetCatId}`);
+  
+  // Check if clicking on own cat
+  const isOwnCat = (targetCatId === currentPlayerData.catId && 
+                   targetPlayerId === currentPlayerData.playerId.toString());
+  
+  if (isOwnCat) {
+    console.log('❌ Cannot vote for own cat - showing warning');
+    showSelfVoteWarning(stageBase);
+    return;
+  }
+  
+  // Valid vote - update selection
+  console.log(`✅ Valid vote for cat ${targetCatId}`);
+  selectCat(targetCatId, stageBase);
+  
+  // Send vote to server
+  if (currentSocket && currentSocket.connected) {
+    console.log(`📤 Sending vote to server: ${targetCatId}`);
+    currentSocket.emit('vote', {
+      type: 'vote',
+      votedCatId: targetCatId
+    });
+  } else {
+    console.error('❌ Cannot send vote - socket not connected');
+  }
+}
+
+// Select a cat visually and update state
+function selectCat(catId, stageBase) {
+  console.log(`🎯 Selecting cat ${catId}`);
+  
+  // Remove previous selection from all stages
+  const allStageBases = document.querySelectorAll('.stage-base');
+  allStageBases.forEach(stage => {
+    stage.classList.remove('selected');
+  });
+  
+  // Add selection to new stage
+  stageBase.classList.add('selected');
+  
+  // Update selected state
+  selectedCatId = catId;
+  
+  console.log(`✅ Cat ${catId} selected visually`);
+}
+
+// Show warning for voting on own cat with enhanced animation
+function showSelfVoteWarning(stageBase) {
+  console.log('⚠️ Showing self-vote warning');
+  
+  // Add error class to own cat (triggers shake animation)
+  stageBase.classList.add('own-cat-selected');
+  
+  // Show warning message
+  const warningElement = document.querySelector('.warning-message');
+  if (warningElement) {
+    warningElement.style.display = 'block';
+    console.log('🚨 Warning message displayed');
+  }
+  
+  // Remove warning after 3 seconds
+  setTimeout(() => {
+    stageBase.classList.remove('own-cat-selected');
+    if (warningElement) {
+      warningElement.style.display = 'none';
+    }
+    console.log('✅ Self-vote warning cleared');
+  }, 3000);
+}
+
+// Disable voting interactions
+function disableVotingInteractions() {
+  console.log('🚫 Disabling voting interactions');
+  
+  isVotingActive = false;
+  
+  // Remove voting-active class
+  const catDisplay = document.querySelector('.cat-display');
+  if (catDisplay) {
+    catDisplay.classList.remove('voting-active');
+  }
+  
+  // Remove event listeners and clean up classes
+  const stageBases = document.querySelectorAll('.stage-base');
+  stageBases.forEach(stageBase => {
+    stageBase.removeEventListener('click', handleStageClick);
+    stageBase.removeEventListener('mouseenter', handleStageMouseEnter);
+    stageBase.removeEventListener('mouseleave', handleStageMouseLeave);
+    
+    // Keep selection but remove hover states
+    stageBase.classList.remove('own-cat-selected');
+  });
+  
+  console.log('✅ Voting interactions disabled');
+}
+
+// Transition from waiting room to voting phase
+function transitionToVotingPhase(participants, timerSeconds, playerData) {
+  console.log('🎨 Transitioning to voting phase...');
+  
+  // Hide waiting message
+  const waitingMessageElement = document.querySelector('.waiting-message');
+  if (waitingMessageElement) {
+    waitingMessageElement.style.display = 'none';
+  }
+  
+  // Show cat display area
+  const catDisplayElement = document.querySelector('.cat-display');
+  if (catDisplayElement) {
+    catDisplayElement.style.display = 'flex';
+  }
+  
+  // Show timer section
+  const timerSectionElement = document.querySelector('.timer-section');
+  if (timerSectionElement) {
+    timerSectionElement.style.display = 'flex';
+  }
+  
+  populateStageBasesWithParticipants(participants, playerData);
+  startCountdownTimer(timerSeconds);
+  
+  // Enable voting interactions - NEW
+  enableVotingInteractions(currentSocket, playerData);
+  
+  console.log('✅ Voting phase transition complete');
+}
+
 function showCalculatingScreen(message) {
   console.log('🧮 Showing calculating votes screen');
+  
+  // Disable voting interactions - NEW
+  disableVotingInteractions();
   
   // Hide voting elements
   const catDisplay = document.querySelector('.cat-display');
