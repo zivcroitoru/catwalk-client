@@ -239,6 +239,21 @@ h1 {
     z-index: 10;
 }
 
+/* Results display container animation */
+.cat-display.showing-results {
+    animation: resultsReveal 1s ease-out;
+}
+
+@keyframes resultsReveal {
+    0% {
+        opacity: 0.7;
+        transform: translateX(-50%) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
 
 /* Stage Base - Basic Styling */
 .stage-base {
@@ -313,9 +328,22 @@ h1 {
 /* Results mode - make brown base 1/3 height */
 .stage-base.results-mode {
     height: 100px; /* 380px / 3 ≈ 127px */
+
+    animation: resultsTransition 0.8s ease-out;
 }
 
-/* Gold base styling for results phase - FIXED to sit ON TOP of brown base */
+@keyframes resultsTransition {
+    0% {
+        transform: scale(1);
+        height: 380px;
+    }
+    100% {
+        transform: scale(1);
+        height: 100px;
+    }
+}
+
+/* Gold base animations - applies to all */
 .gold-base {
     position: absolute;
     bottom: 100px; /* Position ON TOP of the brown base (which is 100px tall) */
@@ -325,6 +353,22 @@ h1 {
     height: 20px; /* Default height - will be overridden by JavaScript based on votes */
     background-color: var(--color-gold); /* #FFC20E */
     /* Gold base now sits ON TOP of brown base and extends UPWARD */
+
+    animation: goldRise 1.2s ease-out;
+    transform-origin: bottom center;
+}
+
+@keyframes goldRise {
+    0% {
+        height: 0px;
+        opacity: 0.7;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 .stage-walkway {
@@ -361,6 +405,39 @@ h1 {
     height: 149px; /* Fixed height to match width for square sprite */
     top: auto; /* Reset top positioning */
     /* Cat sits on top of the gold base (which sits on top of brown base) */
+
+    animation: catRise 1.5s ease-out 0.3s both;
+    width: 149px !important;
+    height: 149px !important;
+    object-fit: contain;
+    z-index: 11;
+}
+
+@keyframes catRise {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
+}
+
+/* Worn items in results mode */
+.worn-item.results-worn-item {
+    animation: itemFloat 1.8s ease-out 0.6s both;
+}
+
+@keyframes itemFloat {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px) scale(1);
+    }
 }
 
 /* Reward text styling for results phase */
@@ -370,7 +447,7 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    
+
     font-family: var(--font-main);
     font-size: var(--font-size-xs); /* 36px - increased from 24px */
     color: var(--color-white); /* White text */
@@ -392,6 +469,31 @@ h1 {
     2px 0 0 var(--color-black),
     0 -2px 0 var(--color-black),
     0 2px 0 var(--color-black);
+
+    animation: rewardAppear 1s ease-out 0.9s both;
+    /* Enhanced styling for better visibility */
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0 auto;
+    max-width: 180px;
+    word-wrap: break-word;
+    line-height: 1.2;
+
+}
+
+@keyframes rewardAppear {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.5);
+    }
+    60% {
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
 }
 
 /* Cat name and username styling updates */
@@ -430,6 +532,23 @@ h1 {
     bottom: auto;
     height: auto;
     font-size: var(--font-size-xxs);
+
+    animation: nameSlideIn 1s ease-out 1.1s both;
+    background-color: rgba(255, 238, 195, 0.95);
+    border-radius: 6px;
+    padding: 4px 8px;
+    border: 2px solid var(--color-black);
+}
+
+@keyframes nameSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
 }
 
 .username {
@@ -458,6 +577,23 @@ h1 {
 /* Username positioning in results mode */
 .results-mode .username {
     bottom: 5px; /* Maintain bottom position in shorter base */
+
+    animation: usernameSlideIn 1s ease-out 1.15s both;
+    background-color: rgba(218, 171, 110, 0.95);
+    border-radius: 4px;
+    padding: 2px 6px;
+    border: 1px solid var(--color-black);
+}
+
+@keyframes usernameSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
 }
 
 /* RESULTS BUTTONS STYLING */
@@ -473,6 +609,19 @@ h1 {
     justify-content: space-between;
     align-items: center;
     z-index: 100; /* Above other elements */
+
+    animation: buttonsSlideUp 1s ease-out 1.2s both;
+}
+
+@keyframes buttonsSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
 }
 
 /* Results button styling - matches exit dialog buttons */
@@ -499,10 +648,23 @@ h1 {
     
     /* Minimum width for consistent button sizes */
     min-width: 200px;
+
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .results-button:hover {
     opacity: 0.9;
+
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: var(--color-yellow);
+}
+
+.results-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .announcement-text {
@@ -524,6 +686,22 @@ h1 {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+}
+
+/* Smooth transition for announcement hiding */
+.announcement-text.hiding {
+    animation: announcementFadeOut 0.5s ease-out forwards;
+}
+
+@keyframes announcementFadeOut {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.9);
+    }
 }
 
 /* Enhanced warning message visibility */

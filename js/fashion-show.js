@@ -70,6 +70,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
   console.log('🎯 Player data ready:', playerData);
 
+  // Setup results buttons
+  setupResultsButtons();
+
+  // Initialize socket
   initializeSocket(playerData);
 });
 
@@ -137,9 +141,6 @@ function initializeSocket(playerData) {
     const totalCount = participants.length;
     
     console.log(`🗳️ Voting progress: ${votedCount}/${totalCount} participants have voted`);
-    
-    // Update UI to show voting progress (optional - can be implemented later)
-    // For now, just log the progress
   });
 
   // Calculating announcement
@@ -158,8 +159,8 @@ function initializeSocket(playerData) {
       console.log(`  ${index + 1}. ${p.catName} (${p.username}): ${p.votesReceived} votes = ${p.coinsEarned} coins`);
     });
     
-    // TODO: Show results screen (Step 5)
-    console.log('📺 Results screen display - TO BE IMPLEMENTED');
+    // Show results screen
+    showResultsScreen(participants);
   });
 }
 
@@ -196,8 +197,6 @@ function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
     console.log(`  ${index + 1}. ${participant.playerId} (cat: ${participant.catId})${isOurs ? ' ← YOU' : ''}`);
   });
 }
-
-
 
 // Populate each stage base with participant data
 function populateStageBasesWithParticipants(participants, playerData) {
@@ -416,7 +415,6 @@ function handleStageMouseEnter(event) {
                    targetPlayerId === currentPlayerData.playerId.toString());
   
   if (isOwnCat) {
-    // Don't add hover class - CSS will handle the red outline
     console.log('🚫 Hovering over own cat');
   } else {
     console.log(`👆 Hovering over votable cat ${targetCatId}`);
@@ -561,7 +559,7 @@ function transitionToVotingPhase(participants, timerSeconds, playerData) {
   populateStageBasesWithParticipants(participants, playerData);
   startCountdownTimer(timerSeconds);
   
-  // Enable voting interactions - NEW
+  // Enable voting interactions
   enableVotingInteractions(currentSocket, playerData);
   
   console.log('✅ Voting phase transition complete');
@@ -570,7 +568,7 @@ function transitionToVotingPhase(participants, timerSeconds, playerData) {
 function showCalculatingScreen(message) {
   console.log('🧮 Showing calculating votes screen');
   
-  // Disable voting interactions - NEW
+  // Disable voting interactions
   disableVotingInteractions();
   
   // Hide voting elements
@@ -590,6 +588,199 @@ function showCalculatingScreen(message) {
     console.log('✅ Showing announcement:', message);
   } else {
     console.warn('⚠️ Announcement element not found');
+  }
+}
+
+// Show final results with coin rewards (no repositioning)
+function showResultsScreen(participants) {
+  console.log('🏆 Showing results screen - keeping original positions');
+  
+  // Hide calculating announcement
+  const announcementElement = document.querySelector('.announcement-text');
+  if (announcementElement) {
+    announcementElement.style.display = 'none';
+  }
+  
+  // Log results without sorting (for debugging)
+  console.log('📊 Final results by stage:');
+  participants.forEach((p, index) => {
+    console.log(`  Stage ${index + 1}: ${p.catName} - ${p.votesReceived} votes (${p.coinsEarned} coins)`);
+  });
+  
+  // Transform cat display to results mode (no repositioning)
+  transformToResultsMode(participants);
+  
+  // Show results buttons
+  const resultsButtons = document.querySelector('.results-buttons');
+  if (resultsButtons) {
+    resultsButtons.style.display = 'flex';
+    console.log('✅ Results buttons shown');
+  }
+  
+  console.log('🎉 Results screen complete - cats stay in original positions');
+}
+
+// Transform the cat display to show results with gold bases (NO repositioning)
+function transformToResultsMode(participants) {
+  console.log('🎨 Transforming to results mode - keeping original positions');
+  
+  const catDisplay = document.querySelector('.cat-display');
+  if (catDisplay) {
+    catDisplay.style.display = 'flex'; // Ensure it's visible
+    catDisplay.classList.add('showing-results');
+  }
+  
+  const stageBases = document.querySelectorAll('.stage-base');
+  
+  // First, reset all stage bases
+  stageBases.forEach((stageBase, index) => {
+    // Add results mode class
+    stageBase.classList.add('results-mode');
+    
+    // Hide results elements initially
+    const goldBase = stageBase.querySelector('.gold-base');
+    const rewardText = stageBase.querySelector('.reward-text');
+    
+    if (goldBase) goldBase.style.display = 'none';
+    if (rewardText) rewardText.style.display = 'none';
+    
+    console.log(`🎨 Reset stage ${index + 1} for results mode`);
+  });
+  
+  // Find the maximum votes for scaling
+  const maxVotes = Math.max(1, Math.max(...participants.map(p => p.votesReceived)));
+  console.log(`📊 Maximum votes received: ${maxVotes}`);
+  
+  // Update each stage base with its ORIGINAL participant (no repositioning)
+  stageBases.forEach((stageBase, stageIndex) => {
+    // Get the participant data from the stage's data attributes
+    const participantId = stageBase.dataset.participantId;
+    const catId = parseInt(stageBase.dataset.catId);
+    
+    // Find this participant in the results data
+    const participant = participants.find(p => 
+      p.playerId.toString() === participantId && p.catId === catId
+    );
+    
+    if (!participant) {
+      console.warn(`⚠️ No participant found for stage ${stageIndex + 1}`);
+      return;
+    }
+    
+    console.log(`🎨 Updating stage ${stageIndex + 1} with ${participant.catName} (${participant.votesReceived} votes)`);
+    
+    const goldBase = stageBase.querySelector('.gold-base');
+    const rewardText = stageBase.querySelector('.reward-text');
+    const catSprite = stageBase.querySelector('.cat-sprite');
+    
+    // Calculate gold base height based on votes (min 20px, max 200px)
+    const maxHeight = 200;
+    const minHeight = 20;
+    const voteRatio = participant.votesReceived / maxVotes;
+    const goldHeight = Math.max(minHeight, Math.floor(voteRatio * maxHeight));
+    
+    // Show and position gold base
+    if (goldBase) {
+      goldBase.style.display = 'block';
+      goldBase.style.height = `${goldHeight}px`;
+      goldBase.style.bottom = '100px'; // Sits on top of brown base
+      console.log(`💰 Stage ${stageIndex + 1} gold base: ${goldHeight}px (${participant.votesReceived} votes)`);
+    }
+    
+    // Position cat sprite on top of gold base (keep existing sprite)
+    if (catSprite) {
+      catSprite.style.display = 'block';
+      catSprite.classList.add('results-cat');
+      
+      // Position cat on top of gold base
+      const catTopPosition = 100 + goldHeight; // Brown base height + gold base height
+      catSprite.style.bottom = `${catTopPosition}px`;
+      catSprite.style.top = 'auto'; // Reset top positioning
+      
+      console.log(`🐱 Stage ${stageIndex + 1} cat positioned at ${catTopPosition}px from bottom`);
+    }
+    
+    // Render worn items in results mode
+    if (participant.wornItems && participant.wornItems.length > 0) {
+      renderWornItemsResults(stageBase, participant.wornItems, goldHeight);
+    }
+    
+    // Show reward text (no ranking emojis, just coins)
+    if (rewardText) {
+      rewardText.textContent = `${participant.votesReceived} votes = ${participant.coinsEarned} coins`;
+      rewardText.style.display = 'block';
+      console.log(`💰 Stage ${stageIndex + 1} reward text: ${rewardText.textContent}`);
+    }
+    
+    console.log(`✅ Stage ${stageIndex + 1} updated with results (staying in original position)`);
+  });
+  
+  console.log('🎨 Results mode transformation complete - no repositioning');
+}
+
+// Render worn items in results mode (positioned on cat in results)
+function renderWornItemsResults(stageBase, wornItems, goldHeight) {
+  console.log(`👔 Rendering worn items in results mode`);
+  
+  // Remove existing worn items
+  const existingItems = stageBase.querySelectorAll('.worn-item');
+  existingItems.forEach(item => item.remove());
+  
+  if (!wornItems || wornItems.length === 0) {
+    return;
+  }
+  
+  wornItems.forEach((item, itemIndex) => {
+    if (!item.spriteUrl) {
+      console.warn(`⚠️ No sprite URL for item ${itemIndex + 1} in results mode`);
+      return;
+    }
+    
+    // Create worn item element
+    const wornItemElement = document.createElement('img');
+    wornItemElement.src = item.spriteUrl;
+    wornItemElement.alt = `${item.category} item`;
+    wornItemElement.classList.add('worn-item', `worn-${item.category}`, 'results-worn-item');
+    
+    // Position over cat sprite in results mode
+    wornItemElement.style.position = 'absolute';
+    wornItemElement.style.bottom = `${100 + goldHeight}px`; // Same as cat sprite
+    wornItemElement.style.left = '50%';
+    wornItemElement.style.transform = 'translateX(-50%)';
+    wornItemElement.style.width = '149px'; // Same as gold base width
+    wornItemElement.style.height = 'auto';
+    wornItemElement.style.zIndex = '12'; // Above cat sprite in results
+    wornItemElement.style.pointerEvents = 'none';
+    
+    // Crisp pixel rendering
+    wornItemElement.style.imageRendering = 'pixelated';
+    wornItemElement.style.imageRendering = '-moz-crisp-edges';
+    wornItemElement.style.imageRendering = 'crisp-edges';
+    
+    stageBase.appendChild(wornItemElement);
+  });
+  
+  console.log(`✅ Rendered worn items in results mode`);
+}
+
+  // Setup results buttons
+function setupResultsButtons() {
+  const playAgainBtn = document.getElementById('play-again-btn');
+  const goHomeBtn = document.getElementById('go-home-btn');
+  
+  if (playAgainBtn) {
+    playAgainBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('🔄 Play Again clicked - reloading page');
+      window.location.reload(); // Simple implementation - reload page to restart
+    });
+  }
+  
+  if (goHomeBtn) {
+    goHomeBtn.addEventListener('click', (e) => {
+      console.log('🏠 Go Home clicked');
+      // Let the default link behavior handle navigation to album.html
+    });
   }
 }
 
