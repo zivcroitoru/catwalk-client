@@ -318,24 +318,16 @@ function renderBroadcasts() {
 }
 
 // Send broadcast to server
-document.getElementById('sendBroadcastButton').addEventListener('click', async () => {
+document.getElementById('sendBroadcastButton').addEventListener('click', () => {
   const msgInput = document.getElementById('broadcastMessage');
-  const msg = msgInput.value.trim();
-  if (!msg) return alert('Please enter a message.');
+  const message = msgInput.value.trim();
+  if (!message) return alert('Please enter a message.');
 
-  try {
-    const res = await fetch(`${APP_URL}/api/broadcasts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg })
-    });
+  // Emit via socket for live delivery AND DB saving
+  socket.emit('adminBroadcast', { message });
 
-    if (!res.ok) throw new Error('Failed to save broadcast');
-
-    msgInput.value = '';
-    alert('Broadcast sent and saved!');
-  } catch (err) {
-    console.error(err);
-    alert('Failed to send broadcast.');
-  }
+  msgInput.value = '';
 });
+
+
+

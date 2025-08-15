@@ -134,13 +134,13 @@ header {
 
 
 /* Chat messages area */
-.chat-messages {
+/* .chat-messages {
     flex-grow: 1;
     padding: 10px;
     overflow-y: auto;
     border-bottom: 1px solid #ddd;
     background: #fff;
-}
+} */
 
 /* Each message paragraph */
 .chat-messages p {
@@ -149,6 +149,8 @@ header {
     border-radius: 20px;
     max-width: 70%;
     word-wrap: break-word;
+    margin-left: 5px;
+    margin-top: 7px;
 }
 
 /* Style for player's messages (you) */
@@ -176,13 +178,14 @@ header {
     border: #281900 solid 3px;
     align-self: flex-start;
     text-align: left;
+    margin-left: 50px;
 }
 
 .admin-message {
     background-color: #5a3900;
     color: white;
     border: #281900 solid 3px;
-    align-self: flex-start;
+    align-self:flex-end;
     text-align: left;
 }
 
@@ -258,7 +261,7 @@ header {
     display: flex;
     flex-direction: column;
     /* stack children vertically */
-    width: 1850px;
+    width: 1500px;
     height: 100%;
     /* or a fixed height in px if 100% isn't working */
 
@@ -272,15 +275,15 @@ header {
 .chat-messages {
     border: #5a3900 solid 5px;
     font-family: 'Press Start 2P', monospace;
-
+    right: 0;
     flex-grow: 1;
     /* takes remaining vertical space */
-    overflow-y: auto;
+    /* overflow-y: auto; */
     /* scroll vertically if content overflows */
     background: #fff4e2;
     border-radius: 20px 20px 0px 0px;
-    padding: 20px;
-    box-sizing: border-box;
+    /* padding: 20px; */
+    /* box-sizing: border-box; */
 }
 
 /* Input area stays fixed height */

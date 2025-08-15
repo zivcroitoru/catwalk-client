@@ -30,14 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('broadcastMessages');
     if (!container) return;
     container.innerHTML = "";
-    broadcastMessages.forEach(msg => {
+
+    // Render newest first
+    for (let i = broadcastMessages.length - 1; i >= 0; i--) {
+      const msg = broadcastMessages[i];
       const p = document.createElement('p');
       p.classList.add('broadcast-message');
       const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '';
-      p.textContent = `[Broadcast] ${msg.text}`;
+      p.textContent = ` ${msg.text}`;
       container.appendChild(p);
-    });
+    }
   }
+
+
+
 
   // Fetch past broadcasts from API
   async function loadBroadcasts() {
@@ -45,7 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(`${APP_URL}/api/broadcasts`);
       if (res.ok) {
         const past = await res.json();
-        broadcastMessages = past.map(b => ({ text: b.body, date: b.sent_at }));
+        broadcastMessages = past
+          .map(b => ({ text: b.body, date: b.sent_at }))
+          .reverse();  // <- newest first
         localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
         renderBroadcasts();
       } else {
@@ -55,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error fetching past broadcasts:', err);
     }
   }
+
+
 
   // Initial render from localStorage, then refresh from server
   renderBroadcasts();
@@ -91,15 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBroadcasts();
 
   // Receive broadcast from server
-  socket.on('adminBroadcast', (data) => {
-    console.log("📢 Broadcast received:", data);
-    broadcastMessages.push({
-      text: data.message,
-      date: data.date || new Date().toISOString()
-    });
-    localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
-    renderBroadcasts();
+socket.on('adminBroadcast', (data) => {
+  broadcastMessages.push({
+    text: data.message,
+    date: data.date || new Date().toISOString()
   });
+  localStorage.setItem('broadcastMessages', JSON.stringify(broadcastMessages));
+  renderBroadcasts();
+});
+
+
 
 
   let currentTicketId = null;
