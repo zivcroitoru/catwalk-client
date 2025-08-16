@@ -1,1 +1,29 @@
-const catBottomPosition = 100 + goldHeight;
+.coin-reward-text {
+    position: absolute;
+    top: 8px; /* Moved higher in brown box */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%; /* Reduced from 90% to prevent overflow */
+    max-width: 160px; /* Explicit max width for 186px brown box */
+    
+    font-family: var(--font-main);
+    font-size: var(--font-size-xs); /* 36px - largest text */
+    color: var(--color-white); /* WHITE instead of black */
+    text-align: center;
+    font-weight: normal;
+    line-height: 1.1;
+    
+    /* Text containment */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    box-sizing: border-box;
+    
+    /* Sharp pixel font rendering */
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    font-smooth: never;
+    
+    /* Animation */
+    animation: coinTextAppear 1s ease-out 1.2s both;
+}
