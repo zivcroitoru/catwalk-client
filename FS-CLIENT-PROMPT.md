@@ -134,5 +134,14 @@
 
 - The fact that we have 3 cats in the pictures is fine, it makes the testing easier
 - Image 1: How the rewards phase CURRENTLY look like, image 2: How the rewards phase SHOULD look like
-  - In the rewards phase we don't need the walkway stage image any more
-  - In the rewards phase we don't need the "X votes =", only "Y coins" in white with no outline
+  - In the rewards phase we need to have for each stage - a brown box
+  - In the brown box we need - coin amount in white text, cat name in black text, and smaller username in black text
+  - (The text itself (The coins text, the cat name and the usernames are correct) is good right now)
+  - You could say more simply that the brown box with cat name and username should stay the same in the rewards phase as it appears in the voting phase: The only change is adding the coin text
+  - Right now (in rewards phase) :
+    - The brown box is way to tall
+    - The coin text is black and very small - needs to be white and the current cat name size
+    - The cat name's size should be between the coin text and the username text
+    - The username's text should be a teeny bit bigger
+
+Split the problem into simple small sub-steps and fix them all, but tackle carefully one at a time
