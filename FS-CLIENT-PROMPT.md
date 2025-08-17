@@ -114,38 +114,22 @@
 **The core game is fully functional! Now we're polishing the experience.** 🎮✨
 
 
-# Step 5B
+---------
 
-- The vote calculations are not correct when we get to the reward phase.
+Step 6A is complete!
 
-I need you to very carefully analyse the files and find the cause for this
+Now for step 6B. 
+When player clicks on back arrow:
+- the game will have a grey traparent layer added to it so under it is not clickable - the back arrow for example is not clickable
+- A cream screen will pop up, the timer is still running in the background
+- On the cream screen there is:
+  - A text: "Are you sure you want to exit this game?"
+  - A cancel button on the bottom left "No, I changed my mind"
+    - If clicked on, player returns to game
+  - A confirm button on the bottom right "Yes, I'm sure"
+    - If clicked on, player returns home
+- If player clicks outside the cream rectangle, AKA on the grey transparent background, the player returns back to the game (same logic as clicking on cancel button)
 
+Create a detailed stet by step plan with sub steps, then carefully execute them one after the other.
 
-- The fact that we have 3 cats in the pictures is fine, it makes the testing easier
-- Issue 1 -> Image 1: How the back arrow and timer CURRENTLY look like, image 2: How the back arrow and timer SHOULD look like
-  - The timer and countdown seconds are not positioned well
-  - Missing text "Waiting for all players to vote . . ."
-  - When timer reaches 10 - the numbers should become red, and slightly bigger
-- Issue 2 -> Image 3: How the self vote warning message CURRENTLY look like, image 2: How the self vote warning message SHOULD look like
-  - The self vote warning should only appear as text, not in a white box with an outline
-  - The self vote warning should be on the right side of our cream stages base, not hidden behind it
-  - The self vote warning's container should be be more vertical
-- Issue 3 -> Image 5: How the rewards phase CURRENTLY look like, image 2: How the rewards phase SHOULD look like
-  - In the rewards phase we don't need the walkway stage image any more
-  - In the rewards phase we don't need the "X votes =", only "Y coins" in white with no outline
-
-
-# Step 6A
-
-- The fact that we have 3 cats in the pictures is fine, it makes the testing easier
-- Image 1: How the rewards phase CURRENTLY look like, image 2: How the rewards phase SHOULD look like
-  - In the rewards phase we need to have for each stage - a brown box
-  - In the brown box we need - coin amount in white text, cat name in black text, and smaller username in black text
-  - (The text itself (The coins text, the cat name and the usernames are correct) and the sizing is good right now)
-  - Right now (in rewards phase) :
-    - The coin text needs to be a tad bit higher
-    - The cat name's needs to be properly positioned between the 2 texts.
-
-Split the problem into simple small sub-steps and fix them all, but tackle carefully one at a time
-
-Before we get to step
+Image 1 is how the visuals should turn out like.

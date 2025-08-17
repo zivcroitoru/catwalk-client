@@ -13,6 +13,9 @@ let currentPlayerData = null;
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('🎭 Fashion Show page DOM loaded');
 
+  // Setup exit confirmation dialog
+  setupExitConfirmationDialog();
+
   // Get required data
   const userId = localStorage.getItem('userId');
   if (!userId) {
@@ -76,6 +79,77 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize socket
   initializeSocket(playerData);
 });
+
+// Setup exit confirmation dialog
+function setupExitConfirmationDialog() {
+  console.log('🚪 Setting up exit confirmation dialog');
+
+  const albumButton = document.querySelector('.album-button');
+  const exitOverlay = document.getElementById('exit-overlay');
+  const exitDialog = document.getElementById('exit-dialog');
+  const stayButton = document.getElementById('stay-btn');
+  const leaveButton = document.getElementById('leave-btn');
+
+  if (!albumButton || !exitOverlay || !exitDialog || !stayButton || !leaveButton) {
+    console.warn('⚠️ Exit dialog elements not found');
+    return;
+  }
+
+  // Show exit confirmation when back arrow is clicked
+  albumButton.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent default navigation
+    console.log('🚪 Back arrow clicked - showing exit confirmation');
+    showExitDialog();
+  });
+
+  // Hide dialog when clicking outside the cream box (on gray overlay)
+  exitOverlay.addEventListener('click', (e) => {
+    if (e.target === exitOverlay) {
+      console.log('🚪 Clicked outside dialog - hiding exit dialog');
+      hideExitDialog();
+    }
+  });
+
+  // Hide dialog when "No, I changed my mind" is clicked
+  stayButton.addEventListener('click', () => {
+    console.log('🚪 Stay button clicked - hiding exit dialog');
+    hideExitDialog();
+  });
+
+  // Navigate home when "Yes, I'm sure" is clicked
+  leaveButton.addEventListener('click', () => {
+    console.log('🚪 Leave button clicked - navigating to album');
+    
+    // Disconnect socket if connected
+    if (currentSocket && currentSocket.connected) {
+      console.log('🔌 Disconnecting socket before leaving');
+      currentSocket.disconnect();
+    }
+    
+    // Navigate to album page
+    window.location.href = 'album.html';
+  });
+
+  console.log('✅ Exit confirmation dialog setup complete');
+}
+
+// Show exit confirmation dialog
+function showExitDialog() {
+  const exitOverlay = document.getElementById('exit-overlay');
+  if (exitOverlay) {
+    exitOverlay.style.display = 'flex';
+    console.log('✅ Exit dialog shown');
+  }
+}
+
+// Hide exit confirmation dialog
+function hideExitDialog() {
+  const exitOverlay = document.getElementById('exit-overlay');
+  if (exitOverlay) {
+    exitOverlay.style.display = 'none';
+    console.log('✅ Exit dialog hidden');
+  }
+}
 
 function initializeSocket(playerData) {
   console.log('🔧 Initializing socket connection...');
@@ -779,6 +853,7 @@ function transformToResultsMode(participants) {
 
   console.log('🎨 Results mode transformation complete - brown boxes preserved with fixed height calculation');
 }
+
 // Updated renderWornItemsResults to work with preserved brown boxes
 function renderWornItemsResults(stageBase, wornItems, goldHeight) {
   console.log(`👔 Rendering worn items in results mode with preserved brown boxes`);

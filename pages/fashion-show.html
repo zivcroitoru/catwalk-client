@@ -104,21 +104,18 @@
   <!-- Back to album button (always visible) -->
   <a href="album.html" class="album-button">←</a>
 
-  <!-- Exit confirmation dialog (hidden by default) -->
-  <div class="exit-overlay" style="display: none;">
-    <div class="exit-dialog">
+<!-- Exit confirmation dialog (hidden by default) -->
+  <div class="exit-overlay" id="exit-overlay" style="display: none;">
+    <div class="exit-dialog" id="exit-dialog">
       <div class="exit-dialog-title">
-        ARE YOU SURE YOU<br>
-        WANT TO LEAVE THE<br>
-        FASHION SHOW?
+        Are you sure you want to exit this gameshow?
       </div>
       <div class="exit-dialog-buttons">
-        <button class="exit-dialog-button" id="stay-btn">STAY</button>
-        <button class="exit-dialog-button" id="leave-btn">LEAVE</button>
+        <button class="exit-dialog-button" id="stay-btn">NO, I changed my mind</button>
+        <button class="exit-dialog-button" id="leave-btn">YES, I'm sure</button>
       </div>
     </div>
   </div>
-
   <!-- Load Socket.IO client FIRST -->
   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   
