@@ -190,4 +190,84 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
     min-width: 30vw;
     padding: 0.4rem 0.5rem;
   }
+  /* ==== Responsive, neat Cat Profile overrides ==== */
+
+.profile-screen {
+  /* optional wrapper around the profile area */
+  display: grid;
+  place-items: center;
+  padding: 2vw;
+}
+
+/* Center the parchment, make it fluid */
+.cat-profile-scroll {
+  position: relative;          /* override absolute */
+  top: auto; right: auto;       /* clear offsets */
+  transform: none;              /* no forced scale */
+  width: min(900px, 92vw);      /* fluid max width */
+  height: auto;                 /* let content define height */
+  padding: clamp(24px, 6vw, 64px) clamp(20px, 5vw, 48px) clamp(24px, 5vw, 56px);
+  margin: 2vw auto;             /* center on page */
+  overflow: visible;            /* keep the “ears” visible */
+}
+
+/* Name field scales but stays centered on the scroll banner */
+.profile-name-input {
+  width: clamp(260px, 70%, 700px);
+  font-size: clamp(14px, 1.6vw, 24px);
+  padding: clamp(8px, 1vw, 16px) 0;
+}
+
+/* Main area: info + cat preview (2 cols → 1 col) */
+.profile-main {
+  display: grid;                /* instead of flex */
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: clamp(12px, 1.8vw, 28px);
+}
+
+/* Text column sizing */
+.profile-info {
+  font-size: clamp(14px, 1.3vw, 22px);
+  gap: clamp(6px, 0.8vw, 14px);
+}
+
+/* Cat preview scales with room; keeps square */
+.cat-preview-stack {
+  width: clamp(96px, 12vw, 180px);
+  height: clamp(96px, 12vw, 180px);
+  margin-top: 0;
+}
+
+/* Description box is comfortable on big screens, not huge on small */
+.desc-input {
+  width: 100%;
+  min-height: clamp(90px, 12vw, 180px);
+  max-height: 38vh;
+  resize: vertical;
+}
+
+/* Footer buttons: wrap & stay centered neatly */
+.profile-footer-buttons {
+  flex-wrap: wrap;
+  gap: clamp(6px, 0.9vw, 16px);
+}
+
+.profile-btn {
+  font-size: clamp(10px, 0.9vw, 14px);
+  padding: clamp(6px, 0.6vw, 10px) clamp(10px, 1vw, 14px);
+  min-width: max(9ch, clamp(90px, 12vw, 160px));
+}
+
+/* ------ Breakpoint: stack layout on narrow screens ------ */
+@media (max-width: 900px) {
+  .profile-main {
+    grid-template-columns: 1fr;   /* stack */
+    justify-items: center;
+    text-align: left;
+  }
+  .cat-preview-stack { order: -1; } /* cat above details */
+  .profile-name-input { width: 82%; }
+}
+
 }
