@@ -1,193 +1,101 @@
-:root {
-  --cat-podium-offset: -3.5vh;   /* adjust: more negative = paws lower, less = floating */
-}
-
 /* ───────────── Layout: Header ───────────── */
-.welcome-message {
-  position: absolute;
-  top: 3.65vw;
-  left: 10.42vw;
-  font-size: 1.75rem;
-  color: #fff2c7;
-  text-shadow: -4px -4px #000, 4px -4px #000, -4px 4px #000, 4px 4px #000,
-               0 -4px #000, 0 4px #000, -4px 0 #000, 4px 0 #000;
-  z-index: 999;
+.welcome-message{
+  position:absolute;
+  top:3.65vw; left:10.42vw;
+  font-size:1.75rem; color:#fff2c7;
+  text-shadow:-4px -4px #000,4px -4px #000,-4px 4px #000,4px 4px #000,0 -4px #000,0 4px #000,-4px 0 #000,4px 0 #000;
+  z-index:999;
 }
-
-.cats-title {
-  position: absolute;
-  top: 1.04vw;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Press Start 2P', cursive;
-  font-size: 3rem;
-  color: #fff2c7;
-  text-shadow: -4px -4px #000, 4px -4px #000,
-               -4px 4px #000, 4px 4px #000,
-               0 -4px #000, 0 4px #000,
-               -4px 0 #000, 4px 0 #000;
-  z-index: 999;
+.cats-title{
+  position:absolute;
+  top:1.04vw; left:50%; transform:translateX(-50%);
+  font-family:'Press Start 2P',cursive; font-size:3rem; color:#fff2c7;
+  text-shadow:-4px -4px #000,4px -4px #000,-4px 4px #000,4px 4px #000,0 -4px #000,0 4px #000,-4px 0 #000,4px 0 #000;
+  z-index:999;
 }
-
-.sign-out-btn {
-  position: absolute;
-  top: 1.04vw;
-  right: 2.6vw;
-  background: var(--red);
-  color: #fff;
-  border: 6px solid var(--border);
-  padding: 1rem 1.5rem;
-  font-size: .75rem;
-  cursor: pointer;
-  z-index: 999;
+.sign-out-btn{
+  position:absolute; top:1.04vw; right:2.6vw;
+  background:var(--red); color:#fff; border:6px solid var(--border);
+  padding:1rem 1.5rem; font-size:.75rem; cursor:pointer; z-index:999;
 }
 
 /* ───────────── Layout: Topbar / Sidebar ───────────── */
-.topbar {
-  position: absolute;
-  top: 3.12vw;
-  display: flex;
-  flex-direction: column;
-  gap: 1.875rem;
+.topbar{
+  position:absolute; top:3.12vw;
+  display:flex; flex-direction:column; gap:1.875rem;
 }
-
-.topbar-icon {
-  position: relative;
-  background: #f08632;
-  border: 4px solid #000;
-  padding: .5rem;
-  border-radius: 8px;
-  width: 4.43vw;
-  height: 3.33vw;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  transition: transform .2s ease;
+.topbar-icon{
+  position:relative; background:#f08632; border:4px solid #000; padding:.5rem; border-radius:8px;
+  width:4.43vw; height:3.33vw; display:flex; align-items:center; justify-content:flex-start;
+  transition:transform .2s ease;
 }
-.topbar-icon:hover { transform: translateX(6px); }
-.topbar-icon:active {
-  background: #ffce00;
-  transform: translateX(6px) scale(.95);
-  box-shadow: inset 2px 2px 6px rgba(0,0,0,.4);
-}
-.coin-icon { width: 7.81vw; }
-.topbar-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.topbar-icon#catFactToggle img {
-  width: 2.8vw; height: auto; transform: scale(1.4);
-}
-.coin-count {
-  position: absolute;
-  left: 2.92vw;
-  top: 62%;
-  transform: translateY(-50%);
-  color: #000;
-  font-size: 1.375rem;
-  pointer-events: none;
+.topbar-icon:hover{ transform:translateX(6px); }
+.topbar-icon:active{ background:#ffce00; transform:translateX(6px) scale(.95); box-shadow:inset 2px 2px 6px rgba(0,0,0,.4); }
+.coin-icon{ width:7.81vw; }
+.topbar-icon img{ max-width:100%; max-height:100%; object-fit:contain; }
+.topbar-icon#catFactToggle img{ width:2.8vw; height:auto; transform:scale(1.4); }
+.coin-count{
+  position:absolute; left:2.92vw; top:62%; transform:translateY(-50%);
+  color:#000; font-size:1.375rem; pointer-events:none;
 }
 
 /* ───────────── Layout: Main Cat Display ───────────── */
-#carouselCatWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 55vh;   /* centers stage across 1080p / 4K */
-  pointer-events: none;
+/* A responsive stage that always centers content vertically and horizontally */
+#carouselCatWrapper{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  width:100%;
+  min-height:55vh;              /* gives vertical room on tall 4K */
+  pointer-events:none;          /* stage itself is not interactive */
 }
 
-.center-ellipse {
-  display: block;
-  width: min(26vw, 520px);
-  height: auto;
-  margin: 0;
+/* The ellipse sits behind the cat, scaled by viewport—not pixels */
+.center-ellipse{ display:block; width:min(26vw,520px); height:auto; margin:0; }
+
+/* Use an absolutely centered podium for consistent layout */
+.ellipse-podium{
+  position:absolute; inset:0;           /* fill wrapper */
+  display:flex; align-items:center; justify-content:center;
+  transform:none;                        /* remove pixel translate/scale */
+  margin:0; pointer-events:none;
 }
 
-.ellipse-podium {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;   /* ellipse behind cat */
-}
-
-.cat-layer {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, calc(-50% + var(--cat-podium-offset)));
-  width: min(22vw, 420px);
-  height: auto;
-  object-fit: contain;
-  image-rendering: pixelated;
-  z-index: 2;
-  pointer-events: none;
+/* Cat sprite layer is perfectly centered and sized responsively */
+.cat-layer{
+  position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:min(22vw,420px);                 /* scales well on 1080p & 4K */
+  height:auto; object-fit:contain;
+  image-rendering:pixelated;             /* crisp pixels for the art */
+  z-index:2; pointer-events:none;
 }
 
 /* ───────────── Layout: Carousel ───────────── */
-.carousel-wrapper {
-  position: absolute;
-  bottom: 1.56vw;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  align-items: flex-start;
-  z-index: 5;
+.carousel-wrapper{
+  position:absolute; bottom:1.56vw; left:50%; transform:translateX(-50%);
+  width:90%; align-items:flex-start; z-index:5;
 }
-
-.carousel-background {
-  background: var(--cream);
-  border: 8px solid var(--border);
-  padding: 1.125rem 3.125vw;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: visible;
+.carousel-background{
+  background:var(--cream); border:8px solid var(--border);
+  padding:1.125rem 3.125vw; display:flex; align-items:center; position:relative; overflow:visible;
 }
-
-.carousel-viewport { overflow: visible; flex: 1; }
-.carousel { display: flex; gap: 20px; transition: transform .4s ease; }
-.floating-actions {
-  position: absolute;
-  top: -60px;
-  left: 1.04vw;
-  display: flex;
-  gap: 20px;
-  z-index: 10;
-}
+.carousel-viewport{ overflow:visible; flex:1; }
+.carousel{ display:flex; gap:20px; transition:transform .4s ease; }
+.floating-actions{ position:absolute; top:-60px; left:1.04vw; display:flex; gap:20px; z-index:10; }
 
 /* ───────────── Responsive ───────────── */
-@media (max-width: 768px), (orientation: portrait) {
-  .welcome-message { display: none; }
+@media (max-width:768px),(orientation:portrait){
+  .welcome-message{ display:none; }
 }
 
 /* ───────────── Shop Lock Interaction Control ───────────── */
-body.shop-lock #game>*:not(.wrapper) {
-  pointer-events: none;
-  user-select: none;
-  filter: blur(0px);
-}
-body.shop-lock .right-pane,
-body.shop-lock .shop-popup,
-body.shop-lock .shop-blocker {
-  pointer-events: auto;
-  filter: none;
-}
-body.shop-lock .topbar,
-body.shop-lock .sign-out-btn,
-body.shop-lock .welcome-message,
-body.shop-lock .cats-title,
-body.shop-lock .carousel-wrapper,
-body.shop-lock .floating-actions {
-  pointer-events: none;
-}
+body.shop-lock #game>*:not(.wrapper){ pointer-events:none; user-select:none; filter:blur(0px); }
+body.shop-lock .right-pane, body.shop-lock .shop-popup, body.shop-lock .shop-blocker{ pointer-events:auto; filter:none; }
+body.shop-lock .topbar, body.shop-lock .sign-out-btn, body.shop-lock .welcome-message,
+body.shop-lock .cats-title, body.shop-lock .carousel-wrapper, body.shop-lock .floating-actions{ pointer-events:none; }
 
-/* Right details pane stays anchored */
-.right-pane {
-  position: absolute;
-  right: 2vw;
-  top: 6vw;
-  z-index: 6;
+/* Right details pane stays anchored and avoids overlapping the centered stage */
+.right-pane{
+  position:absolute; right:2vw; top:6vw; z-index:6;   /* above ellipse/cat */
 }
-.hidden { display: none !important; }
+.hidden{ display:none !important; }
