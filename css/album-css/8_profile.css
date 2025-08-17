@@ -37,12 +37,11 @@
 /* ───────────── Main Content ───────────── */
 .profile-main {
   display: grid;
-  grid-template-columns: 1fr auto; /* text on left, cat on right */
+  grid-template-columns: 1fr 9vw; /* text + fixed-size cat column */
   gap: 1vw;
   align-items: start;
-  flex: 1;
-  overflow: hidden;
 }
+
 
 .profile-info {
   display: grid;
@@ -61,13 +60,14 @@
   position: relative;
   width: 8.33vw;
   height: 8.33vw;
-  margin-top: 0.4vw;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0.26vw solid var(--border);
   background-color: #fff8;
+  margin: 0; /* ← remove margin to align cleanly */
 }
+
 
 .cat-preview-stack img {
   position: absolute;
