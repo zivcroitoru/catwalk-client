@@ -36,23 +36,25 @@
 
 /* ───────────── Main Content ───────────── */
 .profile-main {
-  display: flex;
-  gap: 1.25vw;
+  display: grid;
+  grid-template-columns: 1fr auto; /* text on left, cat on right */
+  gap: 1vw;
+  align-items: start;
   flex: 1;
   overflow: hidden;
 }
 
-/* ───────────── Info Section ───────────── */
 .profile-info {
-  flex: 1;
   display: grid;
   grid-template-columns: max-content 1fr;
   column-gap: 0.6vw;
   row-gap: 0.4vw;
   font-size: 1.1rem;
+  line-height: 1.3;
   word-break: break-word;
   overflow: hidden;
 }
+
 
 /* ───────────── Cat Preview ───────────── */
 .cat-preview-stack {
