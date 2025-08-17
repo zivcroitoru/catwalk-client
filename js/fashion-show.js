@@ -80,9 +80,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeSocket(playerData);
 });
 
-// Setup exit confirmation dialog
+// Game phase tracking
+let currentGamePhase = 'waiting'; // 'waiting', 'voting', 'results'
+
+// Setup exit confirmation dialog with phase-based behavior
 function setupExitConfirmationDialog() {
-  console.log('🚪 Setting up exit confirmation dialog');
+  console.log('🚪 Setting up exit confirmation dialog with phase-based behavior');
 
   const albumButton = document.querySelector('.album-button');
   const exitOverlay = document.getElementById('exit-overlay');
@@ -95,11 +98,21 @@ function setupExitConfirmationDialog() {
     return;
   }
 
-  // Show exit confirmation when back arrow is clicked
+  // Handle back arrow click based on current game phase
   albumButton.addEventListener('click', (e) => {
     e.preventDefault(); // Prevent default navigation
-    console.log('🚪 Back arrow clicked - showing exit confirmation');
-    showExitDialog();
+    console.log(`🚪 Back arrow clicked during ${currentGamePhase} phase`);
+    
+    if (currentGamePhase === 'waiting') {
+      // Direct navigation during waiting room - no confirmation needed
+      console.log('🚪 Waiting room - navigating directly home');
+      navigateHome();
+    } else if (currentGamePhase === 'voting') {
+      // Show confirmation dialog during voting phase
+      console.log('🚪 Voting phase - showing exit confirmation');
+      showExitDialog();
+    }
+    // Results phase: back arrow is hidden, so this shouldn't be reached
   });
 
   // Hide dialog when clicking outside the cream box (on gray overlay)
@@ -119,7 +132,14 @@ function setupExitConfirmationDialog() {
   // Navigate home when "Yes, I'm sure" is clicked
   leaveButton.addEventListener('click', () => {
     console.log('🚪 Leave button clicked - navigating to album');
+    navigateHome();
+  });
+
+  console.log('✅ Exit confirmation dialog setup complete');
+}
     
+// Navigate home with proper cleanup
+function navigateHome() {
     // Disconnect socket if connected
     if (currentSocket && currentSocket.connected) {
       console.log('🔌 Disconnecting socket before leaving');
@@ -127,10 +147,39 @@ function setupExitConfirmationDialog() {
     }
     
     // Navigate to album page
-    window.location.href = 'album.html';
-  });
+  window.location.href = 'album.html';
+}
 
-  console.log('✅ Exit confirmation dialog setup complete');
+// Update game phase and handle back arrow visibility
+function setGamePhase(phase) {
+  console.log(`🎮 Game phase changed: ${currentGamePhase} → ${phase}`);
+  currentGamePhase = phase;
+  
+  const albumButton = document.querySelector('.album-button');
+  if (!albumButton) {
+    console.warn('⚠️ Album button not found when setting game phase');
+    return;
+  }
+  
+  switch (phase) {
+    case 'waiting':
+      albumButton.style.display = 'flex'; // Show back arrow
+      console.log('👁️ Back arrow shown (waiting room - direct navigation)');
+      break;
+      
+    case 'voting':
+      albumButton.style.display = 'flex'; // Show back arrow
+      console.log('👁️ Back arrow shown (voting phase - confirmation required)');
+      break;
+      
+    case 'results':
+      albumButton.style.display = 'none'; // Hide back arrow
+      console.log('🚫 Back arrow hidden (results phase)');
+      break;
+      
+    default:
+      console.warn(`⚠️ Unknown game phase: ${phase}`);
+  }
 }
 
 // Show exit confirmation dialog
@@ -241,6 +290,9 @@ function initializeSocket(playerData) {
 // Update waiting room UI
 function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
   console.log(`🎨 Updating waiting room UI: ${currentCount}/${maxCount}`);
+
+  // Ensure we're in waiting phase
+  setGamePhase('waiting');
 
   // Update player counter
   const playerCounterElement = document.getElementById('player-counter');
@@ -654,6 +706,9 @@ function disableVotingInteractions() {
 function transitionToVotingPhase(participants, timerSeconds, playerData) {
   console.log('🎨 Transitioning to voting phase...');
 
+  // Set game phase to voting (shows back arrow with confirmation)
+  setGamePhase('voting');
+
   // Hide waiting message
   const waitingMessageElement = document.querySelector('.waiting-message');
   if (waitingMessageElement) {
@@ -710,6 +765,9 @@ function showCalculatingScreen(message) {
 // Show final results with coin rewards (no repositioning)
 function showResultsScreen(participants) {
   console.log('🏆 Showing results screen - keeping original positions');
+
+  // Set game phase to results (hides back arrow completely)
+  setGamePhase('results');
 
   // Hide calculating announcement
   const announcementElement = document.querySelector('.announcement-text');
@@ -908,6 +966,10 @@ function setupResultsButtons() {
     playAgainBtn.addEventListener('click', (e) => {
       e.preventDefault();
       console.log('🔄 Play Again clicked - reloading page');
+      
+      // Reset game phase to waiting before reload to ensure proper state
+      setGamePhase('waiting');
+      
       window.location.reload(); // Simple implementation - reload page to restart
     });
   }
@@ -915,7 +977,7 @@ function setupResultsButtons() {
   if (goHomeBtn) {
     goHomeBtn.addEventListener('click', (e) => {
       console.log('🏠 Go Home clicked');
-      // Let the default link behavior handle navigation to album.html
+      navigateHome(); // Use the centralized navigation function
     });
   }
 }
