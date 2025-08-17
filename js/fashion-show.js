@@ -150,7 +150,7 @@ function navigateHome() {
   window.location.href = 'album.html';
 }
 
-// Update game phase and handle back arrow visibility
+// 🔧 ENHANCED: Update game phase and handle back arrow visibility + dialog cleanup
 function setGamePhase(phase) {
   console.log(`🎮 Game phase changed: ${currentGamePhase} → ${phase}`);
   currentGamePhase = phase;
@@ -174,7 +174,10 @@ function setGamePhase(phase) {
       
     case 'results':
       albumButton.style.display = 'none'; // Hide back arrow
+      // 🔧 FIX: Hide exit confirmation dialog when entering results phase
+      hideExitDialog();
       console.log('🚫 Back arrow hidden (results phase)');
+      console.log('🚪 Exit confirmation dialog hidden (results phase)');
       break;
       
     default:
@@ -762,11 +765,11 @@ function showCalculatingScreen(message) {
   }
 }
 
-// Show final results with coin rewards (no repositioning)
+// 🔧 ENHANCED: Show final results with coin rewards and proper dialog cleanup
 function showResultsScreen(participants) {
   console.log('🏆 Showing results screen - keeping original positions');
 
-  // Set game phase to results (hides back arrow completely)
+  // 🔧 FIX: Set game phase to results (this will hide back arrow AND exit dialog)
   setGamePhase('results');
 
   // Hide calculating announcement
@@ -791,7 +794,7 @@ function showResultsScreen(participants) {
     console.log('✅ Results buttons shown');
   }
 
-  console.log('🎉 Results screen complete - cats stay in original positions');
+  console.log('🎉 Results screen complete - cats stay in original positions, exit dialog hidden');
 }
 
 // Transform the cat display to show results with gold bases (NO repositioning)

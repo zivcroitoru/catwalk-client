@@ -120,3 +120,257 @@
 - ✅ **Polished user experience** with smooth animations and clean UI
 
 **The fashion show game is 95% complete! Only database coin integration remaining.** 🎮✨💰
+
+---------
+
+
+# 🧪 **COMPREHENSIVE TESTING SCENARIOS FOR COIN BUG**
+
+Here are detailed test scenarios designed to expose potential bugs in the coin calculation system:
+
+## 🎯 **TEST SCENARIO SETUP:**
+- **Record initial coin amount** before each test
+- **Execute planned voting pattern** exactly as described
+- **Check final coin amount** after returning home
+- **Verify:** Final = Initial + Expected_Reward
+
+---
+
+## **📋 SCENARIO 1: Basic Vote Changing**
+**Goal:** Test vote switching and ensure correct final count
+
+**Setup:**
+- Enter with Cat A
+- Record initial coins: `______`
+- Wait for 5-player room
+
+**Voting Plan:**
+1. Vote for Player B's cat
+2. Wait 10 seconds
+3. Change vote to Player C's cat  
+4. Wait 10 seconds
+5. Change vote to Player D's cat
+6. Stay until results
+
+**Expected Others' Votes:** Plan with others to give you exactly **2 votes**
+
+**Expected Outcome:**
+- Your final vote: Player D
+- Votes received: 2
+- Coin reward: 50 coins
+- **Final coins should be: Initial + 50**
+
+---
+
+## **📋 SCENARIO 2: Self-Vote Attempt + Early Completion**
+**Goal:** Test self-vote rejection and early voting end
+
+**Setup:**
+- Enter with Cat B  
+- Record initial coins: `______`
+
+**Voting Plan:**
+1. Try to vote for your own cat (should show warning)
+2. Vote for Player A's cat
+3. Coordinate with others to **all vote quickly** (trigger early end)
+4. Stay until results
+
+**Expected Others' Votes:** Plan to receive exactly **3 votes**
+
+**Expected Outcome:**
+- Self-vote rejected (no effect)
+- Early voting end triggered
+- Votes received: 3  
+- Coin reward: 75 coins
+- **Final coins should be: Initial + 75**
+
+---
+
+## **📋 SCENARIO 3: Mid-Voting Disconnect**
+**Goal:** Test dummy participant protection
+
+**Setup:**
+- Enter with Cat C
+- Record initial coins: `______`
+
+**Voting Plan:**
+1. Vote for Player A's cat
+2. Wait for ~15 seconds (mid-voting phase)
+3. **Close browser/disconnect deliberately**
+4. Check coins later from home page
+
+**Expected Outcome:**
+- You become dummy participant
+- No coin reward (you quit before results)
+- **Final coins should be: Initial + 0**
+- Other players might still vote for you, but you don't get coins
+
+---
+
+## **📋 SCENARIO 4: Receive Votes Then Quit**
+**Goal:** Test timing of when coin rewards are applied
+
+**Setup:**
+- Enter with Cat D
+- Record initial coins: `______`  
+- Coordinate with 2 friends to vote for you
+
+**Voting Plan:**
+1. Vote for Player A's cat
+2. **Have 2 friends vote for you immediately**
+3. Wait until timer shows ~5 seconds left
+4. **Disconnect before results phase**
+
+**Expected Outcome:**
+- You quit before results calculation
+- Marked as dummy - no coin reward
+- **Final coins should be: Initial + 0**
+
+---
+
+## **📋 SCENARIO 5: Multi-Round Play Again**
+**Goal:** Test multiple rounds with different vote counts
+
+**Setup:**
+- Enter with Cat E
+- Record initial coins: `______`
+
+**Voting Plan:**
+- **Round 1:** Receive **1 vote**, play again
+- **Round 2:** Receive **4 votes**, play again  
+- **Round 3:** Receive **0 votes**, go home
+
+**Expected Outcome:**
+- Round 1: +25 coins (immediate DB update)
+- Round 2: +100 coins (immediate DB update)
+- Round 3: +0 coins (immediate DB update)
+- **Final coins should be: Initial + 125**
+
+---
+
+## **📋 SCENARIO 6: Maximum Stress Test**
+**Goal:** Test edge case with maximum votes
+
+**Setup:**
+- Enter with Cat F
+- Record initial coins: `______`
+- Coordinate with all 4 other players
+
+**Voting Plan:**
+1. Vote for Player A's cat
+2. **Have ALL 4 other players vote for you**
+3. Stay until results
+
+**Expected Outcome:**
+- Votes received: 4 (maximum possible)
+- Coin reward: 100 coins  
+- **Final coins should be: Initial + 100**
+
+---
+
+## **📋 SCENARIO 7: Timeout Auto-Vote**
+**Goal:** Test automatic vote assignment at timeout
+
+**Setup:**
+- Enter with Cat G  
+- Record initial coins: `______`
+
+**Voting Plan:**
+1. **Don't vote at all**
+2. Let timer run out (30 seconds)
+3. Server assigns random vote
+4. Stay until results
+
+**Expected Others' Votes:** Plan to receive exactly **2 votes**
+
+**Expected Outcome:**
+- Auto-vote assigned by server
+- Votes received: 2
+- Coin reward: 50 coins
+- **Final coins should be: Initial + 50**
+
+---
+
+## **📋 SCENARIO 8: Race Condition Test**
+**Goal:** Test concurrent database operations
+
+**Setup:**
+- **TWO DIFFERENT BROWSERS/DEVICES**
+- Record initial coins: `______`
+
+**Voting Plan:**
+1. **Browser 1:** Enter fashion show with Cat H
+2. **Browser 2:** Simultaneously make shop purchase (spend coins)
+3. **Browser 1:** Complete fashion show, receive 75 coins
+4. Check final coin amount
+
+**Expected Outcome:**
+- Shop purchase: -X coins
+- Fashion show: +75 coins  
+- **Final coins should be: Initial - X + 75**
+
+---
+
+## **📋 SCENARIO 9: Decimal Edge Case**
+**Goal:** Force potential calculation errors
+
+**Setup:**
+- Enter with Cat I
+- Record initial coins: `______`
+- Use network debugging tools if available
+
+**Voting Plan:**
+1. Vote normally
+2. Try to trigger any network issues during voting
+3. Complete normally
+
+**Expected Others' Votes:** Plan to receive exactly **1 vote**
+
+**Expected Outcome:**
+- Votes received: 1
+- Coin reward: 25 coins
+- **Final coins should be: Initial + 25**
+- **Critical:** Final amount must end in 0 or 5
+
+---
+
+## **📋 SCENARIO 10: Zero Reward Confirmation**
+**Goal:** Confirm zero rewards work correctly
+
+**Setup:**
+- Enter with unpopular cat
+- Record initial coins: `______`
+
+**Voting Plan:**
+1. Vote for someone else
+2. **Coordinate so NOBODY votes for you**
+3. Stay until results
+
+**Expected Outcome:**
+- Votes received: 0
+- Coin reward: 0 coins (should skip DB update)
+- **Final coins should be: Initial + 0**
+
+---
+
+## 🔍 **CRITICAL CHECKPOINTS:**
+
+### **✅ For Each Test:**
+1. **Before:** Screenshot initial coin amount
+2. **During:** Note exact voting pattern
+3. **After:** Screenshot final coin amount  
+4. **Verify:** Calculate expected vs actual
+
+### **🚨 Red Flags to Watch For:**
+- Final coin amount ending in 1, 2, 3, 4, 6, 7, 8, or 9
+- Negative coin changes
+- Coin amounts that don't match expected calculation
+- Database inconsistencies between multiple rounds
+
+### **📊 Success Criteria:**
+- All final amounts end in 0 or 5
+- All calculations match: `Final = Initial + (Votes × 25)`
+- Multi-round tests show correct cumulative totals
+- Disconnection tests show no undeserved rewards
+
+**If all scenarios pass, the coin system is robust! If any fail, the detailed logging will help identify the exact bug.** 🎯✨

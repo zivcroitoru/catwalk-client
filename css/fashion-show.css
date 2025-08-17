@@ -569,9 +569,9 @@ h1 {
 /* Cat name and username styling updates */
 .cat-name {
     position: absolute;
-    top: 60%; /* Position in middle of brown box (between coin text and username) */
+    bottom: 50px;  /* VOTING PHASE: 100px from bottom */
+    transform: translateX(-50%);  /* Only horizontal centering */
     left: 50%;
-    transform: translate(-50%,-60%);
     width: 85%; /* Reduced from 90% to prevent overflow */
     max-width: 160px; /* Explicit max width for 186px brown box */
     
@@ -597,6 +597,10 @@ h1 {
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
     font-smooth: never;
+}
+
+.stage-base.results-mode .cat-name {
+  bottom: 25px;   /* RESULTS PHASE: 50px from bottom */
 }
 
 .username {
