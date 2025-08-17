@@ -80,31 +80,30 @@ toastConfirmAddCat(
       palette: matched.palette,
       sprite_url: matched.sprite_url,
       selected: false,
-      equipment: { hat: null, top: null, eyes: null, accessories: [] }
+      equipment: { hat: null, top: null, eyes: null, accessories: null }
     };
 
-    await addCatToUser(newCat);
-    console.log("📦 Cat added to storage");
+await addCatToUser(newCat);
+console.log("📦 Cat added to storage");
 
-    window.userCats = await getPlayerCats();
-    console.log("📥 Refreshed userCats:", window.userCats.length);
+window.userCats = await getPlayerCats();
+console.log("📥 Refreshed userCats:", window.userCats.length);
 
-    await renderCarousel();
-    console.log("🔄 Carousel re-rendered");
+await renderCarousel(newCat.id);
+console.log("🔄 Carousel re-rendered");
 
-    updateInventoryCount();
-    console.log("🔢 Inventory updated");
+console.log("🔢 Inventory updated");
 
-    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
-    console.log("📢 Toast shown");
+toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+console.log("📢 Toast shown");
 
-    window.closeAddCat?.();
-    console.log("❌ Popup closed");
+window.closeAddCat?.();
+console.log("❌ Popup closed");
 
-    setTimeout(() => {
-      window.catAdded = false;
-      console.log("⏱️ Reset catAdded flag");
-    }, 300);
+setTimeout(() => {
+  window.catAdded = false;
+  console.log("⏱️ Reset catAdded flag");
+}, 300);
   },
   () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
