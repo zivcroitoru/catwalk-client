@@ -1,6 +1,15 @@
 // /js/core/toast.js
 import { toPascalCase } from './utils.js';
 
+// 🎨 **STANDARDIZED STYLING FOR FASHION SHOW**
+const FASHION_TOAST_STYLE = {
+  border: '3px solid #000',
+  boxShadow: '4px 4px 0px #000',
+  fontFamily: "'Press Start 2P', monospace",
+  fontSize: '12px',
+  padding: '16px',
+  zIndex: 999999
+};
 
 export function toastCatAdded({ breed, name, sprite_url }) {
   Toastify({
@@ -351,3 +360,145 @@ export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes
 
   return toast;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// FASHION SHOW SPECIFIC TOAST NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * ✅ SIMPLIFIED: Show coin reward for fashion show results
+ * @param {number} coinsEarned - Coins earned this round
+ * @param {number} votesReceived - Number of votes received
+ */
+export function toastFashionShowReward(coinsEarned, votesReceived) {
+  // Only show if coins > 0
+  if (coinsEarned <= 0) {
+    console.log('🍞 No reward toast - zero coins earned');
+    return;
+  }
+
+  const plural = votesReceived === 1 ? 'vote' : 'votes';
+  const message = `${votesReceived} ${plural} received, +${coinsEarned} COINS`;
+  
+  Toastify({
+    text: `🎉 ${message}`,
+    duration: 4000,
+    gravity: "top",
+    position: "right",
+    style: {
+      ...FASHION_TOAST_STYLE,
+      background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+      color: '#000',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      width: '280px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+
+/**
+ * ✅ KEEP: Show warning when player quits early (before results)
+ */
+export function toastFashionShowEarlyQuit() {
+  Toastify({
+    text: "⚠️ You left the fashion show early - no coins awarded!",
+    duration: 3000,
+    gravity: "bottom",
+    position: "right",
+    style: {
+      ...FASHION_TOAST_STYLE,
+      background: "#ff9800",
+      color: "#000",
+      width: "280px"
+    }
+  }).showToast();
+}
+
+/**
+ * ✅ SIMPLIFIED: Show connection status toast
+ * @param {'connected' | 'disconnected' | 'reconnecting' | 'error'} status
+ * @param {string} [message] - Optional custom message for errors
+ */
+export function toastFashionShowConnection(status, message = '') {
+  const statusConfig = {
+    connected: {
+      text: "✅ Connected to fashion show!",
+      background: "#4caf50",
+      duration: 2000
+    },
+    disconnected: {
+      text: "❌ Disconnected from fashion show",
+      background: "#f44336",
+      duration: 3000
+    },
+    reconnecting: {
+      text: "🔄 Reconnecting to fashion show...",
+      background: "#ff9800",
+      duration: -1 // Persistent
+    },
+    error: {
+      text: message || "❌ Fashion show connection error",
+      background: "#d32f2f",
+      duration: 4000
+    }
+  };
+
+  const config = statusConfig[status] || statusConfig.error;
+
+  Toastify({
+    text: config.text,
+    duration: config.duration,
+    gravity: "top",
+    position: "center",
+    style: {
+      ...FASHION_TOAST_STYLE,
+      background: config.background,
+      color: '#fff',
+      minWidth: '250px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+
+/**
+ * ✅ SIMPLIFIED: Show game error toast
+ * @param {string} errorMessage - Error message to display
+ * @param {'warning' | 'error' | 'info'} [severity='error'] - Error severity
+ */
+export function toastFashionShowError(errorMessage, severity = 'error') {
+  const severityConfig = {
+    error: {
+      background: "#d32f2f",
+      emoji: "❌",
+      color: "#fff"
+    },
+    warning: {
+      background: "#ff9800", 
+      emoji: "⚠️",
+      color: "#000"
+    },
+    info: {
+      background: "#2196f3",
+      emoji: "ℹ️", 
+      color: "#fff"
+    }
+  };
+
+  const config = severityConfig[severity];
+
+  Toastify({
+    text: `${config.emoji} ${errorMessage}`,
+    duration: 4000,
+    gravity: "top",
+    position: "center",
+    style: {
+      ...FASHION_TOAST_STYLE,
+      background: config.background,
+      color: config.color,
+      maxWidth: '400px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+

@@ -124,253 +124,249 @@
 ---------
 
 
-# 🧪 **COMPREHENSIVE TESTING SCENARIOS FOR COIN BUG**
-
-Here are detailed test scenarios designed to expose potential bugs in the coin calculation system:
-
-## 🎯 **TEST SCENARIO SETUP:**
-- **Record initial coin amount** before each test
-- **Execute planned voting pattern** exactly as described
-- **Check final coin amount** after returning home
-- **Verify:** Final = Initial + Expected_Reward
+## 🍞 **FASHION SHOW TOAST SYSTEM ANALYSIS**
 
 ---
 
-## **📋 SCENARIO 1: Basic Vote Changing**
-**Goal:** Test vote switching and ensure correct final count
+### **Current Toast Infrastructure:**
 
-**Setup:**
-- Enter with Cat A
-- Record initial coins: `______`
-- Wait for 5-player room
-
-**Voting Plan:**
-1. Vote for Player B's cat
-2. Wait 10 seconds
-3. Change vote to Player C's cat  
-4. Wait 10 seconds
-5. Change vote to Player D's cat
-6. Stay until results
-
-**Expected Others' Votes:** Plan with others to give you exactly **2 votes**
-
-**Expected Outcome:**
-- Your final vote: Player D
-- Votes received: 2
-- Coin reward: 50 coins
-- **Final coins should be: Initial + 50**
+The fashion show uses a **custom toast queue management system** built on top of Toastify.js, implemented via the `FashionShowToastManager` class with:
+- **Queue system** to prevent toast overlap - This is nice, but instead it will be better to have the toasts stack under each other (instead of waiting, and then it's not relevant anymore)
+- **Priority system** (high priority toasts jump to front)
+- **Results phase mode** (pauses non-critical toasts during results)
+- **Smart positioning** with fallbacks
 
 ---
 
-## **📋 SCENARIO 2: Self-Vote Attempt + Early Completion**
-**Goal:** Test self-vote rejection and early voting end
+## 📋 **COMPLETE TOAST INVENTORY:**
 
-**Setup:**
-- Enter with Cat B  
-- Record initial coins: `______`
+### **1. Vote Cast Toast** - this is good
+**When:** Player successfully votes or changes vote  
+**Trigger:** Server confirms vote via `vote_confirmed` event  
+**Position:** Default (top-right)  
+**Duration:** 2000ms  
+**Appearance:**
+```
+Text: "✅ Voted for [CatName]!" or "🔄 Vote changed to [CatName]!"
+Background: #4caf50 (green)
+Border: 3px solid #000 (black)
+Font: 'Press Start 2P', 12px
+Color: #000 (black text)
+Shadow: 4px 4px 0px #000
+```
 
-**Voting Plan:**
-1. Try to vote for your own cat (should show warning)
-2. Vote for Player A's cat
-3. Coordinate with others to **all vote quickly** (trigger early end)
-4. Stay until results
+### **2. Room Joined Toast** - there is no need for this, remove it
+**When:** First player joins waiting room  
+**Trigger:** `updateWaitingRoomUI()` when currentCount === 1  
+**Position:** Default (top-right)  
+**Duration:** 2500ms  
+**Appearance:**
+```
+Text: "🎭 Welcome to Fashion Show! (X/5)"
+Background: #2196f3 (blue)
+Border: 3px solid #000
+Font: 'Press Start 2P', 12px
+Color: #fff (white text)
+Shadow: 4px 4px 0px #000
+```
 
-**Expected Others' Votes:** Plan to receive exactly **3 votes**
+### **3. Waiting Room Update Toast** - there is no need for this, remove it
+**When:** Additional players join (2-4 players in room)  
+**Trigger:** `updateWaitingRoomUI()` when 1 < currentCount < maxCount  
+**Position:** Default (top-right)  
+**Duration:** 2000ms  
+**Appearance:**
+```
+Text: "🎭 X more player(s) needed!"
+Background: #2196f3 (blue) or #ff9800 (orange if ≤2 needed)
+Border: 3px solid #000
+Font: 'Press Start 2P', 11px
+Color: #fff (white text)
+Shadow: 3px 3px 0px #000
+```
 
-**Expected Outcome:**
-- Self-vote rejected (no effect)
-- Early voting end triggered
-- Votes received: 3  
-- Coin reward: 75 coins
-- **Final coins should be: Initial + 75**
+### **4. Voting Started Toast** - there is no need for this, remove it
+**When:** Voting phase begins (room full, timer starts)  
+**Trigger:** `transitionToVotingPhase()` calls `showVotingStartedToast()`  
+**Position:** Default (top-right)  
+**Duration:** 3000ms  
+**Priority:** High  
+**Appearance:**
+```
+Text: "🗳️ Voting started! X seconds to vote!"
+Background: #9c27b0 (purple)
+Border: 3px solid #000
+Font: 'Press Start 2P', 12px
+Color: #fff (white text)
+Padding: 16px
+Shadow: 4px 4px 0px #000
+```
 
----
+### **5. Connection Status Toasts** - This is good
+**When:** Socket connection changes  
+**Trigger:** Socket events (connect, disconnect, error)  
+**Position:** top-center (for visibility)  
+**Duration:** 3000ms (except reconnecting = persistent)  
+**Priority:** High  
+**Appearance:**
 
-## **📋 SCENARIO 3: Mid-Voting Disconnect**
-**Goal:** Test dummy participant protection
+**Connected:**
+```
+Text: "✅ Connected to fashion show!"
+Background: #4caf50 (green)
+```
 
-**Setup:**
-- Enter with Cat C
-- Record initial coins: `______`
+**Disconnected:**
+```
+Text: "❌ Disconnected from fashion show"
+Background: #f44336 (red)
+```
 
-**Voting Plan:**
-1. Vote for Player A's cat
-2. Wait for ~15 seconds (mid-voting phase)
-3. **Close browser/disconnect deliberately**
-4. Check coins later from home page
+**Reconnecting:**
+```
+Text: "🔄 Reconnecting to fashion show..."
+Background: #ff9800 (orange)
+Duration: -1 (persistent)
+```
 
-**Expected Outcome:**
-- You become dummy participant
-- No coin reward (you quit before results)
-- **Final coins should be: Initial + 0**
-- Other players might still vote for you, but you don't get coins
+**All connection toasts:**
+```
+Border: 3px solid #000
+Font: 'Press Start 2P', 12px
+Color: #fff (white text)
+minWidth: 250px
+textAlign: center
+Shadow: 4px 4px 0px #000
+```
 
----
+### **6. Error Toasts**
+**When:** Various error conditions  
+**Trigger:** `socket.on('error')` or `showErrorToast()` calls  
+**Position:** top-center  
+**Duration:** 4000ms  
+**Priority:** High  
+**Appearance:**
 
-## **📋 SCENARIO 4: Receive Votes Then Quit**
-**Goal:** Test timing of when coin rewards are applied
+**Error Severity:**
+```
+Text: "❌ [Error Message]"
+Background: #d32f2f (red)
+Color: #fff (white text)
+```
 
-**Setup:**
-- Enter with Cat D
-- Record initial coins: `______`  
-- Coordinate with 2 friends to vote for you
+**Warning Severity:**
+```
+Text: "⚠️ [Error Message]"
+Background: #ff9800 (orange)
+Color: #000 (black text)
+```
 
-**Voting Plan:**
-1. Vote for Player A's cat
-2. **Have 2 friends vote for you immediately**
-3. Wait until timer shows ~5 seconds left
-4. **Disconnect before results phase**
+**Info Severity:**
+```
+Text: "ℹ️ [Error Message]"
+Background: #2196f3 (blue)
+Color: #fff (white text)
+```
 
-**Expected Outcome:**
-- You quit before results calculation
-- Marked as dummy - no coin reward
-- **Final coins should be: Initial + 0**
+**All error toasts:**
+```
+Border: 3px solid #000
+Font: 'Press Start 2P', 12px
+Padding: 16px
+maxWidth: 400px
+textAlign: center
+Shadow: 4px 4px 0px #000
+```
 
----
+### **7. Coin Reward Toast** ⭐ - Simplify this: Only if coins > 0 then "X vote(s) received, +X COINS"
+**When:** Results phase starts and coins are awarded  
+**Trigger:** `socket.on('results')` with toastData  
+**Position:** top-right  
+**Duration:** 4000ms  
+**Special:** **Bypasses queue system** (shows immediately)  
+**Appearance:**
 
-## **📋 SCENARIO 5: Multi-Round Play Again**
-**Goal:** Test multiple rounds with different vote counts
+```
+Complex HTML structure with:
+- "🎉 FASHION SHOW RESULTS 🎉" (if coins > 0) or "💫 FASHION SHOW RESULTS 💫"
+- "X vote(s) received!"
+- "+X COINS" (large text)
+- "Balance: X coins"
+Background: linear-gradient(135deg, #4caf50, #66bb6a) (green gradient)
+Border: 3px solid #000
+borderRadius: 8px
+Padding: 20px
+Width: 300px
+Shadow: 6px 6px 0px #000
+Font: 'Press Start 2P' (various sizes)
+```
 
-**Setup:**
-- Enter with Cat E
-- Record initial coins: `______`
-
-**Voting Plan:**
-- **Round 1:** Receive **1 vote**, play again
-- **Round 2:** Receive **4 votes**, play again  
-- **Round 3:** Receive **0 votes**, go home
-
-**Expected Outcome:**
-- Round 1: +25 coins (immediate DB update)
-- Round 2: +100 coins (immediate DB update)
-- Round 3: +0 coins (immediate DB update)
-- **Final coins should be: Initial + 125**
-
----
-
-## **📋 SCENARIO 6: Maximum Stress Test**
-**Goal:** Test edge case with maximum votes
-
-**Setup:**
-- Enter with Cat F
-- Record initial coins: `______`
-- Coordinate with all 4 other players
-
-**Voting Plan:**
-1. Vote for Player A's cat
-2. **Have ALL 4 other players vote for you**
-3. Stay until results
-
-**Expected Outcome:**
-- Votes received: 4 (maximum possible)
-- Coin reward: 100 coins  
-- **Final coins should be: Initial + 100**
-
----
-
-## **📋 SCENARIO 7: Timeout Auto-Vote**
-**Goal:** Test automatic vote assignment at timeout
-
-**Setup:**
-- Enter with Cat G  
-- Record initial coins: `______`
-
-**Voting Plan:**
-1. **Don't vote at all**
-2. Let timer run out (30 seconds)
-3. Server assigns random vote
-4. Stay until results
-
-**Expected Others' Votes:** Plan to receive exactly **2 votes**
-
-**Expected Outcome:**
-- Auto-vote assigned by server
-- Votes received: 2
-- Coin reward: 50 coins
-- **Final coins should be: Initial + 50**
-
----
-
-## **📋 SCENARIO 8: Race Condition Test**
-**Goal:** Test concurrent database operations
-
-**Setup:**
-- **TWO DIFFERENT BROWSERS/DEVICES**
-- Record initial coins: `______`
-
-**Voting Plan:**
-1. **Browser 1:** Enter fashion show with Cat H
-2. **Browser 2:** Simultaneously make shop purchase (spend coins)
-3. **Browser 1:** Complete fashion show, receive 75 coins
-4. Check final coin amount
-
-**Expected Outcome:**
-- Shop purchase: -X coins
-- Fashion show: +75 coins  
-- **Final coins should be: Initial - X + 75**
-
----
-
-## **📋 SCENARIO 9: Decimal Edge Case**
-**Goal:** Force potential calculation errors
-
-**Setup:**
-- Enter with Cat I
-- Record initial coins: `______`
-- Use network debugging tools if available
-
-**Voting Plan:**
-1. Vote normally
-2. Try to trigger any network issues during voting
-3. Complete normally
-
-**Expected Others' Votes:** Plan to receive exactly **1 vote**
-
-**Expected Outcome:**
-- Votes received: 1
-- Coin reward: 25 coins
-- **Final coins should be: Initial + 25**
-- **Critical:** Final amount must end in 0 or 5
-
----
-
-## **📋 SCENARIO 10: Zero Reward Confirmation**
-**Goal:** Confirm zero rewards work correctly
-
-**Setup:**
-- Enter with unpopular cat
-- Record initial coins: `______`
-
-**Voting Plan:**
-1. Vote for someone else
-2. **Coordinate so NOBODY votes for you**
-3. Stay until results
-
-**Expected Outcome:**
-- Votes received: 0
-- Coin reward: 0 coins (should skip DB update)
-- **Final coins should be: Initial + 0**
+### **8. Early Quit Toast** - This is good
+**When:** Player leaves during voting phase  
+**Trigger:** `navigateHome()` during voting phase  
+**Position:** bottom-right  
+**Duration:** 3000ms  
+**Priority:** High  
+**Appearance:**
+```
+Text: "⚠️ You left the fashion show early - no coins awarded!"
+Background: #ff9800 (orange)
+Border: 3px solid #000
+Font: 'Press Start 2P', 12px
+Color: #000 (black text)
+Width: 280px
+Padding: 16px
+Shadow: 4px 4px 0px #000
+```
 
 ---
 
-## 🔍 **CRITICAL CHECKPOINTS:**
+## 🎯 **TOAST POSITIONING SUMMARY:**
 
-### **✅ For Each Test:**
-1. **Before:** Screenshot initial coin amount
-2. **During:** Note exact voting pattern
-3. **After:** Screenshot final coin amount  
-4. **Verify:** Calculate expected vs actual
+| **Toast Type** | **Position** | **Reasoning** |
+|---|---|---|
+| Vote Cast | top-right | Standard feedback location |
+| Room Joined | top-right | Standard feedback location |
+| Waiting Updates | top-right | Standard feedback location |
+| Voting Started | top-right | Standard feedback location |
+| **Connection Status** | **top-center** | **Critical visibility** |
+| **Error Messages** | **top-center** | **Critical visibility** |
+| **Coin Rewards** | **top-right** | **Celebration placement** |
+| **Early Quit Warning** | **bottom-right** | **Departure warning** |
 
-### **🚨 Red Flags to Watch For:**
-- Final coin amount ending in 1, 2, 3, 4, 6, 7, 8, or 9
-- Negative coin changes
-- Coin amounts that don't match expected calculation
-- Database inconsistencies between multiple rounds
+---
 
-### **📊 Success Criteria:**
-- All final amounts end in 0 or 5
-- All calculations match: `Final = Initial + (Votes × 25)`
-- Multi-round tests show correct cumulative totals
-- Disconnection tests show no undeserved rewards
+## 🎨 **VISUAL CONSISTENCY:**
 
-**If all scenarios pass, the coin system is robust! If any fail, the detailed logging will help identify the exact bug.** 🎯✨
+### **Consistent Styling Elements:**
+- ✅ **Font:** `'Press Start 2P', monospace` (pixel art aesthetic)
+- ✅ **Borders:** All have `3px solid #000` (black borders)
+- ✅ **Shadows:** Most have `4px 4px 0px #000` (pixelated shadows)
+- ✅ **Colors:** Game-appropriate palette (greens, blues, oranges, reds)
+- ✅ **z-index:** All set to `999999` (above game elements)
+
+### **Inconsistencies Found:**
+- 🔧 **Shadow sizes vary:** Some 3px, some 4px, some 6px
+- 🔧 **Font sizes vary:** 11px, 12px, 14px, 16px, 18px, 20px
+- 🔧 **Padding inconsistent:** 12px, 16px, 20px
+- 🔧 **Border radius:** Only coin reward has rounded corners
+
+---
+
+## 🛠️ **IMPROVEMENT RECOMMENDATIONS:**
+
+### **1. Standardize Visual Consistency:**
+- **Standard shadow:** `4px 4px 0px #000` for all
+- **Standard font size:** 12px for body text, 14px for titles
+- **Standard padding:** 16px for all
+- **Standard border radius:** Either all square (0px) or all rounded (8px)
+
+### **2. Improve Positioning:**
+- Consider **offset from edges** (currently flush with screen edges)
+- **Vertical stacking** when multiple toasts appear
+
+### **3. Queue System Enhancements:**
+- **Critical toast priority** could interrupt less important ones
+- **Toast deduplication** (prevent identical toasts from queuing)
+
+

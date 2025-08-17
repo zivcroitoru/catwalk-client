@@ -10,78 +10,244 @@ let selectedCatId = null;
 let currentSocket = null;
 let currentPlayerData = null;
 
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🎭 Fashion Show page DOM loaded');
-
-  // Setup exit confirmation dialog
-  setupExitConfirmationDialog();
-
-  // Get required data
-  const userId = localStorage.getItem('userId');
-  if (!userId) {
-    console.error('❌ No userId in localStorage - user must be logged in');
-    alert('Please log in to access the fashion show');
-    window.location.href = '/';
-    return;
-  }
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const catIdFromUrl = urlParams.get('catId');
-  if (!catIdFromUrl) {
-    console.error('❌ No catId provided in URL');
-    alert('No cat selected for fashion show');
-    window.location.href = '/';
-    return;
-  }
-  const catId = parseInt(catIdFromUrl);
-
-  // Get username
-  let username = 'Unknown Player'; // fallback
-  try {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      username = storedUsername;
-    } else {
-      username = `Player_${userId}`;
-      console.log('⚠️ No stored username, using fallback:', username);
-    }
-  } catch (err) {
-    console.warn('⚠️ Could not get username, using fallback:', username);
-  }
-
-  // Get cat name
-  let catName = `Cat_${catId}`; // fallback
-  try {
-    console.log('🔄 Fetching user cats...');
-    const userCats = await getPlayerCats();
-
-    const selectedCat = userCats.find(cat => cat.id === catId);
-    if (selectedCat && selectedCat.name) {
-      catName = selectedCat.name;
-    } else {
-      console.warn('⚠️ Cat not found in user cats, using fallback name');
-    }
-  } catch (err) {
-    console.warn('⚠️ Could not fetch cat data, using fallback:', err);
-  }
-
-  const playerData = {
-    playerId: userId,
-    username: username,
-    catId: catId,
-    catName: catName
-  };
-  console.log('🎯 Player data ready:', playerData);
-
-  // Setup results buttons
-  setupResultsButtons();
-
-  // Initialize socket
-  initializeSocket(playerData);
-});
-
 // Game phase tracking
 let currentGamePhase = 'waiting'; // 'waiting', 'voting', 'results'
+
+// Connection quality monitoring
+let connectionQualityTimer = null;
+let lastHeartbeatTime = Date.now();
+
+// 🎨 **STANDARDIZED STYLING FOR ALL TOASTS**
+const STANDARD_TOAST_STYLE = {
+  border: '3px solid #000',
+  boxShadow: '4px 4px 0px #000',
+  fontFamily: "'Press Start 2P', monospace",
+  fontSize: '12px',
+  padding: '16px',
+  zIndex: 999999
+};
+
+// 🍞 **SIMPLIFIED TOAST FUNCTIONS**
+
+// 1. Vote Cast Toast ✅ KEEP - Good user feedback
+function showVoteCastToast(catName, isChange = false) {
+  const message = isChange ? 
+    `🔄 Vote changed to ${catName}!` : 
+    `✅ Voted for ${catName}!`;
+    
+  Toastify({
+    text: message,
+    duration: 2000,
+    gravity: "top",
+    position: "right",
+    style: {
+      ...STANDARD_TOAST_STYLE,
+      background: '#4caf50',
+      color: '#000'
+    }
+  }).showToast();
+}
+
+// 2. Connection Status Toasts ✅ KEEP - Critical for connectivity
+function showConnectionToast(status, message = '') {
+  const statusConfig = {
+    connected: {
+      text: "✅ Connected to fashion show!",
+      background: "#4caf50",
+      duration: 2000
+    },
+    disconnected: {
+      text: "❌ Disconnected from fashion show",
+      background: "#f44336",
+      duration: 3000
+    },
+    reconnecting: {
+      text: "🔄 Reconnecting to fashion show...",
+      background: "#ff9800",
+      duration: -1 // Persistent
+    },
+    error: {
+      text: message || "❌ Fashion show connection error",
+      background: "#d32f2f",
+      duration: 4000
+    }
+  };
+
+  const config = statusConfig[status] || statusConfig.error;
+
+  Toastify({
+    text: config.text,
+    duration: config.duration,
+    gravity: "top",
+    position: "center",
+    style: {
+      ...STANDARD_TOAST_STYLE,
+      background: config.background,
+      color: '#fff',
+      minWidth: '250px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+
+// 3. Error Toasts ✅ KEEP - Critical for error feedback
+function showErrorToast(errorMessage, severity = 'error') {
+  const severityConfig = {
+    error: {
+      background: "#d32f2f",
+      emoji: "❌",
+      color: "#fff"
+    },
+    warning: {
+      background: "#ff9800", 
+      emoji: "⚠️",
+      color: "#000"
+    },
+    info: {
+      background: "#2196f3",
+      emoji: "ℹ️", 
+      color: "#fff"
+    }
+  };
+
+  const config = severityConfig[severity];
+
+  Toastify({
+    text: `${config.emoji} ${errorMessage}`,
+    duration: 4000,
+    gravity: "top",
+    position: "center",
+    style: {
+      ...STANDARD_TOAST_STYLE,
+      background: config.background,
+      color: config.color,
+      maxWidth: '400px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+
+// 4. Simplified Coin Reward Toast ✅ SIMPLIFIED
+function showRewardToast(coinsEarned, votesReceived) {
+  // Only show if coins > 0
+  if (coinsEarned <= 0) {
+    console.log('🍞 No reward toast - zero coins earned');
+    return;
+  }
+
+  const plural = votesReceived === 1 ? 'vote' : 'votes';
+  const message = `${votesReceived} ${plural} received, +${coinsEarned} COINS`;
+  
+  Toastify({
+    text: `🎉 ${message}`,
+    duration: 4000,
+    gravity: "top",
+    position: "right",
+    style: {
+      ...STANDARD_TOAST_STYLE,
+      background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+      color: '#000',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      width: '280px',
+      textAlign: 'center'
+    }
+  }).showToast();
+}
+
+// 5. Early Quit Toast ✅ KEEP - Important warning
+function showEarlyQuitToast() {
+  Toastify({
+    text: "⚠️ You left the fashion show early - no coins awarded!",
+    duration: 3000,
+    gravity: "bottom",
+    position: "right",
+    style: {
+      ...STANDARD_TOAST_STYLE,
+      background: "#ff9800",
+      color: "#000",
+      width: "280px"
+    }
+  }).showToast();
+}
+
+// 🔧 FIXED: DOMContentLoaded handler with proper error handling
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    console.log('🎭 Fashion Show page DOM loaded');
+    
+    setupExitConfirmationDialog();
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('❌ No userId in localStorage - user must be logged in');
+      showErrorToast('Please log in to access the fashion show', 'error');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const catIdFromUrl = urlParams.get('catId');
+    if (!catIdFromUrl) {
+      console.error('❌ No catId provided in URL');
+      showErrorToast('No cat selected for fashion show', 'error');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+      return;
+    }
+    const catId = parseInt(catIdFromUrl);
+
+    // Get username
+    let username = 'Unknown Player'; // fallback
+    try {
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        username = storedUsername;
+      } else {
+        username = `Player_${userId}`;
+        console.log('⚠️ No stored username, using fallback:', username);
+      }
+    } catch (err) {
+      console.warn('⚠️ Could not get username, using fallback:', username);
+    }
+
+    // Get cat name
+    let catName = `Cat_${catId}`; // fallback
+    try {
+      console.log('🔄 Fetching user cats...');
+      const userCats = await getPlayerCats();
+
+      const selectedCat = userCats.find(cat => cat.id === catId);
+      if (selectedCat && selectedCat.name) {
+        catName = selectedCat.name;
+      } else {
+        console.warn('⚠️ Cat not found in user cats, using fallback name');
+      }
+    } catch (err) {
+      console.warn('⚠️ Could not fetch cat data, using fallback:', err);
+    }
+
+    const playerData = {
+      playerId: userId,
+      username: username,
+      catId: catId,
+      catName: catName
+    };
+    console.log('🎯 Player data ready:', playerData);
+
+    // Setup results buttons
+    setupResultsButtons();
+    
+    // 🔧 FIXED: Only call initializeSocket once
+    initializeSocket(playerData);
+
+  } catch (err) {
+    handleFashionShowError(err, 'Initialization');
+  }
+});
 
 // Setup exit confirmation dialog with phase-based behavior
 function setupExitConfirmationDialog() {
@@ -137,18 +303,6 @@ function setupExitConfirmationDialog() {
 
   console.log('✅ Exit confirmation dialog setup complete');
 }
-    
-// Navigate home with proper cleanup
-function navigateHome() {
-    // Disconnect socket if connected
-    if (currentSocket && currentSocket.connected) {
-      console.log('🔌 Disconnecting socket before leaving');
-      currentSocket.disconnect();
-    }
-    
-    // Navigate to album page
-  window.location.href = 'album.html';
-}
 
 // 🔧 ENHANCED: Update game phase and handle back arrow visibility + dialog cleanup
 function setGamePhase(phase) {
@@ -187,12 +341,6 @@ function setGamePhase(phase) {
 
 // Show exit confirmation dialog
 function showExitDialog() {
-  // 🔧 SAFETY: Only show dialog if we're not in results phase
-  if (currentGamePhase === 'results') {
-    console.log('🚫 Cannot show exit dialog during results phase');
-    return;
-  }
-  
   const exitOverlay = document.getElementById('exit-overlay');
   if (exitOverlay) {
     exitOverlay.style.display = 'flex';
@@ -209,6 +357,35 @@ function hideExitDialog() {
   }
 }
 
+// 🔧 FIXED: Navigate home with early quit warning
+function navigateHome() {
+  // Show early quit warning if leaving during voting
+  if (currentGamePhase === 'voting') {
+    showEarlyQuitToast();
+    
+    // Brief delay to let user see the toast before navigation
+    setTimeout(() => {
+      // Disconnect socket if connected
+      if (currentSocket && currentSocket.connected) {
+        console.log('🔌 Disconnecting socket before leaving');
+        currentSocket.disconnect();
+      }
+      
+      // Navigate to album page
+      window.location.href = 'album.html';
+    }, 1500); // 1.5 second delay to show toast
+  } else {
+    // Normal navigation for waiting/results phases
+    if (currentSocket && currentSocket.connected) {
+      console.log('🔌 Disconnecting socket before leaving');
+      currentSocket.disconnect();
+    }
+    
+    window.location.href = 'album.html';
+  }
+}
+
+// 🔧 FIXED: Initialize socket with comprehensive error handling
 function initializeSocket(playerData) {
   console.log('🔧 Initializing socket connection...');
 
@@ -217,12 +394,18 @@ function initializeSocket(playerData) {
     auth: { token: authToken }
   });
 
-  // Store socket reference globally for voting
   currentSocket = socket;
   currentPlayerData = playerData;
 
+  // Socket connect handler
   socket.on('connect', () => {
     console.log('✅ Socket connected:', socket.id);
+    
+    // Show connection success toast
+    showConnectionToast('connected');
+    
+    // Start connection quality monitoring
+    startConnectionMonitoring();
 
     const joinMessage = {
       playerId: playerData.playerId,
@@ -234,11 +417,111 @@ function initializeSocket(playerData) {
 
   socket.on('connect_error', (err) => {
     console.error('❌ Socket connect_error:', err);
+    showConnectionToast('error', 'Failed to connect to fashion show');
   });
 
+  // Socket disconnect handler
   socket.on('disconnect', (reason) => {
     console.log('🔌 Socket disconnected:', reason);
-    disableVotingInteractions(); // Disable voting when disconnected
+    disableVotingInteractions();
+    
+    // Stop connection monitoring
+    stopConnectionMonitoring();
+    
+    // Show disconnection toast (but not if intentional navigation)
+    if (reason !== 'client namespace disconnect' && reason !== 'io client disconnect') {
+      showConnectionToast('disconnected');
+      
+      // Try to reconnect after brief delay
+      setTimeout(() => {
+        if (!currentSocket.connected) {
+          showConnectionToast('reconnecting');
+        }
+      }, 2000);
+    }
+  });
+  
+  // Handle reconnection success
+  socket.on('reconnect', () => {
+    console.log('🔄 Socket reconnected');
+    showConnectionToast('connected');
+  });
+
+  // 🔧 FIXED: Consolidated error handling
+  socket.on('error', (errorData) => {
+    console.error('🚨 Server error:', errorData);
+    
+    let severity = errorData.severity || 'error';
+    let message = errorData.message || 'An unknown error occurred';
+    
+    // Show appropriate toast based on error type
+    showErrorToast(message, severity);
+    
+    // Handle specific error types
+    switch (errorData.type) {
+      case 'ownership_error':
+      case 'validation_error':
+      case 'data_loading_error':
+        // Critical errors - navigate home after delay
+        setTimeout(() => {
+          console.log('🏠 Navigating home due to critical error');
+          window.location.href = 'album.html';
+        }, 3000);
+        break;
+        
+      case 'room_full':
+        // Room full - show info and navigate back
+        setTimeout(() => {
+          window.location.href = 'album.html';
+        }, 4000);
+        break;
+        
+      case 'duplicate_join':
+        // Duplicate join - immediate navigation
+        setTimeout(() => {
+          window.location.href = 'album.html';
+        }, 2000);
+        break;
+        
+      case 'vote_error':
+      case 'vote_too_late':
+        // Vote errors - just show toast, don't navigate
+        break;
+        
+      default:
+        // Unknown errors - offer to go home
+        setTimeout(() => {
+          if (confirm('An error occurred. Return to main page?')) {
+            window.location.href = 'album.html';
+          }
+        }, 3000);
+    }
+  });
+
+  // Handle vote confirmation from server
+  socket.on('vote_confirmed', (data) => {
+    console.log('✅ Vote confirmed by server:', data);
+    // Show vote confirmation toast with more details
+    const targetParticipant = document.querySelector(`[data-cat-id="${data.votedCatId}"]`);
+    const catNameElement = targetParticipant?.querySelector('.cat-name');
+    const catName = catNameElement?.textContent || `Cat ${data.votedCatId}`;
+    
+    // Check if this is a vote change
+    const isChange = selectedCatId !== null && selectedCatId !== data.votedCatId;
+    
+    showVoteCastToast(catName, isChange);
+  });
+
+  // Handle heartbeat for connection monitoring
+  socket.on('heartbeat', (data) => {
+    // Update last heartbeat time
+    lastHeartbeatTime = Date.now();
+    
+    // Respond to server heartbeat to confirm connection
+    socket.emit('heartbeat_response', { 
+      timestamp: data.timestamp,
+      clientTime: Date.now()
+    });
   });
 
   // Waiting room participant updates
@@ -276,44 +559,101 @@ function initializeSocket(playerData) {
   });
 
   // Calculating announcement
-    socket.on('calculating_announcement', (message) => {
+  socket.on('calculating_announcement', (message) => {
     console.log('📥 Received calculating_announcement:', message);
     showCalculatingScreen(message.message);
   });
 
-  // Final results
+  // 🔧 FIXED: Enhanced results handler with toast data
   socket.on('results', (message) => {
     console.log('📥 Received results:', message);
 
-    const { participants } = message;
+    const { participants, toastData } = message;
+    
+    // Log results for debugging
     console.log('🏆 Final results received:');
     participants.forEach((p, index) => {
       console.log(`  ${index + 1}. ${p.catName} (${p.username}): ${p.votesReceived} votes = ${p.coinsEarned} coins`);
     });
+
+    // Show coin reward toast based on server data
+    if (toastData) {
+      console.log('💰 Processing toast data:', toastData);
+      
+      if (toastData.success && toastData.coinsEarned > 0) {
+        // Show success toast with coin reward
+        showRewardToast(
+          toastData.coinsEarned,
+          toastData.votesReceived
+        );
+      } else if (!toastData.success) {
+        // Show error toast for failed coin update
+        const errorMsg = toastData.error === 'dummy_participant' 
+          ? 'No coins awarded - you disconnected during the game'
+          : 'Failed to award coins - please contact support';
+          
+        showErrorToast(errorMsg, 'warning');
+      }
+    } else {
+      // Fallback: No toast data from server
+      console.warn('⚠️ No toast data received from server');
+      showErrorToast('Results received but coin status unknown', 'info');
+    }
 
     // Show results screen
     showResultsScreen(participants);
   });
 }
 
+// Connection quality monitoring functions
+function startConnectionMonitoring() {
+  // Reset monitoring
+  if (connectionQualityTimer) {
+    clearInterval(connectionQualityTimer);
+  }
+  
+  lastHeartbeatTime = Date.now();
+  
+  // Check connection quality every 10 seconds
+  connectionQualityTimer = setInterval(() => {
+    const timeSinceLastHeartbeat = Date.now() - lastHeartbeatTime;
+    
+    // If no heartbeat for more than 45 seconds, connection might be poor
+    if (timeSinceLastHeartbeat > 45000) {
+      console.warn('⚠️ Poor connection detected - no heartbeat for', timeSinceLastHeartbeat, 'ms');
+      
+      if (currentSocket && !currentSocket.connected) {
+        showConnectionToast('disconnected');
+      } else {
+        showErrorToast('Connection quality is poor', 'warning');
+      }
+    }
+  }, 10000);
+}
+
+function stopConnectionMonitoring() {
+  if (connectionQualityTimer) {
+    clearInterval(connectionQualityTimer);
+    connectionQualityTimer = null;
+  }
+}
+
 // Update waiting room UI
 function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
   console.log(`🎨 Updating waiting room UI: ${currentCount}/${maxCount}`);
 
-  // Ensure we're in waiting phase
   setGamePhase('waiting');
 
-  // Update player counter
   const playerCounterElement = document.getElementById('player-counter');
   if (playerCounterElement) {
     playerCounterElement.textContent = `${currentCount}/${maxCount}`;
   }
 
-  // Update waiting message visibility
   const waitingMessageElement = document.querySelector('.waiting-message');
   if (waitingMessageElement) {
     if (currentCount < maxCount) {
       waitingMessageElement.style.display = 'block';
+      // ❌ REMOVED: Toast calls for room updates
     } else {
       console.log('🎯 Room is full! Waiting for voting phase...');
     }
@@ -575,7 +915,7 @@ function handleStageMouseEnter(event) {
   const targetCatId = parseInt(stageBase.dataset.catId);
   const targetPlayerId = stageBase.dataset.participantId;
 
-  // 🔧 SAFETY: Validate data before processing
+  // Validate data before processing
   if (isNaN(targetCatId) || !targetPlayerId) {
     console.warn(`⚠️ Stage has invalid data - catId: ${targetCatId}, playerId: ${targetPlayerId}`);
     return;
@@ -608,9 +948,10 @@ function handleStageClick(event) {
   const targetCatId = parseInt(stageBase.dataset.catId);
   const targetPlayerId = stageBase.dataset.participantId;
 
-  // 🔧 SAFETY: Validate data before processing
+  // Validate data before processing
   if (isNaN(targetCatId) || !targetPlayerId) {
     console.warn(`⚠️ Clicked stage has invalid data - catId: ${targetCatId}, playerId: ${targetPlayerId}`);
+    showErrorToast('Invalid cat selection', 'warning');
     return;
   }
 
@@ -626,7 +967,7 @@ function handleStageClick(event) {
     return;
   }
 
-  // Valid vote - update selection
+  // Valid vote - update selection immediately (optimistic UI)
   console.log(`✅ Valid vote for cat ${targetCatId}`);
   selectCat(targetCatId, stageBase);
 
@@ -639,6 +980,14 @@ function handleStageClick(event) {
     });
   } else {
     console.error('❌ Cannot send vote - socket not connected');
+    // Revert optimistic UI update
+    const allStageBases = document.querySelectorAll('.stage-base');
+    allStageBases.forEach(stage => {
+      stage.classList.remove('selected');
+    });
+    selectedCatId = null;
+    
+    showConnectionToast('disconnected');
   }
 }
 
@@ -715,7 +1064,6 @@ function disableVotingInteractions() {
 function transitionToVotingPhase(participants, timerSeconds, playerData) {
   console.log('🎨 Transitioning to voting phase...');
 
-  // Set game phase to voting (shows back arrow with confirmation)
   setGamePhase('voting');
 
   // Hide waiting message
@@ -742,7 +1090,36 @@ function transitionToVotingPhase(participants, timerSeconds, playerData) {
   // Enable voting interactions
   enableVotingInteractions(currentSocket, playerData);
 
+  // ❌ REMOVED: showVotingStartedToast() call
+
   console.log('✅ Voting phase transition complete');
+}
+
+// Enhanced error boundary function for unexpected errors
+function handleFashionShowError(error, context = 'Unknown') {
+  console.error(`🚨 Fashion Show Error in ${context}:`, error);
+  
+  let userMessage = 'An unexpected error occurred';
+  
+  // Customize message based on error type
+  if (error.message?.includes('network') || error.message?.includes('fetch')) {
+    userMessage = 'Network connection problem';
+  } else if (error.message?.includes('invalid') || error.message?.includes('not found')) {
+    userMessage = 'Invalid game data - please restart';
+  } else if (error.message?.includes('timeout')) {
+    userMessage = 'Connection timeout - please try again';
+  }
+  
+  showErrorToast(userMessage, 'error');
+  
+  // For critical errors, offer to return home
+  if (context === 'Critical' || error.message?.includes('auth')) {
+    setTimeout(() => {
+      if (confirm('A serious error occurred. Return to main page?')) {
+        navigateHome();
+      }
+    }, 2000);
+  }
 }
 
 function showCalculatingScreen(message) {
@@ -771,11 +1148,11 @@ function showCalculatingScreen(message) {
   }
 }
 
-// 🔧 ENHANCED: Show final results with coin rewards and proper dialog cleanup
+// Enhanced showResultsScreen function
 function showResultsScreen(participants) {
   console.log('🏆 Showing results screen - keeping original positions');
 
-  // 🔧 FIX: Set game phase to results (this will hide back arrow AND exit dialog)
+  // Set game phase to results (this will hide back arrow AND exit dialog)
   setGamePhase('results');
 
   // Hide calculating announcement
@@ -829,7 +1206,7 @@ function transformToResultsMode(participants) {
     console.log(`🎨 Prepared stage ${index + 1} for results mode (keeping brown box)`);
   });
 
-  // 🔧 FIXED: Use fixed height per vote instead of relative scaling
+  // Use fixed height per vote instead of relative scaling
   const PIXELS_PER_VOTE = 40; // Each vote = 40px of height
   const MIN_HEIGHT = 20; // Minimum height even with 0 votes
 
@@ -856,7 +1233,7 @@ function transformToResultsMode(participants) {
     const goldBase = stageBase.querySelector('.gold-base');
     const catSprite = stageBase.querySelector('.cat-sprite');
 
-    // 🔧 FIXED: Calculate gold base height using fixed formula
+    // Calculate gold base height using fixed formula
     const goldHeight = MIN_HEIGHT + (participant.votesReceived * PIXELS_PER_VOTE);
 
     console.log(`📏 Stage ${stageIndex + 1}: ${participant.votesReceived} votes = ${goldHeight}px (${MIN_HEIGHT} + ${participant.votesReceived} × ${PIXELS_PER_VOTE})`);
@@ -991,7 +1368,30 @@ function setupResultsButtons() {
   }
 }
 
-// Handle page unload
+// Page unload cleanup
 window.addEventListener('beforeunload', () => {
-  console.log('🔌 Page unloading - will disconnect socket');
+  console.log('🔌 Page unloading - cleaning up');
+  
+  // Stop connection monitoring
+  stopConnectionMonitoring();
+  
+  // Disconnect socket
+  if (currentSocket && currentSocket.connected) {
+    currentSocket.disconnect();
+  }
+});
+
+// Global error handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('🚨 Unhandled promise rejection in fashion show:', event.reason);
+  handleFashionShowError(event.reason, 'Promise Rejection');
+  
+  // Prevent the default browser error dialog
+  event.preventDefault();
+});
+
+// Global error handler for JavaScript errors
+window.addEventListener('error', (event) => {
+  console.error('🚨 JavaScript error in fashion show:', event.error);
+  handleFashionShowError(event.error, 'JavaScript');
 });

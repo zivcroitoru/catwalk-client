@@ -9,7 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-  
+    
+  <!-- 🔥 CRITICAL: Add Toastify CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
   <link rel="stylesheet" href="../css/fashion-show.css" />
 </head>
 <body>
@@ -116,19 +119,30 @@
       </div>
     </div>
   </div>
-  <!-- Load Socket.IO client FIRST -->
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+
+  <!-- 🔥 CRITICAL: Load dependencies in correct order -->
   
-  <!-- Debug script to check if io is available -->
+  <!-- 1. Load Toastify JavaScript FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  
+  <!-- 2. Load Socket.IO client SECOND -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <!-- 3. Debug script to verify libraries loaded -->
   <script>
+    console.log('🔧 Toastify loaded check:', typeof Toastify !== 'undefined' ? '✅ Available' : '❌ Not found');
     console.log('🔧 Socket.IO loaded check:', typeof io !== 'undefined' ? '✅ Available' : '❌ Not found');
     if (typeof io !== 'undefined') {
-      console.log('🔧 Socket.IO version:', io.version);
+      console.log('🔧 Socket.IO version:', io.version || 'Version property not available');
       window.io = io; // Ensure it's on window object
+    }
+    if (typeof Toastify !== 'undefined') {
+      console.log('🔧 Toastify version check: ✅ Library loaded successfully');
+      window.Toastify = Toastify; // Ensure it's on window object
     }
   </script>
   
-  <!-- Load fashion show script AFTER Socket.IO -->
+  <!-- 4. Load fashion show script LAST (after all dependencies) -->
   <script type="module" src="../js/fashion-show.js"></script>
 </body>
 </html>
