@@ -1,273 +1,113 @@
-.cat-profile-scroll {
-  position: absolute;
-  top: -8vw;
-  right: 5vw;
-  transform: scale(0.8);
-  transform-origin: top right;
-  width: 45vw;
-  height: 35vw;
-background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
+/* ==== Cat Profile: responsive & neat (replace your block) ==== */
 
-  padding: 8vw 6vw 6vw;
-  box-sizing: border-box;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: visible;
-}
-
-.profile-name-input {
-  position: absolute;
-  top: 4.5vw;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70%;
-  padding: 1rem 0;
-  text-align: center;
-  background: #fff;
-  border: 0.31vw solid var(--border);
-  font-size: 1.5rem;
-  z-index: 10;
+.cat-profile-scroll{
+  position: relative;                 /* no absolute */
+  top:auto; right:auto;               /* clear offsets */
+  transform:none; transform-origin:initial;
+  width:min(900px,92vw);
+  height:auto;
+  background:url('../../assets/ui/scroll.svg') center/100% 100% no-repeat;
+  padding:clamp(24px,6vw,64px) clamp(20px,5vw,48px) clamp(24px,5vw,56px);
+  box-sizing:border-box;
+  color:var(--border);
+  display:flex;
+  flex-direction:column;
+  overflow:visible;
+  margin:2vw auto;                    /* center on page */
+  font-size:1rem; line-height:1.5;
 }
 
-.profile-main {
-  display: flex;
-  gap: 1.25vw;
+/* Name */
+.profile-name-input{
+  position:absolute;                  /* stays on the banner */
+  top:4.5vw; left:50%; transform:translateX(-50%);
+  width:clamp(260px,70%,700px);
+  padding:clamp(8px,1vw,16px) 0;
+  text-align:center;
+  background:#fff;
+  border:0.31vw solid var(--border);
+  font-size:clamp(14px,1.6vw,24px);
+  z-index:10;
 }
 
-.profile-info {
-  margin-top: 1.04vw;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.52vw;
-  font-size: 1.31rem;
-  line-height: 1.5;
+/* Main layout */
+.profile-main{
+  display:grid;
+  grid-template-columns:1fr auto;     /* info | cat */
+  align-items:start;
+  gap:clamp(12px,1.8vw,28px);
 }
 
-.cat-preview-stack {
-  position: relative;
-  width: 8.33vw;
-  height: 8.33vw;
-  margin-top: 1.04vw;
+.profile-info{
+  margin-top:1.04vw;
+  display:flex; flex-direction:column;
+  gap:clamp(6px,0.8vw,14px);
+  font-size:clamp(14px,1.3vw,22px);
+  line-height:1.5;
 }
 
-.cat-preview-stack img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  pointer-events: none;
-  image-rendering: pixelated;
+/* Cat preview */
+.cat-preview-stack{
+  position:relative;
+  width:clamp(96px,12vw,180px);
+  height:clamp(96px,12vw,180px);
+  margin-top:0;
+}
+.cat-preview-stack img{
+  position:absolute; inset:0;
+  width:100%;
+  pointer-events:none; image-rendering:pixelated;
 }
 
-/* ───────────── Footer Buttons ───────────── */
-.profile-footer-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 0.5vw;
-  margin-top: auto;
-  width: fit-content;
-  max-width: 100%;
-  align-self: center;
+/* Description */
+.desc-input{
+  width:100%;
+  min-height:clamp(90px,12vw,180px);
+  max-height:38vh;
+  resize:vertical;
+  transition:background-color .2s ease,color .2s ease;
+}
+.desc-input.editing{
+  background-color:#fffce6; color:#222;
+  border:2px solid #ffcc66; box-shadow:0 0 4px #ffcc66;
 }
 
-.profile-btn {
-  font-size: 0.6rem;
-  padding: 0.35rem 0.5rem;
-  min-width: fit-content;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  box-sizing: border-box;
+/* Footer buttons */
+.profile-footer-buttons{
+  display:flex; justify-content:center; align-items:center;
+  flex-wrap:wrap;                      /* allow wrap */
+  gap:clamp(6px,0.9vw,16px);
+  margin-top:auto; width:fit-content; max-width:100%;
+  align-self:center;
 }
+.profile-btn{
+  font-size:clamp(10px,0.9vw,14px);
+  padding:clamp(6px,0.6vw,10px) clamp(10px,1vw,14px);
+  min-width:max(9ch, clamp(90px,12vw,160px));
+  white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+  box-sizing:border-box;
+}
+.profile-btn:hover{ transform:translateY(-0.1vw); box-shadow:0.3vw 0.3vw 0 #000; }
+.profile-btn:active{ transform:translateY(0.1vw); box-shadow:inset 0.15vw 0.15vw 0 #000; }
 
-.profile-btn:hover {
-  transform: translateY(-0.1vw);
-  box-shadow: 0.3vw 0.3vw 0 #000;
-}
+/* Colored buttons (unchanged) */
+#deleteBtn{ background:#ffcccc; color:#7a0000; border-color:#7a0000; }
+#deleteBtn:hover{ background:#ff9999; } #deleteBtn:active{ background:#e06666; }
+#fashionBtn{ background:#fff2b3; color:#665200; border-color:#665200; }
+#fashionBtn:hover{ background:#ffe066; } #fashionBtn:active{ background:#ffd633; }
+#saveBtn{ background:#ccffcc; color:#006600; border-color:#006600; }
+#saveBtn:hover{ background:#99ff99; } #saveBtn:active{ background:#66e066; }
+#cancelBtn{ background:#cce6ff; color:#003d66; border-color:#003d66; }
+#cancelBtn:hover{ background:#99ccff; } #cancelBtn:active{ background:#66b3ff; }
+#customizeBtn{ background:#f2ccff; color:#500066; border-color:#500066; }
+#customizeBtn:hover{ background:#e699ff; } #customizeBtn:active{ background:#d966ff; }
 
-.profile-btn:active {
-  transform: translateY(0.1vw);
-  box-shadow: inset 0.15vw 0.15vw 0 #000;
+/* ---------- Breakpoints ---------- */
+@media (max-width: 900px){
+  .profile-main{ grid-template-columns:1fr; justify-items:center; }
+  .cat-preview-stack{ order:-1; }     /* cat above details */
+  .profile-name-input{ width:82%; }
 }
-
-/* ───────────── Colored Buttons ───────────── */
-#deleteBtn {
-  background-color: #ffcccc;
-  color: #7a0000;
-  border-color: #7a0000;
-}
-#deleteBtn:hover {
-  background-color: #ff9999;
-}
-#deleteBtn:active {
-  background-color: #e06666;
-}
-
-#fashionBtn {
-  background-color: #fff2b3;
-  color: #665200;
-  border-color: #665200;
-}
-#fashionBtn:hover {
-  background-color: #ffe066;
-}
-#fashionBtn:active {
-  background-color: #ffd633;
-}
-
-#saveBtn {
-  background-color: #ccffcc;
-  color: #006600;
-  border-color: #006600;
-}
-#saveBtn:hover {
-  background-color: #99ff99;
-}
-#saveBtn:active {
-  background-color: #66e066;
-}
-
-#cancelBtn {
-  background-color: #cce6ff;
-  color: #003d66;
-  border-color: #003d66;
-}
-#cancelBtn:hover {
-  background-color: #99ccff;
-}
-#cancelBtn:active {
-  background-color: #66b3ff;
-}
-
-#customizeBtn {
-  background-color: #f2ccff;
-  color: #500066;
-  border-color: #500066;
-}
-#customizeBtn:hover {
-  background-color: #e699ff;
-}
-#customizeBtn:active {
-  background-color: #d966ff;
-}
-
-.desc-input {
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.desc-input.editing {
-  background-color: #fffce6;
-  color: #222;
-  border: 2px solid #ffcc66;
-  box-shadow: 0 0 4px #ffcc66;
-}
-
-/* ───────────── Mobile Adjustments ───────────── */
-@media (max-width: 600px) {
-  .cat-profile-scroll {
-    width: 85vw;
-    height: auto;
-    padding: 10vw 6vw 6vw;
-    transform: scale(1);
-    top: 5vw;
-    right: 5vw;
-  }
-
-  .profile-name-input {
-    font-size: 1.1rem;
-    width: 80%;
-  }
-
-  .profile-btn {
-    font-size: 0.6rem;
-    min-width: 30vw;
-    padding: 0.4rem 0.5rem;
-  }
-  /* ==== Responsive, neat Cat Profile overrides ==== */
-
-.profile-screen {
-  /* optional wrapper around the profile area */
-  display: grid;
-  place-items: center;
-  padding: 2vw;
-}
-
-/* Center the parchment, make it fluid */
-.cat-profile-scroll {
-  position: relative;          /* override absolute */
-  top: auto; right: auto;       /* clear offsets */
-  transform: none;              /* no forced scale */
-  width: min(900px, 92vw);      /* fluid max width */
-  height: auto;                 /* let content define height */
-  padding: clamp(24px, 6vw, 64px) clamp(20px, 5vw, 48px) clamp(24px, 5vw, 56px);
-  margin: 2vw auto;             /* center on page */
-  overflow: visible;            /* keep the “ears” visible */
-}
-
-/* Name field scales but stays centered on the scroll banner */
-.profile-name-input {
-  width: clamp(260px, 70%, 700px);
-  font-size: clamp(14px, 1.6vw, 24px);
-  padding: clamp(8px, 1vw, 16px) 0;
-}
-
-/* Main area: info + cat preview (2 cols → 1 col) */
-.profile-main {
-  display: grid;                /* instead of flex */
-  grid-template-columns: 1fr auto;
-  align-items: start;
-  gap: clamp(12px, 1.8vw, 28px);
-}
-
-/* Text column sizing */
-.profile-info {
-  font-size: clamp(14px, 1.3vw, 22px);
-  gap: clamp(6px, 0.8vw, 14px);
-}
-
-/* Cat preview scales with room; keeps square */
-.cat-preview-stack {
-  width: clamp(96px, 12vw, 180px);
-  height: clamp(96px, 12vw, 180px);
-  margin-top: 0;
-}
-
-/* Description box is comfortable on big screens, not huge on small */
-.desc-input {
-  width: 100%;
-  min-height: clamp(90px, 12vw, 180px);
-  max-height: 38vh;
-  resize: vertical;
-}
-
-/* Footer buttons: wrap & stay centered neatly */
-.profile-footer-buttons {
-  flex-wrap: wrap;
-  gap: clamp(6px, 0.9vw, 16px);
-}
-
-.profile-btn {
-  font-size: clamp(10px, 0.9vw, 14px);
-  padding: clamp(6px, 0.6vw, 10px) clamp(10px, 1vw, 14px);
-  min-width: max(9ch, clamp(90px, 12vw, 160px));
-}
-
-/* ------ Breakpoint: stack layout on narrow screens ------ */
-@media (max-width: 900px) {
-  .profile-main {
-    grid-template-columns: 1fr;   /* stack */
-    justify-items: center;
-    text-align: left;
-  }
-  .cat-preview-stack { order: -1; } /* cat above details */
-  .profile-name-input { width: 82%; }
-}
-
+@media (max-width: 600px){
+  .profile-btn{ min-width:30vw; }
 }
