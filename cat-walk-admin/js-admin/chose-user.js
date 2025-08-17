@@ -1,9 +1,6 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
-
-
-
 // Get player ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get('id');
@@ -16,28 +13,32 @@ if (!playerId) {
   alert('No player ID provided.');
 }
 
+// DOM elements
 const rectangle = document.querySelector('.rectangle');
-const catImage = document.querySelector('.category .cats');
-const clothesImage = document.querySelector('.category .clothes');
-const catCountElement = document.querySelector('.cat-count');
-const clothesCountElement = document.querySelector('.clothes-count');
+const catCountElement = document.getElementById('showCatsBtn');
+const clothesCountElement = document.getElementById('showClothesBtn');
 const catImagesContainer = document.getElementById('cat-images');
 
 const arrowLeft = document.querySelector('.arrow-left');
 const arrowRight = document.querySelector('.arrow-right');
 const pageNumberText = document.querySelector('.pages p');
 
-const catColor = '#ffffffff';     // white background for cats
-const clothesColor = '#838e84';   // green background for clothes
+// Toggle buttons
+const showCatsBtn = document.getElementById('showCatsBtn');
+const showClothesBtn = document.getElementById('showClothesBtn');
 
+// Colors for background
+const catColor = '#ffffff';     // white background for cats
+const clothesColor = '#838e84'; // green background for clothes
+
+// Pagination + data
 const ITEMS_PER_PAGE = 9;
-
-let currentView = 'cats'; // Tracks what is currently shown
-let currentItems = [];    // All cats or clothes fetched
+let currentView = 'cats';
+let currentItems = [];
 let currentPage = 1;
 let totalPages = 1;
 
-// Show player info
+// ---------------------- PLAYER INFO ----------------------
 if (playerId) {
   fetch(`${APP_URL}/api/players/${playerId}`)
     .then(response => {
@@ -60,52 +61,44 @@ if (playerId) {
     });
 }
 
-// Fetch only counts for cats and clothes on page load
+// ---------------------- COUNTS ----------------------
 function fetchCounts() {
   if (!playerId) return;
 
   // Fetch cats count
   fetch(`${APP_URL}/api/players/${playerId}/cats`)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to fetch cats');
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       latestCatsCount = data.length;
-      catCountElement.textContent = `CATS: ${latestCatsCount}`;
+      if (catCountElement) catCountElement.textContent = `CATS: ${latestCatsCount}`;
     })
     .catch(error => {
       console.error('Error fetching cats count:', error);
-      catCountElement.textContent = 'CATS: 0';
+      if (catCountElement) catCountElement.textContent = 'CATS: 0';
     });
 
   // Fetch clothes count
   fetch(`${APP_URL}/api/players/${playerId}/items`)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to fetch clothes');
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       latestClothesCount = data.length;
-      clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
+      if (clothesCountElement) clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
     })
     .catch(error => {
       console.error('Error fetching clothes count:', error);
-      clothesCountElement.textContent = 'CLOTHES: 0';
+      if (clothesCountElement) clothesCountElement.textContent = 'CLOTHES: 0';
     });
 }
 
-// Update pagination display and arrow button states
+// ---------------------- PAGINATION ----------------------
 function updatePagination() {
   pageNumberText.textContent = `${currentPage} / ${totalPages}`;
-
   arrowLeft.style.opacity = currentPage > 1 ? '1' : '0.3';
   arrowRight.style.opacity = currentPage < totalPages ? '1' : '0.3';
   arrowLeft.style.pointerEvents = currentPage > 1 ? 'auto' : 'none';
   arrowRight.style.pointerEvents = currentPage < totalPages ? 'auto' : 'none';
 }
 
-// Show images for the given page number (grid/table style)
 function showPage(page) {
   if (!currentItems.length) {
     catImagesContainer.innerHTML = '<p>No items found.</p>';
@@ -120,7 +113,6 @@ function showPage(page) {
   catImagesContainer.innerHTML = '';
 
   pageItems.forEach((item, index) => {
-    // wrapper acts like a "table cell"
     const wrapper = document.createElement('div');
     wrapper.className = 'cat-card';
 
@@ -132,21 +124,17 @@ function showPage(page) {
     img.alt = 'Item image';
     img.style.cursor = 'pointer';
 
-    // Add a label under the image
+    // Add label
     const label = document.createElement('p');
-    // if (currentView === 'cats') {
-    //   label.textContent = item.name || `Cat ${startIndex + index + 1}`;
-    // } else {
-    //   label.textContent = item.name || `Item ${startIndex + index + 1}`;
-    // }
+    // label.textContent = item.name || (currentView === 'cats' ? `Cat ${startIndex + index + 1}` : `Item ${startIndex + index + 1}`);
 
-    // Add click behavior
+    // Click behavior
     const realIndex = startIndex + index;
     if (currentView === 'cats') {
       img.addEventListener('click', () => {
         window.location.href = `/cat-walk-admin/htmls/user-cat-data.html?player_id=${playerId}&cat_index=${realIndex}`;
       });
-    } else if (currentView === 'clothes') {
+    } else {
       img.addEventListener('click', () => {
         window.location.href = `/cat-walk-admin/htmls/user-clothes-data.html?player_id=${playerId}&item_index=${realIndex}`;
       });
@@ -160,65 +148,66 @@ function showPage(page) {
   updatePagination();
 }
 
-// Fetch and show cats
+// ---------------------- TOGGLE ----------------------
+function setActiveButton(view) {
+  if (view === 'cats') {
+    showCatsBtn.classList.add('active');
+    showClothesBtn.classList.remove('active');
+  } else {
+    showCatsBtn.classList.remove('active');
+    showClothesBtn.classList.add('active');
+  }
+}
+
 function fetchAndShowCats() {
   if (!playerId) return;
   fetch(`${APP_URL}/api/players/${playerId}/cats`)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to fetch cats');
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       currentView = 'cats';
+      setActiveButton('cats');
       rectangle.style.backgroundColor = catColor;
       latestCatsCount = data.length;
 
-      // Update counts, keep clothes count too
-      catCountElement.textContent = `CATS: ${latestCatsCount}`;
-      clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
+      if (catCountElement) catCountElement.textContent = `CATS: ${latestCatsCount}`;
+      if (clothesCountElement) clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
 
       currentItems = data;
       currentPage = 1;
       totalPages = Math.ceil(data.length / ITEMS_PER_PAGE) || 1;
       showPage(currentPage);
     })
-    .catch(error => {
-      console.error(error);
+    .catch(() => {
       catImagesContainer.innerHTML = '<p>Error loading cats.</p>';
       pageNumberText.textContent = `0 / 0`;
     });
 }
 
-// Fetch and show clothes
 function fetchAndShowClothes() {
   if (!playerId) return;
   fetch(`${APP_URL}/api/players/${playerId}/items`)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to fetch clothes');
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
       currentView = 'clothes';
+      setActiveButton('clothes');
       rectangle.style.backgroundColor = clothesColor;
       latestClothesCount = data.length;
 
-      // Update counts, keep cats count too
-      clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
-      catCountElement.textContent = `CATS: ${latestCatsCount}`;
+      if (clothesCountElement) clothesCountElement.textContent = `CLOTHES: ${latestClothesCount}`;
+      if (catCountElement) catCountElement.textContent = `CATS: ${latestCatsCount}`;
 
       currentItems = data;
       currentPage = 1;
       totalPages = Math.ceil(data.length / ITEMS_PER_PAGE) || 1;
       showPage(currentPage);
     })
-    .catch(error => {
-      console.error(error);
+    .catch(() => {
       catImagesContainer.innerHTML = '<p>Error loading clothes.</p>';
       pageNumberText.textContent = `0 / 0`;
     });
 }
 
-// Arrow buttons click handlers
+// ---------------------- EVENTS ----------------------
 arrowLeft.addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
@@ -233,23 +222,14 @@ arrowRight.addEventListener('click', () => {
   }
 });
 
-// Initial load - fetch counts and show cats by default
+showCatsBtn.addEventListener('click', fetchAndShowCats);
+showClothesBtn.addEventListener('click', fetchAndShowClothes);
+
+// ---------------------- INITIAL LOAD ----------------------
 if (playerId) {
-  fetchCounts();       // fetch and display counts immediately
-  fetchAndShowCats();  // show cats grid by default
+  fetchCounts();
+  fetchAndShowCats(); // Default view
 }
-
-// Event listeners for toggling cats/clothes
-catImage.addEventListener('click', fetchAndShowCats);
-catCountElement.addEventListener('click', fetchAndShowCats);
-clothesImage.addEventListener('click', fetchAndShowClothes);
-clothesCountElement.addEventListener('click', fetchAndShowClothes);
-
-
-
-
-
-
 
 
 
@@ -257,6 +237,9 @@ clothesCountElement.addEventListener('click', fetchAndShowClothes);
 
 // import { APP_URL } from "../../js/core/config.js";
 // console.log('APP_URL:', APP_URL);
+
+
+
 
 // // Get player ID from URL
 // const urlParams = new URLSearchParams(window.location.search);
@@ -359,7 +342,7 @@ clothesCountElement.addEventListener('click', fetchAndShowClothes);
 //   arrowRight.style.pointerEvents = currentPage < totalPages ? 'auto' : 'none';
 // }
 
-// // Show images for the given page number
+// // Show images for the given page number (grid/table style)
 // function showPage(page) {
 //   if (!currentItems.length) {
 //     catImagesContainer.innerHTML = '<p>No items found.</p>';
@@ -374,6 +357,10 @@ clothesCountElement.addEventListener('click', fetchAndShowClothes);
 //   catImagesContainer.innerHTML = '';
 
 //   pageItems.forEach((item, index) => {
+//     // wrapper acts like a "table cell"
+//     const wrapper = document.createElement('div');
+//     wrapper.className = 'cat-card';
+
 //     const img = document.createElement('img');
 //     img.src = item.sprite_url_preview || item.sprite_url;
 //     img.className = 'users-stuff';
@@ -382,9 +369,16 @@ clothesCountElement.addEventListener('click', fetchAndShowClothes);
 //     img.alt = 'Item image';
 //     img.style.cursor = 'pointer';
 
-//     // Calculate real index in the full list for URL
-//     const realIndex = startIndex + index;
+//     // Add a label under the image
+//     const label = document.createElement('p');
+//     // if (currentView === 'cats') {
+//     //   label.textContent = item.name || `Cat ${startIndex + index + 1}`;
+//     // } else {
+//     //   label.textContent = item.name || `Item ${startIndex + index + 1}`;
+//     // }
 
+//     // Add click behavior
+//     const realIndex = startIndex + index;
 //     if (currentView === 'cats') {
 //       img.addEventListener('click', () => {
 //         window.location.href = `/cat-walk-admin/htmls/user-cat-data.html?player_id=${playerId}&cat_index=${realIndex}`;
@@ -395,7 +389,9 @@ clothesCountElement.addEventListener('click', fetchAndShowClothes);
 //       });
 //     }
 
-//     catImagesContainer.appendChild(img);
+//     wrapper.appendChild(img);
+//     wrapper.appendChild(label);
+//     catImagesContainer.appendChild(wrapper);
 //   });
 
 //   updatePagination();
