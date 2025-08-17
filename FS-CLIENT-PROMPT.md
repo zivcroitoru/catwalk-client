@@ -5,7 +5,7 @@
 ### **Phase 1: Core Infrastructure** ✅ COMPLETE
 - ✅ Socket.IO connection between client and server
 - ✅ Waiting room system (participants join and leave)
-- ✅ Participant counter display (X/3 players)
+- ✅ Participant counter display (X/5 players)
 - ✅ Room cycling (when full, creates new game room + resets waiting room)
 
 ### **Phase 2: Enhanced Data & Visuals** ✅ COMPLETE  
@@ -17,7 +17,7 @@
 - ✅ Client displays real cat sprites (not placeholders)
 - ✅ Client displays worn items layered on cats
 - ✅ Transition from waiting room to voting phase UI
-- ✅ 60-second countdown timer display
+- ✅ 30-second countdown timer display
 
 ### **Phase 3: Basic Voting Structure** ✅ COMPLETE
 - ✅ Server sends `voting_phase` message with participant data
@@ -36,69 +36,75 @@
 - ✅ **Proper State Management** - Voting interactions enabled/disabled correctly
 
 ### **Phase 5: Vote Calculation & Results Display** ✅ COMPLETE
-- ✅ **Timer-based calculation** triggers when 60 seconds end
+- ✅ **Timer-based calculation** triggers when 30 seconds end
 - ✅ **Auto-vote assignment** for participants who haven't voted
 - ✅ **Detailed logging** of vote counting process
 - ✅ **Coin reward calculation** (25 coins per vote received)
 - ✅ **Early voting end** when all participants vote (1.5s delay)
 - ✅ **Results display** with gold pedestals proportional to votes
 - ✅ **No repositioning** - cats stay in original stage positions
-- ✅ **Simple reward display** - "X votes = Y coins" (medals removed)
+- ✅ **Simple reward display** - "X coins" text in brown boxes
 - ✅ **Smooth animations** - gold base rise, cat positioning, text appearance
 - ✅ **Navigation buttons** - Play Again/Go Home functionality
 
+### **Phase 6: User Experience & Polish** ✅ COMPLETE
+
+#### **Step 6A: Visual Polish** ✅ COMPLETE
+- ✅ Removed medal emojis from results display
+- ✅ Clean coin reward text display in brown boxes
+- ✅ Fixed height calculation for gold pedestals (40px per vote + 20px minimum)
+- ✅ Preserved brown stage bases during results mode
+- ✅ Smooth animations for all result elements
+
+#### **Step 6B: Exit Confirmation Dialog** ✅ COMPLETE  
+- ✅ **Phase-based back arrow behavior:**
+  - **Waiting Room:** Back arrow visible, direct navigation (no confirmation)
+  - **Voting Phase:** Back arrow visible, shows confirmation dialog
+  - **Results Phase:** Back arrow completely hidden
+- ✅ **Confirmation dialog features:**
+  - Gray transparent overlay blocks background interactions
+  - Cream dialog box with proper styling
+  - "Are you sure you want to exit this gameshow?" text
+  - "NO, I changed my mind" and "YES, I'm sure" buttons
+  - Click outside dialog to cancel
+- ✅ **Game phase management:**
+  - `setGamePhase()` function controls back arrow visibility
+  - Proper phase transitions during game flow
+  - Play Again button restores back arrow correctly
+
 ---
 
-## 🎯 **CURRENT STEPS: Polish & UX Improvements**
+## 🎯 **CURRENT STEPS: Final Features**
 
-### **Step 6A: Visual Polish** 🔄 IN PROGRESS
-**Goal:** Perfect the visual aspects and user experience
-
-**Sub-steps:**
-1. ✅ Remove medal emojis from results display
-2. 🔄 **CURRENT:** Further details in prompt...
-
-### **Step 6B: Exit Confirmation Dialog** ⏸️ PLANNED
-**Goal:** Add confirmation popup when player tries to leave
+### **Step 6C: Database Integration** 🔄 NEXT
+**Goal:** Apply coin rewards to player accounts in database
 
 **Sub-steps:**
-1. Detect click on back arrow (←) button
-2. Show overlay with "Are you sure you want to leave?" popup
-3. Present "YES" and "NO" options
-4. Handle YES - navigate to album.html
-5. Handle NO - close popup and stay in fashion show
-6. Style popup to match existing design system
-
-### **Step 6C: Database Integration** ⏸️ PLANNED
-**Goal:** Apply coin rewards to player accounts
-
-**Sub-steps:**
-1. Update player coins in database based on votes received
-2. Skip DB updates for dummy participants (disconnected players)
-3. Error handling for database operations
-4. Verify coin balances update correctly
-5. Show coin gain feedback to players
+1. Add server-side database update for coin rewards
+2. Update player coins based on votes received
+3. Skip DB updates for dummy participants (disconnected players)
+4. Error handling for database operations
+5. Verify coin balances update correctly in player accounts
 
 ---
 
 ## 🎮 **COMPLETE GAME FLOW STATUS:**
 
-1. ✅ **Waiting Room** - Players join and see counter
-2. ✅ **Voting Phase Start** - Timer starts, cats displayed with interactive voting
+1. ✅ **Waiting Room** - Players join, see counter, back arrow for direct exit
+2. ✅ **Voting Phase Start** - Timer starts, cats displayed, back arrow with confirmation
 3. ✅ **Voting Interaction** - Purple outlines, click voting, self-vote prevention
 4. ✅ **Vote Calculation** - Timer/early end with detailed logging
-5. ✅ **Results Display** - Gold pedestals, coin rewards, no repositioning
-6. ✅ **Navigation** - Play Again/Go Home buttons work
-7. 🔄 **Visual Polish** - Fine-tuning animations and layout
-8. ⏸️ **Exit Confirmation** - Popup when trying to leave
-9. ⏸️ **Database Updates** - Apply coin rewards to player accounts
+5. ✅ **Results Display** - Gold pedestals, coin rewards, no back arrow
+6. ✅ **Navigation** - Play Again (restores back arrow) / Go Home buttons
+7. ✅ **Exit Confirmation** - Phase-appropriate back arrow behavior
+8. 🔄 **Database Updates** - Apply coin rewards to player accounts
 
 ---
 
 ## 📋 **IMMEDIATE NEXT ACTIONS:**
 
-### **Priority 1: Visual Polish (Step 6A)**
-- Further details in prompt
+### **Priority 1: Database Integration (Step 6C)**
+- Implement server-side coin reward updates to player accounts
 
 ---
 
@@ -110,26 +116,7 @@
 - ✅ **Proportional results display** without ranking repositioning
 - ✅ **Early voting end** for better game pacing
 - ✅ **Robust error handling** for disconnections and timeouts
+- ✅ **Smart exit confirmation** with phase-appropriate behavior
+- ✅ **Polished user experience** with smooth animations and clean UI
 
-**The core game is fully functional! Now we're polishing the experience.** 🎮✨
-
-
----------
-
-Step 6A is complete!
-
-Now for step 6B. 
-When player clicks on back arrow:
-- the game will have a grey traparent layer added to it so under it is not clickable - the back arrow for example is not clickable
-- A cream screen will pop up, the timer is still running in the background
-- On the cream screen there is:
-  - A text: "Are you sure you want to exit this game?"
-  - A cancel button on the bottom left "No, I changed my mind"
-    - If clicked on, player returns to game
-  - A confirm button on the bottom right "Yes, I'm sure"
-    - If clicked on, player returns home
-- If player clicks outside the cream rectangle, AKA on the grey transparent background, the player returns back to the game (same logic as clicking on cancel button)
-
-Create a detailed stet by step plan with sub steps, then carefully execute them one after the other.
-
-Image 1 is how the visuals should turn out like.
+**The fashion show game is 95% complete! Only database coin integration remaining.** 🎮✨💰
