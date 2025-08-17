@@ -1,7 +1,3 @@
-:root {
-  --cat-podium-offset: -6vh;   /* move cat up: more negative = higher */
-}
-
 /* ───────────── Layout: Header ───────────── */
 .welcome-message {
   position: absolute;
@@ -37,7 +33,7 @@
   color: #fff;
   border: 6px solid var(--border);
   padding: 1rem 1.5rem;
-  font-size: .75rem;
+  font-size: 0.75rem;
   cursor: pointer;
   z-index: 999;
 }
@@ -55,25 +51,39 @@
   position: relative;
   background: #f08632;
   border: 4px solid #000;
-  padding: .5rem;
+  padding: 0.5rem;
   border-radius: 8px;
   width: 4.43vw;
   height: 3.33vw;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transition: transform .2s ease;
+  transition: transform 0.2s ease;
 }
-.topbar-icon:hover { transform: translateX(6px); }
+
+.topbar-icon:hover {
+  transform: translateX(6px);
+}
+
 .topbar-icon:active {
   background: #ffce00;
-  transform: translateX(6px) scale(.95);
-  box-shadow: inset 2px 2px 6px rgba(0,0,0,.4);
+  transform: translateX(6px) scale(0.95);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
-.coin-icon { width: 7.81vw; }
-.topbar-icon img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.coin-icon {
+  width: 7.81vw;
+}
+
+.topbar-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 .topbar-icon#catFactToggle img {
-  width: 2.8vw; height: auto; transform: scale(1.4);
+  width: 2.8vw;   /* larger width relative to parent */
+  height: auto;   /* preserve aspect ratio */
+  transform: scale(1.4); /* increase overall size (optional tweak) */
 }
 .coin-count {
   position: absolute;
@@ -86,49 +96,35 @@
 }
 
 /* ───────────── Layout: Main Cat Display ───────────── */
-html { overflow-y: scroll; }
-
-#carouselCatWrapper {
-  position: fixed;           /* lock to viewport */
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 100vw;
-  height: 56vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 4;
-}
-
 .center-ellipse {
   display: block;
-  width: min(26vw, 520px);
-  height: auto;
-  margin: 0;
+  width: 6vw;
+  margin-top: 6rem;
 }
 
 .ellipse-podium {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;   /* ellipse behind cat */
+  position: relative;
+  width: fit-content;
+  transform: translate(-200px, 315px) scale(5); /* Moved 15px further down */
+  margin: 0 auto;
+}
+
+#carouselCatWrapper {
+  position: relative;
+  width: 10.42vw;
+  height: auto;
 }
 
 .cat-layer {
   position: absolute;
+  top: 100%;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, calc(-50% + var(--cat-podium-offset)));
-  width: min(22vw, 420px);
+  transform: translate(-50%, -95%) scale(0.8); /* moved down */
+  width: 10.42vw;
   height: auto;
   object-fit: contain;
-  image-rendering: pixelated;
-  z-index: 2;
   pointer-events: none;
+  z-index: 2;
 }
 
 /* ───────────── Layout: Carousel ───────────── */
@@ -139,7 +135,6 @@ html { overflow-y: scroll; }
   transform: translateX(-50%);
   width: 90%;
   align-items: flex-start;
-  z-index: 5;
 }
 
 .carousel-background {
@@ -152,8 +147,17 @@ html { overflow-y: scroll; }
   overflow: visible;
 }
 
-.carousel-viewport { overflow: visible; flex: 1; }
-.carousel { display: flex; gap: 20px; transition: transform .4s ease; }
+.carousel-viewport {
+  overflow: visible;
+  flex: 1;
+}
+
+.carousel {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.4s ease;
+}
+
 .floating-actions {
   position: absolute;
   top: -60px;
@@ -165,21 +169,25 @@ html { overflow-y: scroll; }
 
 /* ───────────── Responsive ───────────── */
 @media (max-width: 768px), (orientation: portrait) {
-  .welcome-message { display: none; }
+  .welcome-message {
+    display: none;
+  }
 }
 
 /* ───────────── Shop Lock Interaction Control ───────────── */
-body.shop-lock #game>*:not(.wrapper) {
+body.shop-lock #game > *:not(.wrapper) {
   pointer-events: none;
   user-select: none;
-  filter: blur(0px);
+  filter: blur(0px); /* Optional visual feedback */
 }
+
 body.shop-lock .right-pane,
 body.shop-lock .shop-popup,
 body.shop-lock .shop-blocker {
   pointer-events: auto;
   filter: none;
 }
+
 body.shop-lock .topbar,
 body.shop-lock .sign-out-btn,
 body.shop-lock .welcome-message,
@@ -188,12 +196,11 @@ body.shop-lock .carousel-wrapper,
 body.shop-lock .floating-actions {
   pointer-events: none;
 }
-
-/* Right details pane stays anchored */
 .right-pane {
-  position: absolute;
+  position: absolute; /* or relative */
   right: 2vw;
-  top: 6vw;
-  z-index: 6;
+  top: 6vw; /* adjust as needed */
 }
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
