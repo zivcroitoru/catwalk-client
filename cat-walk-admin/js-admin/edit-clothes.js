@@ -10,7 +10,7 @@ if (!clothId || !selectedCloth) {
   console.error("Missing cloth ID or data");
 } else {
   document.addEventListener('DOMContentLoaded', () => {
-    const clothImage = document.querySelector('.cat-pic-data');
+    const clothImage = document.querySelector('.clothes-pic-data');
     const clothName = document.querySelector('.clothes-name');
     const clothCategory = document.querySelector('.clothes-category');
     const clothSprite = document.querySelector('.clothes-sprite-url');
