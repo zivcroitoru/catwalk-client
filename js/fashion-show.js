@@ -688,9 +688,11 @@ function transformToResultsMode(participants) {
     console.log(`🎨 Prepared stage ${index + 1} for results mode (keeping brown box)`);
   });
 
-  // Find the maximum votes for scaling
-  const maxVotes = Math.max(1, Math.max(...participants.map(p => p.votesReceived)));
-  console.log(`📊 Maximum votes received: ${maxVotes}`);
+  // 🔧 FIXED: Use fixed height per vote instead of relative scaling
+  const PIXELS_PER_VOTE = 40; // Each vote = 40px of height
+  const MIN_HEIGHT = 20; // Minimum height even with 0 votes
+
+  console.log('📊 Using fixed pedestal calculation: 40px per vote + 20px minimum');
 
   // Update each stage base with its ORIGINAL participant (no repositioning)
   stageBases.forEach((stageBase, stageIndex) => {
@@ -713,11 +715,10 @@ function transformToResultsMode(participants) {
     const goldBase = stageBase.querySelector('.gold-base');
     const catSprite = stageBase.querySelector('.cat-sprite');
 
-    // Calculate gold base height based on votes (min 20px, max 200px)
-    const maxHeight = 200;
-    const minHeight = 20;
-    const voteRatio = participant.votesReceived / maxVotes;
-    const goldHeight = Math.max(minHeight, Math.floor(voteRatio * maxHeight));
+    // 🔧 FIXED: Calculate gold base height using fixed formula
+    const goldHeight = MIN_HEIGHT + (participant.votesReceived * PIXELS_PER_VOTE);
+
+    console.log(`📏 Stage ${stageIndex + 1}: ${participant.votesReceived} votes = ${goldHeight}px (${MIN_HEIGHT} + ${participant.votesReceived} × ${PIXELS_PER_VOTE})`);
 
     // Show and position gold base ON TOP of the brown base (not replacing it)
     if (goldBase) {
@@ -776,9 +777,8 @@ function transformToResultsMode(participants) {
     console.log(`✅ Stage ${stageIndex + 1} updated with results (brown box preserved)`);
   });
 
-  console.log('🎨 Results mode transformation complete - brown boxes preserved');
+  console.log('🎨 Results mode transformation complete - brown boxes preserved with fixed height calculation');
 }
-
 // Updated renderWornItemsResults to work with preserved brown boxes
 function renderWornItemsResults(stageBase, wornItems, goldHeight) {
   console.log(`👔 Rendering worn items in results mode with preserved brown boxes`);

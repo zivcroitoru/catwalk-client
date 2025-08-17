@@ -114,7 +114,12 @@
 **The core game is fully functional! Now we're polishing the experience.** 🎮✨
 
 
-# Step 6A
+# Step 5B
+
+- The vote calculations are not correct when we get to the reward phase.
+
+I need you to very carefully analyse the files and find the cause for this
+
 
 - The fact that we have 3 cats in the pictures is fine, it makes the testing easier
 - Issue 1 -> Image 1: How the back arrow and timer CURRENTLY look like, image 2: How the back arrow and timer SHOULD look like
@@ -142,3 +147,5 @@
     - The cat name's needs to be properly positioned between the 2 texts.
 
 Split the problem into simple small sub-steps and fix them all, but tackle carefully one at a time
+
+Before we get to step

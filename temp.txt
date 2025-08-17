@@ -1,29 +1,119 @@
-.coin-reward-text {
-    position: absolute;
-    top: 8px; /* Moved higher in brown box */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 85%; /* Reduced from 90% to prevent overflow */
-    max-width: 160px; /* Explicit max width for 186px brown box */
-    
-    font-family: var(--font-main);
-    font-size: var(--font-size-xs); /* 36px - largest text */
-    color: var(--color-white); /* WHITE instead of black */
-    text-align: center;
-    font-weight: normal;
-    line-height: 1.1;
-    
-    /* Text containment */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    overflow: hidden;
-    box-sizing: border-box;
-    
-    /* Sharp pixel font rendering */
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
-    font-smooth: never;
-    
-    /* Animation */
-    animation: coinTextAppear 1s ease-out 1.2s both;
+// 🔧 FIXED: Replace the transformToResultsMode function in fashion-show.js
+// Change the pedestal height calculation from relative to fixed
+
+function transformToResultsMode(participants) {
+  console.log('🎨 Transforming to results mode - preserving brown boxes');
+
+  const catDisplay = document.querySelector('.cat-display');
+  if (catDisplay) {
+    catDisplay.style.display = 'flex'; // Ensure it's visible
+    catDisplay.classList.add('showing-results');
+  }
+
+  const stageBases = document.querySelectorAll('.stage-base');
+
+  // First, add results mode class to all stage bases (but don't shrink them)
+  stageBases.forEach((stageBase, index) => {
+    stageBase.classList.add('results-mode');
+
+    // Hide gold base and old reward text initially
+    const goldBase = stageBase.querySelector('.gold-base');
+    const oldRewardText = stageBase.querySelector('.reward-text');
+
+    if (goldBase) goldBase.style.display = 'none';
+    if (oldRewardText) oldRewardText.style.display = 'none';
+
+    console.log(`🎨 Prepared stage ${index + 1} for results mode (keeping brown box)`);
+  });
+
+  // 🔧 FIXED: Use fixed height per vote instead of relative scaling
+  const PIXELS_PER_VOTE = 40; // Each vote = 40px of height
+  const MIN_HEIGHT = 20; // Minimum height even with 0 votes
+
+  console.log('📊 Using fixed pedestal calculation: 40px per vote + 20px minimum');
+
+  // Update each stage base with its ORIGINAL participant (no repositioning)
+  stageBases.forEach((stageBase, stageIndex) => {
+    // Get the participant data from the stage's data attributes
+    const participantId = stageBase.dataset.participantId;
+    const catId = parseInt(stageBase.dataset.catId);
+
+    // Find this participant in the results data
+    const participant = participants.find(p => 
+      p.playerId.toString() === participantId && p.catId === catId
+    );
+
+    if (!participant) {
+      console.warn(`⚠️ No participant found for stage ${stageIndex + 1}`);
+      return;
+    }
+
+    console.log(`🎨 Updating stage ${stageIndex + 1} with ${participant.catName} (${participant.votesReceived} votes)`);
+
+    const goldBase = stageBase.querySelector('.gold-base');
+    const catSprite = stageBase.querySelector('.cat-sprite');
+
+    // 🔧 FIXED: Calculate gold base height using fixed formula
+    const goldHeight = MIN_HEIGHT + (participant.votesReceived * PIXELS_PER_VOTE);
+
+    console.log(`📏 Stage ${stageIndex + 1}: ${participant.votesReceived} votes = ${goldHeight}px (${MIN_HEIGHT} + ${participant.votesReceived} × ${PIXELS_PER_VOTE})`);
+
+    // Show and position gold base ON TOP of the brown base (not replacing it)
+    if (goldBase) {
+      goldBase.style.display = 'block';
+      goldBase.style.height = `${goldHeight}px`;
+      goldBase.style.bottom = '100px';
+      goldBase.style.position = 'absolute';
+      goldBase.style.left = '50%';
+      goldBase.style.transform = 'translateX(-50%)';
+      goldBase.style.width = '149px';
+      goldBase.style.backgroundColor = 'var(--color-gold)';
+      console.log(`💰 Stage ${stageIndex + 1} gold base: ${goldHeight}px (${participant.votesReceived} votes)`);
+    }
+
+    // Position cat sprite on top of gold base
+    if (catSprite) {
+      catSprite.style.display = 'block';
+      catSprite.classList.add('results-cat');
+
+      // Position cat on top of gold base
+      const catBottomPosition = 100 + goldHeight; // Brown base height + gold base height
+      catSprite.style.bottom = `${catBottomPosition}px`;
+      catSprite.style.top = 'auto'; // Reset top positioning
+      catSprite.style.position = 'absolute';
+      catSprite.style.left = '50%';
+      catSprite.style.transform = 'translateX(-50%)';
+      catSprite.style.width = '149px';
+      catSprite.style.height = '149px';
+      catSprite.style.objectFit = 'contain';
+      catSprite.style.zIndex = '11';
+
+      console.log(`🐱 Stage ${stageIndex + 1} cat positioned at ${catBottomPosition}px from bottom`);
+    }
+
+    // Render worn items in results mode (positioned on cat)
+    if (participant.wornItems && participant.wornItems.length > 0) {
+      renderWornItemsResults(stageBase, participant.wornItems, goldHeight);
+    }
+
+    // ADD COIN TEXT TO THE EXISTING BROWN BOX
+    // Remove any existing coin reward text first
+    const existingCoinText = stageBase.querySelector('.coin-reward-text');
+    if (existingCoinText) {
+      existingCoinText.remove();
+    }
+
+    // Create new coin reward text element
+    const coinText = document.createElement('div');
+    coinText.className = 'coin-reward-text';
+    coinText.textContent = `${participant.coinsEarned} coins`;
+
+    // Append to stage base (will be positioned by CSS)
+    stageBase.appendChild(coinText);
+
+    console.log(`💰 Stage ${stageIndex + 1} coin text added: ${coinText.textContent}`);
+    console.log(`✅ Stage ${stageIndex + 1} updated with results (brown box preserved)`);
+  });
+
+  console.log('🎨 Results mode transformation complete - brown boxes preserved with fixed height calculation');
 }
