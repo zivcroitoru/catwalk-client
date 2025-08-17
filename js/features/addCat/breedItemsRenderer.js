@@ -60,7 +60,7 @@ async function showAddCatConfirmation(breed, variantData) {
 
 toastConfirmAddCat(
   matched,
-  async () => {  // ✅ async callback
+  async () => {
     if (window.catAdded) return;
     window.catAdded = true;
 
@@ -70,6 +70,7 @@ toastConfirmAddCat(
     }
 
     const newCat = {
+      // client fields (server will assign its own numeric id)
       id: crypto.randomUUID(),
       template: `${breed}-${matched.variant}-${matched.palette}`,
       name: `${breed} (${matched.name})`,
@@ -80,36 +81,40 @@ toastConfirmAddCat(
       palette: matched.palette,
       sprite_url: matched.sprite_url,
       selected: false,
-      equipment: { hat: null, top: null, eyes: null, accessories: null }
+      equipment: { hat: null, top: null, eyes: null, accessories: null },
     };
 
-await addCatToUser(newCat);
-console.log("📦 Cat added to storage");
+    // 1) Create on server → get backend id
+    const created = await addCatToUser(newCat);     // returns { id, ... }
+    console.log("📦 Cat added to storage", created);
 
-window.userCats = await getPlayerCats();
-console.log("📥 Refreshed userCats:", window.userCats.length);
+    // 2) Refresh cache from server
+    window.userCats = await getPlayerCats();
+    console.log("📥 Refreshed userCats:", window.userCats.length);
 
-await renderCarousel(newCat.id);
-console.log("🔄 Carousel re-rendered");
+    // 3) Select the created cat by backend id; fallback to last if missing
+    const selectId =
+      (created && created.id) ||
+      window.userCats.at(-1)?.id ||
+      null;
 
-console.log("🔢 Inventory updated");
+    await renderCarousel(selectId);
+    console.log("🔄 Carousel re-rendered with new cat selected:", selectId);
 
-toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
-console.log("📢 Toast shown");
+    toastCatAdded({ breed, name: matched.name, sprite_url: matched.sprite_url });
+    window.closeAddCat?.();
 
-window.closeAddCat?.();
-console.log("❌ Popup closed");
-
-setTimeout(() => {
-  window.catAdded = false;
-  console.log("⏱️ Reset catAdded flag");
-}, 300);
+    setTimeout(() => {
+      window.catAdded = false;
+      console.log("⏱️ Reset catAdded flag");
+    }, 300);
   },
   () => {
     document.querySelector(".shop-card.selected")?.classList.remove("selected");
     toastCancelled();
   }
 );
+
 
 }
 
