@@ -1,6 +1,12 @@
 import { APP_URL } from './core/config.js';
 import { getAuthToken } from './core/auth/authentication.js';
 import { getPlayerCats } from './core/storage.js';
+import { 
+  toastFashionShowReward,
+  toastFashionShowEarlyQuit, 
+  toastFashionShowConnection,
+  toastFashionShowError 
+} from './core/toast.js';
 
 console.log("🎭 Fashion Show - using APP_URL:", APP_URL);
 
@@ -17,158 +23,167 @@ let currentGamePhase = 'waiting'; // 'waiting', 'voting', 'results'
 let connectionQualityTimer = null;
 let lastHeartbeatTime = Date.now();
 
-// 🎨 **STANDARDIZED STYLING FOR ALL TOASTS**
-const STANDARD_TOAST_STYLE = {
-  border: '3px solid #000',
-  boxShadow: '4px 4px 0px #000',
-  fontFamily: "'Press Start 2P', monospace",
-  fontSize: '12px',
-  padding: '16px',
-  zIndex: 999999
-};
+// 🍞 **SIMPLIFIED TOAST FUNCTIONS USING IMPORTS**
 
-// 🍞 **SIMPLIFIED TOAST FUNCTIONS**
-
-// 1. Vote Cast Toast ✅ KEEP - Good user feedback
+// Vote Cast Toast ✅ KEEP - Good user feedback
 function showVoteCastToast(catName, isChange = false) {
   const message = isChange ? 
     `🔄 Vote changed to ${catName}!` : 
     `✅ Voted for ${catName}!`;
     
-  Toastify({
-    text: message,
-    duration: 2000,
-    gravity: "top",
-    position: "right",
-    style: {
-      ...STANDARD_TOAST_STYLE,
-      background: '#2196f3',
-      color: '#000'
-    }
-  }).showToast();
+  // Use local implementation for this specific case
+  if (typeof Toastify !== 'undefined') {
+    Toastify({
+      text: message,
+      duration: 2000,
+      gravity: "top",
+      position: "right",
+      style: {
+        border: '3px solid #000',
+        boxShadow: '4px 4px 0px #000',
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: '12px',
+        padding: '16px',
+        zIndex: 999999,
+        background: '#2196f3',
+        color: '#000'
+      }
+    }).showToast();
+  }
 }
 
-// 2. Connection Status Toasts ✅ KEEP - Critical for connectivity
+// 🔧 UPDATED: Use imported toast functions
 function showConnectionToast(status, message = '') {
-  const statusConfig = {
-    connected: {
-      text: "✅ Connected to fashion show!",
-      background: "#4caf50",
-      duration: 2000
-    },
-    disconnected: {
-      text: "❌ Disconnected from fashion show",
-      background: "#f44336",
-      duration: 3000
-    },
-    reconnecting: {
-      text: "🔄 Reconnecting to fashion show...",
-      background: "#ff9800",
-      duration: -1 // Persistent
-    },
-    error: {
-      text: message || "❌ Fashion show connection error",
-      background: "#d32f2f",
-      duration: 4000
-    }
-  };
-
-  const config = statusConfig[status] || statusConfig.error;
-
-  Toastify({
-    text: config.text,
-    duration: config.duration,
-    gravity: "top",
-    position: "center",
-    style: {
-      ...STANDARD_TOAST_STYLE,
-      background: config.background,
-      color: '#fff',
-      minWidth: '250px',
-      textAlign: 'center'
-    }
-  }).showToast();
+  toastFashionShowConnection(status, message);
 }
 
-// 3. Error Toasts ✅ KEEP - Critical for error feedback
 function showErrorToast(errorMessage, severity = 'error') {
-  const severityConfig = {
-    error: {
-      background: "#d32f2f",
-      emoji: "❌",
-      color: "#fff"
-    },
-    warning: {
-      background: "#ff9800", 
-      emoji: "⚠️",
-      color: "#000"
-    },
-    info: {
-      background: "#2196f3",
-      emoji: "ℹ️", 
-      color: "#fff"
-    }
-  };
-
-  const config = severityConfig[severity];
-
-  Toastify({
-    text: `${config.emoji} ${errorMessage}`,
-    duration: 4000,
-    gravity: "top",
-    position: "center",
-    style: {
-      ...STANDARD_TOAST_STYLE,
-      background: config.background,
-      color: config.color,
-      maxWidth: '400px',
-      textAlign: 'center'
-    }
-  }).showToast();
+  // Validate inputs
+  if (typeof errorMessage !== 'string' || errorMessage.trim() === '') {
+    console.error('❌ Invalid error message for toast');
+    return;
+  }
+  
+  toastFashionShowError(errorMessage, severity);
+  console.log(`✅ Error toast displayed: ${errorMessage} (${severity})`);
 }
 
-// 4. Simplified Coin Reward Toast ✅ SIMPLIFIED
 function showRewardToast(coinsEarned, votesReceived) {
+  // Validate inputs
+  if (typeof coinsEarned !== 'number' || typeof votesReceived !== 'number') {
+    console.error('❌ Invalid toast parameters:', { coinsEarned, votesReceived });
+    return;
+  }
+  
   // Only show if coins > 0
   if (coinsEarned <= 0) {
     console.log('🍞 No reward toast - zero coins earned');
     return;
   }
 
-  const plural = votesReceived === 1 ? 'vote' : 'votes';
-  const message = `${votesReceived} ${plural} received, +${coinsEarned} COINS`;
-  
-  Toastify({
-    text: `🎉 ${message}`,
-    duration: 4000,
-    gravity: "top",
-    position: "right",
-    style: {
-      ...STANDARD_TOAST_STYLE,
-      background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
-      color: '#000',
-      fontSize: '14px',
-      fontWeight: 'bold',
-      width: '280px',
-      textAlign: 'center'
-    }
-  }).showToast();
+  toastFashionShowReward(coinsEarned, votesReceived);
+  console.log(`✅ Reward toast displayed: ${coinsEarned} coins for ${votesReceived} votes`);
 }
 
-// 5. Early Quit Toast ✅ KEEP - Important warning
 function showEarlyQuitToast() {
-  Toastify({
-    text: "⚠️ You left the fashion show early - no coins awarded!",
-    duration: 3000,
-    gravity: "bottom",
-    position: "right",
-    style: {
-      ...STANDARD_TOAST_STYLE,
-      background: "#ff9800",
-      color: "#000",
-      width: "280px"
+  toastFashionShowEarlyQuit();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DEBUGGING HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+// 🔧 NEW: Function to validate coin calculation for debugging
+function validateCoinCalculation(votesReceived, coinsEarned) {
+  const expectedCoins = votesReceived * 25;
+  
+  if (coinsEarned !== expectedCoins) {
+    console.error(`❌ CLIENT VALIDATION FAILED:`);
+    console.error(`   Votes: ${votesReceived}, Expected: ${expectedCoins}, Actual: ${coinsEarned}`);
+    return false;
+  }
+  
+  if (coinsEarned % 25 !== 0) {
+    console.error(`❌ CLIENT VALIDATION FAILED: Coins not multiple of 25: ${coinsEarned}`);
+    return false;
+  }
+  
+  return true;
+}
+
+// 🔧 NEW: Enhanced logging for toast debugging
+function logToastDebugInfo(toastData, participants) {
+  console.log('🔍 TOAST DEBUG INFO:');
+  console.log('='.repeat(40));
+  
+  if (toastData) {
+    console.log('📊 Toast Data Received:');
+    console.log(`   Success: ${toastData.success}`);
+    console.log(`   Skipped: ${toastData.skipped || false}`);
+    console.log(`   Reason: ${toastData.reason || 'N/A'}`);
+    console.log(`   Error: ${toastData.error || 'N/A'}`);
+    console.log(`   Coins Earned: ${toastData.coinsEarned || 0}`);
+    console.log(`   Votes Received: ${toastData.votesReceived || 0}`);
+    
+    if (toastData.coinsEarned && toastData.votesReceived) {
+      const isValid = validateCoinCalculation(toastData.votesReceived, toastData.coinsEarned);
+      console.log(`   Calculation Valid: ${isValid}`);
     }
-  }).showToast();
+  } else {
+    console.log('❌ No toast data received from server');
+  }
+  
+  // Find our participant in the results
+  const ourParticipant = participants.find(p => 
+    p.playerId === currentPlayerData?.playerId && p.catId === currentPlayerData?.catId
+  );
+  
+  if (ourParticipant) {
+    console.log('👤 Our Participant Results:');
+    console.log(`   Cat Name: ${ourParticipant.catName}`);
+    console.log(`   Votes Received: ${ourParticipant.votesReceived}`);
+    console.log(`   Coins Earned: ${ourParticipant.coinsEarned}`);
+    
+    if (ourParticipant.coinsEarned && ourParticipant.votesReceived) {
+      const isValid = validateCoinCalculation(ourParticipant.votesReceived, ourParticipant.coinsEarned);
+      console.log(`   Calculation Valid: ${isValid}`);
+    }
+  } else {
+    console.log('❌ Could not find our participant in results');
+  }
+  
+  console.log('='.repeat(40));
+}
+
+// 🔧 ENHANCED: Error handling function for unexpected errors
+function handleFashionShowError(error, context = 'Unknown') {
+  console.error(`🚨 Fashion Show Error in ${context}:`, error);
+  
+  let userMessage = 'An unexpected error occurred';
+  let severity = 'error';
+  
+  // Customize message based on error type
+  if (error.message?.includes('network') || error.message?.includes('fetch')) {
+    userMessage = 'Network connection problem';
+    severity = 'warning';
+  } else if (error.message?.includes('invalid') || error.message?.includes('not found')) {
+    userMessage = 'Invalid game data - please restart';
+    severity = 'error';
+  } else if (error.message?.includes('timeout')) {
+    userMessage = 'Connection timeout - please try again';
+    severity = 'warning';
+  }
+  
+  showErrorToast(userMessage, severity);
+  
+  // For critical errors, offer to return home
+  if (context === 'Critical' || error.message?.includes('auth')) {
+    setTimeout(() => {
+      if (confirm('A serious error occurred. Return to main page?')) {
+        navigateHome();
+      }
+    }, 2000);
+  }
 }
 
 // 🔧 FIXED: DOMContentLoaded handler with proper error handling
@@ -564,7 +579,7 @@ function initializeSocket(playerData) {
     showCalculatingScreen(message.message);
   });
 
-  // 🔧 FIXED: Enhanced results handler with toast data
+  // 🔧 UPDATED: Enhanced results handler with proper toast data processing
   socket.on('results', (message) => {
     console.log('📥 Received results:', message);
 
@@ -576,31 +591,62 @@ function initializeSocket(playerData) {
       console.log(`  ${index + 1}. ${p.catName} (${p.username}): ${p.votesReceived} votes = ${p.coinsEarned} coins`);
     });
 
-    // Show coin reward toast based on server data
+    // 🔧 ENHANCED: Process toast data with proper validation and debug logging
+    logToastDebugInfo(toastData, participants);
+
     if (toastData) {
-      console.log('💰 Processing toast data:', toastData);
+      console.log('💰 Processing toast data from server:', toastData);
       
-      if (toastData.success && toastData.coinsEarned > 0) {
-        // Show success toast with coin reward
-        showRewardToast(
-          toastData.coinsEarned,
-          toastData.votesReceived
-        );
-      } else if (!toastData.success) {
-        // Show error toast for failed coin update
-        const errorMsg = toastData.error === 'dummy_participant' 
-          ? 'No coins awarded - you disconnected during the game'
-          : 'Failed to award coins - please contact support';
+      // Validate toast data structure
+      if (typeof toastData.success === 'boolean') {
+        if (toastData.success && !toastData.skipped) {
+          // Successful coin update - show reward toast
+          const coinsEarned = toastData.coinsEarned || 0;
+          const votesReceived = toastData.votesReceived || 0;
           
-        showErrorToast(errorMsg, 'warning');
+          console.log(`💰 Showing reward toast: ${votesReceived} votes = ${coinsEarned} coins`);
+          showRewardToast(coinsEarned, votesReceived);
+          
+        } else if (toastData.success && toastData.skipped) {
+          // Skipped update (dummy participant or zero coins)
+          console.log(`⏭️ Coin update skipped: ${toastData.reason}`);
+          
+          if (toastData.reason === 'dummy_participant') {
+            // Show disconnection warning
+            showErrorToast('You disconnected during the game - no coins awarded', 'warning');
+          }
+          // Don't show toast for zero coins (normal case)
+          
+        } else {
+          // Failed coin update
+          console.error('❌ Coin update failed:', toastData.error);
+          
+          // Show appropriate error message based on error type
+          let errorMessage = 'Failed to award coins - please contact support';
+          
+          if (toastData.error === 'dummy_participant') {
+            errorMessage = 'No coins awarded - you disconnected during the game';
+          } else if (toastData.error?.includes('invalid_coin_amount')) {
+            errorMessage = 'Invalid coin calculation - please report this bug';
+          } else if (toastData.error === 'player_not_found') {
+            errorMessage = 'Player account not found - please contact support';
+          } else if (toastData.error === 'database_error') {
+            errorMessage = 'Database error - coins may not have been awarded';
+          }
+          
+          showErrorToast(errorMessage, 'error');
+        }
+      } else {
+        console.warn('⚠️ Invalid toast data structure received from server');
+        showErrorToast('Results received but coin status unknown', 'info');
       }
     } else {
-      // Fallback: No toast data from server
+      // No toast data from server - this shouldn't happen
       console.warn('⚠️ No toast data received from server');
       showErrorToast('Results received but coin status unknown', 'info');
     }
 
-    // Show results screen
+    // Show results screen regardless of coin status
     showResultsScreen(participants);
   });
 }
@@ -653,7 +699,6 @@ function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
   if (waitingMessageElement) {
     if (currentCount < maxCount) {
       waitingMessageElement.style.display = 'block';
-      // ❌ REMOVED: Toast calls for room updates
     } else {
       console.log('🎯 Room is full! Waiting for voting phase...');
     }
@@ -1090,36 +1135,7 @@ function transitionToVotingPhase(participants, timerSeconds, playerData) {
   // Enable voting interactions
   enableVotingInteractions(currentSocket, playerData);
 
-  // ❌ REMOVED: showVotingStartedToast() call
-
   console.log('✅ Voting phase transition complete');
-}
-
-// Enhanced error boundary function for unexpected errors
-function handleFashionShowError(error, context = 'Unknown') {
-  console.error(`🚨 Fashion Show Error in ${context}:`, error);
-  
-  let userMessage = 'An unexpected error occurred';
-  
-  // Customize message based on error type
-  if (error.message?.includes('network') || error.message?.includes('fetch')) {
-    userMessage = 'Network connection problem';
-  } else if (error.message?.includes('invalid') || error.message?.includes('not found')) {
-    userMessage = 'Invalid game data - please restart';
-  } else if (error.message?.includes('timeout')) {
-    userMessage = 'Connection timeout - please try again';
-  }
-  
-  showErrorToast(userMessage, 'error');
-  
-  // For critical errors, offer to return home
-  if (context === 'Critical' || error.message?.includes('auth')) {
-    setTimeout(() => {
-      if (confirm('A serious error occurred. Return to main page?')) {
-        navigateHome();
-      }
-    }, 2000);
-  }
 }
 
 function showCalculatingScreen(message) {

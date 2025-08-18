@@ -1,14 +1,14 @@
 // /js/core/toast.js
-import { toPascalCase } from './utils.js';
+import { toPascalCase } from "./utils.js";
 
 // 🎨 **STANDARDIZED STYLING FOR FASHION SHOW**
 const FASHION_TOAST_STYLE = {
-  border: '3px solid #000',
-  boxShadow: '4px 4px 0px #000',
+  border: "3px solid #000",
+  boxShadow: "4px 4px 0px #000",
   fontFamily: "'Press Start 2P', monospace",
-  fontSize: '12px',
-  padding: '16px',
-  zIndex: 999999
+  fontSize: "12px",
+  padding: "16px",
+  zIndex: 999999,
 };
 
 export function toastCatAdded({ breed, name, sprite_url }) {
@@ -51,11 +51,9 @@ export function toastCatAdded({ breed, name, sprite_url }) {
       color: "black",
       boxShadow: "6px 6px #000",
       zIndex: 999999,
-    }
+    },
   }).showToast();
 }
-
-
 
 export function toastCancelled() {
   Toastify({
@@ -63,7 +61,7 @@ export function toastCancelled() {
     duration: 1500,
     gravity: "bottom",
     position: "center",
-    style: { background: "#999" }
+    style: { background: "#999" },
   }).showToast();
 }
 
@@ -73,7 +71,7 @@ export function toastBought(name) {
     duration: 2000,
     gravity: "bottom",
     position: "center",
-    style: { background: "#4caf50" }
+    style: { background: "#4caf50" },
   }).showToast();
 }
 
@@ -83,19 +81,17 @@ export function toastNotEnough() {
     duration: 2000,
     gravity: "bottom",
     position: "center",
-    style: { background: "#d32f2f" }
+    style: { background: "#d32f2f" },
   }).showToast();
 }
 
 export function toastEquipResult(name, result) {
   Toastify({
-    text: result === "equipped"
-      ? `Equipped "${name}"`
-      : `Unequipped "${name}"`,
+    text: result === "equipped" ? `Equipped "${name}"` : `Unequipped "${name}"`,
     duration: 2000,
     gravity: "bottom",
     position: "center",
-    style: { background: "#2196f3" }
+    style: { background: "#2196f3" },
   }).showToast();
 }
 
@@ -113,7 +109,7 @@ export function toastInfo(text, background = "#ffcc66") {
       color: "black",
       padding: "10px",
       zIndex: 999999,
-    }
+    },
   }).showToast();
 }
 
@@ -131,12 +127,15 @@ export function toastSimple(text, background = "#4caf50") {
       color: "black",
       padding: "10px",
       zIndex: 999999,
-    }
+    },
   }).showToast();
 }
 
 export function toastConfirmDelete(cat, onConfirm, onCancel) {
-  const imageURL = new URL(cat.sprite_url || cat.image || '', window.location.origin).href;
+  const imageURL = new URL(
+    cat.sprite_url || cat.image || "",
+    window.location.origin,
+  ).href;
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
@@ -173,9 +172,13 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
       transform: "translate(-50%, -50%)",
     },
     callback: () => {
-      document.getElementById("confirmDelete")?.removeEventListener("click", onConfirm);
-      document.getElementById("cancelDelete")?.removeEventListener("click", onCancel);
-    }
+      document
+        .getElementById("confirmDelete")
+        ?.removeEventListener("click", onConfirm);
+      document
+        .getElementById("cancelDelete")
+        ?.removeEventListener("click", onCancel);
+    },
   });
 
   toast.showToast();
@@ -235,9 +238,10 @@ export function toastNoCats() {
       zIndex: 999999,
     },
     callback: () => {
-      document.getElementById("addCatBtnToast")
+      document
+        .getElementById("addCatBtnToast")
         ?.removeEventListener("click", window.__addCatBtnToastHandler);
-    }
+    },
   });
 
   // Track the toast so we can close it later
@@ -249,52 +253,59 @@ export function toastNoCats() {
   // Button click closes toast & opens Add Cat popup
   window.__addCatBtnToastHandler = () => {
     if (window.Toastify?.recent) {
-      try { window.Toastify.recent.hideToast(); } catch {}
+      try {
+        window.Toastify.recent.hideToast();
+      } catch {}
     }
     document.getElementById("addCatBtn")?.click();
   };
 
   requestAnimationFrame(() => {
-    document.getElementById("addCatBtnToast")
+    document
+      .getElementById("addCatBtnToast")
       ?.addEventListener("click", window.__addCatBtnToastHandler);
   });
 }
 
 export async function toastCatFact() {
   try {
-    const res = await fetch('https://catfact.ninja/fact');
+    const res = await fetch("https://catfact.ninja/fact");
     const { fact } = await res.json();
     Toastify({
       text: `🐾 ${fact}`,
       duration: 5000,
-      gravity: 'bottom',
-      position: 'right',
+      gravity: "bottom",
+      position: "right",
       style: {
-        background: '#fff2d9',
-        color: '#000',
+        background: "#fff2d9",
+        color: "#000",
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '10px',
-        border: '2px solid #000',
+        fontSize: "10px",
+        border: "2px solid #000",
       },
     }).showToast();
   } catch {
     Toastify({
-      text: 'Failed to load cat fact 😿',
+      text: "Failed to load cat fact 😿",
       duration: 3000,
-      gravity: 'bottom',
-      position: 'right',
+      gravity: "bottom",
+      position: "right",
       style: {
-        background: '#fdd',
-        color: '#000',
+        background: "#fdd",
+        color: "#000",
         fontFamily: "'Press Start 2P', monospace",
-        fontSize: '10px',
-        border: '2px solid #000',
+        fontSize: "10px",
+        border: "2px solid #000",
       },
     }).showToast();
   }
 }
 
-export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes, onCancel) {
+export function toastConfirmAddCat(
+  { name, variant, palette, sprite_url },
+  onYes,
+  onCancel,
+) {
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
@@ -339,9 +350,13 @@ export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes
       transform: "translate(-50%, -50%)",
     },
     callback: () => {
-      document.getElementById("confirmAddYes")?.removeEventListener("click", onYes);
-      document.getElementById("confirmAddNo")?.removeEventListener("click", onCancel);
-    }
+      document
+        .getElementById("confirmAddYes")
+        ?.removeEventListener("click", onYes);
+      document
+        .getElementById("confirmAddNo")
+        ?.removeEventListener("click", onCancel);
+    },
   });
 
   toast.showToast();
@@ -373,13 +388,13 @@ export function toastConfirmAddCat({ name, variant, palette, sprite_url }, onYes
 export function toastFashionShowReward(coinsEarned, votesReceived) {
   // Only show if coins > 0
   if (coinsEarned <= 0) {
-    console.log('🍞 No reward toast - zero coins earned');
+    console.log("🍞 No reward toast - zero coins earned");
     return;
   }
 
-  const plural = votesReceived === 1 ? 'vote' : 'votes';
+  const plural = votesReceived === 1 ? "vote" : "votes";
   const message = `${votesReceived} ${plural} received, +${coinsEarned} COINS`;
-  
+
   Toastify({
     text: `🎉 ${message}`,
     duration: 4000,
@@ -387,13 +402,13 @@ export function toastFashionShowReward(coinsEarned, votesReceived) {
     position: "right",
     style: {
       ...FASHION_TOAST_STYLE,
-      background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
-      color: '#000',
-      fontSize: '14px',
-      fontWeight: 'bold',
-      width: '280px',
-      textAlign: 'center'
-    }
+      background: "linear-gradient(135deg, #4caf50, #66bb6a)",
+      color: "#000",
+      fontSize: "14px",
+      fontWeight: "bold",
+      width: "280px",
+      textAlign: "center",
+    },
   }).showToast();
 }
 
@@ -410,8 +425,8 @@ export function toastFashionShowEarlyQuit() {
       ...FASHION_TOAST_STYLE,
       background: "#ff9800",
       color: "#000",
-      width: "280px"
-    }
+      width: "280px",
+    },
   }).showToast();
 }
 
@@ -420,28 +435,28 @@ export function toastFashionShowEarlyQuit() {
  * @param {'connected' | 'disconnected' | 'reconnecting' | 'error'} status
  * @param {string} [message] - Optional custom message for errors
  */
-export function toastFashionShowConnection(status, message = '') {
+export function toastFashionShowConnection(status, message = "") {
   const statusConfig = {
     connected: {
       text: "✅ Connected to fashion show!",
       background: "#4caf50",
-      duration: 2000
+      duration: 2000,
     },
     disconnected: {
       text: "❌ Disconnected from fashion show",
       background: "#f44336",
-      duration: 3000
+      duration: 3000,
     },
     reconnecting: {
       text: "🔄 Reconnecting to fashion show...",
       background: "#ff9800",
-      duration: -1 // Persistent
+      duration: -1, // Persistent
     },
     error: {
       text: message || "❌ Fashion show connection error",
       background: "#d32f2f",
-      duration: 4000
-    }
+      duration: 4000,
+    },
   };
 
   const config = statusConfig[status] || statusConfig.error;
@@ -454,10 +469,10 @@ export function toastFashionShowConnection(status, message = '') {
     style: {
       ...FASHION_TOAST_STYLE,
       background: config.background,
-      color: '#fff',
-      minWidth: '250px',
-      textAlign: 'center'
-    }
+      color: "#fff",
+      minWidth: "250px",
+      textAlign: "center",
+    },
   }).showToast();
 }
 
@@ -466,23 +481,23 @@ export function toastFashionShowConnection(status, message = '') {
  * @param {string} errorMessage - Error message to display
  * @param {'warning' | 'error' | 'info'} [severity='error'] - Error severity
  */
-export function toastFashionShowError(errorMessage, severity = 'error') {
+export function toastFashionShowError(errorMessage, severity = "error") {
   const severityConfig = {
     error: {
       background: "#d32f2f",
       emoji: "❌",
-      color: "#fff"
+      color: "#fff",
     },
     warning: {
-      background: "#ff9800", 
+      background: "#ff9800",
       emoji: "⚠️",
-      color: "#000"
+      color: "#000",
     },
     info: {
       background: "#2196f3",
-      emoji: "ℹ️", 
-      color: "#fff"
-    }
+      emoji: "ℹ️",
+      color: "#fff",
+    },
   };
 
   const config = severityConfig[severity];
@@ -496,9 +511,8 @@ export function toastFashionShowError(errorMessage, severity = 'error') {
       ...FASHION_TOAST_STYLE,
       background: config.background,
       color: config.color,
-      maxWidth: '400px',
-      textAlign: 'center'
-    }
+      maxWidth: "400px",
+      textAlign: "center",
+    },
   }).showToast();
 }
-
