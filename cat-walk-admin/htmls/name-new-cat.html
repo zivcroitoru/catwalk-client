@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>add-clothes</title>
     <link rel="stylesheet" href="../css/naming-new.css">
-        <script defer src="../js-admin/edit-new-cat.js" type="module"></script>
+    <script defer src="../js-admin/edit-new-cat.js" type="module"></script>
 
 </head>
 
@@ -39,12 +39,28 @@
                 <img src="../PICS/GINGER-TABY-CAT.png" class="cat-pic-data" id="sprite" width="500" height="500">
             </div>
             <div class="edit-stuff">
-                <p class="cat-name" id="cat-name" contenteditable="true">TEMPLATE-TEMPLATE-TEMPLATE</p>
-                <p class="cat-breed" id="cat-breed" contenteditable="true">BREED</p>
-                <p class="cat-variant" id="cat-variant" contenteditable="true">VARIANT</p>
-                <p class="cat-pallete" id="cat-pallete" contenteditable="true">PALLETE</p>
-                <p class="cat-description" id="cat-description" contenteditable="true">DESCRIPTION</p>
+                <div class="cat-info">
+                    <span class="label">Name:</span>
+                    <span class="value cat-name" id="cat-name" contenteditable="true">TEMPLATE-TEMPLATE-TEMPLATE</span>
+                </div>
+                <div class="cat-info">
+                    <span class="label">Breed:</span>
+                    <span class="value cat-breed" id="cat-breed" contenteditable="true">BREED</span>
+                </div>
+                <div class="cat-info">
+                    <span class="label">Variant:</span>
+                    <span class="value cat-variant" id="cat-variant" contenteditable="true">VARIANT</span>
+                </div>
+                <div class="cat-info">
+                    <span class="label">Pallete:</span>
+                    <span class="value cat-pallete" id="cat-pallete" contenteditable="true">PALLETE</span>
+                </div>
+                <div class="cat-info">
+                    <span class="label">Description:</span>
+                    <span class="value cat-description" id="cat-description" contenteditable="true">DESCRIPTION</span>
+                </div>
             </div>
+
         </div>
         <div class="button-container">
             <button class="next-button">DONE</button>

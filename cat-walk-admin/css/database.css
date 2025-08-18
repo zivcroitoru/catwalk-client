@@ -141,7 +141,7 @@ body {
     font-family: 'Nunito', sans-serif;
     border-radius: 30px;
     display: flex;
-    justify-content: center;
+justify-items: center;
     align-items: center;
 
 
@@ -270,7 +270,7 @@ body {
 
 .grid-wrapper {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     column-gap: 25px;
     /* Keep horizontal spacing */
     row-gap: 0px;
@@ -555,12 +555,16 @@ body {
         grid-template-columns: repeat(3, 1fr);
         padding: -0px;
         position: absolute;
+          justify-items: center;  /* center inside each cell */
+  align-items: start;     /* <-- stick cats to the top */
+  position: absolute;
+
         top: -15px;
         margin-top: 5px;
         left: 0;
         margin-left: 12px;
         width: 100%;
-        height: 100%;
+        /* height: 100%; */
         z-index: 2;
         transform: scale(0.91);
     }
@@ -575,9 +579,13 @@ body {
         left: 0;
         margin-left: 12px;
         width: 100%;
-        height: 100%;
+        /* height: 100%; */
         z-index: 2;
         transform: scale(0.95);
+          justify-items: center;  /* center inside each cell */
+  align-items: start;     /* <-- stick cats to the top */
+  position: absolute;
+
     }
 
 
@@ -692,6 +700,7 @@ body {
 
     .grid-wrapper,
     .grid-wrapper-cats {
+        grid-template-columns: repeat(3, 1fr);
         position: relative;
         top: auto;
         left: auto;
