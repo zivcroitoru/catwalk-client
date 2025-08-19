@@ -72,11 +72,20 @@
   - Proper phase transitions during game flow
   - Play Again button restores back arrow correctly
 
+### **Step 6C: Database Integration** ✅ COMPLETE
+- ✅ **Apply coin rewards to player accounts in database**
+  - Add server-side database update for coin rewards
+  - Update player coins based on votes received
+  - Skip DB updates for dummy participants (disconnected players)
+  - Error handling for database operations
+  - Verify coin balances update correctly in player accounts
+
+
 ---
 
 ## 🎯 **CURRENT STEPS: Final Features**
 
-### **Step 6C: Database Integration** 🔄 NEXT
+### **Step 7: Computer different sized screens responsivity** 🔄 NEXT
 **Goal:** Apply coin rewards to player accounts in database
 
 **Sub-steps:**
@@ -123,250 +132,115 @@
 
 ---------
 
+I have a project I'm working on, and one of the requirements is for the screen to be relatively responsive to various computer screen sizes (laptops and desktops, but no need whatsoever for phones and tablets).
+I've added to my css `@media` parts at the end as to take care of different general sizes. I still have some way to go, but I think it's a good start.
+Tell me your thought and help me right a prompt for claud with a plan with sub steps.
 
-## 🍞 **FASHION SHOW TOAST SYSTEM ANALYSIS**
+---------
 
----
 
-### **Current Toast Infrastructure:**
+**Help me make my fashion show interface relatively responsive for desktop/laptop screens (no need for mobile, ultrawide monitors, etc). Here's my current approach and what I need to improve:**
 
-The fashion show uses a **custom toast queue management system** built on top of Toastify.js, implemented via the `FashionShowToastManager` class with:
-- **Queue system** to prevent toast overlap - This is nice, but instead it will be better to have the toasts stack under each other (instead of waiting, and then it's not relevant anymore)
-- **Priority system** (high priority toasts jump to front)
-- **Results phase mode** (pauses non-critical toasts during results)
-- **Smart positioning** with fallbacks
+**CURRENT STATE:**
+- I have basic media queries scaling `.cat-display` by height breakpoints
+- Most dimensions use CSS custom properties but are still fixed pixel values
+- Layout works on my development screen but needs adaptation for various desktop sizes
 
----
+**GOALS:**
+1. **Responsive scaling system** that works smoothly across desktop screen sizes (1366x768 to 4K)
+2. **Proportional scaling** of all UI elements, not just the cat display
+3. **Flexible layout** that maintains visual hierarchy and readability
+4. **Performance optimization** for different screen densities
 
-## 📋 **COMPLETE TOAST INVENTORY:**
+**SPECIFIC AREAS TO ADDRESS:**
 
-### **1. Vote Cast Toast** - this is good
-**When:** Player successfully votes or changes vote  
-**Trigger:** Server confirms vote via `vote_confirmed` event  
-**Position:** Default (top-right)  
-**Duration:** 2000ms  
-**Appearance:**
-```
-Text: "✅ Voted for [CatName]!" or "🔄 Vote changed to [CatName]!"
-Background: #4caf50 (green)
-Border: 3px solid #000 (black)
-Font: 'Press Start 2P', 12px
-Color: #000 (black text)
-Shadow: 4px 4px 0px #000
-```
+**Sub-step 1: Comprehensive Breakpoint Strategy**
+- Analyze current breakpoints (600px, 900px, 1300px height) and optimize
+- Add width-based breakpoints for ultrawide monitors
+- Create a scaling system that considers both width AND height
+- Handle edge cases like very wide but short screens
 
-### **2. Room Joined Toast** - there is no need for this, remove it
-**When:** First player joins waiting room  
-**Trigger:** `updateWaitingRoomUI()` when currentCount === 1  
-**Position:** Default (top-right)  
-**Duration:** 2500ms  
-**Appearance:**
-```
-Text: "🎭 Welcome to Fashion Show! (X/5)"
-Background: #2196f3 (blue)
-Border: 3px solid #000
-Font: 'Press Start 2P', 12px
-Color: #fff (white text)
-Shadow: 4px 4px 0px #000
-```
+**Sub-step 2: Typography & UI Element Scaling**
+- Scale fonts proportionally with screen size while maintaining readability
+- Ensure buttons, timer, and warning messages scale appropriately
+- Make spacing variables more flexible (convert some px to rem/em/vw/vh)
+- Optimize the Jersey 10 font rendering at different scales
 
-### **3. Waiting Room Update Toast** - there is no need for this, remove it
-**When:** Additional players join (2-4 players in room)  
-**Trigger:** `updateWaitingRoomUI()` when 1 < currentCount < maxCount  
-**Position:** Default (top-right)  
-**Duration:** 2000ms  
-**Appearance:**
-```
-Text: "🎭 X more player(s) needed!"
-Background: #2196f3 (blue) or #ff9800 (orange if ≤2 needed)
-Border: 3px solid #000
-Font: 'Press Start 2P', 11px
-Color: #fff (white text)
-Shadow: 3px 3px 0px #000
-```
+**Sub-step 3: Layout Container Optimization**
+- Review the main game area positioning and sizing
+- Optimize the stage bases layout for different aspect ratios  
+- Ensure proper spacing between elements at all scales
+- Handle the fixed 1050px width of `.cat-display` more flexibly
 
-### **4. Voting Started Toast** - there is no need for this, remove it
-**When:** Voting phase begins (room full, timer starts)  
-**Trigger:** `transitionToVotingPhase()` calls `showVotingStartedToast()`  
-**Position:** Default (top-right)  
-**Duration:** 3000ms  
-**Priority:** High  
-**Appearance:**
-```
-Text: "🗳️ Voting started! X seconds to vote!"
-Background: #9c27b0 (purple)
-Border: 3px solid #000
-Font: 'Press Start 2P', 12px
-Color: #fff (white text)
-Padding: 16px
-Shadow: 4px 4px 0px #000
-```
+**Sub-step 4: Interactive Element Responsiveness**
+- Ensure click targets remain appropriately sized across scales
+- Optimize hover effects and animations for different screen sizes
+- Make sure the exit dialog scales properly
+- Verify timer and progress elements remain readable
 
-### **5. Connection Status Toasts** - This is good
-**When:** Socket connection changes  
-**Trigger:** Socket events (connect, disconnect, error)  
-**Position:** top-center (for visibility)  
-**Duration:** 3000ms (except reconnecting = persistent)  
-**Priority:** High  
-**Appearance:**
+**Sub-step 5: Performance & Polish**
+- Minimize layout shifts during scaling
+- Optimize CSS for different pixel densities
+- Test the scaling animations work smoothly at different sizes
+- Remove debug background colors and finalize the system
 
-**Connected:**
-```
-Text: "✅ Connected to fashion show!"
-Background: #4caf50 (green)
-```
+**CONSTRAINTS:**
+- Must maintain the pixel art aesthetic and sharp rendering
+- Keep the current color scheme and design language
+- Preserve all interactive functionality
+- No need for mobile/tablet support
 
-**Disconnected:**
-```
-Text: "❌ Disconnected from fashion show"
-Background: #f44336 (red)
-```
+**OUTPUT REQUESTED:**
+- Updated CSS with improved media queries and flexible units
+- Explanation of the scaling strategy chosen
+- Recommendations for testing across different screen sizes
+- Any JavaScript adjustments needed for responsive behavior
 
-**Reconnecting:**
-```
-Text: "🔄 Reconnecting to fashion show..."
-Background: #ff9800 (orange)
-Duration: -1 (persistent)
-```
-
-**All connection toasts:**
-```
-Border: 3px solid #000
-Font: 'Press Start 2P', 12px
-Color: #fff (white text)
-minWidth: 250px
-textAlign: center
-Shadow: 4px 4px 0px #000
-```
-
-### **6. Error Toasts**
-**When:** Various error conditions  
-**Trigger:** `socket.on('error')` or `showErrorToast()` calls  
-**Position:** top-center  
-**Duration:** 4000ms  
-**Priority:** High  
-**Appearance:**
-
-**Error Severity:**
-```
-Text: "❌ [Error Message]"
-Background: #d32f2f (red)
-Color: #fff (white text)
-```
-
-**Warning Severity:**
-```
-Text: "⚠️ [Error Message]"
-Background: #ff9800 (orange)
-Color: #000 (black text)
-```
-
-**Info Severity:**
-```
-Text: "ℹ️ [Error Message]"
-Background: #2196f3 (blue)
-Color: #fff (white text)
-```
-
-**All error toasts:**
-```
-Border: 3px solid #000
-Font: 'Press Start 2P', 12px
-Padding: 16px
-maxWidth: 400px
-textAlign: center
-Shadow: 4px 4px 0px #000
-```
-
-### **7. Coin Reward Toast** ⭐ - Simplify this: Only if coins > 0 then "X vote(s) received, +X COINS"
-**When:** Results phase starts and coins are awarded  
-**Trigger:** `socket.on('results')` with toastData  
-**Position:** top-right  
-**Duration:** 4000ms  
-**Special:** **Bypasses queue system** (shows immediately)  
-**Appearance:**
-
-```
-Complex HTML structure with:
-- "🎉 FASHION SHOW RESULTS 🎉" (if coins > 0) or "💫 FASHION SHOW RESULTS 💫"
-- "X vote(s) received!"
-- "+X COINS" (large text)
-- "Balance: X coins"
-Background: linear-gradient(135deg, #4caf50, #66bb6a) (green gradient)
-Border: 3px solid #000
-borderRadius: 8px
-Padding: 20px
-Width: 300px
-Shadow: 6px 6px 0px #000
-Font: 'Press Start 2P' (various sizes)
-```
-
-### **8. Early Quit Toast** - This is good
-**When:** Player leaves during voting phase  
-**Trigger:** `navigateHome()` during voting phase  
-**Position:** bottom-right  
-**Duration:** 3000ms  
-**Priority:** High  
-**Appearance:**
-```
-Text: "⚠️ You left the fashion show early - no coins awarded!"
-Background: #ff9800 (orange)
-Border: 3px solid #000
-Font: 'Press Start 2P', 12px
-Color: #000 (black text)
-Width: 280px
-Padding: 16px
-Shadow: 4px 4px 0px #000
-```
+Please provide a systematic approach with code examples for each sub-step, focusing on creating a robust scaling system that maintains the game's visual quality across desktop screen sizes.
 
 ---
 
-## 🎯 **TOAST POSITIONING SUMMARY:**
 
-| **Toast Type** | **Position** | **Reasoning** |
-|---|---|---|
-| Vote Cast | top-right | Standard feedback location |
-| Room Joined | top-right | Standard feedback location |
-| Waiting Updates | top-right | Standard feedback location |
-| Voting Started | top-right | Standard feedback location |
-| **Connection Status** | **top-center** | **Critical visibility** |
-| **Error Messages** | **top-center** | **Critical visibility** |
-| **Coin Rewards** | **top-right** | **Celebration placement** |
-| **Early Quit Warning** | **bottom-right** | **Departure warning** |
+/* Tall viewport heights (desktop, large screens) */
+@media (max-height: 600px) {
+    body {
+        background-color: green;
+    }
+    .cat-display {
+        transform: scale(0.7);
+        transform-origin: top center;
+    }
+}
 
----
+/* Specific fix for 1440x900 and similar resolutions */
+@media (min-height: 900px) and (max-height: 1000px) and (min-width: 1400px) and (max-width: 1500px) {
+    body {
+        background-color: blue; /* Different color to identify this rule */
+    }
+    .cat-display {
+        transform: scale(1.1); /* Smaller scale than 1.5x for better fit */
+        transform-origin: top center;
+    }
+}
 
-## 🎨 **VISUAL CONSISTENCY:**
+/* Large screens (but not 1440x900) */
+@media (min-height: 900px) and (not (min-width: 1400px and max-width: 1500px and max-height: 1000px)) {
+    body {
+        background-color: red;
+    }
+    .cat-display {
+        transform: scale(1.5);
+        transform-origin: top center;
+    }
+}
 
-### **Consistent Styling Elements:**
-- ✅ **Font:** `'Press Start 2P', monospace` (pixel art aesthetic)
-- ✅ **Borders:** All have `3px solid #000` (black borders)
-- ✅ **Shadows:** Most have `4px 4px 0px #000` (pixelated shadows)
-- ✅ **Colors:** Game-appropriate palette (greens, blues, oranges, reds)
-- ✅ **z-index:** All set to `999999` (above game elements)
-
-### **Inconsistencies Found:**
-- 🔧 **Shadow sizes vary:** Some 3px, some 4px, some 6px
-- 🔧 **Font sizes vary:** 11px, 12px, 14px, 16px, 18px, 20px
-- 🔧 **Padding inconsistent:** 12px, 16px, 20px
-- 🔧 **Border radius:** Only coin reward has rounded corners
-
----
-
-## 🛠️ **IMPROVEMENT RECOMMENDATIONS:**
-
-### **1. Standardize Visual Consistency:**
-- **Standard shadow:** `4px 4px 0px #000` for all
-- **Standard font size:** 12px for body text, 14px for titles
-- **Standard padding:** 16px for all
-- **Standard border radius:** Either all square (0px) or all rounded (8px)
-
-### **2. Improve Positioning:**
-- Consider **offset from edges** (currently flush with screen edges)
-- **Vertical stacking** when multiple toasts appear
-
-### **3. Queue System Enhancements:**
-- **Critical toast priority** could interrupt less important ones
-- **Toast deduplication** (prevent identical toasts from queuing)
-
-
+/* Very large screens */
+@media (min-height: 1300px) {
+    body {
+        background-color: magenta;
+    }
+    .cat-display {
+        transform: scale(2);
+        transform-origin: top center;
+    }
+}

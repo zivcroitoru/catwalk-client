@@ -16,108 +16,129 @@
   <link rel="stylesheet" href="../css/fashion-show.css" />
 </head>
 <body>
-  <main>
-    <!-- Main title -->
-    <h1 class="main-header">FASHION SHOW!</h1>
+  <!-- Main flex container -->
+  <div class="main-container">
     
-    <!-- Waiting message (visible during waiting room phase) -->
-    <div class="waiting-message">
-      WAITING FOR MORE<br>
-      PLAYERS TO JOIN<br>
-      <span id="player-counter">1/5</span>
-    </div>
+    <!-- TOP SECTION -->
+    <section class="top-section">
+      <h1 class="main-header">FASHION SHOW!</h1>
+    </section>
 
-    <!-- Cat display area (visible during voting and results phases) -->
-    <div class="cat-display" style="display: none;">
-      <!-- Stage bases for 5 participants with enhanced structure -->
-      <div class="stage-base" data-participant-index="0" data-participant-id="" data-cat-id="">
-        <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-        <div class="cat-name"></div>
-        <div class="username"></div>
-        <!-- Gold base for results phase -->
-        <div class="gold-base" style="display: none;"></div>
-        <div class="reward-text" style="display: none;"></div>
+    <!-- MIDDLE SECTION -->
+    <section class="middle-section">
+      <!-- Waiting message (visible during waiting room phase) -->
+      <div class="waiting-message">
+        WAITING FOR MORE<br>
+        PLAYERS TO JOIN<br>
+        <span id="player-counter">1/5</span>
       </div>
-      
-      <div class="stage-base" data-participant-index="1" data-participant-id="" data-cat-id="">
-        <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-        <div class="cat-name"></div>
-        <div class="username"></div>
-        <div class="gold-base" style="display: none;"></div>
-        <div class="reward-text" style="display: none;"></div>
-      </div>
-      
-      <div class="stage-base" data-participant-index="2" data-participant-id="" data-cat-id="">
-        <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-        <div class="cat-name"></div>
-        <div class="username"></div>
-        <div class="gold-base" style="display: none;"></div>
-        <div class="reward-text" style="display: none;"></div>
-      </div>
-      
-      <div class="stage-base" data-participant-index="3" data-participant-id="" data-cat-id="">
-        <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-        <div class="cat-name"></div>
-        <div class="username"></div>
-        <div class="gold-base" style="display: none;"></div>
-        <div class="reward-text" style="display: none;"></div>
-      </div>
-      
-      <div class="stage-base" data-participant-index="4" data-participant-id="" data-cat-id="">
-        <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-        <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-        <div class="cat-name"></div>
-        <div class="username"></div>
-        <div class="gold-base" style="display: none;"></div>
-        <div class="reward-text" style="display: none;"></div>
-      </div>
-    </div>
 
-    <!-- Timer section (visible during voting phase) -->
-    <div class="timer-section" style="display: none;">
-      <img src="../assets/icons/timer.png" alt="Timer" class="timer-icon">
-      <span id="timer-text">60 s</span>
-    </div>
-
-    <!-- Warning message for voting on own cat -->
-    <div class="warning-message" style="display: none;">
-      YOU CAN'T<br>
-      VOTE FOR<br>
-      YOUR OWN<br>
-      CAT!
-    </div>
-
-    <!-- Announcement text for transitions -->
-    <div class="announcement-text" style="display: none;">
-      CALCULATING VOTES, PLEASE WAIT . . .
-    </div>
-
-    <!-- Results buttons (visible during results phase) -->
-    <div class="results-buttons" style="display: none;">
-      <a href="#" class="results-button" id="play-again-btn">PLAY AGAIN</a>
-      <a href="album.html" class="results-button" id="go-home-btn">GO HOME</a>
-    </div>
-
-  </main>
-  
-  <!-- Back to album button (always visible) -->
-  <a href="album.html" class="album-button">←</a>
-
-<!-- Exit confirmation dialog (hidden by default) -->
-  <div class="exit-overlay" id="exit-overlay" style="display: none;">
-    <div class="exit-dialog" id="exit-dialog">
-      <div class="exit-dialog-title">
-        Are you sure you want to exit this gameshow?
+      <!-- Cat display area (visible during voting and results phases) -->
+      <div class="cat-display" style="display: none;">
+        <!-- Stage bases for 5 participants with enhanced structure -->
+        <div class="stage-base" data-participant-index="0" data-participant-id="" data-cat-id="">
+          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+          <div class="cat-name"></div>
+          <div class="username"></div>
+          <!-- Gold base for results phase -->
+          <div class="gold-base" style="display: none;"></div>
+          <div class="reward-text" style="display: none;"></div>
+        </div>
+        
+        <div class="stage-base" data-participant-index="1" data-participant-id="" data-cat-id="">
+          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+          <div class="cat-name"></div>
+          <div class="username"></div>
+          <div class="gold-base" style="display: none;"></div>
+          <div class="reward-text" style="display: none;"></div>
+        </div>
+        
+        <div class="stage-base" data-participant-index="2" data-participant-id="" data-cat-id="">
+          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+          <div class="cat-name"></div>
+          <div class="username"></div>
+          <div class="gold-base" style="display: none;"></div>
+          <div class="reward-text" style="display: none;"></div>
+        </div>
+        
+        <div class="stage-base" data-participant-index="3" data-participant-id="" data-cat-id="">
+          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+          <div class="cat-name"></div>
+          <div class="username"></div>
+          <div class="gold-base" style="display: none;"></div>
+          <div class="reward-text" style="display: none;"></div>
+        </div>
+        
+        <div class="stage-base" data-participant-index="4" data-participant-id="" data-cat-id="">
+          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
+          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
+          <div class="cat-name"></div>
+          <div class="username"></div>
+          <div class="gold-base" style="display: none;"></div>
+          <div class="reward-text" style="display: none;"></div>
+        </div>
       </div>
-      <div class="exit-dialog-buttons">
-        <button class="exit-dialog-button" id="stay-btn">NO, I changed my mind</button>
-        <button class="exit-dialog-button" id="leave-btn">YES, I'm sure</button>
+
+      <!-- Warning message for voting on own cat -->
+      <div class="warning-message" style="display: none;">
+        YOU CAN'T<br>
+        VOTE FOR<br>
+        YOUR OWN<br>
+        CAT!
       </div>
-    </div>
+
+      <!-- Exit confirmation dialog (hidden by default) -->
+      <div class="exit-overlay" id="exit-overlay" style="display: none;">
+        <div class="exit-dialog" id="exit-dialog">
+          <div class="exit-dialog-title">
+            Are you sure you want to exit this gameshow?
+          </div>
+          <div class="exit-dialog-buttons">
+            <button class="exit-dialog-button" id="stay-btn">NO, I changed my mind</button>
+            <button class="exit-dialog-button" id="leave-btn">YES, I'm sure</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM SECTION -->
+    <section class="bottom-section">
+      <!-- Left side elements -->
+      <div class="bottom-left">
+        <!-- Back to album button -->
+        <a href="album.html" class="album-button">←</a>
+        
+        <!-- Timer section (visible during voting phase) -->
+        <div class="timer-section" style="display: none;">
+          <img src="../assets/icons/timer.png" alt="Timer" class="timer-icon">
+          <span id="timer-text">60 s</span>
+        </div>
+      </div>
+
+      <!-- Center elements -->
+      <div class="bottom-center">
+        <!-- Announcement text for transitions -->
+        <div class="announcement-text" style="display: none;">
+          CALCULATING VOTES, PLEASE WAIT . . .
+        </div>
+
+        <!-- Results buttons (visible during results phase) -->
+        <div class="results-buttons" style="display: none;">
+          <a href="#" class="results-button" id="play-again-btn">PLAY AGAIN</a>
+          <a href="album.html" class="results-button" id="go-home-btn">GO HOME</a>
+        </div>
+      </div>
+
+      <!-- Right side elements (for future use) -->
+      <div class="bottom-right">
+        <!-- Reserved for future elements -->
+      </div>
+    </section>
+
   </div>
 
   <!-- 🔥 CRITICAL: Load dependencies in correct order -->

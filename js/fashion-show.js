@@ -571,7 +571,10 @@ function initializeSocket(playerData) {
     const totalCount = participants.length;
 
     console.log(`🗳️ Voting progress: ${votedCount}/${totalCount} participants have voted`);
-  });
+  
+  // Update the progress message with current vote count
+  showVotingProgressMessage(votedCount, totalCount);
+});
 
   // Calculating announcement
   socket.on('calculating_announcement', (message) => {
@@ -843,8 +846,8 @@ function startCountdownTimer(initialSeconds) {
   let remainingSeconds = initialSeconds;
   timerTextElement.textContent = `${remainingSeconds} s`;
 
-  // Show voting progress message using announcement text
-  showVotingProgressMessage();
+  // Show initial voting progress message (0 votes to start)
+  showVotingProgressMessage(0, 5);
 
   console.log(`⏰ Timer started at ${new Date().toLocaleTimeString()}`);
   console.log(`⏰ Timer will end at ${new Date(Date.now() + initialSeconds * 1000).toLocaleTimeString()}`);
@@ -886,12 +889,13 @@ function startCountdownTimer(initialSeconds) {
 }
 
 // Show voting progress message using the announcement text element
-function showVotingProgressMessage() {
+function showVotingProgressMessage(votedCount = 0, totalCount = 5) {
+
   const announcementElement = document.querySelector('.announcement-text');
   if (announcementElement) {
-    announcementElement.textContent = 'Waiting for all players to vote . . .';
+    announcementElement.innerHTML = `Waiting for all players to vote . . .<br>${votedCount}/${totalCount} voted`;
     announcementElement.style.display = 'block';
-    console.log('✅ Voting progress message displayed using announcement text');
+    console.log(`✅ Voting progress message displayed: ${votedCount}/${totalCount} voted`);
   } else {
     console.warn('⚠️ Announcement element not found');
   }
