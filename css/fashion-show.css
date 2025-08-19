@@ -47,7 +47,7 @@ body {
 }
 
 /* Main title styling */
-h1 {
+.main-header {
     font-family: var(--font-main);
     font-size: var(--font-size-lg); /* 96px */
     color: var(--color-cream); /* #FFEEC3 */
@@ -55,13 +55,6 @@ h1 {
     margin: 0; /* Remove default margins */
     padding: 0;
     font-weight: normal;
-    
-    /* Position: center top, full viewport width, 128px height */
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw; /* Full viewport width instead of fixed 1920px */
-    height: 128px;
     
     /* Center the text vertically within the 128px height */
     display: flex;
@@ -203,13 +196,10 @@ h1 {
 
 /* Ensure cat display has proper stacking */
 .cat-display {
-    position: absolute;
-    top: 150px;
-    left: 50%;
-    transform: translateX(-50%);
     width: 1050px;
     height: 420px;
     background-color: var(--color-cream);
+    margin: 0 auto; /* center alignment */
     
     /* Add flexbox for stage bases layout */
     display: flex;
@@ -883,4 +873,33 @@ h1 {
 .exit-dialog-button:active {
     transform: translateY(0px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Tall viewport heights (desktop, large screens) */
+@media (max-height: 600px) {
+    body {
+        background-color: green;
+    }
+    .cat-display {
+        transform: scale(0.7);
+        transform-origin: top center;
+    }
+}
+@media (min-height: 900px) {
+    body {
+        background-color: red;
+    }
+    .cat-display {
+        transform: scale(1.5);
+        transform-origin: top center;
+    }
+}
+@media (min-height: 1300px) {
+    body {
+        background-color: magenta;
+    }
+    .cat-display {
+        transform: scale(2);
+        transform-origin: top center;
+    }
 }
