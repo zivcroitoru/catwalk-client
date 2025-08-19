@@ -11,12 +11,13 @@ if (spriteImage && spriteURL) {
 
 // Handle NEXT button click
 document.querySelector('.next-button').addEventListener('click', async () => {
-  const template = document.getElementById('clothes-template')?.textContent.trim();
-  const name = document.getElementById('clothes-name')?.textContent.trim();
-  const category = document.getElementById('clothes-category')?.textContent.trim();
-  const price = document.getElementById('clothes-price')?.textContent.trim();
-  const description = document.getElementById('clothes-description')?.textContent.trim();
-  const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.textContent.trim()
+  const template = document.getElementById('clothes-template')?.value;
+  const name = document.getElementById('clothes-name')?.value;
+  const category = document.getElementById('clothes-category')?.value;
+  let price = document.getElementById('clothes-price')?.value;
+  price = parseInt(price);
+  const description = document.getElementById('clothes-description')?.value;
+  const sprite_url_preview = document.getElementById('clothes-sprite-preview')?.value;
   const sprite_url = spriteImage?.src;
 
   const clothesData = {

@@ -333,17 +333,16 @@ header {
 }
 
 /*------------------- MEDIA QUERIES --------------------*/
-@media (max-width: 20000px) {}
 
-@media (max-width: 1600px) {
-    .rectangle {
+@media (max-height: 1500px)
+{
+       .rectangle {
         width: 45vw;
         height: 45vw;
-        max-width: 490px;
-        max-height: 490px;
-        transform: scale(0.8);
-        margin-right: 160px;
-        margin-bottom: 50px;
+        max-width: 70.4vh;
+        max-height: 70vh;
+        margin-right: 26vh;
+        margin-bottom: 10vh;
     }
 
     #cat-images {
@@ -371,19 +370,20 @@ header {
         gap: 0;
         /* no gap so they touch each other */
         position: absolute;
-        top: 135px;
-        margin-right: 210px;
-        height: 100px;
-        width: 56.2vh;
+        top: 17vh;
+        margin-right: 37.5vh;
+        height: 14vh;
+        width: 47vh;
         right: 0;
         z-index: 0;
+        transform: scale(1.2);
 
     }
 
     .toggle-btn {
         flex: 1;
         /* each button takes equal width */
-        padding: 12px 0;
+        padding: 1vh 0;
         font-size: 26px;
         font-weight: 600;
         border: 0px solid #838E84;
@@ -419,18 +419,206 @@ header {
         padding: -0px;
         position: absolute;
         top: 0px;
-        margin-top: -35px;
+        margin-top: -6vh;
         left: 0;
-        margin-left: -35px;
+        margin-left: -6vh;
         width: 100%;
         height: 100%;
         z-index: 2;
-        transform: scale(0.82);
+        transform: scale(0.76);
+    }
+}
+@media (max-height: 900px) {
+    .rectangle {
+        width: 45vw;
+        height: 45vw;
+        max-width: 70.4vh;
+        max-height: 70vh;
+        transform: scale(0.8);
+        margin-right: 23vh;
+        margin-bottom: 7vh;
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    .toggle-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        /* no gap so they touch each other */
+        position: absolute;
+        top: 20vh;
+        margin-right: 34.5vh;
+        height: 14vh;
+        width: 47vh;
+        right: 0;
+        z-index: 0;
+
+    }
+
+    .toggle-btn {
+        flex: 1;
+        /* each button takes equal width */
+        padding: 1vh 0;
+        font-size: vh;
+        font-weight: 600;
+        border: 0px solid #838E84;
+        /* border like figma */
+        background-color: #fff;
+        /* default white */
+        color: #838E84;
+        /* default green text */
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Nunito', sans-serif;
+
+    }
+
+    #showClothesBtn {
+        background-color: #838E84;
+        color: #ffffff;
+    }
+
+    .toggle-btn:first-child {
+        border-radius: 12px;
+        /* left rounded corners */
+    }
+
+    .toggle-btn:last-child {
+        border-radius: 12px;
+        /* right rounded corners */
+    }
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: 0px;
+        margin-top: -5vh;
+        left: 0;
+        margin-left: -5vh;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.76);
     }
 
 
 }
 
+
+@media (height: 1024px){
+
+        .rectangle {
+        width: 45vw;
+        height: 45vw;
+        max-width: 70.4vh;
+        max-height: 70vh;
+        margin-right: 26vh;
+        margin-bottom: 10vh;
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+    .toggle-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        /* no gap so they touch each other */
+        position: absolute;
+        top: 23vh;
+        margin-right: 34.5vh;
+        height: 14vh;
+        width: 47vh;
+        right: 0;
+        z-index: 0;
+        transform: scale(1.09);
+
+    }
+
+    .toggle-btn {
+        flex: 1;
+        /* each button takes equal width */
+        padding: 1vh 0;
+        font-size: 26px;
+        font-weight: 600;
+        border: 0px solid #838E84;
+        /* border like figma */
+        background-color: #fff;
+        /* default white */
+        color: #838E84;
+        /* default green text */
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Nunito', sans-serif;
+
+    }
+
+    #showClothesBtn {
+        background-color: #838E84;
+        color: #ffffff;
+    }
+
+    .toggle-btn:first-child {
+        border-radius: 12px;
+        /* left rounded corners */
+    }
+
+    .toggle-btn:last-child {
+        border-radius: 12px;
+        /* right rounded corners */
+    }
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: 0px;
+        margin-top: -6vh;
+        left: 0;
+        margin-left: -6vh;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.76);
+    }
+}
 @media (max-width: 1000px) {
     header {
         height: 60px;

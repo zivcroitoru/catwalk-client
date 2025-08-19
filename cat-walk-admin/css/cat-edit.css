@@ -148,6 +148,8 @@ body {
     transform: none;
     cursor: pointer;
     padding: 0;
+    overflow:hidden;
+    text-overflow: ellipsis;
 
 }
 

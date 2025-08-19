@@ -120,6 +120,10 @@ body {
 
 }
 
+.clothes-info{
+    margin-bottom: -10px;
+}
+
 .cat-pic-data,
 .clothes-pic-data {
 
@@ -144,6 +148,8 @@ body {
     border-radius: 100px;
     text-decoration: none;
     gap: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -178,6 +184,29 @@ body {
     color: #b2c2b2;
 }
 
+
+
+#clothes-template,
+#clothes-name,
+#clothes-category,
+#clothes-price,
+#clothes-description,
+#clothes-sprite-preview
+{
+    border-radius: 15px;
+    font-family: 'Nunito', sans-serif;
+}
+
+
+#cat-name,
+#cat-breed,
+#cat-variant,
+#cat-pallete,
+#cat-description
+{
+    border-radius: 15px;
+    font-family: 'Nunito', sans-serif;
+}
 
 .button-container {
     position: fixed;
@@ -305,14 +334,16 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    margin-right: -150px;
-    margin-bottom: 50px;
-    font-size: 22px;
+    margin-right: -50px;
+    margin-bottom: 10px;
+    font-size: 28px;
     color: #4E5C4F;
     font-weight: 400;
     cursor: pointer;
     border-radius: 100px;
     text-decoration: none;
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
     display: flex;          /* add this */
     flex-direction: column; /* stack items vertically */
     gap: 20px;              /* adjust spacing between items */
@@ -330,6 +361,8 @@ body {
     cursor: pointer;
     border-radius: 100px;
     text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     display: flex;          /* add this */
     flex-direction: column; /* stack items vertically */
