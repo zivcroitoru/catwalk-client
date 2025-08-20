@@ -35,12 +35,12 @@ card.innerHTML = `
   </div>
 `;
 
-    card.querySelector("button").addEventListener("click", () => {
-      if (selectedCard) selectedCard.classList.remove("selected");
-      selectedCard = card;
-      card.classList.add("selected");
-      showAddCatConfirmation(breed, variantData);
-    });
+card.addEventListener("click", () => {
+  if (selectedCard) selectedCard.classList.remove("selected");
+  selectedCard = card;
+  card.classList.add("selected");
+  showAddCatConfirmation(breed, variantData);
+});
 
     container.appendChild(card);
   });
