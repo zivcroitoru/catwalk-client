@@ -1,4 +1,3 @@
-// /js/core/toast.js
 import { toPascalCase } from "./utils.js";
 
 // 🎨 **STANDARDIZED STYLING FOR FASHION SHOW**
@@ -11,10 +10,17 @@ const FASHION_TOAST_STYLE = {
   zIndex: 999999,
 };
 
+/**
+ * Display celebration toast when a new cat is added to collection
+ * Shows cat sprite, breed info, and confirmation message
+ */
 export function toastCatAdded({ breed, name, sprite_url }) {
+  console.log(`🐱 Displaying cat added toast: ${breed} (${name})`);
+
   Toastify({
     node: (() => {
       const wrapper = document.createElement("div");
+      // Centered layout with cat sprite and text
       wrapper.style.cssText = `
         font-family: 'Press Start 2P', monospace;
         font-size: 14px;
@@ -55,7 +61,12 @@ export function toastCatAdded({ breed, name, sprite_url }) {
   }).showToast();
 }
 
+/**
+ * Simple cancellation notification
+ */
 export function toastCancelled() {
+  console.log("🚫 User cancelled action");
+
   Toastify({
     text: "❌ Cancelled",
     duration: 1500,
@@ -65,7 +76,12 @@ export function toastCancelled() {
   }).showToast();
 }
 
+/**
+ * Purchase confirmation toast
+ */
 export function toastBought(name) {
+  console.log(`💰 Purchase confirmed: ${name}`);
+  
   Toastify({
     text: `✅ Bought "${name}"!`,
     duration: 2000,
@@ -75,7 +91,12 @@ export function toastBought(name) {
   }).showToast();
 }
 
+/**
+ * Insufficient funds warning
+ */
 export function toastNotEnough() {
+  console.log("💸 Insufficient coins for purchase");
+  
   Toastify({
     text: `❌ Not enough coins`,
     duration: 2000,
@@ -85,7 +106,12 @@ export function toastNotEnough() {
   }).showToast();
 }
 
+/**
+ * Equipment status change notification
+ */
 export function toastEquipResult(name, result) {
+  console.log(`🎽 Equipment ${result}: ${name}`);
+  
   Toastify({
     text: result === "equipped" ? `Equipped "${name}"` : `Unequipped "${name}"`,
     duration: 2000,
@@ -95,7 +121,12 @@ export function toastEquipResult(name, result) {
   }).showToast();
 }
 
+/**
+ * General info toast with customizable background
+ */
 export function toastInfo(text, background = "#ffcc66") {
+  console.log(`ℹ️ Info toast: ${text}`);
+  
   Toastify({
     text,
     duration: 2000,
@@ -113,7 +144,12 @@ export function toastInfo(text, background = "#ffcc66") {
   }).showToast();
 }
 
+/**
+ * Simple text toast with default green styling
+ */
 export function toastSimple(text, background = "#4caf50") {
+  console.log(`💬 Simple toast: ${text}`);
+
   Toastify({
     text,
     duration: 2000,
@@ -131,7 +167,14 @@ export function toastSimple(text, background = "#4caf50") {
   }).showToast();
 }
 
+/**
+ * Critical confirmation dialog for cat deletion
+ * Shows cat image and requires explicit user confirmation
+ */
 export function toastConfirmDelete(cat, onConfirm, onCancel) {
+  console.log(`⚠️ Delete confirmation requested for cat: ${cat.name}`);
+  
+  // Ensure image URL is properly resolved relative to current location
   const imageURL = new URL(
     cat.sprite_url || cat.image || "",
     window.location.origin,
@@ -151,7 +194,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
 
   const toast = Toastify({
     node: wrapper,
-    duration: -1,
+    duration: -1, // Persistent until user action
     gravity: "top",
     position: "center",
     style: {
@@ -172,6 +215,7 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
       transform: "translate(-50%, -50%)",
     },
     callback: () => {
+      // Cleanup event listeners when toast is destroyed
       document
         .getElementById("confirmDelete")
         ?.removeEventListener("click", onConfirm);
@@ -183,19 +227,28 @@ export function toastConfirmDelete(cat, onConfirm, onCancel) {
 
   toast.showToast();
 
+  // Bind event handlers after DOM elements are rendered
   requestAnimationFrame(() => {
     document.getElementById("confirmDelete")?.addEventListener("click", () => {
+      console.log(`✅ Delete confirmed for: ${cat.name}`);
       toast.hideToast();
       onConfirm?.();
     });
     document.getElementById("cancelDelete")?.addEventListener("click", () => {
+      console.log(`❌ Delete cancelled for: ${cat.name}`);
       toast.hideToast();
       onCancel?.();
     });
   });
 }
 
+/**
+ * Empty collection state with call-to-action
+ * Persistent toast that encourages user to add their first cat
+ */
 export function toastNoCats() {
+  console.log("📭 Showing empty collection toast with add cat CTA");
+  
   const toast = Toastify({
     node: (() => {
       const wrapper = document.createElement("div");
@@ -238,13 +291,14 @@ export function toastNoCats() {
       zIndex: 999999,
     },
     callback: () => {
+      // Cleanup global handler reference
       document
         .getElementById("addCatBtnToast")
         ?.removeEventListener("click", window.__addCatBtnToastHandler);
     },
   });
 
-  // Track the toast so we can close it later
+  // Track the toast globally so we can close it later
   window.Toastify = window.Toastify || {};
   window.Toastify.recent = toast;
 
@@ -252,6 +306,7 @@ export function toastNoCats() {
 
   // Button click closes toast & opens Add Cat popup
   window.__addCatBtnToastHandler = () => {
+    console.log("🎯 Add cat button clicked from no-cats toast");
     if (window.Toastify?.recent) {
       try {
         window.Toastify.recent.hideToast();
@@ -267,10 +322,18 @@ export function toastNoCats() {
   });
 }
 
+/**
+ * Fetch and display random cat fact from API
+ * Gracefully handles network failures
+ */
 export async function toastCatFact() {
+  console.log("🎲 Fetching random cat fact from API");
+  
   try {
     const res = await fetch("https://catfact.ninja/fact");
     const { fact } = await res.json();
+    console.log("✅ Cat fact retrieved successfully");
+    
     Toastify({
       text: `🐾 ${fact}`,
       duration: 5000,
@@ -284,7 +347,9 @@ export async function toastCatFact() {
         border: "2px solid #000",
       },
     }).showToast();
-  } catch {
+  } catch (error) {
+    console.error("❌ Failed to fetch cat fact:", error);
+    
     Toastify({
       text: "Failed to load cat fact 😿",
       duration: 3000,
@@ -301,11 +366,17 @@ export async function toastCatFact() {
   }
 }
 
+/**
+ * Confirmation dialog for adding a new cat
+ * Shows preview of cat sprite and variant info
+ */
 export function toastConfirmAddCat(
   { name, variant, palette, sprite_url },
   onYes,
   onCancel,
 ) {
+  console.log(`🤔 Add cat confirmation: ${toPascalCase(variant)} (${toPascalCase(palette)})`);
+  
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
@@ -329,7 +400,7 @@ export function toastConfirmAddCat(
 
   const toast = Toastify({
     node: wrapper,
-    duration: -1,
+    duration: -1, // Persistent until user decides
     gravity: "top",
     position: "center",
     style: {
@@ -350,6 +421,7 @@ export function toastConfirmAddCat(
       transform: "translate(-50%, -50%)",
     },
     callback: () => {
+      // Cleanup event listeners when toast closes
       document
         .getElementById("confirmAddYes")
         ?.removeEventListener("click", onYes);
@@ -361,13 +433,15 @@ export function toastConfirmAddCat(
 
   toast.showToast();
 
-  // bind after mount
+  // bind after mount to ensure DOM elements exist
   requestAnimationFrame(() => {
     document.getElementById("confirmAddYes")?.addEventListener("click", () => {
+      console.log("✅ Cat addition confirmed");
       toast.hideToast();
       onYes?.();
     });
     document.getElementById("confirmAddNo")?.addEventListener("click", () => {
+      console.log("❌ Cat addition cancelled");
       toast.hideToast();
       onCancel?.();
     });
@@ -381,7 +455,8 @@ export function toastConfirmAddCat(
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * ✅ SIMPLIFIED: Show coin reward for fashion show results
+ * Show coin reward for fashion show results
+ * Only displays when coins are actually earned (> 0)
  * @param {number} coinsEarned - Coins earned this round
  * @param {number} votesReceived - Number of votes received
  */
@@ -391,6 +466,8 @@ export function toastFashionShowReward(coinsEarned, votesReceived) {
     console.log("🍞 No reward toast - zero coins earned");
     return;
   }
+
+  console.log(`🎉 Fashion show reward: ${coinsEarned} coins from ${votesReceived} votes`);
 
   const plural = votesReceived === 1 ? "vote" : "votes";
   const message = `${votesReceived} ${plural} received, +${coinsEarned} COINS`;
@@ -413,9 +490,12 @@ export function toastFashionShowReward(coinsEarned, votesReceived) {
 }
 
 /**
- * ✅ KEEP: Show warning when player quits early (before results)
+ * Show warning when player quits early (before results)
+ * Important feedback for players to understand reward system
  */
 export function toastFashionShowEarlyQuit() {
+  console.log("⚠️ Player quit fashion show early - no rewards");
+
   Toastify({
     text: "⚠️ You left the fashion show early - no coins awarded!",
     duration: 3000,
@@ -431,11 +511,14 @@ export function toastFashionShowEarlyQuit() {
 }
 
 /**
- * ✅ SIMPLIFIED: Show connection status toast
+ * Show connection status toast
+ * Handles all WebSocket/network states for fashion show
  * @param {'connected' | 'disconnected' | 'reconnecting' | 'error'} status
  * @param {string} [message] - Optional custom message for errors
  */
 export function toastFashionShowConnection(status, message = "") {
+  console.log(`🔌 Fashion show connection status: ${status}${message ? ` - ${message}` : ''}`);
+
   const statusConfig = {
     connected: {
       text: "✅ Connected to fashion show!",
@@ -450,7 +533,7 @@ export function toastFashionShowConnection(status, message = "") {
     reconnecting: {
       text: "🔄 Reconnecting to fashion show...",
       background: "#ff9800",
-      duration: -1, // Persistent
+      duration: -1, // Persistent until resolved
     },
     error: {
       text: message || "❌ Fashion show connection error",
@@ -477,11 +560,14 @@ export function toastFashionShowConnection(status, message = "") {
 }
 
 /**
- * ✅ SIMPLIFIED: Show game error toast
+ * Show game error toast
+ * Centralized error display with severity levels
  * @param {string} errorMessage - Error message to display
  * @param {'warning' | 'error' | 'info'} [severity='error'] - Error severity
  */
 export function toastFashionShowError(errorMessage, severity = "error") {
+  console.log(`🚨 Fashion show ${severity}: ${errorMessage}`);
+  
   const severityConfig = {
     error: {
       background: "#d32f2f",

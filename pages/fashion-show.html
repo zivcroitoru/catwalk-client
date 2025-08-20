@@ -1,169 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fashion Show</title>
-  
-  <!-- Google Fonts - Jersey 10 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-    
-  <!-- 🔥 CRITICAL: Add Toastify CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="../css/fashion-show.css" />
-</head>
-<body>
-  <!-- Main flex container -->
-  <div class="main-container">
-    
-    <!-- TOP SECTION -->
-    <section class="top-section">
-      <h1 class="main-header">FASHION SHOW!</h1>
-    </section>
+    <title>Fashion Show</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <!-- MIDDLE SECTION -->
-    <section class="middle-section">
-      <!-- Waiting message (visible during waiting room phase) -->
-      <div class="waiting-message">
-        WAITING FOR MORE<br>
-        PLAYERS TO JOIN<br>
-        <span id="player-counter">1/5</span>
-      </div>
+    <!-- Core authentication and real-time communication dependencies -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap"
+      rel="stylesheet"
+    />
 
-      <!-- Cat display area (visible during voting and results phases) -->
-      <div class="cat-display" style="display: none;">
-        <!-- Stage bases for 5 participants with enhanced structure -->
-        <div class="stage-base" data-participant-index="0" data-participant-id="" data-cat-id="">
-          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-          <div class="cat-name"></div>
-          <div class="username"></div>
-          <!-- Gold base for results phase -->
-          <div class="gold-base" style="display: none;"></div>
-          <div class="reward-text" style="display: none;"></div>
-        </div>
-        
-        <div class="stage-base" data-participant-index="1" data-participant-id="" data-cat-id="">
-          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-          <div class="cat-name"></div>
-          <div class="username"></div>
-          <div class="gold-base" style="display: none;"></div>
-          <div class="reward-text" style="display: none;"></div>
-        </div>
-        
-        <div class="stage-base" data-participant-index="2" data-participant-id="" data-cat-id="">
-          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-          <div class="cat-name"></div>
-          <div class="username"></div>
-          <div class="gold-base" style="display: none;"></div>
-          <div class="reward-text" style="display: none;"></div>
-        </div>
-        
-        <div class="stage-base" data-participant-index="3" data-participant-id="" data-cat-id="">
-          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-          <div class="cat-name"></div>
-          <div class="username"></div>
-          <div class="gold-base" style="display: none;"></div>
-          <div class="reward-text" style="display: none;"></div>
-        </div>
-        
-        <div class="stage-base" data-participant-index="4" data-participant-id="" data-cat-id="">
-          <img src="../assets/icons/stage-walkway.png" alt="Stage Walkway" class="stage-walkway">
-          <img src="" alt="Cat Sprite" class="cat-sprite" style="display: none;">
-          <div class="cat-name"></div>
-          <div class="username"></div>
-          <div class="gold-base" style="display: none;"></div>
-          <div class="reward-text" style="display: none;"></div>
-        </div>
-      </div>
+    <!-- Toast notification library for user feedback -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
 
-      <!-- Warning message for voting on own cat -->
-      <div class="warning-message" style="display: none;">
-        YOU CAN'T<br>
-        VOTE FOR<br>
-        YOUR OWN<br>
-        CAT!
-      </div>
+    <!-- Custom styling for fashion show interface -->
+    <link rel="stylesheet" href="../css/fashion-show.css" />
+  </head>
+  <body>
+    <!-- Main application container with flex layout -->
+    <div class="main-container">
+      <!-- TOP SECTION: Game title and branding -->
+      <section class="top-section">
+        <h1 class="main-header">FASHION SHOW!</h1>
+      </section>
 
-      <!-- Exit confirmation dialog (hidden by default) -->
-      <div class="exit-overlay" id="exit-overlay" style="display: none;">
-        <div class="exit-dialog" id="exit-dialog">
-          <div class="exit-dialog-title">
-            Are you sure you want to exit this gameshow?
+      <!-- MIDDLE SECTION: Primary game content area -->
+      <section class="middle-section">
+        <!-- Waiting room UI - displayed while players join (1-5 players) -->
+        <div class="waiting-message">
+          WAITING FOR MORE<br />
+          PLAYERS TO JOIN<br />
+          <!-- Dynamic player count updated via JavaScript -->
+          <span id="player-counter">1/5</span>
+        </div>
+
+        <!-- Main game area - cat display stage for voting/results phases -->
+        <div class="cat-display" style="display: none">
+          <!-- Stage bases for up to 5 participants with walkways and cat sprites -->
+          <div
+            class="stage-base"
+            data-participant-index="0"
+            data-participant-id=""
+            data-cat-id=""
+          >
+            <img
+              src="../assets/icons/stage-walkway.png"
+              alt="Stage Walkway"
+              class="stage-walkway"
+            />
+            <!-- Cat sprite hidden initially, shown when participant data loads -->
+            <img
+              src=""
+              alt="Cat Sprite"
+              class="cat-sprite"
+              style="display: none"
+            />
+            <div class="cat-name"></div>
+            <div class="username"></div>
+            <!-- Victory elements for results phase -->
+            <div class="gold-base" style="display: none"></div>
+            <div class="reward-text" style="display: none"></div>
           </div>
-          <div class="exit-dialog-buttons">
-            <button class="exit-dialog-button" id="stay-btn">NO, I changed my mind</button>
-            <button class="exit-dialog-button" id="leave-btn">YES, I'm sure</button>
+
+          <div
+            class="stage-base"
+            data-participant-index="1"
+            data-participant-id=""
+            data-cat-id=""
+          >
+            <img
+              src="../assets/icons/stage-walkway.png"
+              alt="Stage Walkway"
+              class="stage-walkway"
+            />
+            <img
+              src=""
+              alt="Cat Sprite"
+              class="cat-sprite"
+              style="display: none"
+            />
+            <div class="cat-name"></div>
+            <div class="username"></div>
+            <div class="gold-base" style="display: none"></div>
+            <div class="reward-text" style="display: none"></div>
+          </div>
+
+          <div
+            class="stage-base"
+            data-participant-index="2"
+            data-participant-id=""
+            data-cat-id=""
+          >
+            <img
+              src="../assets/icons/stage-walkway.png"
+              alt="Stage Walkway"
+              class="stage-walkway"
+            />
+            <img
+              src=""
+              alt="Cat Sprite"
+              class="cat-sprite"
+              style="display: none"
+            />
+            <div class="cat-name"></div>
+            <div class="username"></div>
+            <div class="gold-base" style="display: none"></div>
+            <div class="reward-text" style="display: none"></div>
+          </div>
+
+          <div
+            class="stage-base"
+            data-participant-index="3"
+            data-participant-id=""
+            data-cat-id=""
+          >
+            <img
+              src="../assets/icons/stage-walkway.png"
+              alt="Stage Walkway"
+              class="stage-walkway"
+            />
+            <img
+              src=""
+              alt="Cat Sprite"
+              class="cat-sprite"
+              style="display: none"
+            />
+            <div class="cat-name"></div>
+            <div class="username"></div>
+            <div class="gold-base" style="display: none"></div>
+            <div class="reward-text" style="display: none"></div>
+          </div>
+
+          <div
+            class="stage-base"
+            data-participant-index="4"
+            data-participant-id=""
+            data-cat-id=""
+          >
+            <img
+              src="../assets/icons/stage-walkway.png"
+              alt="Stage Walkway"
+              class="stage-walkway"
+            />
+            <img
+              src=""
+              alt="Cat Sprite"
+              class="cat-sprite"
+              style="display: none"
+            />
+            <div class="cat-name"></div>
+            <div class="username"></div>
+            <div class="gold-base" style="display: none"></div>
+            <div class="reward-text" style="display: none"></div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- BOTTOM SECTION -->
-    <section class="bottom-section">
-      <!-- Left side elements -->
-      <div class="bottom-left">
-        <!-- Back to album button -->
-        <a href="album.html" class="album-button">←</a>
-        
-        <!-- Timer section (visible during voting phase) -->
-        <div class="timer-section" style="display: none;">
-          <img src="../assets/icons/timer.png" alt="Timer" class="timer-icon">
-          <span id="timer-text">60 s</span>
-        </div>
-      </div>
-
-      <!-- Center elements -->
-      <div class="bottom-center">
-        <!-- Announcement text for transitions -->
-        <div class="announcement-text" style="display: none;">
-          CALCULATING VOTES, PLEASE WAIT . . .
+        <!-- Error feedback for invalid voting attempts -->
+        <div class="warning-message" style="display: none">
+          YOU CAN'T<br />
+          VOTE FOR<br />
+          YOUR OWN<br />
+          CAT!
         </div>
 
-        <!-- Results buttons (visible during results phase) -->
-        <div class="results-buttons" style="display: none;">
-          <a href="#" class="results-button" id="play-again-btn">PLAY AGAIN</a>
-          <a href="album.html" class="results-button" id="go-home-btn">GO HOME</a>
+        <!-- Modal overlay for exit confirmation -->
+        <div class="exit-overlay" id="exit-overlay" style="display: none">
+          <div class="exit-dialog" id="exit-dialog">
+            <div class="exit-dialog-title">
+              Are you sure you want to exit this gameshow?
+            </div>
+            <div class="exit-dialog-buttons">
+              <button class="exit-dialog-button" id="stay-btn">
+                NO, I changed my mind
+              </button>
+              <button class="exit-dialog-button" id="leave-btn">
+                YES, I'm sure
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Right side elements (for future use) -->
-      <div class="bottom-right">
-        <!-- Reserved for future elements -->
-      </div>
-    </section>
+      <!-- BOTTOM SECTION: Navigation and game controls -->
+      <section class="bottom-section">
+        <!-- Left side: Navigation and timer -->
+        <div class="bottom-left">
+          <!-- Back navigation to album page -->
+          <a href="album.html" class="album-button">←</a>
 
-  </div>
+          <!-- Voting phase countdown timer -->
+          <div class="timer-section" style="display: none">
+            <img
+              src="../assets/icons/timer.png"
+              alt="Timer"
+              class="timer-icon"
+            />
+            <!-- Timer text updated via JavaScript countdown -->
+            <span id="timer-text">60 s</span>
+          </div>
+        </div>
 
-  <!-- 🔥 CRITICAL: Load dependencies in correct order -->
-  
-  <!-- 1. Load Toastify JavaScript FIRST -->
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  
-  <!-- 2. Load Socket.IO client SECOND -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  
-  <!-- 3. Debug script to verify libraries loaded -->
-  <script>
-    console.log('🔧 Toastify loaded check:', typeof Toastify !== 'undefined' ? '✅ Available' : '❌ Not found');
-    console.log('🔧 Socket.IO loaded check:', typeof io !== 'undefined' ? '✅ Available' : '❌ Not found');
-    if (typeof io !== 'undefined') {
-      console.log('🔧 Socket.IO version:', io.version || 'Version property not available');
-      window.io = io; // Ensure it's on window object
-    }
-    if (typeof Toastify !== 'undefined') {
-      console.log('🔧 Toastify version check: ✅ Library loaded successfully');
-      window.Toastify = Toastify; // Ensure it's on window object
-    }
-  </script>
-  
-  <!-- 4. Load fashion show script LAST (after all dependencies) -->
-  <script type="module" src="../js/fashion-show.js"></script>
-</body>
+        <!-- Center: Status messages and action buttons -->
+        <div class="bottom-center">
+          <!-- Loading state announcement during vote processing -->
+          <div class="announcement-text" style="display: none">
+            CALCULATING VOTES, PLEASE WAIT . . .
+          </div>
+
+          <!-- Post-game action buttons -->
+          <div class="results-buttons" style="display: none">
+            <a href="#" class="results-button" id="play-again-btn"
+              >PLAY AGAIN</a
+            >
+            <a href="album.html" class="results-button" id="go-home-btn"
+              >GO HOME</a
+            >
+          </div>
+        </div>
+
+        <!-- Right side: Reserved for future UI elements -->
+        <div class="bottom-right">
+          <!-- Reserved for future elements like chat, player list, etc. -->
+        </div>
+      </section>
+    </div>
+
+    <!-- CRITICAL: External dependencies loaded in specific order to prevent race conditions -->
+
+    <!-- 1. Toast notification library - must load before fashion-show.js -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- 2. Real-time communication library - must load before fashion-show.js -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <!-- 3. Dependency verification and global assignment for module compatibility -->
+    <script>
+      // Verify critical dependencies loaded successfully before main script execution
+      console.log(
+        "🔧 [DEPENDENCY CHECK] Toastify loaded:",
+        typeof Toastify !== "undefined" ? "✅ Available" : "❌ Not found",
+      );
+      console.log(
+        "🔧 [DEPENDENCY CHECK] Socket.IO loaded:",
+        typeof io !== "undefined" ? "✅ Available" : "❌ Not found",
+      );
+
+      if (typeof io !== "undefined") {
+        console.log(
+          "🔧 [SOCKET.IO] Version detected:",
+          io.version || "Version property unavailable",
+        );
+        window.io = io; // Ensure global availability for ES6 modules
+      } else {
+        console.error(
+          "❌ [CRITICAL] Socket.IO failed to load - real-time features will not work",
+        );
+      }
+
+      if (typeof Toastify !== "undefined") {
+        console.log("🔧 [TOASTIFY] Notification system ready");
+        window.Toastify = Toastify; // Ensure global availability for ES6 modules
+      } else {
+        console.warn(
+          "⚠️ [WARNING] Toastify failed to load - user notifications may not display",
+        );
+      }
+
+      // Log successful dependency initialization
+      console.log(
+        "🚀 [INIT] All dependencies processed, loading main application...",
+      );
+    </script>
+
+    <!-- 4. Main application logic - loaded after all dependencies are verified -->
+    <script type="module" src="../js/fashion-show.js"></script>
+  </body>
 </html>

@@ -1,6 +1,7 @@
 import { toastCatAdded, toastCancelled, toastConfirmAddCat } from '../../core/toast.js';
 import { addCatToUser, getPlayerCats } from '../../core/storage.js';
 import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
+import { toPascalCase } from "../../core/utils.js";
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
@@ -27,19 +28,19 @@ export function renderBreedItems(breed) {
 
     const card = document.createElement("div");
     card.className = "shop-card";
-  card.innerHTML = `
-    <img src="${sprite_url}" class="shop-img" alt="${name}" />
-    <div class="shop-btn-bar">
-      <button class="shop-btn">${name}</button>
-    </div>
-  `;
+card.innerHTML = `
+  <img src="${sprite_url}" class="shop-img" alt="${name}" />
+  <div class="shop-btn-bar">
+    <button class="shop-btn">${toPascalCase(variantData.variant)} (${toPascalCase(variantData.palette)})</button>
+  </div>
+`;
 
-    card.querySelector("button").addEventListener("click", () => {
-      if (selectedCard) selectedCard.classList.remove("selected");
-      selectedCard = card;
-      card.classList.add("selected");
-      showAddCatConfirmation(breed, variantData);
-    });
+card.addEventListener("click", () => {
+  if (selectedCard) selectedCard.classList.remove("selected");
+  selectedCard = card;
+  card.classList.add("selected");
+  showAddCatConfirmation(breed, variantData);
+});
 
     container.appendChild(card);
   });
