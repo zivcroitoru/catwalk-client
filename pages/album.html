@@ -1,184 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Meta Information - Core document setup for cat album application -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Cats</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="../assets/icons/cat_browser_icon.png"
+    />
 
-  <title>My Cats</title>
-  <link rel="icon" type="image/png" href="../assets/icons/cat_browser_icon.png" />
-  <script type="module" src="../js/core/auth/authentication.js"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script type="module" src="../js/features/mailbox/gotomail.js"></script>
+    <!-- Core JavaScript Modules - Authentication and real-time communication -->
+    <script type="module" src="../js/core/auth/authentication.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script type="module" src="../js/features/mailbox/gotomail.js"></script>
 
+    <!-- CSS Files - Organized by specificity (base → layout → components → features → utilities) -->
+    <!-- Base styles and foundational elements -->
+    <link rel="stylesheet" href="../css/album-css/1_base.css" />
+    <!-- Layout structure and grid systems -->
+    <link rel="stylesheet" href="../css/album-css/2_layout.css" />
+    <!-- Reusable UI components -->
+    <link rel="stylesheet" href="../css/album-css/3_components.css" />
+    <!-- Feature-specific styles -->
+    <link rel="stylesheet" href="../css/album-css/4_add_cat.css" />
+    <link rel="stylesheet" href="../css/album-css/5_carousel.css" />
+    <link rel="stylesheet" href="../css/album-css/6_cat-album.css" />
+    <link rel="stylesheet" href="../css/album-css/7_shop.css" />
+    <link rel="stylesheet" href="../css/album-css/8_profile.css" />
+    <link rel="stylesheet" href="../css/album-css/9_modals.css" />
+    <!-- Utility classes and overrides -->
+    <link rel="stylesheet" href="../css/album-css/10_utilities.css" />
+    <link rel="stylesheet" href="../css/mailbox.css" />
+    <!-- External library styles -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <!-- <link rel="stylesheet" href="../css/album-css/11_pc_overrides.css"> -->
+  </head>
 
+  <body>
+    <!-- Global Sign Out Button - TODO: Consider moving to topbar for better UX -->
+    <button class="sign-out-btn" onclick="signOut()">Sign Out !</button>
 
-  <!-- ✅ Import all CSS files -->
-  <link rel="stylesheet" href="../css/album-css/1_base.css">
-  <link rel="stylesheet" href="../css/album-css/2_layout.css">
-  <link rel="stylesheet" href="../css/album-css/3_components.css">
-  <link rel="stylesheet" href="../css/album-css/4_add_cat.css">
-  <link rel="stylesheet" href="../css/album-css/5_carousel.css">
-  <link rel="stylesheet" href="../css/album-css/6_cat-album.css">
-  <link rel="stylesheet" href="../css/album-css/7_shop.css">
-  <link rel="stylesheet" href="../css/album-css/8_profile.css">
-  <link rel="stylesheet" href="../css/album-css/9_modals.css">
-  <link rel="stylesheet" href="../css/album-css/10_utilities.css">
-  <link rel="stylesheet" href="../css/mailbox.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <!-- <link rel="stylesheet" href="../css/album-css/11_pc_overrides.css"> -->
-</head>
+    <!-- Main Game Container - Primary application wrapper -->
+    <div id="game">
+      <!-- Cat Display Area - Main interactive zone for cat visualization -->
+      <div id="catAreaWrapper">
+        <!-- Individual Cat Display - Shows selected cat with layered customization -->
+        <div class="cat-display-wrapper hidden" id="catDisplay">
+          <div class="ellipse-podium">
+            <!-- Background podium element -->
+            <img
+              src="../assets/ui/Ellipse.svg"
+              alt="Ellipse"
+              class="center-ellipse"
+            />
+            <!-- Layered Cat Rendering System - Order matters for proper visual stacking -->
+            <div class="carousel-cat">
+              <img class="cat-layer carouselBase" alt="Base" />
+              <!-- Base cat body -->
+              <img class="cat-layer carouselHat" alt="Hat" />
+              <!-- Hat accessory layer -->
+              <img class="cat-layer carouselTop" alt="Top" />
+              <!-- Clothing layer -->
+              <img class="cat-layer carouselEyes" alt="Eyes" />
+              <!-- Eye customization -->
+              <img class="cat-layer carouselAccessory" alt="Accessory" />
+              <!-- Additional accessories -->
+            </div>
+          </div>
+        </div>
 
-<body>
-  <button class="sign-out-btn" onclick="signOut()">Sign Out !</button>
-  <div id="game">
-    <!-- ✅ CAT AREA WRAPPER -->
-    <!-- CAT AREA WRAPPER -->
-    <div id="catAreaWrapper">
-      <!-- Cat Display -->
-      <div class="cat-display-wrapper hidden" id="catDisplay">
-        <div class="ellipse-podium">
-          <img src="../assets/ui/Ellipse.svg" alt="Ellipse" class="center-ellipse" />
-          <div class="carousel-cat">
-            <img class="cat-layer carouselBase" alt="Base" />
-            <img class="cat-layer carouselHat" alt="Hat" />
-            <img class="cat-layer carouselTop" alt="Top" />
-            <img class="cat-layer carouselEyes" alt="Eyes" />
-            <img class="cat-layer carouselAccessory" alt="Accessory" />
+        <div class="carousel-wrapper" id="carouselWrapper">...</div>
+      </div>
+
+      <!-- Top Navigation Bar - User status and quick actions -->
+      <div class="topbar">
+        <!-- Currency Display - Shows user's coin balance -->
+        <div class="topbar-icon coin-icon" title="Coins">
+          <img src="../assets/icons/coin.png" alt="Coins" />
+          <span class="coin-count"></span>
+        </div>
+
+        <!-- Cat Fact Toggle - Educational content feature -->
+        <div
+          class="topbar-icon"
+          id="catFactToggle"
+          title="Cat Fact"
+          style="cursor: pointer"
+        >
+          <img
+            src="../assets/icons/cat_browser_icon.png"
+            alt="Cat Fact"
+            style="width: 24px; height: 24px"
+          />
+        </div>
+
+        <!-- Mailbox System - User communications and notifications -->
+        <div class="topbar-icon" title="Mailbox">
+          <img
+            src="../assets/icons/mail.png"
+            alt="Mailbox"
+            id="mailbox-icon"
+            style="cursor: pointer"
+          />
+          <!-- Notification Indicator - Shows when new messages arrive -->
+          <span
+            id="mailbox-dot"
+            style="
+              display: none;
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 15px;
+              height: 15px;
+              background: rgb(200, 53, 0);
+              border-radius: 50%;
+            "
+          ></span>
+        </div>
+
+        <!-- User Welcome Message - Personalized greeting -->
+        <div class="welcome-message" id="welcomeMessage">Welcome,</div>
+      </div>
+
+      <!-- Main Application Title -->
+      <h1 class="cats-title">MY CATS</h1>
+
+      <!-- Main Content Wrapper - Core application layout -->
+      <div class="wrapper">
+        <div class="main-area">
+          <!-- Cat Carousel System - Primary navigation for user's cat collection -->
+          <div class="carousel-wrapper">
+            <div class="carousel-background">
+              <!-- Carousel Navigation Controls -->
+              <button class="scroll-btn left" onclick="scrollCarousel(-1)">
+                ‹
+              </button>
+              <div class="carousel-viewport">
+                <!-- Dynamic Cat Container - Populated by JavaScript -->
+                <div class="carousel" id="catCarousel"></div>
+              </div>
+              <button class="scroll-btn right" onclick="scrollCarousel(1)">
+                ›
+              </button>
+
+              <!-- Add New Cat Button - Primary CTA for expanding collection -->
+              <button id="addCatBtn" class="add-cat-btn">
+                <img src="../assets/ui/plus.png" alt="Add Cat" />
+              </button>
+            </div>
+
+            <!-- Inventory Status Display - Shows collection progress -->
+            <div class="floating-actions">
+              <div class="inventory-box">
+                <span id="inventoryCount">Cats: 0/25</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel - Cat management and shop features -->
+          <div class="right-pane">
+            <!-- Shop Overlay Blocker - Prevents interaction during shop usage -->
+            <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
+
+            <!-- Cat Profile Panel - Detailed cat information and management -->
+            <div id="catProfileScroll" class="cat-profile-scroll hidden">
+              <div class="scroll-inner">
+                <!-- Editable Cat Name - Primary identifier -->
+                <input
+                  type="text"
+                  id="catName"
+                  class="profile-name-input"
+                  disabled
+                />
+
+                <!-- Cat Information Display -->
+                <div class="profile-main">
+                  <div class="profile-info">
+                    <div class="profile-row">
+                      <strong>Breed:</strong> <span id="profileBreed">-</span>
+                    </div>
+                    <div class="profile-row">
+                      <strong>Variant:</strong>
+                      <span id="profileVariant">-</span>
+                    </div>
+                    <div class="profile-row">
+                      <strong>Palette:</strong>
+                      <span id="profilePalette">-</span>
+                    </div>
+                    <div class="profile-row">
+                      <strong>Birthdate:</strong>
+                      <span id="profileBirthday">-</span>
+                    </div>
+                    <div class="profile-row">
+                      <strong>Age:</strong> <span id="profileAge">-</span>
+                    </div>
+                  </div>
+                  <!-- Cat Profile Image Display -->
+                  <div class="top-right-icons">
+                    <img
+                      id="profileImage"
+                      class="placeholder-uploadedcat-profile"
+                      alt="Uploaded Cat"
+                    />
+                  </div>
+                </div>
+
+                <!-- Cat Description Editor -->
+                <div class="desc-block" id="descBlock">
+                  <label for="catDesc">Description:</label>
+                  <!-- TODO: Add auto-save functionality to prevent data loss -->
+                  <textarea
+                    id="catDesc"
+                    class="desc-input"
+                    maxlength="200"
+                    readonly
+                  ></textarea>
+                  <div id="charCount" class="word-count">
+                    0 / 200 characters
+                  </div>
+                </div>
+
+                <!-- Profile Management Actions -->
+                <div class="profile-footer-buttons">
+                  <button class="profile-btn primary" id="editBtn">Edit</button>
+                  <button class="profile-btn danger" id="deleteBtn">
+                    Delete
+                  </button>
+                  <button class="profile-btn secondary" id="customizeBtn">
+                    Customize
+                  </button>
+                  <button class="profile-btn primary" id="fashionBtn">
+                    Enter Fashion Show
+                  </button>
+                  <!-- Edit Mode Controls - Hidden by default -->
+                  <button
+                    class="profile-btn primary save-cancel hidden"
+                    id="saveBtn"
+                  >
+                    Save
+                  </button>
+                  <button
+                    class="profile-btn secondary save-cancel hidden"
+                    id="cancelBtn"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shop Popup Modal - Cat customization marketplace -->
+            <div id="shopPopup" class="shop-popup hidden">
+              <!-- Shop Category Navigation -->
+              <div class="tabs">
+                <div class="tab active" data-category="hats">Hats</div>
+                <div class="tab" data-category="tops">Tops</div>
+                <div class="tab" data-category="accessories">Accessories</div>
+                <div class="tab" data-category="eyes">Eyes</div>
+                <!-- TODO: Add more categories like 'backgrounds', 'poses' -->
+              </div>
+
+              <!-- Shop Items Container - Dynamically populated -->
+              <div class="shop-scroll-wrapper">
+                <div id="shopItems"></div>
+              </div>
+
+              <button
+                id="shopCloseBtn"
+                class="profile-btn danger"
+                style="align-self: flex-end"
+              >
+                Close
+              </button>
+            </div>
+
+            <!-- Add Cat Modal - New cat creation interface -->
+            <div id="addCatPopup" class="shop-popup hidden">
+              <!-- Breed Selection Tabs - Dynamically generated -->
+              <div class="tabs" id="breedTabs"></div>
+
+              <!-- Breed Options Container -->
+              <div class="shop-scroll-wrapper">
+                <div id="breedItems" class="shop-items"></div>
+              </div>
+
+              <button
+                id="addCatCloseBtn"
+                class="profile-btn danger"
+                style="align-self: flex-end"
+              >
+                ✕
+              </button>
+            </div>
+
+            <!-- Add Cat Overlay - Modal background blocker -->
+            <div id="addCatOverlayBlocker" class="overlay hidden"></div>
           </div>
         </div>
       </div>
-      <!-- Carousel Area -->
-      <div class="carousel-wrapper" id="carouselWrapper">
-        ...
-      </div>
-    </div> <!-- ✅ END of #catAreaWrapper -->
-    <!-- Topbar -->
-    <div class="topbar">
-      <div class="topbar-icon coin-icon" title="Coins">
-        <img src="../assets/icons/coin.png" alt="Coins" />
-        <span class="coin-count"></span>
-      </div>
-      <div class="topbar-icon" id="catFactToggle" title="Cat Fact" style="cursor:pointer;">
-        <img src="../assets/icons/cat_browser_icon.png" alt="Cat Fact" style="width: 24px; height: 24px;" />
-      </div>
 
-      <div class="topbar-icon" title="Mailbox" >
-        <img src="../assets/icons/mail.png" alt="Mailbox" id="mailbox-icon" style="cursor: pointer;"/>
-          <span id="mailbox-dot"
-        style="display:none; position:absolute; top:0; right:0;
-               width:15px; height:15px; background:rgb(200, 53, 0); border-radius:50%;"></span>
-      </div>
-      <div class="welcome-message" id="welcomeMessage">Welcome, </div>
+      <!-- External Libraries Loading - Critical for notifications -->
+      <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+      <!-- Main Application Logic - Load after all dependencies -->
+      <script type="module" src="../js/main.js"></script>
+      <script>
+        console.log(
+          "🎯 Album page: Main application script loaded, initializing game logic",
+        );
+      </script>
 
+      <!-- Cat Fact Display Widget - Educational content overlay -->
+      <div
+        id="catFactContainer"
+        style="
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          width: 360px; /* wider container */
+          padding: 16px; /* more padding for readability */
+          background: #fff2d9;
+          border: 3px solid #000; /* thicker border */
+          font-family: &quot;Press Start 2P&quot;, monospace;
+          font-size: 14px; /* increased font size */
+          line-height: 1.4; /* better line spacing */
+          z-index: 1000;
+          box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+          cursor: pointer;
+          user-select: none;
+        "
+      ></div>
     </div>
-    <!-- Title -->
-    <h1 class="cats-title">MY CATS</h1>
-    <!-- ✅ Mailbox Display -->
-    
-    <!-- Carousel Area -->
-    <div class="wrapper">
-      <div class="main-area">
-        <!-- 🎠 Carousel Display -->
-        <div class="carousel-wrapper">
-          <div class="carousel-background">
-            <button class="scroll-btn left" onclick="scrollCarousel(-1)">‹</button>
-            <div class="carousel-viewport">
-              <div class="carousel" id="catCarousel"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollCarousel(1)">›</button>
-            <button id="addCatBtn" class="add-cat-btn">
-              <img src="../assets/ui/plus.png" alt="Add Cat" />
-            </button>
-          </div>
-          <!-- 🧾 Floating Info -->
-          <div class="floating-actions">
-<div class="inventory-box">
-  <span id="inventoryCount">Cats: 0/25</span>
-</div>
-          </div>
-        </div>
-        <!-- 🧾 Right Pane: Profile + Shop -->
-        <div class="right-pane">
-          <div id="shopOverlayBlocker" class="shop-blocker hidden"></div>
-          <!-- 🧑‍💻 Profile Panel -->
-          <div id="catProfileScroll" class="cat-profile-scroll hidden">
-            <div class="scroll-inner">
-              <input type="text" id="catName" class="profile-name-input" disabled />
-              <div class="profile-main">
-                <div class="profile-info">
-                  <div class="profile-row"><strong>Breed:</strong> <span id="profileBreed">-</span></div>
-                  <div class="profile-row"><strong>Variant:</strong> <span id="profileVariant">-</span></div>
-                  <div class="profile-row"><strong>Palette:</strong> <span id="profilePalette">-</span></div>
-                  <div class="profile-row"><strong>Birthdate:</strong> <span id="profileBirthday">-</span></div>
-                  <div class="profile-row"><strong>Age:</strong> <span id="profileAge">-</span></div>
-                </div>
-                <div class="top-right-icons">
-                  <img id="profileImage" class="placeholder-uploadedcat-profile" alt="Uploaded Cat" />
-                </div>
-              </div>
-              <!-- Description -->
-              <div class="desc-block" id="descBlock">
-                <label for="catDesc">Description:</label>
-                <textarea id="catDesc" class="desc-input" maxlength="200" readonly></textarea>
-                <div id="charCount" class="word-count">0 / 200 characters</div>
-              </div>
-              <!-- Footer Buttons -->
-              <div class="profile-footer-buttons">
-                <button class="profile-btn primary" id="editBtn">Edit</button>
-                <button class="profile-btn danger" id="deleteBtn">Delete</button>
-                <button class="profile-btn secondary" id="customizeBtn">Customize</button>
-                <button class="profile-btn primary" id="fashionBtn">Enter Fashion Show</button>
-                <button class="profile-btn primary save-cancel hidden" id="saveBtn">Save</button>
-                <button class="profile-btn secondary save-cancel hidden" id="cancelBtn">Cancel</button>
-              </div>
-            </div>
-          </div>
-          <!-- ✅ Shop Popup -->
-          <div id="shopPopup" class="shop-popup hidden">
-            <div class="tabs">
-              <div class="tab active" data-category="hats">Hats</div>
-              <div class="tab" data-category="tops">Tops</div>
-              <div class="tab" data-category="accessories">Accessories</div>
-              <div class="tab" data-category="eyes">Eyes</div>
-            </div>
-            <div class="shop-scroll-wrapper">
-              <div id="shopItems"></div>
-            </div>
-            <button id="shopCloseBtn" class="profile-btn danger" style="align-self: flex-end;">Close</button>
-          </div>
-          <!-- ✅ Add Cat Popup (matches Shop style) -->
-          <div id="addCatPopup" class="shop-popup hidden">
-            <div class="tabs" id="breedTabs"></div>
-            <div class="shop-scroll-wrapper">
-              <div id="breedItems" class="shop-items"></div>
-            </div>
-            <button id="addCatCloseBtn" class="profile-btn danger" style="align-self: flex-end;">✕</button>
-          </div>
-          <!-- ✅ Add Cat Overlay -->
-          <div id="addCatOverlayBlocker" class="overlay hidden"></div>
-          <!-- ✅ Toastify FIRST -->
-          <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-          <!-- ✅ Your modules LAST -->
-<script type="module" src="../js/main.js"></script>
-          <div id="catFactContainer" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 360px;              /* wider container */
-  padding: 16px;             /* more padding for readability */
-  background: #fff2d9;
-  border: 3px solid #000;    /* thicker border */
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;           /* increased font size */
-  line-height: 1.4;          /* better line spacing */
-  z-index: 1000;
-  box-shadow: 4px 4px 8px rgba(0,0,0,0.4);
-  cursor: pointer;
-  user-select: none;
-">
-          </div>
-
-</body>
-
+  </body>
 </html>

@@ -8,30 +8,32 @@ import {
   toastFashionShowError 
 } from './core/toast.js';
 
-console.log("🎭 Fashion Show - using APP_URL:", APP_URL);
+console.log("Fashion Show - using APP_URL:", APP_URL);
 
-// Global voting state
+// Global state management for the fashion show game
 let isVotingActive = false;
 let selectedCatId = null;
 let currentSocket = null;
 let currentPlayerData = null;
 
-// Game phase tracking
-let currentGamePhase = 'waiting'; // 'waiting', 'voting', 'results'
+// Game phase tracking ('waiting', 'voting', 'results')
+let currentGamePhase = 'waiting';
 
-// Connection quality monitoring
+// Connection monitoring for quality detection
 let connectionQualityTimer = null;
 let lastHeartbeatTime = Date.now();
 
-// 🍞 **SIMPLIFIED TOAST FUNCTIONS USING IMPORTS**
+// Toast notification functions with proper error handling
 
-// Vote Cast Toast ✅ KEEP - Good user feedback
+/**
+ * Shows vote confirmation toast when user casts or changes vote
+ * Local implementation for immediate feedback
+ */
 function showVoteCastToast(catName, isChange = false) {
   const message = isChange ? 
-    `🔄 Vote changed to ${catName}!` : 
-    `✅ Voted for ${catName}!`;
+    `Vote changed to ${catName}!` : 
+    `Voted for ${catName}!`;
     
-  // Use local implementation for this specific case
   if (typeof Toastify !== 'undefined') {
     Toastify({
       text: message,
@@ -52,85 +54,88 @@ function showVoteCastToast(catName, isChange = false) {
   }
 }
 
-// 🔧 UPDATED: Use imported toast functions
+/**
+ * Delegates connection status toasts to imported function
+ */
 function showConnectionToast(status, message = '') {
   toastFashionShowConnection(status, message);
 }
 
+/**
+ * Shows error toasts with validation
+ */
 function showErrorToast(errorMessage, severity = 'error') {
-  // Validate inputs
   if (typeof errorMessage !== 'string' || errorMessage.trim() === '') {
-    console.error('❌ Invalid error message for toast');
+    console.error('Invalid error message for toast');
     return;
   }
   
   toastFashionShowError(errorMessage, severity);
-  console.log(`✅ Error toast displayed: ${errorMessage} (${severity})`);
 }
 
+/**
+ * Shows reward toast for coins earned
+ */
 function showRewardToast(coinsEarned, votesReceived) {
-  // Validate inputs
   if (typeof coinsEarned !== 'number' || typeof votesReceived !== 'number') {
-    console.error('❌ Invalid toast parameters:', { coinsEarned, votesReceived });
+    console.error('Invalid toast parameters:', { coinsEarned, votesReceived });
     return;
   }
   
-  // Only show if coins > 0
+  // Only show if coins earned
   if (coinsEarned <= 0) {
-    console.log('🍞 No reward toast - zero coins earned');
     return;
   }
 
   toastFashionShowReward(coinsEarned, votesReceived);
-  console.log(`✅ Reward toast displayed: ${coinsEarned} coins for ${votesReceived} votes`);
 }
 
+/**
+ * Shows early quit warning toast
+ */
 function showEarlyQuitToast() {
   toastFashionShowEarlyQuit();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// DEBUGGING HELPER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════
+// Debugging and validation helper functions
 
-// 🔧 NEW: Function to validate coin calculation for debugging
+/**
+ * Validates coin calculation for debugging purposes
+ * Expected formula: votesReceived * 25 = coinsEarned
+ */
 function validateCoinCalculation(votesReceived, coinsEarned) {
   const expectedCoins = votesReceived * 25;
   
   if (coinsEarned !== expectedCoins) {
-    console.error(`❌ CLIENT VALIDATION FAILED:`);
+    console.error(`CLIENT VALIDATION FAILED:`);
     console.error(`   Votes: ${votesReceived}, Expected: ${expectedCoins}, Actual: ${coinsEarned}`);
     return false;
   }
   
   if (coinsEarned % 25 !== 0) {
-    console.error(`❌ CLIENT VALIDATION FAILED: Coins not multiple of 25: ${coinsEarned}`);
+    console.error(`CLIENT VALIDATION FAILED: Coins not multiple of 25: ${coinsEarned}`);
     return false;
   }
   
   return true;
 }
 
-// 🔧 NEW: Enhanced logging for toast debugging
+/**
+ * Enhanced logging for toast debugging and result validation
+ */
 function logToastDebugInfo(toastData, participants) {
-  console.log('🔍 TOAST DEBUG INFO:');
+  console.log('TOAST DEBUG INFO:');
   console.log('='.repeat(40));
   
   if (toastData) {
-    console.log('📊 Toast Data Received:');
-    console.log(`   Success: ${toastData.success}`);
-    console.log(`   Skipped: ${toastData.skipped || false}`);
-    console.log(`   Reason: ${toastData.reason || 'N/A'}`);
-    console.log(`   Error: ${toastData.error || 'N/A'}`);
-    console.log(`   Coins Earned: ${toastData.coinsEarned || 0}`);
-    console.log(`   Votes Received: ${toastData.votesReceived || 0}`);
+    console.log('Toast Data Received:', toastData);
     
     if (toastData.coinsEarned && toastData.votesReceived) {
       const isValid = validateCoinCalculation(toastData.votesReceived, toastData.coinsEarned);
       console.log(`   Calculation Valid: ${isValid}`);
     }
   } else {
-    console.log('❌ No toast data received from server');
+    console.log('No toast data received from server');
   }
   
   // Find our participant in the results
@@ -139,25 +144,24 @@ function logToastDebugInfo(toastData, participants) {
   );
   
   if (ourParticipant) {
-    console.log('👤 Our Participant Results:');
-    console.log(`   Cat Name: ${ourParticipant.catName}`);
-    console.log(`   Votes Received: ${ourParticipant.votesReceived}`);
-    console.log(`   Coins Earned: ${ourParticipant.coinsEarned}`);
+    console.log('Our Participant Results:', ourParticipant);
     
     if (ourParticipant.coinsEarned && ourParticipant.votesReceived) {
       const isValid = validateCoinCalculation(ourParticipant.votesReceived, ourParticipant.coinsEarned);
       console.log(`   Calculation Valid: ${isValid}`);
     }
   } else {
-    console.log('❌ Could not find our participant in results');
+    console.log('Could not find our participant in results');
   }
   
   console.log('='.repeat(40));
 }
 
-// 🔧 ENHANCED: Error handling function for unexpected errors
+/**
+ * Centralized error handler with context-aware messaging
+ */
 function handleFashionShowError(error, context = 'Unknown') {
-  console.error(`🚨 Fashion Show Error in ${context}:`, error);
+  console.error(`Fashion Show Error in ${context}:`, error);
   
   let userMessage = 'An unexpected error occurred';
   let severity = 'error';
@@ -176,7 +180,7 @@ function handleFashionShowError(error, context = 'Unknown') {
   
   showErrorToast(userMessage, severity);
   
-  // For critical errors, offer to return home
+  // Critical error handling with user confirmation
   if (context === 'Critical' || error.message?.includes('auth')) {
     setTimeout(() => {
       if (confirm('A serious error occurred. Return to main page?')) {
@@ -186,16 +190,20 @@ function handleFashionShowError(error, context = 'Unknown') {
   }
 }
 
-// 🔧 FIXED: DOMContentLoaded handler with proper error handling
+/**
+ * Main initialization when DOM loads
+ * Validates user state and initializes the fashion show
+ */
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    console.log('🎭 Fashion Show page DOM loaded');
+    console.log('Fashion Show page DOM loaded');
     
     setupExitConfirmationDialog();
 
+    // Validate user authentication
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      console.error('❌ No userId in localStorage - user must be logged in');
+      console.error('No userId in localStorage - user must be logged in');
       showErrorToast('Please log in to access the fashion show', 'error');
       setTimeout(() => {
         window.location.href = '/';
@@ -203,10 +211,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    // Validate cat selection from URL
     const urlParams = new URLSearchParams(window.location.search);
     const catIdFromUrl = urlParams.get('catId');
     if (!catIdFromUrl) {
-      console.error('❌ No catId provided in URL');
+      console.error('No catId provided in URL');
       showErrorToast('No cat selected for fashion show', 'error');
       setTimeout(() => {
         window.location.href = '/';
@@ -215,34 +224,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const catId = parseInt(catIdFromUrl);
 
-    // Get username
-    let username = 'Unknown Player'; // fallback
+    // Get username with fallback
+    let username = 'Unknown Player';
     try {
       const storedUsername = localStorage.getItem('username');
       if (storedUsername) {
         username = storedUsername;
       } else {
         username = `Player_${userId}`;
-        console.log('⚠️ No stored username, using fallback:', username);
+        console.log('No stored username, using fallback:', username);
       }
     } catch (err) {
-      console.warn('⚠️ Could not get username, using fallback:', username);
+      console.warn('Could not get username, using fallback:', username);
     }
 
-    // Get cat name
-    let catName = `Cat_${catId}`; // fallback
+    // Get cat name with fallback
+    let catName = `Cat_${catId}`;
     try {
-      console.log('🔄 Fetching user cats...');
+      console.log('Fetching user cats...');
       const userCats = await getPlayerCats();
 
       const selectedCat = userCats.find(cat => cat.id === catId);
       if (selectedCat && selectedCat.name) {
         catName = selectedCat.name;
       } else {
-        console.warn('⚠️ Cat not found in user cats, using fallback name');
+        console.warn('Cat not found in user cats, using fallback name');
       }
     } catch (err) {
-      console.warn('⚠️ Could not fetch cat data, using fallback:', err);
+      console.warn('Could not fetch cat data, using fallback:', err);
     }
 
     const playerData = {
@@ -251,12 +260,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       catId: catId,
       catName: catName
     };
-    console.log('🎯 Player data ready:', playerData);
+    console.log('Player data ready:', playerData);
 
-    // Setup results buttons
+    // Setup UI components
     setupResultsButtons();
     
-    // 🔧 FIXED: Only call initializeSocket once
+    // Initialize socket connection
     initializeSocket(playerData);
 
   } catch (err) {
@@ -264,9 +273,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Setup exit confirmation dialog with phase-based behavior
+/**
+ * Sets up exit confirmation dialog with phase-based behavior
+ * Different behavior based on current game phase
+ */
 function setupExitConfirmationDialog() {
-  console.log('🚪 Setting up exit confirmation dialog with phase-based behavior');
+  console.log('Setting up exit confirmation dialog');
 
   const albumButton = document.querySelector('.album-button');
   const exitOverlay = document.getElementById('exit-overlay');
@@ -275,124 +287,115 @@ function setupExitConfirmationDialog() {
   const leaveButton = document.getElementById('leave-btn');
 
   if (!albumButton || !exitOverlay || !exitDialog || !stayButton || !leaveButton) {
-    console.warn('⚠️ Exit dialog elements not found');
+    console.warn('Exit dialog elements not found');
     return;
   }
 
   // Handle back arrow click based on current game phase
   albumButton.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent default navigation
-    console.log(`🚪 Back arrow clicked during ${currentGamePhase} phase`);
+    e.preventDefault();
+    console.log(`Back arrow clicked during ${currentGamePhase} phase`);
     
     if (currentGamePhase === 'waiting') {
-      // Direct navigation during waiting room - no confirmation needed
-      console.log('🚪 Waiting room - navigating directly home');
+      // Direct navigation during waiting room
       navigateHome();
     } else if (currentGamePhase === 'voting') {
       // Show confirmation dialog during voting phase
-      console.log('🚪 Voting phase - showing exit confirmation');
       showExitDialog();
     }
-    // Results phase: back arrow is hidden, so this shouldn't be reached
+    // Results phase: back arrow is hidden
   });
 
-  // Hide dialog when clicking outside the cream box (on gray overlay)
+  // Hide dialog when clicking outside
   exitOverlay.addEventListener('click', (e) => {
     if (e.target === exitOverlay) {
-      console.log('🚪 Clicked outside dialog - hiding exit dialog');
       hideExitDialog();
     }
   });
 
   // Hide dialog when "No, I changed my mind" is clicked
   stayButton.addEventListener('click', () => {
-    console.log('🚪 Stay button clicked - hiding exit dialog');
     hideExitDialog();
   });
 
   // Navigate home when "Yes, I'm sure" is clicked
   leaveButton.addEventListener('click', () => {
-    console.log('🚪 Leave button clicked - navigating to album');
     navigateHome();
   });
 
-  console.log('✅ Exit confirmation dialog setup complete');
+  console.log('Exit confirmation dialog setup complete');
 }
 
-// 🔧 ENHANCED: Update game phase and handle back arrow visibility + dialog cleanup
+/**
+ * Updates game phase and manages back arrow visibility
+ * Cleans up dialogs when entering results phase
+ */
 function setGamePhase(phase) {
-  console.log(`🎮 Game phase changed: ${currentGamePhase} → ${phase}`);
+  console.log(`Game phase changed: ${currentGamePhase} → ${phase}`);
   currentGamePhase = phase;
   
   const albumButton = document.querySelector('.album-button');
   if (!albumButton) {
-    console.warn('⚠️ Album button not found when setting game phase');
+    console.warn('Album button not found when setting game phase');
     return;
   }
   
   switch (phase) {
     case 'waiting':
       albumButton.style.display = 'flex'; // Show back arrow
-      console.log('👁️ Back arrow shown (waiting room - direct navigation)');
       break;
       
     case 'voting':
       albumButton.style.display = 'flex'; // Show back arrow
-      console.log('👁️ Back arrow shown (voting phase - confirmation required)');
       break;
       
     case 'results':
       albumButton.style.display = 'none'; // Hide back arrow
-      // 🔧 FIX: Hide exit confirmation dialog when entering results phase
-      hideExitDialog();
-      console.log('🚫 Back arrow hidden (results phase)');
-      console.log('🚪 Exit confirmation dialog hidden (results phase)');
+      hideExitDialog(); // Clean up exit dialog
       break;
       
     default:
-      console.warn(`⚠️ Unknown game phase: ${phase}`);
+      console.warn(`Unknown game phase: ${phase}`);
   }
 }
 
-// Show exit confirmation dialog
+/**
+ * Shows exit confirmation dialog
+ */
 function showExitDialog() {
   const exitOverlay = document.getElementById('exit-overlay');
   if (exitOverlay) {
     exitOverlay.style.display = 'flex';
-    console.log('✅ Exit dialog shown');
   }
 }
 
-// Hide exit confirmation dialog
+/**
+ * Hides exit confirmation dialog
+ */
 function hideExitDialog() {
   const exitOverlay = document.getElementById('exit-overlay');
   if (exitOverlay) {
     exitOverlay.style.display = 'none';
-    console.log('✅ Exit dialog hidden');
   }
 }
 
-// 🔧 FIXED: Navigate home with early quit warning
+/**
+ * Navigates to home/album page with early quit warning if appropriate
+ */
 function navigateHome() {
   // Show early quit warning if leaving during voting
   if (currentGamePhase === 'voting') {
     showEarlyQuitToast();
     
-    // Brief delay to let user see the toast before navigation
     setTimeout(() => {
-      // Disconnect socket if connected
       if (currentSocket && currentSocket.connected) {
-        console.log('🔌 Disconnecting socket before leaving');
         currentSocket.disconnect();
       }
-      
-      // Navigate to album page
       window.location.href = 'album.html';
-    }, 1500); // 1.5 second delay to show toast
+    }, 1500); // Brief delay to show toast
   } else {
     // Normal navigation for waiting/results phases
     if (currentSocket && currentSocket.connected) {
-      console.log('🔌 Disconnecting socket before leaving');
       currentSocket.disconnect();
     }
     
@@ -400,9 +403,12 @@ function navigateHome() {
   }
 }
 
-// 🔧 FIXED: Initialize socket with comprehensive error handling
+/**
+ * Initializes socket connection with comprehensive error handling
+ * Sets up all socket event listeners
+ */
 function initializeSocket(playerData) {
-  console.log('🔧 Initializing socket connection...');
+  console.log('Initializing socket connection...');
 
   const authToken = getAuthToken();
   const socket = io(APP_URL, {
@@ -414,33 +420,28 @@ function initializeSocket(playerData) {
 
   // Socket connect handler
   socket.on('connect', () => {
-    console.log('✅ Socket connected:', socket.id);
+    console.log('Socket connected:', socket.id);
     
-    // Show connection success toast
     showConnectionToast('connected');
-    
-    // Start connection quality monitoring
     startConnectionMonitoring();
 
     const joinMessage = {
       playerId: playerData.playerId,
       catId: playerData.catId
     };
-    console.log('📤 Sending join message:', joinMessage);
+    console.log('Sending join message:', joinMessage);
     socket.emit('join', joinMessage);
   });
 
   socket.on('connect_error', (err) => {
-    console.error('❌ Socket connect_error:', err);
+    console.error('Socket connect_error:', err);
     showConnectionToast('error', 'Failed to connect to fashion show');
   });
 
   // Socket disconnect handler
   socket.on('disconnect', (reason) => {
-    console.log('🔌 Socket disconnected:', reason);
+    console.log('Socket disconnected:', reason);
     disableVotingInteractions();
-    
-    // Stop connection monitoring
     stopConnectionMonitoring();
     
     // Show disconnection toast (but not if intentional navigation)
@@ -458,41 +459,38 @@ function initializeSocket(playerData) {
   
   // Handle reconnection success
   socket.on('reconnect', () => {
-    console.log('🔄 Socket reconnected');
+    console.log('Socket reconnected');
     showConnectionToast('connected');
   });
 
-  // 🔧 FIXED: Consolidated error handling
+  // Centralized server error handling
   socket.on('error', (errorData) => {
-    console.error('🚨 Server error:', errorData);
+    console.error('Server error:', errorData);
     
     let severity = errorData.severity || 'error';
     let message = errorData.message || 'An unknown error occurred';
     
-    // Show appropriate toast based on error type
     showErrorToast(message, severity);
     
-    // Handle specific error types
+    // Handle specific error types with appropriate navigation
     switch (errorData.type) {
       case 'ownership_error':
       case 'validation_error':
       case 'data_loading_error':
         // Critical errors - navigate home after delay
         setTimeout(() => {
-          console.log('🏠 Navigating home due to critical error');
+          console.log('Navigating home due to critical error');
           window.location.href = 'album.html';
         }, 3000);
         break;
         
       case 'room_full':
-        // Room full - show info and navigate back
         setTimeout(() => {
           window.location.href = 'album.html';
         }, 4000);
         break;
         
       case 'duplicate_join':
-        // Duplicate join - immediate navigation
         setTimeout(() => {
           window.location.href = 'album.html';
         }, 2000);
@@ -515,8 +513,8 @@ function initializeSocket(playerData) {
 
   // Handle vote confirmation from server
   socket.on('vote_confirmed', (data) => {
-    console.log('✅ Vote confirmed by server:', data);
-    // Show vote confirmation toast with more details
+    console.log('Vote confirmed by server:', data);
+    
     const targetParticipant = document.querySelector(`[data-cat-id="${data.votedCatId}"]`);
     const catNameElement = targetParticipant?.querySelector('.cat-name');
     const catName = catNameElement?.textContent || `Cat ${data.votedCatId}`;
@@ -529,10 +527,9 @@ function initializeSocket(playerData) {
 
   // Handle heartbeat for connection monitoring
   socket.on('heartbeat', (data) => {
-    // Update last heartbeat time
     lastHeartbeatTime = Date.now();
     
-    // Respond to server heartbeat to confirm connection
+    // Respond to server heartbeat
     socket.emit('heartbeat_response', { 
       timestamp: data.timestamp,
       clientTime: Date.now()
@@ -541,28 +538,28 @@ function initializeSocket(playerData) {
 
   // Waiting room participant updates
   socket.on('participant_update', (message) => {
-    console.log('📥 Received participant_update:', message);
+    console.log('Received participant_update:', message);
 
     const { participants, maxCount } = message;
     const currentCount = participants.length;
 
-    console.log(`👥 Waiting room: ${currentCount}/${maxCount} participants`);
+    console.log(`Waiting room: ${currentCount}/${maxCount} participants`);
     updateWaitingRoomUI(currentCount, maxCount, participants, playerData);
   });
 
   // Voting phase transition
   socket.on('voting_phase', (message) => {
-    console.log('📥 Received voting_phase:', message);
+    console.log('Received voting_phase:', message);
 
     const { participants, timerSeconds } = message;
-    console.log(`🗳️ Entering voting phase with ${participants.length} participants, timer: ${timerSeconds}s`);
+    console.log(`Entering voting phase with ${participants.length} participants, timer: ${timerSeconds}s`);
 
     transitionToVotingPhase(participants, timerSeconds, playerData);
   });
 
   // Voting updates (when someone votes)
   socket.on('voting_update', (message) => {
-    console.log('📥 Received voting_update:', message);
+    console.log('Received voting_update:', message);
 
     const { participants } = message;
 
@@ -570,35 +567,35 @@ function initializeSocket(playerData) {
     const votedCount = participants.filter(p => p.votedCatId).length;
     const totalCount = participants.length;
 
-    console.log(`🗳️ Voting progress: ${votedCount}/${totalCount} participants have voted`);
+    console.log(`Voting progress: ${votedCount}/${totalCount} participants have voted`);
   
-  // Update the progress message with current vote count
-  showVotingProgressMessage(votedCount, totalCount);
-});
+    // Update the progress message with current vote count
+    showVotingProgressMessage(votedCount, totalCount);
+  });
 
   // Calculating announcement
   socket.on('calculating_announcement', (message) => {
-    console.log('📥 Received calculating_announcement:', message);
+    console.log('Received calculating_announcement:', message);
     showCalculatingScreen(message.message);
   });
 
-  // 🔧 UPDATED: Enhanced results handler with proper toast data processing
+  // Results with enhanced toast data processing
   socket.on('results', (message) => {
-    console.log('📥 Received results:', message);
+    console.log('Received results:', message);
 
     const { participants, toastData } = message;
     
     // Log results for debugging
-    console.log('🏆 Final results received:');
+    console.log('Final results received:');
     participants.forEach((p, index) => {
       console.log(`  ${index + 1}. ${p.catName} (${p.username}): ${p.votesReceived} votes = ${p.coinsEarned} coins`);
     });
 
-    // 🔧 ENHANCED: Process toast data with proper validation and debug logging
+    // Process toast data with validation and debug logging
     logToastDebugInfo(toastData, participants);
 
     if (toastData) {
-      console.log('💰 Processing toast data from server:', toastData);
+      console.log('Processing toast data from server:', toastData);
       
       // Validate toast data structure
       if (typeof toastData.success === 'boolean') {
@@ -607,22 +604,20 @@ function initializeSocket(playerData) {
           const coinsEarned = toastData.coinsEarned || 0;
           const votesReceived = toastData.votesReceived || 0;
           
-          console.log(`💰 Showing reward toast: ${votesReceived} votes = ${coinsEarned} coins`);
+          console.log(`Showing reward toast: ${votesReceived} votes = ${coinsEarned} coins`);
           showRewardToast(coinsEarned, votesReceived);
           
         } else if (toastData.success && toastData.skipped) {
           // Skipped update (dummy participant or zero coins)
-          console.log(`⏭️ Coin update skipped: ${toastData.reason}`);
+          console.log(`Coin update skipped: ${toastData.reason}`);
           
           if (toastData.reason === 'dummy_participant') {
-            // Show disconnection warning
             showErrorToast('You disconnected during the game - no coins awarded', 'warning');
           }
-          // Don't show toast for zero coins (normal case)
           
         } else {
           // Failed coin update
-          console.error('❌ Coin update failed:', toastData.error);
+          console.error('Coin update failed:', toastData.error);
           
           // Show appropriate error message based on error type
           let errorMessage = 'Failed to award coins - please contact support';
@@ -640,12 +635,12 @@ function initializeSocket(playerData) {
           showErrorToast(errorMessage, 'error');
         }
       } else {
-        console.warn('⚠️ Invalid toast data structure received from server');
+        console.warn('Invalid toast data structure received from server');
         showErrorToast('Results received but coin status unknown', 'info');
       }
     } else {
       // No toast data from server - this shouldn't happen
-      console.warn('⚠️ No toast data received from server');
+      console.warn('No toast data received from server');
       showErrorToast('Results received but coin status unknown', 'info');
     }
 
@@ -655,8 +650,11 @@ function initializeSocket(playerData) {
 }
 
 // Connection quality monitoring functions
+
+/**
+ * Starts monitoring connection quality via heartbeat tracking
+ */
 function startConnectionMonitoring() {
-  // Reset monitoring
   if (connectionQualityTimer) {
     clearInterval(connectionQualityTimer);
   }
@@ -669,7 +667,7 @@ function startConnectionMonitoring() {
     
     // If no heartbeat for more than 45 seconds, connection might be poor
     if (timeSinceLastHeartbeat > 45000) {
-      console.warn('⚠️ Poor connection detected - no heartbeat for', timeSinceLastHeartbeat, 'ms');
+      console.warn('Poor connection detected - no heartbeat for', timeSinceLastHeartbeat, 'ms');
       
       if (currentSocket && !currentSocket.connected) {
         showConnectionToast('disconnected');
@@ -680,6 +678,9 @@ function startConnectionMonitoring() {
   }, 10000);
 }
 
+/**
+ * Stops connection quality monitoring
+ */
 function stopConnectionMonitoring() {
   if (connectionQualityTimer) {
     clearInterval(connectionQualityTimer);
@@ -687,9 +688,11 @@ function stopConnectionMonitoring() {
   }
 }
 
-// Update waiting room UI
+/**
+ * Updates waiting room UI with participant count and status
+ */
 function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
-  console.log(`🎨 Updating waiting room UI: ${currentCount}/${maxCount}`);
+  console.log(`Updating waiting room UI: ${currentCount}/${maxCount}`);
 
   setGamePhase('waiting');
 
@@ -703,42 +706,45 @@ function updateWaitingRoomUI(currentCount, maxCount, participants, playerData) {
     if (currentCount < maxCount) {
       waitingMessageElement.style.display = 'block';
     } else {
-      console.log('🎯 Room is full! Waiting for voting phase...');
+      console.log('Room is full! Waiting for voting phase...');
     }
   }
 
   // Debug: Check if we're in the participant list
   const ourParticipant = participants.find(p => p.playerId === playerData.playerId);
   if (!ourParticipant) {
-    console.warn('⚠️ Could not find our participant in the list');
+    console.warn('Could not find our participant in the list');
   }
 
   // Debug: Show all participants
-  console.log('👥 All participants in room:');
+  console.log('All participants in room:');
   participants.forEach((participant, index) => {
     const isOurs = participant.playerId === playerData.playerId;
     console.log(`  ${index + 1}. ${participant.playerId} (cat: ${participant.catId})${isOurs ? ' ← YOU' : ''}`);
   });
 }
 
-// Populate each stage base with participant data
+/**
+ * Populates stage bases with participant data for display
+ * Sets up data attributes for click handling
+ */
 function populateStageBasesWithParticipants(participants, playerData) {
-  console.log('🎨 Populating stage bases...');
+  console.log('Populating stage bases...');
 
   const stageBases = document.querySelectorAll('.stage-base');
 
   participants.forEach((participant, index) => {
     if (index >= stageBases.length) {
-      console.warn(`⚠️ Not enough stage bases for participant ${index + 1}`);
+      console.warn(`Not enough stage bases for participant ${index + 1}`);
       return;
     }
 
     const stageBase = stageBases[index];
     const isOwnCat = participant.playerId === playerData.playerId && participant.catId === playerData.catId;
 
-    console.log(`🎨 Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
+    console.log(`Populating stage ${index + 1}:`, participant, isOwnCat ? '(YOUR CAT)' : '');
 
-    // Store participant data for click handling - IMPORTANT!
+    // Store participant data for click handling
     stageBase.dataset.participantId = participant.playerId.toString();
     stageBase.dataset.catId = participant.catId.toString();
 
@@ -747,10 +753,9 @@ function populateStageBasesWithParticipants(participants, playerData) {
     if (catSprite) {
       if (participant.catSpriteUrl) {
         catSprite.src = participant.catSpriteUrl;
-        console.log(`✅ Set cat sprite for stage ${index + 1}`);
       } else {
         catSprite.src = '../assets/cat-placeholder.png';
-        console.warn(`⚠️ No sprite URL for stage ${index + 1}, using placeholder`);
+        console.warn(`No sprite URL for stage ${index + 1}, using placeholder`);
       }
       catSprite.style.display = 'block';
     }
@@ -769,22 +774,25 @@ function populateStageBasesWithParticipants(participants, playerData) {
 
     // Render worn items
     if (participant.wornItems && participant.wornItems.length > 0) {
-      console.log(`👔 Stage ${index + 1} has ${participant.wornItems.length} worn items`);
+      console.log(`Stage ${index + 1} has ${participant.wornItems.length} worn items`);
       renderWornItems(stageBase, participant.wornItems, index);
     }
 
     // Clear any previous voting-related classes
     stageBase.classList.remove('own-cat', 'selected', 'own-cat-selected');
 
-    console.log(`✅ Stage ${index + 1} populated with data attributes: playerId=${participant.playerId}, catId=${participant.catId}`);
+    console.log(`Stage ${index + 1} populated with data attributes: playerId=${participant.playerId}, catId=${participant.catId}`);
   });
 
-  console.log('✅ Stage bases populated');
+  console.log('Stage bases populated');
 }
 
-// Render worn items on top of cat sprite
+/**
+ * Renders worn items on top of cat sprite
+ * Positions items appropriately over the cat
+ */
 function renderWornItems(stageBase, wornItems, stageIndex) {
-  console.log(`👔 Rendering ${wornItems.length} worn items for stage ${stageIndex + 1}`);
+  console.log(`Rendering ${wornItems.length} worn items for stage ${stageIndex + 1}`);
 
   // Remove existing worn items
   const existingItems = stageBase.querySelectorAll('.worn-item');
@@ -797,13 +805,13 @@ function renderWornItems(stageBase, wornItems, stageIndex) {
   // Get cat sprite as reference for positioning
   const catSprite = stageBase.querySelector('.cat-sprite');
   if (!catSprite) {
-    console.warn(`⚠️ No cat sprite found for stage ${stageIndex + 1}, cannot render items`);
+    console.warn(`No cat sprite found for stage ${stageIndex + 1}, cannot render items`);
     return;
   }
 
   wornItems.forEach((item, itemIndex) => {
     if (!item.spriteUrl) {
-      console.warn(`⚠️ No sprite URL for item ${itemIndex + 1} on stage ${stageIndex + 1}`);
+      console.warn(`No sprite URL for item ${itemIndex + 1} on stage ${stageIndex + 1}`);
       return;
     }
 
@@ -830,27 +838,30 @@ function renderWornItems(stageBase, wornItems, stageIndex) {
     stageBase.appendChild(wornItemElement);
   });
 
-  console.log(`✅ Rendered worn items for stage ${stageIndex + 1}`);
+  console.log(`Rendered worn items for stage ${stageIndex + 1}`);
 }
 
-// Start countdown timer with urgency states
+/**
+ * Starts countdown timer with urgency states
+ * Adds visual urgency when time is running low
+ */
 function startCountdownTimer(initialSeconds) {
-  console.log('⏰ Starting countdown timer:', initialSeconds, 'seconds');
+  console.log('Starting countdown timer:', initialSeconds, 'seconds');
 
   const timerTextElement = document.getElementById('timer-text');
   if (!timerTextElement) {
-    console.warn('⚠️ Timer text element not found');
+    console.warn('Timer text element not found');
     return;
   }
 
   let remainingSeconds = initialSeconds;
   timerTextElement.textContent = `${remainingSeconds} s`;
 
-  // Show initial voting progress message (0 votes to start)
+  // Show initial voting progress message
   showVotingProgressMessage(0, 5);
 
-  console.log(`⏰ Timer started at ${new Date().toLocaleTimeString()}`);
-  console.log(`⏰ Timer will end at ${new Date(Date.now() + initialSeconds * 1000).toLocaleTimeString()}`);
+  console.log(`Timer started at ${new Date().toLocaleTimeString()}`);
+  console.log(`Timer will end at ${new Date(Date.now() + initialSeconds * 1000).toLocaleTimeString()}`);
 
   const timerInterval = setInterval(() => {
     remainingSeconds--;
@@ -860,103 +871,110 @@ function startCountdownTimer(initialSeconds) {
     if (remainingSeconds <= 10 && remainingSeconds > 0) {
       timerTextElement.classList.add('urgent');
       if (remainingSeconds <= 5) {
-        console.log(`⏰ ${remainingSeconds} seconds remaining - URGENT!`);
+        console.log(`${remainingSeconds} seconds remaining - URGENT!`);
       }
     }
 
     // Log significant timer events
     if (remainingSeconds === 30) {
-      console.log('⏰ 30 seconds remaining');
+      console.log('30 seconds remaining');
     } else if (remainingSeconds === 10) {
-      console.log('⏰ 10 seconds remaining - voting will end soon!');
+      console.log('10 seconds remaining - voting will end soon!');
     }
 
     if (remainingSeconds <= 0) {
       clearInterval(timerInterval);
-      console.log(`⏰ TIMER ENDED at ${new Date().toLocaleTimeString()}`);
-      console.log('⏰ Server should now be calculating votes...');
+      console.log(`TIMER ENDED at ${new Date().toLocaleTimeString()}`);
+      console.log('Server should now be calculating votes...');
 
       // Hide timer section when voting ends
       const timerSection = document.querySelector('.timer-section');
       if (timerSection) {
         timerSection.style.display = 'none';
       }
-      // Keep announcement text visible - server will update it to "calculating votes"
     }
   }, 1000);
 
-  console.log('✅ Countdown timer started');
+  console.log('Countdown timer started');
 }
 
-// Show voting progress message using the announcement text element
+/**
+ * Displays voting progress message in the announcement area
+ * @param {number} votedCount - Number of players who have voted
+ * @param {number} totalCount - Total number of players in the game
+ */
 function showVotingProgressMessage(votedCount = 0, totalCount = 5) {
-
   const announcementElement = document.querySelector('.announcement-text');
+  
   if (announcementElement) {
     announcementElement.innerHTML = `Waiting for all players to vote . . .<br>${votedCount}/${totalCount} voted`;
     announcementElement.style.display = 'block';
-    console.log(`✅ Voting progress message displayed: ${votedCount}/${totalCount} voted`);
+    console.log(`Voting progress updated: ${votedCount}/${totalCount} players voted`);
   } else {
-    console.warn('⚠️ Announcement element not found');
+    console.warn('Failed to update voting progress: announcement element not found');
   }
 }
 
-// Enable voting interactions
+/**
+ * Enables voting interactions for all valid stage bases
+ * @param {Object} socket - WebSocket connection
+ * @param {Object} playerData - Current player's data including catId and playerId
+ */
 function enableVotingInteractions(socket, playerData) {
-  console.log('🗳️ Enabling voting interactions');
+  console.log('Enabling voting interactions for player:', playerData.playerId);
 
+  // Update global state
   isVotingActive = true;
   currentSocket = socket;
   currentPlayerData = playerData;
 
-  // Add voting-active class to cat display
+  // Add voting-active class to enable voting UI styles
   const catDisplay = document.querySelector('.cat-display');
   if (catDisplay) {
     catDisplay.classList.add('voting-active');
-    console.log('✅ Added voting-active class to cat display');
   }
 
-  // Add click handlers and mark own cat
+  // Setup interaction handlers for each stage
   const stageBases = document.querySelectorAll('.stage-base');
   stageBases.forEach((stageBase, index) => {
-    // Remove any existing event listeners
+    // Clean up any existing event listeners to prevent duplicates
     stageBase.removeEventListener('click', handleStageClick);
     stageBase.removeEventListener('mouseenter', handleStageMouseEnter);
     stageBase.removeEventListener('mouseleave', handleStageMouseLeave);
 
-    // Check if this is the player's own cat
     const targetCatId = parseInt(stageBase.dataset.catId);
     const targetPlayerId = stageBase.dataset.participantId;
 
-    // Skip stages that don't have valid participant data
+    // Skip stages without valid participant data
     if (isNaN(targetCatId) || !targetPlayerId) {
-      console.log(`⏭️ Stage ${index + 1} has no participant data - skipping interactions`);
-      return; // Skip this stage entirely
+      console.warn(`Stage ${index + 1} missing participant data - skipping interaction setup`);
+      return;
     }
 
-    // Check if this is the player's own cat
+    // Mark player's own cat as non-votable
     const isOwnCat = (targetCatId === currentPlayerData.catId && 
                      targetPlayerId === currentPlayerData.playerId.toString());
 
     if (isOwnCat) {
       stageBase.classList.add('own-cat');
-      console.log(`🚫 Stage ${index + 1} marked as own cat (non-votable)`);
+      console.log(`Stage ${index + 1} marked as player's own cat (non-votable)`);
     } else {
       stageBase.classList.remove('own-cat');
     }
 
-    // Add event listeners only to valid stages
+    // Add event listeners for voting interactions
     stageBase.addEventListener('click', handleStageClick);
     stageBase.addEventListener('mouseenter', handleStageMouseEnter);
     stageBase.addEventListener('mouseleave', handleStageMouseLeave);
-
-    console.log(`✅ Added interaction handlers to stage ${index + 1} (catId: ${targetCatId}, playerId: ${targetPlayerId})`);
   });
 
-  console.log('✅ Voting interactions enabled');
+  console.log('Voting interactions enabled for', stageBases.length, 'stages');
 }
 
-// Handle mouse enter for hover effects
+/**
+ * Handles mouse enter events for hover effects during voting
+ * @param {Event} event - Mouse enter event
+ */
 function handleStageMouseEnter(event) {
   if (!isVotingActive) return;
 
@@ -964,32 +982,37 @@ function handleStageMouseEnter(event) {
   const targetCatId = parseInt(stageBase.dataset.catId);
   const targetPlayerId = stageBase.dataset.participantId;
 
-  // Validate data before processing
+  // Validate stage data before processing hover
   if (isNaN(targetCatId) || !targetPlayerId) {
-    console.warn(`⚠️ Stage has invalid data - catId: ${targetCatId}, playerId: ${targetPlayerId}`);
+    console.warn('Hover on stage with invalid data - catId:', targetCatId, 'playerId:', targetPlayerId);
     return;
   }
 
-  // Check if this is own cat
+  // Check if hovering over own cat for debugging
   const isOwnCat = (targetCatId === currentPlayerData.catId && 
                    targetPlayerId === currentPlayerData.playerId.toString());
 
   if (isOwnCat) {
-    console.log('🚫 Hovering over own cat');
-  } else {
-    console.log(`👆 Hovering over votable cat ${targetCatId}`);
+    console.log('Hover over own cat (non-votable)');
   }
+  // Note: CSS handles visual hover effects automatically
 }
 
-// Handle mouse leave
+/**
+ * Handles mouse leave events (cleanup handled by CSS)
+ * @param {Event} event - Mouse leave event
+ */
 function handleStageMouseLeave(event) {
-  // CSS handles the hover state removal automatically
+  // CSS automatically removes hover state - no JavaScript cleanup needed
 }
 
-// Handle clicking on a stage base to vote
+/**
+ * Handles click events on stage bases for voting
+ * @param {Event} event - Click event on stage base
+ */
 function handleStageClick(event) {
   if (!isVotingActive) {
-    console.log('⚠️ Voting not active - ignoring click');
+    console.log('Vote attempt blocked - voting not active');
     return;
   }
 
@@ -997,39 +1020,39 @@ function handleStageClick(event) {
   const targetCatId = parseInt(stageBase.dataset.catId);
   const targetPlayerId = stageBase.dataset.participantId;
 
-  // Validate data before processing
+  // Validate stage data before processing vote
   if (isNaN(targetCatId) || !targetPlayerId) {
-    console.warn(`⚠️ Clicked stage has invalid data - catId: ${targetCatId}, playerId: ${targetPlayerId}`);
+    console.error('Vote attempt on invalid stage - catId:', targetCatId, 'playerId:', targetPlayerId);
     showErrorToast('Invalid cat selection', 'warning');
     return;
   }
 
-  console.log(`🖱️ Clicked on stage - Player: ${targetPlayerId}, Cat: ${targetCatId}`);
+  console.log(`Vote attempt: Player ${targetPlayerId}, Cat ${targetCatId}`);
 
-  // Check if clicking on own cat
+  // Prevent voting for own cat
   const isOwnCat = (targetCatId === currentPlayerData.catId && 
                    targetPlayerId === currentPlayerData.playerId.toString());
 
   if (isOwnCat) {
-    console.log('❌ Cannot vote for own cat - showing warning');
+    console.log('Self-vote blocked - showing warning animation');
     showSelfVoteWarning(stageBase);
     return;
   }
 
-  // Valid vote - update selection immediately (optimistic UI)
-  console.log(`✅ Valid vote for cat ${targetCatId}`);
+  // Process valid vote with optimistic UI update
+  console.log(`Valid vote cast for cat ${targetCatId}`);
   selectCat(targetCatId, stageBase);
 
   // Send vote to server
   if (currentSocket && currentSocket.connected) {
-    console.log(`📤 Sending vote to server: ${targetCatId}`);
+    console.log(`Sending vote to server: cat ${targetCatId}`);
     currentSocket.emit('vote', {
       type: 'vote',
       votedCatId: targetCatId
     });
   } else {
-    console.error('❌ Cannot send vote - socket not connected');
-    // Revert optimistic UI update
+    console.error('Vote failed - socket disconnected, reverting UI');
+    // Revert optimistic UI update on connection failure
     const allStageBases = document.querySelectorAll('.stage-base');
     allStageBases.forEach(stage => {
       stage.classList.remove('selected');
@@ -1040,115 +1063,133 @@ function handleStageClick(event) {
   }
 }
 
-// Select a cat visually and update state
+/**
+ * Updates UI to show selected cat and updates global state
+ * @param {number} catId - ID of the selected cat
+ * @param {HTMLElement} stageBase - Stage element that was clicked
+ */
 function selectCat(catId, stageBase) {
-  console.log(`🎯 Selecting cat ${catId}`);
+  console.log(`Selecting cat ${catId} for voting`);
 
-  // Remove previous selection from all stages
+  // Clear previous selection from all stages
   const allStageBases = document.querySelectorAll('.stage-base');
   allStageBases.forEach(stage => {
     stage.classList.remove('selected');
   });
 
-  // Add selection to new stage
+  // Apply selection to clicked stage
   stageBase.classList.add('selected');
-
-  // Update selected state
   selectedCatId = catId;
 
-  console.log(`✅ Cat ${catId} selected visually`);
+  console.log(`Cat ${catId} selection UI updated`);
 }
 
-// Show warning for voting on own cat with enhanced animation
+/**
+ * Shows warning animation when player tries to vote for their own cat
+ * @param {HTMLElement} stageBase - Stage element representing player's own cat
+ */
 function showSelfVoteWarning(stageBase) {
-  console.log('⚠️ Showing self-vote warning');
+  console.log('Displaying self-vote warning animation');
 
-  // Add error class to own cat (triggers shake animation)
+  // Trigger shake animation on own cat
   stageBase.classList.add('own-cat-selected');
 
   // Show warning message
   const warningElement = document.querySelector('.warning-message');
   if (warningElement) {
     warningElement.style.display = 'block';
-    console.log('🚨 Warning message displayed');
+  } else {
+    console.warn('Warning message element not found');
   }
 
-  // Remove warning after 3 seconds
+  // Auto-hide warning after 3 seconds
   setTimeout(() => {
     stageBase.classList.remove('own-cat-selected');
     if (warningElement) {
       warningElement.style.display = 'none';
     }
-    console.log('✅ Self-vote warning cleared');
+    console.log('Self-vote warning cleared');
   }, 3000);
 }
 
-// Disable voting interactions
+/**
+ * Disables all voting interactions and cleans up event listeners
+ */
 function disableVotingInteractions() {
-  console.log('🚫 Disabling voting interactions');
+  console.log('Disabling voting interactions');
 
   isVotingActive = false;
 
-  // Remove voting-active class
+  // Remove voting UI state
   const catDisplay = document.querySelector('.cat-display');
   if (catDisplay) {
     catDisplay.classList.remove('voting-active');
   }
 
-  // Remove event listeners and clean up classes
+  // Clean up event listeners and temporary classes
   const stageBases = document.querySelectorAll('.stage-base');
   stageBases.forEach(stageBase => {
     stageBase.removeEventListener('click', handleStageClick);
     stageBase.removeEventListener('mouseenter', handleStageMouseEnter);
     stageBase.removeEventListener('mouseleave', handleStageMouseLeave);
 
-    // Keep selection but remove hover states
+    // Keep selection visible but remove error states
     stageBase.classList.remove('own-cat-selected');
   });
 
-  console.log('✅ Voting interactions disabled');
+  console.log('Voting interactions disabled - selections preserved');
 }
 
-// Transition from waiting room to voting phase
+/**
+ * Transitions from waiting room to active voting phase
+ * @param {Array} participants - List of participating players and their cats
+ * @param {number} timerSeconds - Voting time limit in seconds
+ * @param {Object} playerData - Current player's data
+ */
 function transitionToVotingPhase(participants, timerSeconds, playerData) {
-  console.log('🎨 Transitioning to voting phase...');
+  console.log(`Starting voting phase with ${participants.length} participants, ${timerSeconds}s timer`);
 
   setGamePhase('voting');
 
-  // Hide waiting message
+  // Hide waiting room UI
   const waitingMessageElement = document.querySelector('.waiting-message');
   if (waitingMessageElement) {
     waitingMessageElement.style.display = 'none';
   }
 
-  // Show cat display area
+  // Show voting UI elements
   const catDisplayElement = document.querySelector('.cat-display');
+  const timerSectionElement = document.querySelector('.timer-section');
+  
   if (catDisplayElement) {
     catDisplayElement.style.display = 'flex';
   }
 
-  // Show timer section
-  const timerSectionElement = document.querySelector('.timer-section');
   if (timerSectionElement) {
     timerSectionElement.style.display = 'flex';
   }
 
+  // Setup game elements
   populateStageBasesWithParticipants(participants, playerData);
   startCountdownTimer(timerSeconds);
 
   // Enable voting interactions
   enableVotingInteractions(currentSocket, playerData);
 
-  console.log('✅ Voting phase transition complete');
+  console.log('Voting phase transition completed successfully');
 }
 
+/**
+ * Shows calculating/processing screen between voting and results
+ * @param {string} message - Message to display during calculation
+ */
 function showCalculatingScreen(message) {
-  console.log('🧮 Showing calculating votes screen');
+  console.log('Displaying vote calculation screen:', message);
 
-  // Disable voting interactions
+  // Disable all voting interactions
   disableVotingInteractions();
 
-  // Hide voting elements
+  // Hide voting UI elements
   const catDisplay = document.querySelector('.cat-display');
   const timerSection = document.querySelector('.timer-section');
   const warningMessage = document.querySelector('.warning-message');
@@ -1157,22 +1198,24 @@ function showCalculatingScreen(message) {
   if (timerSection) timerSection.style.display = 'none';
   if (warningMessage) warningMessage.style.display = 'none';
 
-  // Show announcement
+  // Show calculation message
   const announcementElement = document.querySelector('.announcement-text');
   if (announcementElement) {
     announcementElement.textContent = message;
     announcementElement.style.display = 'block';
-    console.log('✅ Showing announcement:', message);
   } else {
-    console.warn('⚠️ Announcement element not found');
+    console.warn('Cannot show calculating message - announcement element missing');
   }
 }
 
-// Enhanced showResultsScreen function
+/**
+ * Displays final results screen with vote tallies and rewards
+ * @param {Array} participants - Participants with vote counts and coin rewards
+ */
 function showResultsScreen(participants) {
-  console.log('🏆 Showing results screen - keeping original positions');
+  console.log(`Displaying results for ${participants.length} participants`);
 
-  // Set game phase to results (this will hide back arrow AND exit dialog)
+  // Set game phase to results (hides back arrow and exit dialog)
   setGamePhase('results');
 
   // Hide calculating announcement
@@ -1181,105 +1224,102 @@ function showResultsScreen(participants) {
     announcementElement.style.display = 'none';
   }
 
-  // Log results without sorting (for debugging)
-  console.log('📊 Final results by stage:');
+  // Log results for debugging (maintains original stage order)
+  console.log('Final results by stage position:');
   participants.forEach((p, index) => {
     console.log(`  Stage ${index + 1}: ${p.catName} - ${p.votesReceived} votes (${p.coinsEarned} coins)`);
   });
 
-  // Transform cat display to results mode (no repositioning)
+  // Transform display to results mode without repositioning
   transformToResultsMode(participants);
 
-  // Show results buttons
+  // Show results action buttons
   const resultsButtons = document.querySelector('.results-buttons');
   if (resultsButtons) {
     resultsButtons.style.display = 'flex';
-    console.log('✅ Results buttons shown');
+  } else {
+    console.warn('Results buttons element not found');
   }
 
-  console.log('🎉 Results screen complete - cats stay in original positions, exit dialog hidden');
+  console.log('Results screen display completed');
 }
 
-// Transform the cat display to show results with gold bases (NO repositioning)
+/**
+ * Transforms cat display to show results with vote pedestals (preserves original positioning)
+ * @param {Array} participants - Participants with voting results and rewards
+ */
 function transformToResultsMode(participants) {
-  console.log('🎨 Transforming to results mode - preserving brown boxes');
+  console.log('Transforming display to results mode - preserving stage positions');
 
   const catDisplay = document.querySelector('.cat-display');
   if (catDisplay) {
-    catDisplay.style.display = 'flex'; // Ensure it's visible
+    catDisplay.style.display = 'flex';
     catDisplay.classList.add('showing-results');
   }
 
   const stageBases = document.querySelectorAll('.stage-base');
 
-  // First, add results mode class to all stage bases (but don't shrink them)
+  // Prepare all stages for results display
   stageBases.forEach((stageBase, index) => {
     stageBase.classList.add('results-mode');
 
-    // Hide gold base and old reward text initially
+    // Hide gold pedestals and old reward text initially
     const goldBase = stageBase.querySelector('.gold-base');
     const oldRewardText = stageBase.querySelector('.reward-text');
 
     if (goldBase) goldBase.style.display = 'none';
     if (oldRewardText) oldRewardText.style.display = 'none';
-
-    console.log(`🎨 Prepared stage ${index + 1} for results mode (keeping brown box)`);
   });
 
-  // Use fixed height per vote instead of relative scaling
-  const PIXELS_PER_VOTE = 40; // Each vote = 40px of height
-  const MIN_HEIGHT = 20; // Minimum height even with 0 votes
+  // Fixed height calculation for vote pedestals
+  const PIXELS_PER_VOTE = 40; // Each vote adds 40px height
+  const MIN_HEIGHT = 20;      // Minimum pedestal height
+  
+  console.log(`Using pedestal formula: ${MIN_HEIGHT}px base + ${PIXELS_PER_VOTE}px per vote`);
 
-  console.log('📊 Using fixed pedestal calculation: 40px per vote + 20px minimum');
-
-  // Update each stage base with its ORIGINAL participant (no repositioning)
+  // Update each stage with results data (no repositioning)
   stageBases.forEach((stageBase, stageIndex) => {
-    // Get the participant data from the stage's data attributes
     const participantId = stageBase.dataset.participantId;
     const catId = parseInt(stageBase.dataset.catId);
 
-    // Find this participant in the results data
+    // Find matching participant data
     const participant = participants.find(p => 
       p.playerId.toString() === participantId && p.catId === catId
     );
 
     if (!participant) {
-      console.warn(`⚠️ No participant found for stage ${stageIndex + 1}`);
+      console.warn(`No results data found for stage ${stageIndex + 1}`);
       return;
     }
 
-    console.log(`🎨 Updating stage ${stageIndex + 1} with ${participant.catName} (${participant.votesReceived} votes)`);
+    console.log(`Updating stage ${stageIndex + 1}: ${participant.catName} (${participant.votesReceived} votes, ${participant.coinsEarned} coins)`);
 
     const goldBase = stageBase.querySelector('.gold-base');
     const catSprite = stageBase.querySelector('.cat-sprite');
 
-    // Calculate gold base height using fixed formula
+    // Calculate pedestal height based on votes received
     const goldHeight = MIN_HEIGHT + (participant.votesReceived * PIXELS_PER_VOTE);
 
-    console.log(`📏 Stage ${stageIndex + 1}: ${participant.votesReceived} votes = ${goldHeight}px (${MIN_HEIGHT} + ${participant.votesReceived} × ${PIXELS_PER_VOTE})`);
-
-    // Show and position gold base ON TOP of the brown base (not replacing it)
+    // Show and position gold pedestal on top of brown base
     if (goldBase) {
       goldBase.style.display = 'block';
       goldBase.style.height = `${goldHeight}px`;
-      goldBase.style.bottom = '100px';
+      goldBase.style.bottom = '100px';        // Above brown base
       goldBase.style.position = 'absolute';
       goldBase.style.left = '50%';
       goldBase.style.transform = 'translateX(-50%)';
       goldBase.style.width = '149px';
       goldBase.style.backgroundColor = 'var(--color-gold)';
-      console.log(`💰 Stage ${stageIndex + 1} gold base: ${goldHeight}px (${participant.votesReceived} votes)`);
     }
 
-    // Position cat sprite on top of gold base
+    // Position cat sprite on top of gold pedestal
     if (catSprite) {
       catSprite.style.display = 'block';
       catSprite.classList.add('results-cat');
 
-      // Position cat on top of gold base
-      const catBottomPosition = 100 + goldHeight; // Brown base height + gold base height
+      const catBottomPosition = 100 + goldHeight; // Brown base + gold pedestal
       catSprite.style.bottom = `${catBottomPosition}px`;
-      catSprite.style.top = 'auto'; // Reset top positioning
+      catSprite.style.top = 'auto';
       catSprite.style.position = 'absolute';
       catSprite.style.left = '50%';
       catSprite.style.transform = 'translateX(-50%)';
@@ -1287,42 +1327,40 @@ function transformToResultsMode(participants) {
       catSprite.style.height = '149px';
       catSprite.style.objectFit = 'contain';
       catSprite.style.zIndex = '11';
-
-      console.log(`🐱 Stage ${stageIndex + 1} cat positioned at ${catBottomPosition}px from bottom`);
     }
 
-    // Render worn items in results mode (positioned on cat)
+    // Render worn items on cat in results mode
     if (participant.wornItems && participant.wornItems.length > 0) {
       renderWornItemsResults(stageBase, participant.wornItems, goldHeight);
     }
 
-    // ADD COIN TEXT TO THE EXISTING BROWN BOX
-    // Remove any existing coin reward text first
+    // Add coin reward text to brown base
     const existingCoinText = stageBase.querySelector('.coin-reward-text');
     if (existingCoinText) {
-      existingCoinText.remove();
+      existingCoinText.remove(); // Remove old coin text
     }
 
-    // Create new coin reward text element
     const coinText = document.createElement('div');
     coinText.className = 'coin-reward-text';
     coinText.textContent = `${participant.coinsEarned} coins`;
-
-    // Append to stage base (will be positioned by CSS)
     stageBase.appendChild(coinText);
 
-    console.log(`💰 Stage ${stageIndex + 1} coin text added: ${coinText.textContent}`);
-    console.log(`✅ Stage ${stageIndex + 1} updated with results (brown box preserved)`);
+    console.log(`Stage ${stageIndex + 1} results updated: ${goldHeight}px pedestal, ${participant.coinsEarned} coins`);
   });
 
-  console.log('🎨 Results mode transformation complete - brown boxes preserved with fixed height calculation');
+  console.log('Results mode transformation completed - original positions preserved');
 }
 
-// Updated renderWornItemsResults to work with preserved brown boxes
+/**
+ * Renders worn items on cats in results mode with proper positioning
+ * @param {HTMLElement} stageBase - Stage container element
+ * @param {Array} wornItems - Array of worn item data with sprite URLs
+ * @param {number} goldHeight - Height of gold pedestal for positioning
+ */
 function renderWornItemsResults(stageBase, wornItems, goldHeight) {
-  console.log(`👔 Rendering worn items in results mode with preserved brown boxes`);
+  console.log(`Rendering ${wornItems.length} worn items in results mode`);
 
-  // Remove existing worn items
+  // Remove any existing worn items
   const existingItems = stageBase.querySelectorAll('.worn-item');
   existingItems.forEach(item => item.remove());
 
@@ -1332,27 +1370,27 @@ function renderWornItemsResults(stageBase, wornItems, goldHeight) {
 
   wornItems.forEach((item, itemIndex) => {
     if (!item.spriteUrl) {
-      console.warn(`⚠️ No sprite URL for item ${itemIndex + 1} in results mode`);
+      console.warn(`Worn item ${itemIndex + 1} missing sprite URL - skipping`);
       return;
     }
 
-    // Create worn item element
+    // Create worn item image element
     const wornItemElement = document.createElement('img');
     wornItemElement.src = item.spriteUrl;
     wornItemElement.alt = `${item.category} item`;
     wornItemElement.classList.add('worn-item', `worn-${item.category}`, 'results-worn-item');
 
-    // Position over cat sprite in results mode (on top of gold base)
+    // Position over cat sprite on pedestal
     wornItemElement.style.position = 'absolute';
-    wornItemElement.style.bottom = `${100 + goldHeight}px`; // Brown base + gold base height
+    wornItemElement.style.bottom = `${100 + goldHeight}px`; // Brown base + gold pedestal
     wornItemElement.style.left = '50%';
     wornItemElement.style.transform = 'translateX(-50%)';
-    wornItemElement.style.width = '149px'; // Same as gold base width
+    wornItemElement.style.width = '149px';
     wornItemElement.style.height = 'auto';
-    wornItemElement.style.zIndex = '12'; // Above cat sprite in results
+    wornItemElement.style.zIndex = '12';      // Above cat sprite
     wornItemElement.style.pointerEvents = 'none';
 
-    // Crisp pixel rendering
+    // Enable crisp pixel rendering for item sprites
     wornItemElement.style.imageRendering = 'pixelated';
     wornItemElement.style.imageRendering = '-moz-crisp-edges';
     wornItemElement.style.imageRendering = 'crisp-edges';
@@ -1360,10 +1398,12 @@ function renderWornItemsResults(stageBase, wornItems, goldHeight) {
     stageBase.appendChild(wornItemElement);
   });
 
-  console.log(`✅ Rendered worn items in results mode with preserved brown boxes`);
+  console.log(`Successfully rendered worn items in results mode`);
 }
 
-// Setup results buttons
+/**
+ * Sets up event listeners for results screen action buttons
+ */
 function setupResultsButtons() {
   const playAgainBtn = document.getElementById('play-again-btn');
   const goHomeBtn = document.getElementById('go-home-btn');
@@ -1371,47 +1411,58 @@ function setupResultsButtons() {
   if (playAgainBtn) {
     playAgainBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('🔄 Play Again clicked - reloading page');
+      console.log('Play Again clicked - reloading page for new game');
       
-      // Reset game phase to waiting before reload to ensure proper state
+      // Reset game phase before reload for clean state
       setGamePhase('waiting');
       
-      window.location.reload(); // Simple implementation - reload page to restart
+      window.location.reload(); // Simple restart - full page reload
     });
+  } else {
+    console.warn('Play Again button not found');
   }
 
   if (goHomeBtn) {
     goHomeBtn.addEventListener('click', (e) => {
-      console.log('🏠 Go Home clicked');
-      navigateHome(); // Use the centralized navigation function
+      console.log('Go Home clicked - navigating to main menu');
+      navigateHome(); // Use centralized navigation function
     });
+  } else {
+    console.warn('Go Home button not found');
   }
 }
 
-// Page unload cleanup
+// Cleanup on page unload
 window.addEventListener('beforeunload', () => {
-  console.log('🔌 Page unloading - cleaning up');
+  console.log('Page unloading - performing cleanup');
   
   // Stop connection monitoring
   stopConnectionMonitoring();
   
-  // Disconnect socket
+  // Disconnect WebSocket
   if (currentSocket && currentSocket.connected) {
     currentSocket.disconnect();
+    console.log('Socket disconnected during cleanup');
   }
 });
 
-// Global error handler for unhandled promise rejections
+// Global error handlers for debugging and stability
+
+/**
+ * Handles unhandled promise rejections
+ */
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('🚨 Unhandled promise rejection in fashion show:', event.reason);
+  console.error('Unhandled promise rejection in fashion show:', event.reason);
   handleFashionShowError(event.reason, 'Promise Rejection');
   
-  // Prevent the default browser error dialog
+  // Prevent default browser error dialog
   event.preventDefault();
 });
 
-// Global error handler for JavaScript errors
+/**
+ * Handles uncaught JavaScript errors
+ */
 window.addEventListener('error', (event) => {
-  console.error('🚨 JavaScript error in fashion show:', event.error);
+  console.error('JavaScript error in fashion show:', event.error);
   handleFashionShowError(event.error, 'JavaScript');
 });

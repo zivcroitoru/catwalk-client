@@ -1,3 +1,7 @@
+/* ============================================================================
+   FASHION SHOW CSS - Cat Contest Interface
+   ============================================================================ */
+
 /* Design System Variables */
 :root {
   /* Colors */
@@ -34,8 +38,9 @@
 --font-size-lg: 96px;
 --font-size-md: 64px;
 --font-size-sm: 48px;
---font-size-xs: 36px;
---font-size-xxs: 24px;
+--font-size-mds: 36px;
+--font-size-xs: 28px;
+--font-size-xxs: 20px;
 }
 
 /* Reset and base styles */
@@ -76,7 +81,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative; /* For absolute positioned children */
+  position: relative;
   padding: var(--spacing-sm);
   transform: translateY(-30px);
 }
@@ -106,14 +111,13 @@ body {
 }
 
 .bottom-right {
-  /* Reserved for future elements */
   min-width: 100px; /* Maintain balance */
 }
 
 /* HEADER STYLING */
 .main-header {
   font-family: var(--font-main);
-  font-size: var(--font-size-lg); /* 96px */
+  font-size: var(--font-size-lg);
   color: var(--color-cream);
   text-align: center;
   font-weight: normal;
@@ -141,7 +145,7 @@ body {
 /* WAITING MESSAGE */
 .waiting-message {
   font-family: var(--font-main);
-  font-size: var(--font-size-md); /* 64px */
+  font-size: var(--font-size-md);
   color: var(--color-black);
   font-weight: normal;
   text-align: center;
@@ -170,22 +174,8 @@ body {
 
 /* Results display container animation */
 .cat-display.showing-results {
-    animation: resultsReveal 1s ease-out;
-    /* Add transform-origin for better scaling */
-    transform-origin: center center;
-    /* Ensure smooth rendering */
-    will-change: transform, opacity;
-}
-
-@keyframes resultsReveal {
-    0% {
-        opacity: 0.7;
-    transform: scale(0.95);
-    }
-    100% {
-        opacity: 1;
+    opacity: 1;
     transform: scale(1);
-    }
 }
 
 /* WARNING MESSAGE */
@@ -197,7 +187,7 @@ body {
     width: 200px;
     
     font-family: var(--font-main);
-    font-size: var(--font-size-xs); /* 36px */
+    font-size: var(--font-size-mds);
     color: var(--color-red);
     text-align: center;
   line-height: 1.2;
@@ -227,7 +217,7 @@ body {
   text-decoration: none;
   color: var(--color-black);
   background-color: var(--color-brown);
-  font-family: Arial, sans-serif;
+  font-family: var(--font-main);
   font-size: var(--font-size-md);
   font-weight: bold;
   border: var(--stroke-xl) solid var(--color-black);
@@ -262,7 +252,7 @@ body {
 
 #timer-text {
   font-family: var(--font-main);
-  font-size: var(--font-size-sm); /* 48px */
+  font-size: var(--font-size-sm);
   color: var(--color-black);
   font-weight: normal;
   
@@ -277,14 +267,14 @@ body {
 /* Timer text urgent state */
 #timer-text.urgent {
   color: var(--color-red);
-  font-size: var(--font-size-xs); /* 36px */
+  font-size: var(--font-size-mds);
   font-weight: bold;
 }
 
 /* ANNOUNCEMENT TEXT */
 .announcement-text {
   font-family: var(--font-main);
-  font-size: var(--font-size-md); /* 64px */
+  font-size: var(--font-size-md);
   color: var(--color-black);
   font-weight: normal;
   text-align: center;
@@ -315,7 +305,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 200px; /* Space between buttons */
+  gap: 300px;
   animation: buttonsSlideUp 1s ease-out 1.2s both;
 }
 
@@ -336,7 +326,7 @@ body {
   border: var(--stroke-thick) solid var(--color-black);
   color: var(--color-black);
   font-family: var(--font-main);
-  font-size: var(--font-size-sm); /* 48px */
+  font-size: var(--font-size-sm);
   font-weight: normal;
   cursor: pointer;
   text-decoration: none;
@@ -405,7 +395,7 @@ body {
 
 .exit-dialog-title {
   font-family: var(--font-main);
-  font-size: var(--font-size-sm); /* 48px */
+  font-size: var(--font-size-sm);
   color: var(--color-black);
   text-align: center;
   font-weight: normal;
@@ -436,7 +426,7 @@ body {
   border: var(--stroke-thin) solid var(--color-black);
   color: var(--color-black);
   font-family: var(--font-main);
-  font-size: 28px;
+  font-size: var(--font-size-xs);
   font-weight: normal;
   cursor: pointer;
   
@@ -550,8 +540,6 @@ body {
   position: relative;
   box-sizing: border-box;
   overflow: visible;
-    /* Add smooth rendering hint */
-    will-change: auto;
 }
 
 .stage-base.results-mode .stage-walkway {
@@ -569,26 +557,17 @@ body {
   background-color: var(--color-gold);
   animation: goldRise 1.2s ease-out;
   transform-origin: bottom center;
-  /* Add rendering optimization */
-  will-change: height, opacity;
 }
 
 @keyframes goldRise {
-  0% {
-    height: 0px;
-    opacity: 0.7;
-    /* Keep consistent transform */
-    transform: translateX(-50%);
-  }
-  60% {
-    opacity: 1;
-    transform: translateX(-50%);
-  }
-  100% {
-    opacity: 1;
-    height: 20px;
-    transform: translateX(-50%);
-  }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scaleY(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scaleY(1);
+    }
 }
 
 .stage-walkway {
@@ -622,36 +601,32 @@ body {
   animation: catRise 1.5s ease-out 0.3s both;
   object-fit: contain;
   z-index: 11;
-    /* Add rendering optimization */
-    will-change: transform, opacity;
 }
 
 @keyframes catRise {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0px);
-  }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
 }
 
 .worn-item.results-worn-item {
-  animation: itemFloat 1.8s ease-out 0.6s both;
-  /* Add rendering optimization */
-  will-change: transform, opacity;
+    animation: itemFloat 1.8s ease-out 0.6s both;
 }
 
 @keyframes itemFloat {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(30px) scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0px) scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
 }
 
 .reward-text {
@@ -661,7 +636,7 @@ body {
   transform: translateX(-50%);
   width: 90%;
   font-family: var(--font-main);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-mds);
   color: var(--color-white);
   text-align: center;
   font-weight: normal;
@@ -680,23 +655,17 @@ body {
   max-width: 180px;
   word-wrap: break-word;
   line-height: 1.2;
-  /* Add rendering optimization */
-  will-change: transform, opacity;
 }
 
 @keyframes rewardAppear {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.5);
-  }
-  60% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1.1);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
 }
 
 .coin-reward-text {
@@ -707,7 +676,7 @@ body {
   width: 85%;
   max-width: 160px;
   font-family: var(--font-main);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-mds);
   color: var(--color-white);
   text-align: center;
   font-weight: normal;
@@ -722,21 +691,18 @@ body {
   -moz-osx-font-smoothing: unset;
   font-smooth: never;
   
-  animation: coinTextAppear 1s ease-out 1.2s both;
+  animation: coinTextAppear 1s ease-out 0.9s both;
 }
 
 @keyframes coinTextAppear {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.5);
-  }
-  60% {
-    transform: translateX(-50%) scale(1.1);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
 }
 
 /* Cat name and username styling */
@@ -751,7 +717,7 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-main);
-  font-size: 28px;
+  font-size: var(--font-size-xs);
   color: var(--color-black);
   text-align: center;
   font-weight: normal;
@@ -779,7 +745,7 @@ body {
   width: 85%;
   max-width: 160px;
   font-family: var(--font-main);
-  font-size: 20px;
+  font-size: var(--font-size-xxs);
   color: var(--color-black);
   text-align: center;
   font-weight: normal;
@@ -798,10 +764,6 @@ body {
 /* RESPONSIVE DESIGN */
 /* Small laptops and tablets: 1366x768 and similar smaller screens */
 @media (max-width: 1400px) and (max-height: 800px) {
-    /* body {
-        background-color: brown;
-    } */
-
     .cat-display {
         transform: scale(0.9);
     }
@@ -809,10 +771,6 @@ body {
 
 /* Medium laptops: 1440x900, 1680x1050, and 1496x1024 */
 @media (min-width: 1401px) and (max-width: 1700px) and (min-height: 801px) {
-    /* body {
-        background-color: orange;
-    } */
-
     .main-header {
       font-size: var(--font-size-xl);
     }
@@ -826,7 +784,7 @@ body {
     }
 
     .warning-message {
-      font-size: var(--font-size-xs);
+      font-size: var(--font-size-mds);
     }
 
     .album-button {
@@ -840,10 +798,6 @@ body {
 
 /* Large desktop screens: 1920x1080 */
 @media (min-width: 1701px) and (min-height: 1001px) and (max-height: 1200px) {
-    /* body {
-        background-color: yellow;
-    } */
-
     .main-header {
       font-size: var(--font-size-xxl);
     }
@@ -872,10 +826,6 @@ body {
 
 /* Very large desktop screens: 2560x1440 and larger */
 @media (min-width: 1701px) and (min-height: 1201px) {
-    /* body {
-        background-color: green;
-    } */
-    
     .main-header {
       font-size: var(--font-size-xxl);
     }
@@ -900,6 +850,10 @@ body {
         transform: scale(1.8);
     }
 
+    .cat-display.showing-results {
+        transform: scale(1.8);
+    }
+
     .timer-section {
         transform: scale(1.8);
         margin-left: 80px;
@@ -908,10 +862,6 @@ body {
 
 /* Fallback for very small screens (edge case) */
 @media (max-width: 1366px) and (max-height: 768px) {
-  /* body {
-      background-color: blue;
-  } */
-  
   .main-header {
     font-size: var(--font-size-lg);
   }
@@ -925,7 +875,7 @@ body {
   }
 
   .warning-message {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-mds);
   }
 
   .album-button {
@@ -940,8 +890,7 @@ body {
     transform: translateY(-30px);
   }
 
-
-  /* Additional optimization for smoother animations */
+  /* Performance optimization for smaller screens - GPU acceleration */
   .cat-display, 
   .stage-base, 
   .cat-sprite, 
@@ -949,10 +898,8 @@ body {
   .reward-text,
   .coin-reward-text,
   .gold-base {
-    /* Force GPU acceleration for smoother animations */
     backface-visibility: hidden;
     perspective: 1000px;
-    /* Optimize rendering */
     transform-style: preserve-3d;
   }
 }
