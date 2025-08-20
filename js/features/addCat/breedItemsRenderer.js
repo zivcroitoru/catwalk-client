@@ -27,12 +27,12 @@ export function renderBreedItems(breed) {
 
     const card = document.createElement("div");
     card.className = "shop-card";
-    card.innerHTML = `
-      <img src="${sprite_url}" class="shop-img" alt="${name}" />
-      <div class="shop-btn-bar">
-        <button class="shop-btn">SELECT</button>
-      </div>
-    `;
+  card.innerHTML = `
+    <img src="${sprite_url}" class="shop-img" alt="${name}" />
+    <div class="shop-btn-bar">
+      <button class="shop-btn">${name}</button>
+    </div>
+  `;
 
     card.querySelector("button").addEventListener("click", () => {
       if (selectedCard) selectedCard.classList.remove("selected");
