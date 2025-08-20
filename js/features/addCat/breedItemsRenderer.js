@@ -1,7 +1,7 @@
 import { toastCatAdded, toastCancelled, toastConfirmAddCat } from '../../core/toast.js';
 import { addCatToUser, getPlayerCats } from '../../core/storage.js';
 import { renderCarousel, updateInventoryCount } from '../ui/carousel.js';
-import { toPascalCase } from "./utils.js";
+import { toPascalCase } from "../../core/utils.js";
 
 export function renderBreedItems(breed) {
   console.log('🎨 Rendering breed items for:', breed);
