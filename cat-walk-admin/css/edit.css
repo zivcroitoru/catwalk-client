@@ -1,0 +1,1364 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700;900&display=swap');
+
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+
+    display: flex;
+    background-color: #F1EEEE;
+    font-family: 'Nunito', sans-serif;
+}
+
+
+/*-------------------------menu---------------------------*/
+.menu {
+    width: 369px;
+    height: 100%;
+    background-color: #838E84;
+    border-radius: 0 30px 30px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 30px;
+}
+
+.title {
+    font-size: 80px;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: 0;
+    display: center;
+}
+
+.menu a {
+    font-size: 24px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 100;
+    margin-top: 10px;
+
+}
+
+.menu a:hover {
+    color: #4E5C4F;
+}
+
+.separator {
+    width: 70%;
+    height: 1px;
+    background-color: #ffffff;
+    margin: 5px 0;
+}
+
+/*-------------------------middle---------------------------*/
+
+.table {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 1458px;
+    height: 680px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+    margin-left: 50px;
+    margin-top: 50px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+
+}
+
+.big-cat,
+.big-clothes {
+    width: 550px;
+    height: 550px;
+    border-radius: 30px;
+    transform: scale(0.8);
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: 80px;
+    /* margin-left: 100px; */
+    border: 5px solid #cccccc;
+
+}
+
+.cat-info,
+.clothes-info {
+    /* background-color: aqua; */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: absolute;
+    right: 50px;
+    top: 30px;
+    margin-right: 150px;
+    /* padding: 0; */
+}
+
+.cat-pic-data {
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+
+
+}
+
+/*------------------------content----------------------*/
+
+.cat-name,
+.clothes-name {
+    width: 500px;
+    height: 100px;
+    font-size: 32px;
+    font-weight: 100;
+    color: #878787;
+    border-radius: 50px;
+    border: 5px solid #cccccc;
+    background-color: #F6F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: none;
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.cat-name-input {
+    width: 500px;
+    height: 100px;
+    font-size: 32px;
+    font-weight: 100;
+    color: #878787;
+    border-radius: 50px;
+    border: 5px solid #cccccc;
+    background-color: #F6F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: none;
+    cursor: pointer;
+    padding: 0
+}
+
+
+.cat-sprite,
+.cat-breed,
+.cat-variant,
+.cat-pallete,
+.cat-status,
+.cat-date {
+    width: 500px;
+    height: 100px;
+    font-size: 22px;
+    font-weight: 100;
+    color: #878787;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: -50px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.clothes-category,
+.clothes-sprite-url {
+    width: 500px;
+    height: 100px;
+    font-size: 22px;
+    font-weight: 100;
+    color: #878787;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+
+}
+
+
+
+/*---------------------buttons----------------------*/
+.button-container {
+    position: fixed;
+    bottom: 50px;
+    left: 60%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    z-index: 100;
+}
+
+.cancel-button {
+    font-family: 'Nunito', sans-serif;
+    width: 200px;
+    height: 80px;
+    background-color: #4E5C4F;
+    border-radius: 100px;
+    font-size: 28px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    margin-right: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.clothes-pic-data {
+    width: 100%;
+    height: auto;
+    /* keeps aspect ratio */
+    max-width: 500px;
+    /* optional */
+    image-rendering: pixelated;
+}
+
+
+.save-button {
+    font-family: 'Nunito', sans-serif;
+    width: 200px;
+    height: 80px;
+    background-color: #4E5C4F;
+    border-radius: 100px;
+    font-size: 28px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    margin-right: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-button-clothes:hover,
+.cancel-button:hover,
+.delete-button:hover,
+.save-button:hover {
+    background-color: #2c342c;
+}
+
+
+
+.delete-button {
+    font-family: 'Nunito', sans-serif;
+    width: 200px;
+    height: 80px;
+    background-color: #4E5C4F;
+    border-radius: 100px;
+    font-size: 28px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 100px;
+}
+
+.delete-button-clothes {
+    font-family: 'Nunito', sans-serif;
+    width: 200px;
+    height: 80px;
+    background-color: #4E5C4F;
+    border-radius: 100px;
+    font-size: 28px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 100px;
+    margin-top: 100px;
+}
+
+
+
+.cat-name:hover,
+.clothes-name:hover {
+    background-color: #9e9c9c;
+}
+
+.back {
+    position: absolute;
+    left: 20px;
+    text-decoration: none;
+    color: #838E84;
+    font-size: 24px;
+    font-weight: 200;
+    top: 20px;
+}
+
+
+.back:hover {
+    color: rgb(29, 44, 36);
+}
+
+
+/*------------------- MEDIA QUERIES --------------------*/
+
+@media (max-height: 800px) {
+
+    .menu {
+        width: 300px;
+        height: 100%;
+        background-color: #838E84;
+        border-radius: 0 30px 30px 0;
+        /* rounded on right side only */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 15px;
+
+    }
+
+    .menu a {
+        font-size: 24px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 100;
+        margin-top: 10px;
+        transform: scale(0.8);
+
+    }
+
+
+    .big-cat,
+    .big-clothes {
+        width: 50vh;
+        height: 50vh;
+        border-radius: 30px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin-top: 18vh;
+        /* margin-left: 100px; */
+        border: 5px solid #cccccc;
+
+    }
+
+    .clothes-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: 10px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+    .cat-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: -70px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+
+    .clothesype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 200px;
+    }
+
+    .catype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .table {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        width: 90%;
+        /* take 90% of screen width */
+        max-width: 1458px;
+        /* but never exceed design size */
+        height: 90%;
+        max-height: 680px;
+
+        background-color: #FFFFFF;
+        border-radius: 30px;
+        padding: 20px;
+        position: relative;
+        box-sizing: border-box;
+        margin-right: 50px;
+    }
+
+    .cat-info,
+    .clothes-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        position: absolute;
+        top: 10;
+        right: -50px;
+        /* push 20px away from the right edge */
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .user-clothes,
+    .user-cat {
+        display: flex;
+        transform: scale(0.8);
+        flex-direction: column;
+        /* stack image and label vertically */
+        align-items: center;
+        /* center horizontally */
+        text-align: center;
+        gap: 10px;
+        /* spacing between image and text */
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.91);
+    }
+
+    .grid-wrapper-clothes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0px;
+        column-gap: 20px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.95);
+    }
+
+
+    .delete-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-bottom: 0px;
+
+    }
+
+    .delete-button-clothes {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-top: 100px;
+        margin-bottom: 0px;
+
+    }
+
+    .cancel-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 30px;
+        margin-bottom: 0px;
+    }
+
+
+    .save-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 30px;
+        margin-bottom: 0px;
+
+    }
+
+    .pages-clothes {
+        position: fixed;
+        /* bottom: 10px; */
+        /* left: 10; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding-left: 125px;
+        border-radius: 20px;
+        font-size: 32px;
+        color: #838E84;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+
+
+}
+
+@media (max-height: 900px) {
+
+    .menu {
+        width: 300px;
+        height: 100%;
+        background-color: #838E84;
+        border-radius: 0 30px 30px 0;
+        /* rounded on right side only */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 15px;
+
+    }
+
+    .menu a {
+        font-size: 24px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 100;
+        margin-top: 10px;
+        transform: scale(0.8);
+
+    }
+
+
+    .big-cat,
+    .big-clothes {
+        width: 50vh;
+        height: 50vh;
+        border-radius: 30px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin-top: 18vh;
+        /* margin-left: 100px; */
+        border: 5px solid #cccccc;
+
+    }
+
+    .clothes-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: 10px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+    .cat-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: -70px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+
+    .clothesype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 200px;
+    }
+
+    .catype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .table {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        width: 90%;
+        /* take 90% of screen width */
+        max-width: 1458px;
+        /* but never exceed design size */
+        height: 90%;
+        max-height: 680vh;
+
+        background-color: #FFFFFF;
+        border-radius: 30px;
+        padding: 20px;
+        position: relative;
+        box-sizing: border-box;
+        margin-right: 50px;
+    }
+
+    .cat-info,
+    .clothes-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        position: absolute;
+        top: 10;
+        right: -50px;
+        /* push 20px away from the right edge */
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .user-clothes,
+    .user-cat {
+        display: flex;
+        transform: scale(0.8);
+        flex-direction: column;
+        /* stack image and label vertically */
+        align-items: center;
+        /* center horizontally */
+        text-align: center;
+        gap: 10px;
+        /* spacing between image and text */
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.91);
+    }
+
+    .grid-wrapper-clothes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0px;
+        column-gap: 20px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.95);
+    }
+
+
+    .delete-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-bottom: 0px;
+
+    }
+
+    .delete-button-clothes {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-top: 100px;
+        margin-bottom: 0px;
+
+    }
+
+    .cancel-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 30px;
+        margin-bottom: 0px;
+    }
+
+
+    .save-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 30px;
+        margin-bottom: 0px;
+
+    }
+
+    .pages-clothes {
+        position: fixed;
+        /* bottom: 10px; */
+        /* left: 10; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding-left: 125px;
+        border-radius: 20px;
+        font-size: 32px;
+        color: #838E84;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+
+
+}
+
+
+
+
+@media (min-height: 1000px) {
+
+    .menu {
+        width: 300px;
+        height: 100%;
+        background-color: #838E84;
+        border-radius: 0 30px 30px 0;
+        /* rounded on right side only */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 15px;
+
+    }
+
+    .menu a {
+        font-size: 24px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 100;
+        margin-top: 10px;
+        transform: scale(0.8);
+
+    }
+
+
+    .big-cat,
+    .big-clothes {
+        width: 50vh;
+        height: 50vh;
+        border-radius: 30px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin-top: 18vh;
+        /* margin-left: 100px; */
+        border: 5px solid #cccccc;
+
+    }
+
+    .clothes-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: 10px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+    .cat-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: -70px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+
+    .clothesype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 200px;
+    }
+
+    .catype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .table {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        width: 90%;
+        /* take 90% of screen width */
+        max-width: 1458px;
+        /* but never exceed design size */
+        height: 90%;
+        max-height: 680vh;
+
+        background-color: #FFFFFF;
+        border-radius: 30px;
+        padding: 20px;
+        position: relative;
+        box-sizing: border-box;
+        margin-right: 50px;
+    }
+
+    .cat-info,
+    .clothes-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        position: absolute;
+        top: 15vh;
+        right: -50px;
+        /* push 20px away from the right edge */
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .user-clothes,
+    .user-cat {
+        display: flex;
+        transform: scale(0.8);
+        flex-direction: column;
+        /* stack image and label vertically */
+        align-items: center;
+        /* center horizontally */
+        text-align: center;
+        gap: 10px;
+        /* spacing between image and text */
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.91);
+    }
+
+    .grid-wrapper-clothes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0px;
+        column-gap: 20px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.95);
+    }
+
+
+    .delete-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 10vh;
+
+    }
+
+    .delete-button-clothes {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-top: 100px;
+        margin-bottom: 0px;
+
+    }
+
+    .cancel-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 10vh;
+    }
+
+
+    .save-button {
+        font-family: 'Nunito', sans-serif;
+        width: 150px;
+        height: 70px;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 10vh;
+
+    }
+
+    .pages-clothes {
+        position: fixed;
+        /* bottom: 10px; */
+        /* left: 10; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding-left: 125px;
+        border-radius: 20px;
+        font-size: 32px;
+        color: #838E84;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+}
+
+
+
+
+
+@media (min-height: 1400px) {
+
+    .menu {
+        width: 300px;
+        height: 100%;
+        background-color: #838E84;
+        border-radius: 0 30px 30px 0;
+        /* rounded on right side only */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        gap: 15px;
+
+    }
+
+    .menu a {
+        font-size: 24px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 100;
+        margin-top: 10px;
+        transform: scale(0.8);
+
+    }
+
+
+    .big-cat,
+    .big-clothes {
+        width: 50vh;
+        height: 50vh;
+        border-radius: 30px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin-top: 18vh;
+        /* margin-left: 100px; */
+        border: 5px solid #cccccc;
+
+    }
+
+    .clothes-pic-data {
+        width: 50vh;
+        height: 50vh;
+        margin-top: 10px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+    .cat-pic-data {
+        width: 70vh;
+        height: 70vh;
+        margin-top: -200px;
+        /* negative margin moves it up */
+        image-rendering: pixelated;
+    }
+
+    .clothesype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 200px;
+    }
+
+    .catype {
+        margin: 0;
+        /* optional spacing */
+        font-weight: 400;
+        font-size: 32px;
+        color: #333;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .table {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        width: 90%;
+        /* take 90% of screen width */
+        max-width: 1458vh;
+        /* but never exceed design size */
+        height: 93%;
+        max-height: 1000vh;
+
+        background-color: #FFFFFF;
+        border-radius: 30px;
+        position: relative;
+        box-sizing: border-box;
+        margin-right: 50px;
+    }
+
+    .cat-info,
+    .clothes-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        position: absolute;
+        top: 15vh;
+        right: 100px;
+        transform: scale(1.5);
+        /* push 20px away from the right edge */
+    }
+
+    #cat-images {
+        width: 30vw;
+        max-width: 550px;
+        margin-left: 0.7vw;
+        margin-top: 0.5vw;
+    }
+
+    .user-clothes,
+    .user-cat {
+        display: flex;
+        transform: scale(0.8);
+        flex-direction: column;
+        /* stack image and label vertically */
+        align-items: center;
+        /* center horizontally */
+        text-align: center;
+        gap: 10px;
+        /* spacing between image and text */
+    }
+
+    .data-list {
+        width: 45vw;
+        max-width: 600px;
+        margin-left: 3vw;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        margin-top: 100px;
+    }
+
+    .title {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+
+
+    .grid-wrapper-cats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: -0px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.91);
+    }
+
+    .grid-wrapper-clothes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0px;
+        column-gap: 20px;
+        position: absolute;
+        top: -15px;
+        margin-top: 5px;
+        left: 0;
+        margin-left: 12px;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        transform: scale(0.95);
+    }
+
+
+    .delete-button {
+        font-family: 'Nunito', sans-serif;
+        width: 15vh;
+        height: 7vh;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 15vh;
+
+    }
+
+    .delete-button-clothes {
+        font-family: 'Nunito', sans-serif;
+        width: 15vh;
+        height: 7vh;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 40px;
+        margin-top: 100px;
+        margin-bottom: 0px;
+
+    }
+
+    .cancel-button {
+        font-family: 'Nunito', sans-serif;
+        width: 15vh;
+        height: 7vh;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 15vh;
+    }
+
+
+    .save-button {
+        font-family: 'Nunito', sans-serif;
+        width: 15vh;
+        height: 7vh;
+        background-color: #4E5C4F;
+        border-radius: 100px;
+        font-size: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 5vh;
+        margin-bottom: 15vh;
+
+    }
+
+    .pages-clothes {
+        position: fixed;
+        /* bottom: 10px; */
+        /* left: 10; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding-left: 125px;
+        border-radius: 20px;
+        font-size: 32px;
+        color: #838E84;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+}
