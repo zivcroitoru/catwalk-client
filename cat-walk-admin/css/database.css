@@ -1144,7 +1144,7 @@ body {
         margin: 0;
         /* optional spacing */
         font-weight: 400;
-        font-size: 32px;
+        font-size: 22px;
         color: #333;
         text-align: center;
         margin-top: 19vh;
@@ -1229,8 +1229,7 @@ body {
         padding: 0px;
         column-gap: 20px;
         position: absolute;
-        top: -15px;
-        margin-top: 5px;
+        top: -50px;
         left: 0;
         margin-left: 12px;
         width: 100%;
