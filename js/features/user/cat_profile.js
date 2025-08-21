@@ -21,17 +21,22 @@ export async function showCatProfile(cat) {
   $('profilePalette').textContent = toPascalCase(cat.palette ?? '');
 
   // ---- Birthday + Age (robust to invalid dates) ----
-  const bd = new Date(cat.birthdate);
-  if (!isNaN(bd)) {
-    const formatted = `${bd.getMonth() + 1}.${bd.getDate()}.${bd.getFullYear().toString().slice(-2)}`;
-    $('profileBirthday').textContent = formatted;
+const bd = new Date(cat.birthdate);
+if (!isNaN(bd)) {
+  // Format: DD.MM.YY
+  const dd = String(bd.getDate()).padStart(2, "0");
+  const mm = String(bd.getMonth() + 1).padStart(2, "0");
+  const yy = bd.getFullYear().toString().slice(-2);
 
-    const ageInDays = Math.floor((Date.now() - bd.getTime()) / 86_400_000);
-    $('profileAge').textContent = `${ageInDays} days`;
-  } else {
-    $('profileBirthday').textContent = '—';
-    $('profileAge').textContent = '—';
-  }
+  const formatted = `${dd}.${mm}.${yy}`;
+  $('profileBirthday').textContent = formatted;
+
+  const ageInDays = Math.floor((Date.now() - bd.getTime()) / 86_400_000);
+  $('profileAge').textContent = `${ageInDays} days`;
+} else {
+  $('profileBirthday').textContent = '—';
+  $('profileAge').textContent = '—';
+}
 
   $('profileImage').src = cat.sprite_url;
 

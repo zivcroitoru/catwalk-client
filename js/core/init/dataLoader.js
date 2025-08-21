@@ -33,13 +33,13 @@ export async function loadShopAndTemplates() {
     if (!breed) continue;
 
     // Group templates by breed for easier lookup
-    (breedItems[breed] ||= []).push({
-      name: t.name ?? 'Unnamed',
-      template,
-      sprite_url: t.sprite_url,
-      variant: t.variant ?? 'default',
-      palette: t.palette ?? 'default'
-    });
+(breedItems[breed] ||= []).push({
+  name: t.name ?? '',   // empty string if no name
+  template,
+  sprite_url: t.sprite_url,
+  variant: t.variant ?? 'default',
+  palette: t.palette ?? 'default'
+});
   }
   
   /* Cache data globally and reset sprite lookup cache */

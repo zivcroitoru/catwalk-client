@@ -461,7 +461,7 @@ export function normalizeCat(cat, spriteByTemplate) {
   const normalized = {
     id: cat.cat_id ?? cat.id,
     template,
-    name: cat.name ?? 'Unnamed Cat',
+    name: cat.name ?? '',   // no fallback label
     birthdate: cat.birthdate,
     description: cat.description ?? '',
     sprite_url: spriteByTemplate[template] ?? 'data:image/png;base64,PLACEHOLDER_IMAGE_BASE64',
@@ -474,6 +474,7 @@ export function normalizeCat(cat, spriteByTemplate) {
 
   return normalized;
 }
+
 
 // ───────────── Public: UI Helpers ─────────────
 /**
