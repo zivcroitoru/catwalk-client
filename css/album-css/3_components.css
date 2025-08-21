@@ -136,12 +136,12 @@ background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-rep
 
 #profileImage {
   position: absolute;
-  top: 1vw;             /* push down from top edge */
-  right: 1vw;           /* push left from right edge */
-  width: 3vw;           /* small square */
-  height: 3vw;
-  border: 0.15vw solid var(--border);
-  box-shadow: 0 0 0 0.08vw var(--accent);
+  top: 4vw;               /* further down */
+  right: 6vw;             /* move left from the edge */
+  width: 6vw;             /* bigger square */
+  height: 6vw;
+  border: 0.21vw solid var(--border);
+  box-shadow: 0 0 0 0.1vw var(--accent);
   object-fit: contain;
   object-position: center;
   image-rendering: pixelated;
