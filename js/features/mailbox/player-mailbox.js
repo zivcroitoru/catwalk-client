@@ -115,10 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTicketId = null;
 
 
-  
-  const lastTicketId = localStorage.getItem('lastTicketId');
+  const lastTicketId = localStorage.getItem(`lastTicketId_${userId}`);
   if (lastTicketId) {
-    // Try to open the ticket even if admin closed it
     openTicket(lastTicketId, /*skipJoin=*/true);
   } else {
     checkOpenTicket();
@@ -198,43 +196,55 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // openTicket: set UI, join room (optionally) and load history
-async function openTicket(ticketId, skipJoin = false) {
-  currentTicketId = ticketId;
-  localStorage.setItem('lastTicketId', ticketId);  
+  async function openTicket(ticketId, skipJoin = false) {
+    currentTicketId = ticketId;
+    localStorage.setItem(`lastTicketId_${userId}`, ticketId);
+    createTicketBtn.style.display = 'none';
+    chatBox.style.display = 'flex';
 
-  createTicketBtn.style.display = 'none';
-  chatBox.style.display = 'flex';
-
-  if (!skipJoin) {
-    socket.emit('joinTicketRoom', { ticketId });
-    console.log('Emitted joinTicketRoom for', ticketId);
-  }
-
-  // 1️⃣ Load messages from localStorage first
-  const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
-  chatMessages.innerHTML = ''; // clear only once before loading
-  savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
-
-  // 2️⃣ Fetch existing messages from the server
-  try {
-    const res = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
-    if (res.ok) {
-      const messages = await res.json();
-
-      messages.forEach(msg => {
-        const label = msg.sender === 'admin' ? 'Admin' :
-                      (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
-        // Only add messages that aren't already in localStorage
-        const alreadySaved = savedMessages.some(m => m.sender === label && m.text === msg.content);
-        if (!alreadySaved) addMessage(label, msg.content);
-      });
-    } else {
-      console.warn('Failed to fetch chat history', await res.text());
+    if (!skipJoin) {
+      socket.emit('joinTicketRoom', { ticketId });
     }
-  } catch (err) {
-    console.error('Error fetching chat history', err);
+
+    chatMessages.innerHTML = '';
+
+    // Load local messages
+    const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
+    savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
+
+    // ⬇️ Fetch messages and also check status
+    try {
+      const res = await fetch(`${APP_URL}/api/tickets/${ticketId}`);
+      if (res.ok) {
+        const ticket = await res.json();
+
+        // fetch chat history
+        const msgsRes = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
+        if (msgsRes.ok) {
+          const messages = await msgsRes.json();
+          messages.forEach(msg => {
+            const label = msg.sender === 'admin' ? 'Admin' :
+              (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
+            const alreadySaved = savedMessages.some(m => m.sender === label && m.text === msg.content);
+            if (!alreadySaved) addMessage(label, msg.content);
+          });
+        }
+
+        // ✅ if server says ticket is closed
+        if (ticket.status === 'closed') {
+          addMessage('System', `Ticket #${ticketId} was closed by admin.`, false);
+          sendBtn.disabled = true;
+          createTicketBtn.style.display = 'block';
+          localStorage.setItem(`ticket_${ticketId}_closed`, 'true');
+        } else {
+          sendBtn.disabled = false;
+        }
+      }
+    } catch (err) {
+      console.error('Error loading ticket info:', err);
+    }
   }
-}
+
 
 
   // ---------- Send message (use socket) ----------
@@ -272,14 +282,12 @@ async function openTicket(ticketId, skipJoin = false) {
   socket.on('ticketClosed', ({ ticketId }) => {
     if (ticketId === currentTicketId) {
       addMessage('System', `Ticket #${ticketId} was closed by admin.`);
-      // disable input
       sendBtn.disabled = true;
-          createTicketBtn.style.display = 'block';
-
-      
-
+      createTicketBtn.style.display = 'block';
     }
+    localStorage.setItem(`ticket_${ticketId}_closed`, 'true');
   });
+
 
   console.log('Player mailbox client ready for user:', userId);
 
