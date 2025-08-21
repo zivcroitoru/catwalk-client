@@ -42,18 +42,6 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   column-gap:1.25vw;
   align-items:start;
 }
-/* .profile-info {
-  margin-top: 1.04vw;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.52vw;
-  font-size: 1.31rem;
-  line-height: 1.5;
-} */
- 
-/* Rows: single line with ellipsis if too long */
-/* Row: label | spacer | value */
 .profile-row {
   display: grid;
   grid-template-columns: max-content 1fr; /* label + value */
@@ -88,7 +76,7 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   display: flex;
   flex-direction: column;   /* stack children top → bottom */
   gap: 0.52vw;              /* space between rows */
-  font-size: 1.31rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
