@@ -14,7 +14,7 @@ const previewKeyMap = {
  */
 export function getItemState(id, category, playerItems) {
   const equippedKey = previewKeyMap[category];
-  const templateId  = window.shopTemplateById?.[id] ?? id; // map ID to template if available
+  const templateId  = window.shopTemplateById?.[id] ?? id;
 
   const owned    = playerItems.ownedItems?.includes(templateId);
   const equipped = window.selectedCat?.equipment?.[equippedKey];
@@ -31,8 +31,6 @@ export async function handleShopClick(item, playerItems) {
   const state      = getItemState(item.id, item.category, playerItems);
   const previewKey = previewKeyMap[item.category];
   const templateId = item.template;
-
-  console.log(`🛍️ handleShopClick | ${state} | ${item.id}`);
 
   // ── Buy ──
   if (state === 'buy') {

@@ -12,10 +12,10 @@ export async function renderCarousel(selectCatId = null) {
   const podium = document.getElementById("catDisplay");
   if (!container) return;
 
-  // Fetch player cats
-if (!window.userCats || window.userCats.length === 0) {
-  window.userCats = await getPlayerCats();
-}
+  // Fetch player cats if not cached
+  if (!window.userCats || window.userCats.length === 0) {
+    window.userCats = await getPlayerCats();
+  }
   const cats = window.userCats;
   const hasCats = cats.length > 0;
 
@@ -25,24 +25,22 @@ if (!window.userCats || window.userCats.length === 0) {
   podium?.classList.toggle("hidden", !hasCats);
   container.innerHTML = "";
 
+  // Handle empty state
+  if (!hasCats) {
+    const addPopup = document.getElementById("addCatPopup");
+    const isOpen = addPopup && !addPopup.classList.contains("hidden") &&
+                   addPopup.style.display !== "none";
 
-if (!hasCats) {
-  const addPopup = document.getElementById("addCatPopup");
-  const isOpen = addPopup && !addPopup.classList.contains("hidden") &&
-                 addPopup.style.display !== "none";
-
-  // Only show toast if popup is NOT open
-  if (!isOpen) {
-    if (window.Toastify?.recent) {
-      try { Toastify.recent.hideToast(); } catch {}
+    if (!isOpen) {
+      if (window.Toastify?.recent) {
+        try { Toastify.recent.hideToast(); } catch {}
+      }
+      toastNoCats();
     }
-    toastNoCats();
+
+    updateInventoryCount();
+    return;
   }
-
-  updateInventoryCount();
-  return;
-}
-
 
   // Close any existing toast
   if (window.Toastify?.recent) {

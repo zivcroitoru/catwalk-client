@@ -6,7 +6,7 @@ import { $, setDisplay, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
 import { loadPlayerItems as loadUserItems, updateCat, deleteCat, getPlayerCats } from '../../core/storage.js';
-
+import { renderCarousel } from '../ui/carousel.js';
 
 export async function showCatProfile(cat) {
   const nameInput = $('catName');
@@ -23,9 +23,7 @@ export async function showCatProfile(cat) {
   $('profileBirthday').textContent = formatted;
   $('profileImage').src = cat.sprite_url;
 
-  const ageInDays = Math.floor(
-    (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
-  );
+  const ageInDays = Math.floor((Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24));
   $('profileAge').textContent = `${ageInDays} days`;
 
   nameInput.value = cat.name;
@@ -42,20 +40,10 @@ export async function showCatProfile(cat) {
 }
 
 export function setupEditMode() {
-  const els = [
-    'editBtn', 'saveBtn', 'cancelBtn', 'deleteBtn',
-    'catName', 'catDesc', 'descBlock', 'charCount'
-  ].map($);
+  const els = ['editBtn', 'saveBtn', 'cancelBtn', 'deleteBtn', 'catName', 'catDesc', 'descBlock', 'charCount'].map($);
+  if (els.some(e => !e)) return;
 
-  if (els.some(e => !e)) {
-    console.warn('⚠️ setupEditMode aborted — missing elements');
-    return;
-  }
-
-  const [
-    editBtn, saveBtn, cancelBtn, deleteBtn,
-    nameInput, descInput, descBlock, charCount
-  ] = els;
+  const [editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descBlock, charCount] = els;
 
   descInput.addEventListener('input', () => {
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
@@ -93,12 +81,9 @@ export function setupEditMode() {
 
         const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
         if (idx !== -1) {
-          window.userCats[idx] = {
-            ...window.currentCat
-          };
+          window.userCats[idx] = { ...window.currentCat };
         }
-      } catch (err) {
-        console.error('Failed to save cat changes:', err);
+      } catch {
         toastSimple('Failed to save changes', '#ff6666');
         return;
       }
@@ -117,37 +102,28 @@ export function setupEditMode() {
     finishEdit();
   };
 
+  deleteBtn.onclick = () => {
+    if (!window.currentCat) return;
 
-deleteBtn.onclick = () => {
-  if (!window.currentCat) return;
+    toastConfirmDelete(window.currentCat, async () => {
+      try {
+        const idToDelete = window.currentCat.id;
+        const idx = window.userCats.findIndex(c => c.id === idToDelete);
 
-  toastConfirmDelete(window.currentCat, async () => {
-    try {
-      const idToDelete = window.currentCat.id;
-      const idx = window.userCats.findIndex(c => c.id === idToDelete);
+        const prevId = window.userCats[idx - 1]?.id || null;
+        const nextId = window.userCats[idx + 1]?.id || null;
+        const preferredId = prevId ?? nextId ?? null;
 
-      // figure out which cat should be selected after deletion
-      const prevId = window.userCats[idx - 1]?.id || null;
-      const nextId = window.userCats[idx + 1]?.id || null;
-      const preferredId = prevId ?? nextId ?? null;
+        await deleteCat(idToDelete);
+        window.userCats = await getPlayerCats();
+        await renderCarousel(preferredId);
 
-      // delete from backend
-      await deleteCat(idToDelete);
-
-      // refresh list
-      window.userCats = await getPlayerCats();
-
-      // ⬇️ re-render selecting the "preferred" cat
-      await renderCarousel(preferredId);
-
-      toastSimple('Cat deleted!', '#ffcc66');
-    } catch (err) {
-      console.error('❌ Delete flow error:', err);
-      toastSimple('Delete failed', '#ff6666');
-    }
-  });
-};
-
+        toastSimple('Cat deleted!', '#ffcc66');
+      } catch {
+        toastSimple('Delete failed', '#ff6666');
+      }
+    });
+  };
 
   function finishEdit() {
     nameInput.disabled = true;
@@ -158,8 +134,7 @@ deleteBtn.onclick = () => {
   }
 }
 
-// ───────────── helpers ─────────────
-
+// Helpers
 function toggleButtons({ edit, save, cancel }) {
   const setVis = (id, show) => {
     const el = $(id);

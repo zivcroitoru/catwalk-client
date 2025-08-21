@@ -1,15 +1,11 @@
 /*-----------------------------------------------------------------------------
-  authentication.js – JWT version (with logs)
+  authentication.js – JWT 
 -----------------------------------------------------------------------------*/
 import { APP_URL } from '../../core/config.js';
 console.log('APP_URL:', APP_URL);
 
 // ───────────── Token Management ─────────────
 let authToken = localStorage.getItem('token');
-
-// export function getAuthToken() {
-//   return authToken;
-// }
 export function getAuthToken() {
   return localStorage.getItem('token');
 }
@@ -26,7 +22,7 @@ function setAuthToken(token) {
 
 // ───────────── API Helpers ─────────────
 async function postJSON(url, body) {
-  console.log('📤 POST to:', url, '| Body:', body);
+  console.log('POST to:', url, '| Body:', body);
   const headers = { 'Content-Type': 'application/json' };
   if (authToken && !url.endsWith('/login') && !url.endsWith('/signup')) {
     headers['Authorization'] = `Bearer ${authToken}`;
@@ -39,7 +35,7 @@ async function postJSON(url, body) {
   });
 
   const data = await res.json().catch(() => ({}));
-  console.log('📥 Response:', res.status, '| Data:', data);
+  console.log('Response:', res.status, '| Data:', data);
 
   if (!res.ok) {
     if (res.status === 401) {
@@ -59,7 +55,7 @@ async function postJSON(url, body) {
 }
 
 function showError(msg = '') {
-  console.warn('⚠️ Error:', msg);
+  console.warn('Error:', msg);
   const box = document.querySelector('.warning-box');
   if (!box) return;
   box.style.display = msg ? 'block' : 'none';
@@ -78,30 +74,11 @@ export async function handleRegister(e) {
     await postJSON(`${APP_URL}/auth/signup`, { username, password });
     alert('Account created successfully!');
   } catch (err) {
-    console.error('❌ Register failed:', err);
+    console.error('Register failed:', err);
     showError(err.message);
   }
 }
 window.handleRegister = handleRegister;
-
-// ───────────── login ─────────────
-// document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
-//   e.preventDefault();
-//   const username = document.getElementById('usernameInput').value;
-//   const password = document.getElementById('passwordInput').value;
-//   console.log('🔐 Logging in:', username);
-
-//   try {
-//     await postJSON(`${APP_URL}/auth/login`, { username, password });
-
-//     console.log('✅ Login successful. Redirecting to album...');
-//     window.location.href = 'album.html';
-//   } catch (err) {
-//     console.error('❌ Login failed:', err);
-//     showError(err.message);
-//   }
-// });
-
 
 
 // ───────────── login ─────────────
@@ -109,7 +86,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('usernameInput').value;
   const password = document.getElementById('passwordInput').value;
-  console.log('🔐 Logging in:', username);
+  console.log('Logging in:', username);
 
   try {
     const result = await postJSON(`${APP_URL}/auth/login`, { username, password });
@@ -117,13 +94,13 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     // Save user ID in localStorage
     if (result.user?.id) {
       localStorage.setItem('userId', result.user.id);
-      console.log('💾 Saved user ID:', result.user.id);
+      console.log('Saved user ID:', result.user.id);
     }
 
-    console.log('✅ Login successful. Redirecting to album...');
+    console.log('Login successful. Redirecting to album...');
     window.location.href = 'album.html'; // or mailbox.html
   } catch (err) {
-    console.error('❌ Login failed:', err);
+    console.error('Login failed:', err);
     showError(err.message);
   }
 });
@@ -152,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ───────────── sign‑out ─────────────
 export async function signOut() {
-  console.log('🚪 Signing out...');
+  console.log('Signing out...');
   try {
     await fetch(`${APP_URL}/auth/logout`, { 
       method: 'POST',
@@ -162,7 +139,7 @@ export async function signOut() {
     });
     console.log('✅ Logged out');
   } catch (err) {
-    console.error('❌ Logout error:', err);
+    console.error('Logout error:', err);
   } finally {
     setAuthToken(null);
     window.location.href = 'login.html';
