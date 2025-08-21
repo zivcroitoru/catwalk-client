@@ -53,18 +53,36 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 } */
  
 /* Rows: single line with ellipsis if too long */
+/* Row: label | spacer | value */
 .profile-row{
   display:grid;
-  grid-template-columns: max-content 0.8vw 1fr; /* label, spacer, value */
+  grid-template-columns: max-content 0.6vw 1fr;
   align-items:center;
 }
-.profile-row > strong,
-.profile-row > span{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+
+/* LABEL: never truncate (show full text, one line) */
+.profile-row > strong{
+  white-space: nowrap;     /* stay on one line */
+  overflow: visible;       /* don't cut */
+  text-overflow: clip;     /* no ellipsis */
+  font-weight:700;
 }
-.profile-row > strong{ font-weight:700; }
+
+/* VALUE: one line with ellipsis if too long */
+.profile-row > span{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;            /* required for ellipsis inside grid */
+}
+
+/* Optional: on narrow screens, let values wrap instead of ellipsis */
+@media (max-width: 600px){
+  .profile-row > span{
+    white-space: normal;   /* wrap on small screens */
+    text-overflow: clip;
+  }
+}
 
 .profile-info {
   margin-top: 1.04vw;
