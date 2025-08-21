@@ -56,26 +56,23 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 /* Row: label | spacer | value */
 .profile-row {
   display: grid;
-  grid-template-columns: max-content 1fr;  /* just label + value */
+  grid-template-columns: max-content 1fr; /* label + value */
   column-gap: 0.6vw;
   align-items: center;
 }
 
-/* LABEL: never truncate (show full text, one line) */
-.profile-row > strong{
-  white-space: nowrap;     /* stay on one line */
-  overflow: visible;       /* don't cut */
-  text-overflow: clip;     /* no ellipsis */
-  font-weight:700;
+.profile-row > strong {
+  white-space: nowrap;
+  font-weight: 700;
 }
 
-/* VALUE: one line with ellipsis if too long */
-.profile-row > span{
+.profile-row > span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;            /* required for ellipsis inside grid */
+  min-width: 0;   /* <── this allows the span to shrink instead of being cut */
 }
+
 
 /* Optional: on narrow screens, let values wrap instead of ellipsis */
 @media (max-width: 600px){
@@ -102,20 +99,23 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 }
 
 .cat-preview-stack {
-  position: relative;
-  width: 8.33vw;
-  height: 8.33vw;
-  margin-top: 1.04vw;
+  width: 6vw;              /* smaller square */
+  aspect-ratio: 1 / 1;     /* always square */
+  justify-self: end;       /* align to the far right of the grid */
+  align-self: start;       /* top align */
+  display: grid;
+  place-items: center;     /* center the cat inside */
+  border: 0.2vw solid var(--border); /* optional frame */
 }
 
 .cat-preview-stack img {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  pointer-events: none;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
   image-rendering: pixelated;
 }
+
 
 /* ───────────── Footer Buttons ───────────── */
 .profile-footer-buttons {
