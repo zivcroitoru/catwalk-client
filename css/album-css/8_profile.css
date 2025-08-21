@@ -159,7 +159,11 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 }
 
 .desc-input {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  resize: none;
+  overflow: hidden;
+  min-height: 3rem;
+  width: 100%;     /* keep full width inside scroll */
+  box-sizing: border-box;
 }
 
 .desc-input.editing {
