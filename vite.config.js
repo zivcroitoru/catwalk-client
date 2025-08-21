@@ -26,7 +26,6 @@ export default defineConfig({
         messages: resolve(__dirname, 'cat-walk-admin/htmls/messages.html'),
         editClothes: resolve(__dirname, 'cat-walk-admin/htmls/edit-clothes.html'),
         editCat: resolve(__dirname, 'cat-walk-admin/htmls/edit-cat.html'),
-        done: resolve(__dirname, 'cat-walk-admin/htmls/done.html'),
         clothesDatabase: resolve(__dirname, 'cat-walk-admin/htmls/clothes-database.html'),
         choseUser: resolve(__dirname, 'cat-walk-admin/htmls/chose-user.html'),
         chosenMessage: resolve(__dirname, 'cat-walk-admin/htmls/chosen-message.html'),
