@@ -135,11 +135,15 @@ background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-rep
 }
 
 #profileImage {
-  width: 10.42vw;
-  height: 10.42vw;
-  margin-left: -5.2vw;
-  border: 0.21vw solid var(--border);
-  box-shadow: 0 0 0 0.104vw var(--accent);
+  width: 3vw;                  /* shrink down */
+  height: 3vw;                 /* keep square */
+  margin-left: 0;               /* no negative shift */
+  border: 0.15vw solid var(--border);
+  box-shadow: 0 0 0 0.08vw var(--accent);
+  object-fit: contain;          /* fit without stretching */
+  object-position: center;      /* center inside */
+  image-rendering: pixelated;   /* crisp pixels */
+  display: block;
 }
 
 /* ───────────── Inputs & Modals ───────────── */
