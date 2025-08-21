@@ -136,9 +136,9 @@ background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-rep
 
 #profileImage {
   position: absolute;
-  top: 4vw;               /* further down */
-  right: 6vw;             /* move left from the edge */
-  width: 6vw;             /* bigger square */
+  top: 7vw;              /* push further down */
+  right: 6vw;            /* keep shifted left from edge */
+  width: 6vw;            /* size */
   height: 6vw;
   border: 0.21vw solid var(--border);
   box-shadow: 0 0 0 0.1vw var(--accent);
