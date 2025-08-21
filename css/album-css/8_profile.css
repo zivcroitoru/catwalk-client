@@ -1,5 +1,5 @@
 .cat-profile-scroll {
-  position: absolute;
+    position: relative;   /* important: anchor absolute children */
   top: -8vw;
   right: 5vw;
   transform: scale(0.8);
@@ -212,6 +212,8 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 /* ───────────── Mobile Adjustments ───────────── */
 @media (max-width: 600px) {
   .cat-profile-scroll {
+      position: relative;   /* important: anchor absolute children */
+
     width: 85vw;
     height: auto;
     padding: 10vw 6vw 6vw;
