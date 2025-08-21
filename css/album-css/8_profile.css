@@ -99,13 +99,14 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 }
 
 .cat-preview-stack {
-  width: 6vw;              /* smaller square */
-  aspect-ratio: 1 / 1;     /* always square */
-  justify-self: end;       /* align to the far right of the grid */
-  align-self: start;       /* top align */
+  width: 3vw;              /* much smaller than 6vw */
+  aspect-ratio: 1 / 1;     /* keep square */
+  justify-self: end;       /* push all the way to the right */
+  align-self: start;       /* stick to the top */
   display: grid;
-  place-items: center;     /* center the cat inside */
-  border: 0.2vw solid var(--border); /* optional frame */
+  place-items: center;     /* center image inside */
+  margin-right: 0;         /* no extra spacing */
+  border: none;            /* remove frame if not needed */
 }
 
 .cat-preview-stack img {
@@ -115,6 +116,7 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   object-position: center;
   image-rendering: pixelated;
 }
+
 
 
 /* ───────────── Footer Buttons ───────────── */
