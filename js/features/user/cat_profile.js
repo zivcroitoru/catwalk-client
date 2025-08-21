@@ -56,10 +56,20 @@ export function setupEditMode() {
 
   const [editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descBlock, charCount] = els;
 
-  // Live counter
+  // --- Auto-resize helper ---
+  function autoResize(el) {
+    el.style.height = 'auto';                // reset
+    el.style.height = el.scrollHeight + 'px'; // expand to fit
+  }
+
+  // Live counter + auto-resize
   descInput.addEventListener('input', () => {
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
+    autoResize(descInput);
   });
+
+  // Run once on setup to size existing text
+  autoResize(descInput);
 
   // ---- Enter edit mode ----
   editBtn.onclick = () => {
@@ -73,104 +83,8 @@ export function setupEditMode() {
     descBlock.classList.add('editing');
 
     toggleButtons({ edit: false, save: true, cancel: true });
+    autoResize(descInput); // ensure height updates when entering edit mode
   };
-
-  // ---- Save (with guards and no premature mutation) ----
-  saveBtn.onclick = async () => {
-    if (!window.currentCat) return;
-
-    if (descInput.value.length > CHAR_LIMIT) {
-      toastSimple(`Description too long. Max: ${CHAR_LIMIT} characters.`, '#ff6666');
-      return;
-    }
-
-    const newName = nameInput.value.trim();
-    const newDesc = descInput.value.trim();
-
-    saveBtn.disabled = true;
-
-    try {
-      const payload = {
-        name: newName,
-        description: newDesc,
-        template: window.currentCat.template,
-        breed: window.currentCat.breed,
-        variant: window.currentCat.variant,
-        palette: window.currentCat.palette
-      };
-
-      await updateCat(window.currentCat.id, payload);
-
-      // Commit only after success
-      window.currentCat = { ...window.currentCat, ...payload };
-
-      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-      if (idx !== -1) window.userCats[idx] = { ...window.currentCat };
-
-      // Reflect name on card if present
-      const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
-      if (card) card.textContent = window.currentCat.name;
-
-      finishEdit();
-      toastSimple('Changes saved!', '#ffcc66');
-    } catch (err) {
-      console.error('updateCat failed:', err);
-      // Revert inputs to originals to avoid desync
-      nameInput.value = nameInput.dataset.original ?? nameInput.value;
-      descInput.value = descInput.dataset.original ?? descInput.value;
-      charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
-      toastSimple('Failed to save changes', '#ff6666');
-    } finally {
-      saveBtn.disabled = false;
-    }
-  };
-
-  // ---- Cancel ----
-  cancelBtn.onclick = () => {
-    nameInput.value = nameInput.dataset.original ?? nameInput.value;
-    descInput.value = descInput.dataset.original ?? descInput.value;
-    charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
-    finishEdit();
-  };
-
-  // ---- Delete ----
-  deleteBtn.onclick = () => {
-    if (!window.currentCat) return;
-
-    toastConfirmDelete(window.currentCat, async () => {
-      try {
-        const idToDelete = window.currentCat.id;
-        const idx = window.userCats.findIndex(c => c.id === idToDelete);
-
-        let preferredId = null;
-        if (idx > -1) {
-          const prevId = window.userCats[idx - 1]?.id ?? null;
-          const nextId = window.userCats[idx + 1]?.id ?? null;
-          preferredId = prevId ?? nextId ?? null;
-        }
-
-        await deleteCat(idToDelete);
-        window.userCats = await getPlayerCats();
-        await renderCarousel(preferredId);
-
-        toastSimple('Cat deleted!', '#ffcc66');
-      } catch (err) {
-        console.error('deleteCat failed:', err);
-        toastSimple('Delete failed', '#ff6666');
-      }
-    });
-  };
-
-  // ---- Helpers (scoped) ----
-  function finishEdit() {
-    nameInput.disabled = true;
-    descInput.readOnly = true;
-
-    descInput.classList.remove('editing');
-    descBlock.classList.remove('editing');
-
-    toggleButtons({ edit: true, save: false, cancel: false });
-  }
 }
 
 // ---- Shared helper ----
