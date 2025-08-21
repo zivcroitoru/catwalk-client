@@ -380,15 +380,16 @@ export function toastConfirmAddCat(
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
       <div style="font-size:16px; font-weight:bold; color:#222; margin-bottom:10px;">Add This Cat?</div>
 
-      <img src="${sprite_url}" alt="Cat"
-        style="
-          width:64px; height:64px;
-          image-rendering:pixelated;
-          transform:scale(2);
-          transform-origin:center;
-          margin: 0 0 20px 0; /* spacing under sprite */
-        "
-        onerror="this.style.display='none'; console.warn('❌ Failed to load preview:', this.src);" />
+<img src="${sprite_url}" alt="Cat"
+  style="
+    width:64px; height:64px;
+    image-rendering:pixelated;
+    transform:scale(2) translateY(-10px); /* move up 10px */
+    transform-origin:center;
+    margin: 0 0 20px 0; /* spacing under sprite */
+  "
+  onerror="this.style.display='none'; console.warn('❌ Failed to load preview:', this.src);" />
+
 
       <div style="font-size:13px; color:#333; margin-top:8px;">
         <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
