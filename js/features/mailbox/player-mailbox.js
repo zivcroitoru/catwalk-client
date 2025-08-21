@@ -212,18 +212,20 @@ async function openTicket(ticketId, skipJoin = false) {
     const label = data.sender === 'admin' ? 'Admin' : 'User';
     addMessage(label, data.content ?? data.text ?? '');
   });
-  
+  ;
 
   // Optional: listen for ticket close events from server if you emit them there
-socket.on('ticketClosed', ({ ticketId }) => {
-  if (ticketId === currentTicketId) {
-    const closedAlready = localStorage.getItem(`ticket_${ticketId}_closed`) === 'true'; 
-    if (!closedAlready) { 
-      addMessage('System', `Ticket #${ticketId} was closed by admin.`); 
-      localStorage.setItem(`ticket_${ticketId}_closed`, 'true'); 
-    } 
-    sendBtn.disabled = true;
-    createTicketBtn.style.display = 'block';
-  }
-});
+  socket.on('ticketClosed', ({ ticketId }) => {
+    if (ticketId === currentTicketId) {
+      addMessage('System', `Ticket #${ticketId} was closed by admin.`);
+      sendBtn.disabled = true;
+      createTicketBtn.style.display = 'block';
+    }
+    localStorage.setItem(`ticket_${ticketId}_closed`, 'true');
+  });
+
+
+  console.log('Player mailbox client ready for user:', userId);
+
+
 });
