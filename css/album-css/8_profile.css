@@ -67,10 +67,10 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 }
 
 .profile-row > span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;   /* <── this allows the span to shrink instead of being cut */
+  white-space: nowrap;   /* keep single line */
+  overflow: visible;     /* let it spill if needed */
+  text-overflow: clip;   /* no ellipsis */
+  min-width: 0;
 }
 
 
