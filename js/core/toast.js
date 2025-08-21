@@ -373,25 +373,29 @@ export async function toastCatFact() {
 export function toastConfirmAddCat(
   { name, variant, palette, sprite_url },
   onYes,
-  onCancel,
+  onCancel
 ) {
-  console.log(`🤔 Add cat confirmation: ${toPascalCase(variant)} (${toPascalCase(palette)})`);
-  
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
     <div style="font-family:'Press Start 2P', monospace; font-size:14px; text-align:center;">
       <div style="font-size:16px; font-weight:bold; color:#222; margin-bottom:10px;">Add This Cat?</div>
 
       <img src="${sprite_url}" alt="Cat"
-        style="width:64px; height:64px; image-rendering:pixelated; transform:scale(2); transform-origin:center; margin: -8px 0 6px 0;"
+        style="
+          width:64px; height:64px;
+          image-rendering:pixelated;
+          transform:scale(2);
+          transform-origin:center;
+          margin: 0 0 20px 0; /* spacing under sprite */
+        "
         onerror="this.style.display='none'; console.warn('❌ Failed to load preview:', this.src);" />
 
       <div style="font-size:13px; color:#333; margin-top:8px;">
         <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
       </div>
-      <div style="font-size:12px; margin-top:2px;">Add to your collection?</div>
+      <div style="font-size:12px; margin-top:6px;">Add to your collection?</div>
 
-      <div style="display:flex; gap:24px; justify-content:center; margin-top:16px;">
+      <div style="display:flex; gap:24px; justify-content:center; margin-top:20px;">
         <button id="confirmAddYes" style="padding:6px 14px;">✅ Yes</button>
         <button id="confirmAddNo" style="padding:6px 14px;">❌ No</button>
       </div>
