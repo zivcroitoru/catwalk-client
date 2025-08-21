@@ -37,7 +37,7 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   gap: 1.25vw;
 }
 
-.profile-info {
+/* .profile-info {
   margin-top: 1.04vw;
   flex: 1;
   display: flex;
@@ -45,6 +45,22 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   gap: 0.52vw;
   font-size: 1.31rem;
   line-height: 1.5;
+} */
+.profile-info {
+  margin-top: 1.04vw;
+  flex: 1;
+  display: flex;
+  flex-direction: column;   /* stack children top → bottom */
+  gap: 0.52vw;              /* space between rows */
+  font-size: 1.31rem;
+  line-height: 1.5;
+}
+
+/* children inherit wrapping behavior */
+.profile-info > * {
+  white-space: normal;      /* allow wrapping */
+  word-break: break-word;   /* break long words if needed */
+  overflow-wrap: anywhere;  /* extra safety for very long strings */
 }
 
 .cat-preview-stack {
