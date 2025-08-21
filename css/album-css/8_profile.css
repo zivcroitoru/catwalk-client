@@ -1,5 +1,5 @@
 .cat-profile-scroll {
-    position: relative;   /* important: anchor absolute children */
+  position: absolute;
   top: -8vw;
   right: 5vw;
   transform: scale(0.8);
@@ -97,7 +97,6 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   word-break: break-word;   /* break long words if needed */
   overflow-wrap: anywhere;  /* extra safety for very long strings */
 }
-
 
 /* ───────────── Footer Buttons ───────────── */
 .profile-footer-buttons {
@@ -212,8 +211,6 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 /* ───────────── Mobile Adjustments ───────────── */
 @media (max-width: 600px) {
   .cat-profile-scroll {
-      position: relative;   /* important: anchor absolute children */
-
     width: 85vw;
     height: auto;
     padding: 10vw 6vw 6vw;
