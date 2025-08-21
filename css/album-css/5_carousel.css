@@ -64,6 +64,7 @@
   border: 0.31vw solid var(--border);
   cursor: pointer;
   position: absolute;
+  z-index: 9999; /* ensures it's on top of almost everything */
 }
 
 .scroll-btn.left {

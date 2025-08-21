@@ -7,27 +7,21 @@ import {
 } from '../storage.js';
 import { APP_URL } from '../../core/config.js';
 
-/* globals for legacy code --------------------------------------- */
+
 export let userCats = [];
 
-/*--------------------------------------------------------------
-  STEP A: Load shop items and cat templates, build breed lookup
-  
-  Fetches shop data and cat templates in parallel, then creates
-  a breed-indexed lookup structure for cat creation.
-----------------------------------------------------------------*/
 export async function loadShopAndTemplates() {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Authentication required');
   const headers = { Authorization: `Bearer ${token}` };
 
-  console.log('🔄 Loading shop items and cat templates...');
+  console.log('Loading shop items and cat templates...');
   const [shopRes, templates] = await Promise.all([
     fetch(`${APP_URL}/api/shop`, { headers }).then(r => r.json()),
     fetch(`${APP_URL}/api/cats/allcats`, { headers }).then(r => r.json())
   ]);
 
-  console.log(`📦 Fetched ${shopRes.length} shop items and ${templates.length} cat templates`);
+  console.log(`Fetched ${shopRes.length} shop items and ${templates.length} cat templates`);
 
   /* Build breed-indexed lookup for cat templates */
   const breedItems = {};
@@ -39,13 +33,13 @@ export async function loadShopAndTemplates() {
     if (!breed) continue;
 
     // Group templates by breed for easier lookup
-    (breedItems[breed] ||= []).push({
-      name: t.name ?? 'Unnamed',
-      template,
-      sprite_url: t.sprite_url,
-      variant: t.variant ?? 'default',
-      palette: t.palette ?? 'default'
-    });
+(breedItems[breed] ||= []).push({
+  name: t.name ?? '',   // empty string if no name
+  template,
+  sprite_url: t.sprite_url,
+  variant: t.variant ?? 'default',
+  palette: t.palette ?? 'default'
+});
   }
   
   /* Cache data globally and reset sprite lookup cache */
@@ -62,18 +56,10 @@ export async function loadShopAndTemplates() {
   console.log(`✅ Shop and templates loaded successfully:`);
   console.log(`   • ${Object.keys(breedItems).length} breeds available`);
   console.log(`   • ${Object.keys(window.shopItemsByCategory).length} shop categories`);
-  console.log('🛍️ Full shop data:', shopItems); // ← here
+  console.log('🛍️ Full shop data:', shopItems);
 }
-
-
-/*--------------------------------------------------------------
-  STEP B: Load player's cats - requires templates to be loaded first
-  
-  Fetches the player's cat collection and normalizes each cat
-  using the breed lookup created in Step A.
-----------------------------------------------------------------*/
 export async function loadUserCats() {
-  console.log('🔄 Loading player cats...');
+  console.log('Loading player cats...');
 
   userCats = (await getPlayerCats()).map(c =>
     normalizeCat(c, buildSpriteLookup(window.breedItems))
@@ -89,5 +75,5 @@ export async function loadUserCats() {
 export async function loadAllData() {
   await loadShopAndTemplates();
   await loadUserCats();
-  console.log('🎉 All game data loaded successfully');
+  console.log('All game data loaded successfully');
 }

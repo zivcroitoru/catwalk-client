@@ -5,21 +5,11 @@ import { renderBreedItems } from "./breedItemsRenderer.js";
 import { $$, toPascalCase } from "../../core/utils.js";
 
 export function initBreedTabs() {
-  console.log('🏷️ Initializing breed tabs...');
-
   const bar = document.getElementById("breedTabs");
-  if (!bar) {
-    console.error('❌ breedTabs container not found');
-    return;
-  }
+  if (!bar) return;
 
   const breeds = Object.keys(window.breedItems || {});
-  console.log('📋 Available breeds:', breeds);
-
-  if (!breeds.length) {
-    console.warn("⚠️ No breeds to initialize");
-    return;
-  }
+  if (!breeds.length) return;
 
   // Clear and rebuild tabs each time
   bar.innerHTML = "";
@@ -45,9 +35,7 @@ export function initBreedTabs() {
     });
   });
 
-  // ✅ Always open the first tab
+  // Always open the first tab
   const firstTab = tabs[0];
   if (firstTab) firstTab.click();
-
-  console.log("✅ Breed tabs initialized");
 }

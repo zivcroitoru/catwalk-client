@@ -26,15 +26,11 @@ const EQUIPMENT_KEY_MAP = {
  */
 export async function renderShopItems(activeCategory) {
   activeCategory = activeCategory.toLowerCase();
-  console.log(`🎨 Rendering shop items for category: ${activeCategory}`);
 
   const container = document.getElementById('shopItems');
   const items = window.shopItemsByCategory?.[activeCategory];
 
-  if (!items || !container) {
-    console.warn('⚠️ Missing shop items or container');
-    return;
-  }
+  if (!items || !container) return;
 
   const playerItems = await loadPlayerItems(true); // force refresh
   const ownedSet = new Set(playerItems.ownedItems || []);
@@ -44,40 +40,46 @@ export async function renderShopItems(activeCategory) {
 
   container.innerHTML = '';
 
-  for (const { name, sprite_url_preview, price, template } of items) {
-    const id = template;
-    const state = getItemState(id, activeCategory, playerItems);
-    const isBuy = state === 'buy';
+for (const { name, sprite_url_preview, price, template } of items) {
+  const id = template;
+  const state = getItemState(id, activeCategory, playerItems);
+  const isBuy = state === 'buy';
 
-    console.log(`🧾 Item: ${name} | ID: ${id} | State: ${state}`);
+  const card = document.createElement('div');
+  card.className = 'shop-card';
+  card.dataset.category = activeCategory;
 
-    const card = document.createElement('div');
-    card.className = 'shop-card';
-    card.dataset.category = activeCategory;
+  if (equipped === id) card.classList.add('equipped');
+  else if (ownedSet.has(id)) card.classList.add('owned');
 
-    if (equipped === id) card.classList.add('equipped');
-    else if (ownedSet.has(id)) card.classList.add('owned');
+  card.innerHTML = `
+    <img src="${sprite_url_preview}" class="shop-img" alt="${name}" />
+    <div class="${isBuy ? 'shop-price-bar' : 'shop-btn-bar'}">
+      ${isBuy
+        ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin"/><span>${price}</span>`
+        : `<button class="shop-btn">${state.toUpperCase()}</button>`}
+    </div>
+  `;
 
-    card.innerHTML = `
-      <img src="${sprite_url_preview}" class="shop-img" alt="${name}" />
-      <div class="${isBuy ? 'shop-price-bar' : 'shop-btn-bar'}">
-        ${isBuy
-          ? `<img src="../assets/icons/coin.png" class="coin-icon" alt="coin"/><span>${price}</span>`
-          : `<button class="shop-btn">${state.toUpperCase()}</button>`}
-      </div>
-    `;
+  // ✅ Make the whole card clickable
+  card.onclick = () =>
+    isBuy
+      ? showBuyConfirmation(
+          { id, name, img: sprite_url_preview, price, category: activeCategory, template },
+          playerItems,
+          activeCategory
+        )
+      : handleEquipClick(
+          { id, name, category: activeCategory, template },
+          playerItems,
+          selectedCat,
+          equipKey,
+          activeCategory
+        );
 
-    const clickTarget = isBuy
-      ? card.querySelector('.shop-price-bar')
-      : card.querySelector('.shop-btn');
+  container.appendChild(card);
+}
 
-    clickTarget.onclick = () =>
-      isBuy
-        ? showBuyConfirmation({ id, name, img: sprite_url_preview, price, category: activeCategory, template }, playerItems, activeCategory)
-        : handleEquipClick({ id, name, category: activeCategory, template }, playerItems, selectedCat, equipKey, activeCategory);
-
-    container.appendChild(card);
-  }
 }
 
 /**
@@ -85,7 +87,6 @@ export async function renderShopItems(activeCategory) {
  */
 async function handleEquipClick(item, playerItems, selectedCat, equipKey, activeCategory) {
   const result = await handleShopClick(item, playerItems);
-  console.log(`✅ Equip result: ${result}`);
 
   await updateCoinCount();
   await loadPlayerItems(true); // refresh inventory
@@ -94,9 +95,7 @@ async function handleEquipClick(item, playerItems, selectedCat, equipKey, active
     selectedCat.equipment ||= { hat: null, top: null, eyes: null, accessories: null };
     selectedCat.equipment[equipKey] = result === 'equipped' ? item.id : null;
 
-    console.log(`🎯 Updating equipment slot '${equipKey}' to:`, selectedCat.equipment[equipKey]);
     await updateCatItems(selectedCat.id, selectedCat.equipment);
-    console.log(`✅ Cat '${selectedCat.name}' updated equipment:`, selectedCat.equipment);
   }
 
   toastEquipResult(item.name, result);
@@ -119,15 +118,12 @@ async function showBuyConfirmation(item, playerItems, activeCategory) {
   document.body.appendChild(box);
 
   box.querySelector('.yes-btn').onclick = async () => {
-    console.log(`🔓 Unlocking item: ${item.id}`);
     const result = await handleShopClick(item, playerItems);
     await updateCoinCount();
 
     if (result === 'bought') {
-      console.log(`✅ Unlock result: bought`);
       toastBought(item.name);
     } else if (result === 'not_enough') {
-      console.warn(`❌ Not enough coins`);
       toastNotEnough();
     }
 
@@ -136,7 +132,6 @@ async function showBuyConfirmation(item, playerItems, activeCategory) {
   };
 
   box.querySelector('.no-btn').onclick = () => {
-    console.log('❌ Cancelled purchase');
     toastCancelled();
     box.remove();
   };

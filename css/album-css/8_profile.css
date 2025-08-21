@@ -32,35 +32,58 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
   z-index: 10;
 }
 
-.profile-main {
+/* .profile-main {
   display: flex;
   gap: 1.25vw;
+} */
+.profile-main{
+  display:grid;
+  grid-template-columns: 1fr 9vw;  /* adjust 2nd col to your preview width */
+  column-gap:1.25vw;
+  align-items:start;
+}
+.profile-row {
+  display: grid;
+  grid-template-columns: max-content 1fr; /* label + value */
+  column-gap: 0.6vw;
+  align-items: center;
+}
+
+.profile-row > strong {
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.profile-row > span {
+  white-space: nowrap;   /* keep single line */
+  overflow: visible;     /* let it spill if needed */
+  text-overflow: clip;   /* no ellipsis */
+  min-width: 0;
+}
+
+
+/* Optional: on narrow screens, let values wrap instead of ellipsis */
+@media (max-width: 600px){
+  .profile-row > span{
+    white-space: normal;   /* wrap on small screens */
+    text-overflow: clip;
+  }
 }
 
 .profile-info {
   margin-top: 1.04vw;
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 0.52vw;
-  font-size: 1.31rem;
+  flex-direction: column;   /* stack children top → bottom */
+  gap: 0.52vw;              /* space between rows */
+  font-size: 1rem;
   line-height: 1.5;
 }
 
-.cat-preview-stack {
-  position: relative;
-  width: 8.33vw;
-  height: 8.33vw;
-  margin-top: 1.04vw;
-}
-
-.cat-preview-stack img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  pointer-events: none;
-  image-rendering: pixelated;
+/* children inherit wrapping behavior */
+.profile-info > * {
+  word-break: break-word;   /* break long words if needed */
+  overflow-wrap: anywhere;  /* extra safety for very long strings */
 }
 
 /* ───────────── Footer Buttons ───────────── */
@@ -159,7 +182,11 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 }
 
 .desc-input {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  resize: none;
+  overflow: hidden;
+  min-height: 3rem;
+  width: 100%;     /* keep full width inside scroll */
+  box-sizing: border-box;
 }
 
 .desc-input.editing {

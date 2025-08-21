@@ -80,6 +80,7 @@
   position: relative;
   overflow: hidden;
   transition: background 0.2s ease, transform 0.15s ease;
+  cursor: pointer;      
 }
 
 .shop-card.owned {
@@ -149,15 +150,14 @@
 .shop-btn-bar {
   background: #ffe08a;
 }
-
 .shop-btn-bar button.shop-btn {
   all: unset;
   font-weight: bold;
   font-family: var(--pixel-font);
-  cursor: pointer;
   font-size: 0.625rem;
   padding: 0.1vw 0.31vw;
   transition: background 0.2s ease, transform 0.1s ease;
+  pointer-events: none;   
 }
 
 .shop-btn-bar button.shop-btn:hover {

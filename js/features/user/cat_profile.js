@@ -1,154 +1,178 @@
-/*-----------------------------------------------------------------------------
-  cat_profile.js – DB version (no localStorage)
------------------------------------------------------------------------------*/
 
-import { $, setDisplay, toPascalCase } from '../../core/utils.js';
+import { $, toPascalCase } from '../../core/utils.js';
 import { CHAR_LIMIT } from '../../core/constants.js';
 import { toastSimple, toastConfirmDelete } from '../../core/toast.js';
-import { loadPlayerItems as loadUserItems, updateCat, deleteCat, getPlayerCats } from '../../core/storage.js';
-
+import { updateCat, deleteCat, getPlayerCats } from '../../core/storage.js';
+import { renderCarousel } from '../ui/carousel.js';
 
 export async function showCatProfile(cat) {
-  const nameInput = $('catName');
-  const descInput = $('catDesc');
-  const charCount = $('charCount');
-  const descBlock = $('descBlock');
+  const nameInput  = $('catName');
+  const descInput  = $('catDesc');
+  const charCount  = $('charCount');
+  const descBlock  = $('descBlock');
 
-  const [breed, variant] = cat.template.split('-');
-  $('profileBreed').textContent = toPascalCase(breed);
+  // ---- Parse template safely (supports multi-hyphen variants) ----
+  const [breedRaw, ...rest] = (cat.template ?? '').split('-');
+  const breed   = breedRaw ?? '';
+  const variant = rest.length ? rest.join('-') : (cat.variant ?? '');
+
+  $('profileBreed').textContent   = toPascalCase(breed);
   $('profileVariant').textContent = toPascalCase(variant);
-  $('profilePalette').textContent = toPascalCase(cat.palette);
-  const date = new Date(cat.birthdate);
-  const formatted = `${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear().toString().slice(-2)}`;
+  $('profilePalette').textContent = toPascalCase(cat.palette ?? '');
+
+  // ---- Birthday + Age (robust to invalid dates) ----
+const bd = new Date(cat.birthdate);
+if (!isNaN(bd)) {
+  // Format: DD.MM.YY
+  const dd = String(bd.getDate()).padStart(2, "0");
+  const mm = String(bd.getMonth() + 1).padStart(2, "0");
+  const yy = bd.getFullYear().toString().slice(-2);
+
+  const formatted = `${dd}.${mm}.${yy}`;
   $('profileBirthday').textContent = formatted;
+
+  const ageInDays = Math.floor((Date.now() - bd.getTime()) / 86_400_000);
+  $('profileAge').textContent = `${ageInDays} days`;
+} else {
+  $('profileBirthday').textContent = '—';
+  $('profileAge').textContent = '—';
+}
+
   $('profileImage').src = cat.sprite_url;
 
-  const ageInDays = Math.floor(
-    (Date.now() - new Date(cat.birthdate)) / (1000 * 60 * 60 * 24)
-  );
-  $('profileAge').textContent = `${ageInDays} days`;
-
-  nameInput.value = cat.name;
+  // ---- Inputs baseline ----
+  nameInput.value = cat.name ?? '';
   nameInput.disabled = true;
 
-  descInput.value = cat.description || '';
+  descInput.value = cat.description ?? '';
   descInput.readOnly = true;
   descInput.classList.remove('editing');
 
   charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
   descBlock.classList.remove('editing');
 
-  window.currentCat = cat;
+  // Stash current cat; ensure breed/variant are present for later updates
+  window.currentCat = { ...cat, breed: cat.breed ?? breed, variant: cat.variant ?? variant };
 }
 
 export function setupEditMode() {
-  const els = [
-    'editBtn', 'saveBtn', 'cancelBtn', 'deleteBtn',
-    'catName', 'catDesc', 'descBlock', 'charCount'
-  ].map($);
+  const els = ['editBtn', 'saveBtn', 'cancelBtn', 'deleteBtn', 'catName', 'catDesc', 'descBlock', 'charCount'].map($);
+  if (els.some(e => !e)) return;
 
-  if (els.some(e => !e)) {
-    console.warn('⚠️ setupEditMode aborted — missing elements');
-    return;
+  const [editBtn, saveBtn, cancelBtn, deleteBtn, nameInput, descInput, descBlock, charCount] = els;
+
+  // --- Auto-resize helper ---
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
   }
 
-  const [
-    editBtn, saveBtn, cancelBtn, deleteBtn,
-    nameInput, descInput, descBlock, charCount
-  ] = els;
-
+  // Live counter + auto-resize
   descInput.addEventListener('input', () => {
     charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
+    autoResize(descInput);
   });
 
+  // Run once on setup
+  autoResize(descInput);
+
+  // ---- Enter edit mode ----
   editBtn.onclick = () => {
     nameInput.dataset.original = nameInput.value;
     descInput.dataset.original = descInput.value;
+
     nameInput.disabled = false;
     descInput.readOnly = false;
+
     descInput.classList.add('editing');
     descBlock.classList.add('editing');
+
     toggleButtons({ edit: false, save: true, cancel: true });
+    autoResize(descInput);
   };
 
+  // ---- Save ----
   saveBtn.onclick = async () => {
+    if (!window.currentCat) return;
     if (descInput.value.length > CHAR_LIMIT) {
-      alert(`Description too long. Max: ${CHAR_LIMIT} characters.`);
+      toastSimple(`Description too long. Max: ${CHAR_LIMIT} characters.`, '#ff6666');
       return;
     }
 
-    if (window.currentCat) {
-      window.currentCat.name = nameInput.value.trim();
-      window.currentCat.description = descInput.value.trim();
+    const newName = nameInput.value.trim();
+    const newDesc = descInput.value.trim();
+    saveBtn.disabled = true;
 
-      try {
-        await updateCat(window.currentCat.id, {
-          name: window.currentCat.name,
-          description: window.currentCat.description,
-          template: window.currentCat.template,
-          breed: window.currentCat.breed,
-          variant: window.currentCat.variant,
-          palette: window.currentCat.palette
-        });
+    try {
+      const payload = {
+        name: newName,
+        description: newDesc,
+        template: window.currentCat.template,
+        breed: window.currentCat.breed,
+        variant: window.currentCat.variant,
+        palette: window.currentCat.palette
+      };
 
-        const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
-        if (idx !== -1) {
-          window.userCats[idx] = {
-            ...window.currentCat
-          };
-        }
-      } catch (err) {
-        console.error('Failed to save cat changes:', err);
-        toastSimple('Failed to save changes', '#ff6666');
-        return;
-      }
+      await updateCat(window.currentCat.id, payload);
+
+      // commit only after success
+      window.currentCat = { ...window.currentCat, ...payload };
+
+      const idx = window.userCats.findIndex(c => c.id === window.currentCat.id);
+      if (idx !== -1) window.userCats[idx] = { ...window.currentCat };
 
       const card = document.querySelector(`.cat-card[data-cat-id="${window.currentCat.id}"] span`);
       if (card) card.textContent = window.currentCat.name;
-    }
 
-    finishEdit();
-    toastSimple('Changes saved!', '#ffcc66');
-  };
-
-  cancelBtn.onclick = () => {
-    nameInput.value = nameInput.dataset.original;
-    descInput.value = descInput.dataset.original;
-    finishEdit();
-  };
-
-
-deleteBtn.onclick = () => {
-  if (!window.currentCat) return;
-
-  toastConfirmDelete(window.currentCat, async () => {
-    try {
-      const idToDelete = window.currentCat.id;
-      const idx = window.userCats.findIndex(c => c.id === idToDelete);
-
-      // figure out which cat should be selected after deletion
-      const prevId = window.userCats[idx - 1]?.id || null;
-      const nextId = window.userCats[idx + 1]?.id || null;
-      const preferredId = prevId ?? nextId ?? null;
-
-      // delete from backend
-      await deleteCat(idToDelete);
-
-      // refresh list
-      window.userCats = await getPlayerCats();
-
-      // ⬇️ re-render selecting the "preferred" cat
-      await renderCarousel(preferredId);
-
-      toastSimple('Cat deleted!', '#ffcc66');
+      finishEdit();
+      toastSimple('Changes saved!', '#ffcc66');
     } catch (err) {
-      console.error('❌ Delete flow error:', err);
-      toastSimple('Delete failed', '#ff6666');
+      console.error('updateCat failed:', err);
+      nameInput.value = nameInput.dataset.original ?? nameInput.value;
+      descInput.value = descInput.dataset.original ?? descInput.value;
+      charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
+      toastSimple('Failed to save changes', '#ff6666');
+    } finally {
+      saveBtn.disabled = false;
     }
-  });
-};
+  };
 
+  // ---- Cancel ----
+  cancelBtn.onclick = () => {
+    nameInput.value = nameInput.dataset.original ?? nameInput.value;
+    descInput.value = descInput.dataset.original ?? descInput.value;
+    charCount.textContent = `${descInput.value.length} / ${CHAR_LIMIT} characters`;
+    finishEdit();
+  };
 
+  // ---- Delete ----
+  deleteBtn.onclick = () => {
+    if (!window.currentCat) return;
+    toastConfirmDelete(window.currentCat, async () => {
+      try {
+        const idToDelete = window.currentCat.id;
+        const idx = window.userCats.findIndex(c => c.id === idToDelete);
+
+        let preferredId = null;
+        if (idx > -1) {
+          const prevId = window.userCats[idx - 1]?.id ?? null;
+          const nextId = window.userCats[idx + 1]?.id ?? null;
+          preferredId = prevId ?? nextId ?? null;
+        }
+
+        await deleteCat(idToDelete);
+        window.userCats = await getPlayerCats();
+        await renderCarousel(preferredId);
+
+        toastSimple('Cat deleted!', '#ffcc66');
+      } catch (err) {
+        console.error('deleteCat failed:', err);
+        toastSimple('Delete failed', '#ff6666');
+      }
+    });
+  };
+
+  // ---- Local helper ----
   function finishEdit() {
     nameInput.disabled = true;
     descInput.readOnly = true;
@@ -158,8 +182,8 @@ deleteBtn.onclick = () => {
   }
 }
 
-// ───────────── helpers ─────────────
 
+// ---- Shared helper ----
 function toggleButtons({ edit, save, cancel }) {
   const setVis = (id, show) => {
     const el = $(id);

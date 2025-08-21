@@ -12,10 +12,10 @@ export async function renderCarousel(selectCatId = null) {
   const podium = document.getElementById("catDisplay");
   if (!container) return;
 
-  // Fetch player cats
-if (!window.userCats || window.userCats.length === 0) {
-  window.userCats = await getPlayerCats();
-}
+  // Fetch player cats if not cached
+  if (!window.userCats || window.userCats.length === 0) {
+    window.userCats = await getPlayerCats();
+  }
   const cats = window.userCats;
   const hasCats = cats.length > 0;
 
@@ -25,24 +25,22 @@ if (!window.userCats || window.userCats.length === 0) {
   podium?.classList.toggle("hidden", !hasCats);
   container.innerHTML = "";
 
+  // Handle empty state
+  if (!hasCats) {
+    const addPopup = document.getElementById("addCatPopup");
+    const isOpen = addPopup && !addPopup.classList.contains("hidden") &&
+                   addPopup.style.display !== "none";
 
-if (!hasCats) {
-  const addPopup = document.getElementById("addCatPopup");
-  const isOpen = addPopup && !addPopup.classList.contains("hidden") &&
-                 addPopup.style.display !== "none";
-
-  // Only show toast if popup is NOT open
-  if (!isOpen) {
-    if (window.Toastify?.recent) {
-      try { Toastify.recent.hideToast(); } catch {}
+    if (!isOpen) {
+      if (window.Toastify?.recent) {
+        try { Toastify.recent.hideToast(); } catch {}
+      }
+      toastNoCats();
     }
-    toastNoCats();
+
+    updateInventoryCount();
+    return;
   }
-
-  updateInventoryCount();
-  return;
-}
-
 
   // Close any existing toast
   if (window.Toastify?.recent) {
@@ -134,18 +132,29 @@ export function scrollCarousel(direction) {
   const carousel = $("catCarousel");
   if (!carousel) return;
 
-  const totalCards = carousel.children.length;
-  const maxPage = Math.max(0, Math.ceil(totalCards / CARDS_PER_PAGE) - 1);
-  state.currentPage = Math.max(0, Math.min(state.currentPage + direction, maxPage));
-
   const card = carousel.querySelector(".cat-card");
-  const gap = 20;
-  const cardWidth = card?.offsetWidth || 0;
-  const totalWidth = (cardWidth + gap) * CARDS_PER_PAGE;
-  const offset = state.currentPage * totalWidth;
+  if (!card) return;
 
+  // read real gap from CSS (fallback to 20)
+  const cs = getComputedStyle(carousel);
+  const gap = parseFloat(cs.columnGap || cs.gap || 20);
+
+  const cardWidth = card.offsetWidth;
+  const step = cardWidth + gap;
+
+  const totalCards = carousel.children.length;
+  const visible = CARDS_PER_PAGE;                 // how many are visible at once
+  const maxIndex = Math.max(0, totalCards - visible);
+
+  // keep a per-card index
+  state.currentIndex ??= 0;
+  state.currentIndex = Math.max(0, Math.min(state.currentIndex + direction, maxIndex));
+
+  const offset = state.currentIndex * step;
   carousel.style.transform = `translateX(-${offset}px)`;
+  carousel.style.transition = 'transform 0.25s ease';  // smooth slide (optional)
 }
+
 
 export function updateInventoryCount() {
   const count = window.userCats?.length || 0;
