@@ -54,10 +54,11 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
  
 /* Rows: single line with ellipsis if too long */
 /* Row: label | spacer | value */
-.profile-row{
-  display:grid;
-  grid-template-columns: max-content 0.6vw 1fr;
-  align-items:center;
+.profile-row {
+  display: grid;
+  grid-template-columns: max-content 1fr;  /* just label + value */
+  column-gap: 0.6vw;
+  align-items: center;
 }
 
 /* LABEL: never truncate (show full text, one line) */
