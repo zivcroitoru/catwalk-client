@@ -18,7 +18,6 @@ if (!clothId || !selectedCloth) {
     const cancelBtn = document.querySelector('.cancel-button');
      const deleteBtn = document.querySelector('.delete-button-clothes');
 
-    // Prefill data
     if (clothImage) clothImage.src = selectedCloth.sprite_url_preview;
     if (clothName) clothName.textContent = selectedCloth.template;
     if (clothCategory) clothCategory.textContent = `CATEGORY: ${selectedCloth.category}`;
@@ -46,7 +45,6 @@ clothSprite.addEventListener('click', () => {
     
 
 
-    // SAVE
     saveBtn.addEventListener('click', async () => {
       try {
         const response = await fetch(`${APP_URL}/api/shop/edit/${selectedCloth.item_id}`, {
@@ -54,7 +52,6 @@ clothSprite.addEventListener('click', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sprite_url_preview: selectedCloth.sprite_url_preview,
-            // Add other fields if needed here
           })
         });
 
@@ -71,12 +68,10 @@ clothSprite.addEventListener('click', () => {
       }
     });
 
-// CANCEL button click handler
     cancelBtn.addEventListener('click', () => {
       window.location.href = 'clothes-database.html';
     });
 
-    // DELETE button click handler
     deleteBtn.addEventListener('click', async () => {
       if (!confirm('Are you sure you want to delete this clothing item? This action cannot be undone.')) {
         return;

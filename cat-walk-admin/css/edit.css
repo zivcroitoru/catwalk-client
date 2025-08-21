@@ -21,7 +21,6 @@ body {
 }
 
 
-/*-------------------------menu---------------------------*/
 .menu {
     width: 369px;
     height: 100%;
@@ -63,7 +62,6 @@ body {
     margin: 5px 0;
 }
 
-/*-------------------------middle---------------------------*/
 
 .table {
     display: flex;
@@ -100,14 +98,12 @@ body {
     left: 0;
     top: 0;
     margin-top: 80px;
-    /* margin-left: 100px; */
     border: 5px solid #cccccc;
 
 }
 
 .cat-info,
 .clothes-info {
-    /* background-color: aqua; */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -115,21 +111,17 @@ body {
     right: 50px;
     top: 30px;
     margin-right: 150px;
-    /* padding: 0; */
 }
 
 .cat-pic-data {
-
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     image-rendering: pixelated;
 
-
 }
 
-/*------------------------content----------------------*/
 
 .cat-name,
 .clothes-name {
@@ -222,7 +214,6 @@ body {
 
 
 
-/*---------------------buttons----------------------*/
 .button-container {
     position: fixed;
     bottom: 50px;
@@ -253,9 +244,7 @@ body {
 .clothes-pic-data {
     width: 100%;
     height: auto;
-    /* keeps aspect ratio */
     max-width: 500px;
-    /* optional */
     image-rendering: pixelated;
 }
 
@@ -335,7 +324,6 @@ body {
 }
 
 
-/*------------------- MEDIA QUERIES --------------------*/
 
 @media (max-height: 800px) {
 
@@ -344,7 +332,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -374,7 +361,6 @@ body {
         left: 0;
         top: 0;
         margin-top: 18vh;
-        /* margin-left: 100px; */
         border: 5px solid #cccccc;
 
     }
@@ -383,7 +369,6 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: 10px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
@@ -391,14 +376,12 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: -70px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -408,7 +391,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -422,9 +404,7 @@ body {
         align-items: flex-end;
 
         width: 90%;
-        /* take 90% of screen width */
         max-width: 1458px;
-        /* but never exceed design size */
         height: 90%;
         max-height: 680px;
 
@@ -444,7 +424,6 @@ body {
         position: absolute;
         top: 10;
         right: -50px;
-        /* push 20px away from the right edge */
     }
 
     #cat-images {
@@ -459,12 +438,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -575,8 +551,6 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -600,7 +574,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -630,7 +603,6 @@ body {
         left: 0;
         top: 0;
         margin-top: 18vh;
-        /* margin-left: 100px; */
         border: 5px solid #cccccc;
 
     }
@@ -639,7 +611,6 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: 10px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
@@ -647,14 +618,12 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: -70px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -664,7 +633,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -676,14 +644,10 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-
         width: 90%;
-        /* take 90% of screen width */
         max-width: 1458px;
-        /* but never exceed design size */
         height: 90%;
         max-height: 680vh;
-
         background-color: #FFFFFF;
         border-radius: 30px;
         padding: 20px;
@@ -700,7 +664,6 @@ body {
         position: absolute;
         top: 10;
         right: -50px;
-        /* push 20px away from the right edge */
     }
 
     #cat-images {
@@ -715,12 +678,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -830,8 +790,7 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -858,7 +817,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -888,7 +846,6 @@ body {
         left: 0;
         top: 0;
         margin-top: 18vh;
-        /* margin-left: 100px; */
         border: 5px solid #cccccc;
 
     }
@@ -897,7 +854,6 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: 10px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
@@ -905,14 +861,12 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: -70px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -922,7 +876,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -936,9 +889,7 @@ body {
         align-items: flex-end;
 
         width: 90%;
-        /* take 90% of screen width */
         max-width: 145vh;
-        /* but never exceed design size */
         height: 90%;
         max-height: 680vh;
 
@@ -958,7 +909,6 @@ body {
         position: absolute;
         top: 15vh;
         right: -50px;
-        /* push 20px away from the right edge */
     }
 
     #cat-images {
@@ -973,12 +923,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -1089,8 +1036,6 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1116,7 +1061,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1146,7 +1090,6 @@ body {
         left: 0;
         top: 0;
         margin-top: 18vh;
-        /* margin-left: 100px; */
         border: 5px solid #cccccc;
 
     }
@@ -1155,7 +1098,6 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: 10px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
@@ -1163,14 +1105,12 @@ body {
         width: 70vh;
         height: 70vh;
         margin-top: -200px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -1180,7 +1120,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -1192,14 +1131,10 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-
         width: 90%;
-        /* take 90% of screen width */
         max-width: 1458vh;
-        /* but never exceed design size */
         height: 93%;
         max-height: 1000vh;
-
         background-color: #FFFFFF;
         border-radius: 30px;
         position: relative;
@@ -1216,7 +1151,6 @@ body {
         top: 15vh;
         right: 100px;
         transform: scale(1.5);
-        /* push 20px away from the right edge */
     }
 
     #cat-images {
@@ -1231,12 +1165,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -1346,8 +1277,6 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;

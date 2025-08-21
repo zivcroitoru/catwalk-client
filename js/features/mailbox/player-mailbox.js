@@ -1,4 +1,3 @@
-// js/features/mailbox/player-mailbox.js
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 
@@ -135,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // openTicket: set UI, join room (optionally) and load history
 async function openTicket(ticketId, skipJoin = false) {
   currentTicketId = ticketId;
   localStorage.setItem(`lastTicketId_${userId}`, ticketId);
@@ -148,7 +146,6 @@ async function openTicket(ticketId, skipJoin = false) {
 
   chatMessages.innerHTML = '';
 
-  // Load local messages
   const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
   savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
 
@@ -157,7 +154,6 @@ async function openTicket(ticketId, skipJoin = false) {
     if (res.ok) {
       const ticket = await res.json();
 
-      // fetch chat history
       const msgsRes = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
       if (msgsRes.ok) {
         const messages = await msgsRes.json();
@@ -169,7 +165,6 @@ async function openTicket(ticketId, skipJoin = false) {
         });
       }
 
-      // ✅ if server says ticket is closed
       if (ticket.status === 'closed') {
         const closedAlready = localStorage.getItem(`ticket_${ticketId}_closed`) === 'true'; 
         if (!closedAlready) { 
@@ -214,7 +209,6 @@ async function openTicket(ticketId, skipJoin = false) {
   });
   ;
 
-  // Optional: listen for ticket close events from server if you emit them there
   socket.on('ticketClosed', ({ ticketId }) => {
     if (ticketId === currentTicketId) {
       addMessage('System', `Ticket #${ticketId} was closed by admin.`);

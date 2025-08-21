@@ -1,4 +1,3 @@
-// js/features/mailbox/gotomail.js
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // ----------------- Dot helpers -----------------
   function showMailboxDot() {
     mailboxDot.style.display = 'block';
   }
@@ -33,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `mailbox.html?id=${userId}`;
   });
 
-  // ----------------- Socket.IO -----------------
   const socket = io(APP_URL, {
     auth: { token: getAuthToken?.() }
   });
@@ -47,18 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Socket connection error:', err);
   });
 
-  // ---------- LIVE BROADCAST ----------
   socket.on('adminBroadcast', (data) => {
-    console.log('📢 Broadcast received:', data);
+    console.log(' Broadcast received:', data);
     localStorage.setItem('hasNewMessage', 'true');
     showMailboxDot();
   });
 
-  // ---------- LIVE TICKET MESSAGES ----------
 socket.on('newMessage', (data) => {
-  // Show dot for any ticket message directed to this user
   if (data.sender === 'admin') {
-    console.log('💬 New admin ticket message received:', data);
+    console.log(' New admin ticket message received:', data);
     localStorage.setItem('hasNewMessage', 'true');
     showMailboxDot();
   }

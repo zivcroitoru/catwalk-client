@@ -1,7 +1,6 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
-// Load sprite image from localStorage and display it
 const spriteURL = localStorage.getItem('spriteURL');
 const spriteImage = document.getElementById('sprite');
 
@@ -9,7 +8,6 @@ if (spriteImage && spriteURL) {
   spriteImage.src = spriteURL;
 }
 
-// Handle NEXT button click
 document.querySelector('.next-button').addEventListener('click', async () => {
   const template = document.getElementById('clothes-template')?.value;
   const name = document.getElementById('clothes-name')?.value;
@@ -32,7 +30,6 @@ document.querySelector('.next-button').addEventListener('click', async () => {
 
   console.log('Sending clothes data:', clothesData);
 
-  // Validate required fields
   if (!template || !name || !category || !price || !description || !sprite_url_preview || !sprite_url) {
     alert("Please fill in all fields before submitting.");
     return;
@@ -56,7 +53,7 @@ document.querySelector('.next-button').addEventListener('click', async () => {
     }
 
     alert("Clothing item added successfully!");
-    window.location.href = "clothes-database.html"; // or wherever you want to go next
+    window.location.href = "clothes-database.html";
 
   } catch (err) {
     console.error("Request failed:", err);

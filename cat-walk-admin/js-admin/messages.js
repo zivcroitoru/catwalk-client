@@ -1,10 +1,8 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
-// ───────────── SOCKET CONNECTION ─────────────
 const socket = io(APP_URL);
 
-// ───────────── GLOBAL VARIABLES ─────────────
 let currentTicketId = null;
 let currentSelectedDiv = null;
 let allTickets = [];
@@ -18,7 +16,6 @@ const ticketModeDiv = document.getElementById('ticketMode');
 const broadcastModeDiv = document.getElementById('broadcastMode');
 const broadcastListContainer = document.getElementById('broadcastList');
 
-// ───────────── INITIALIZATION ─────────────
 document.addEventListener('DOMContentLoaded', () => {
   fetchTickets();
   fetchBroadcasts();
@@ -30,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSendButtonState();
 });
 
-// ───────────── SOCKET EVENTS ─────────────
 socket.on('connect', () => {
   console.log('Admin connected via socket:', socket.id);
   socket.emit('registerAdmin');
@@ -71,18 +67,6 @@ socket.on('newTicketCreated', async (ticket) => {
   renderTickets(allTickets);
 });
 
-// Broadcast real-time listener
-// socket.on('adminBroadcast', (data) => {
-//   console.log("Broadcast received:", data);
-//   const newBroadcast = {
-//     text: data.message,
-//     date: data.date || new Date().toISOString()
-//   };
-//   broadcastMessages.push(newBroadcast);
-//   renderBroadcasts();
-// });
-
-// ───────────── FETCH FUNCTIONS ─────────────
 async function fetchTickets() {
   try {
     const res = await fetch(`${APP_URL}/api/tickets`);
@@ -103,7 +87,6 @@ async function fetchBroadcasts() {
   }
 }
 
-// ───────────── RENDER FUNCTIONS ─────────────
 function renderTickets(tickets) {
   const ticketList = document.getElementById("ticketList");
   ticketList.innerHTML = "";
@@ -141,7 +124,6 @@ function renderBroadcasts() {
   broadcastListContainer.scrollTop = broadcastListContainer.scrollHeight;
 }
 
-// ───────────── TICKET CHAT ─────────────
 async function selectTicket(ticketId, username) {
   currentTicketId = ticketId;
   document.getElementById("chatHeader").textContent = `Chat with ${username} (Ticket #${ticketId})`;
@@ -190,31 +172,25 @@ function closeCurrentTicket() {
   socket.emit('closeTicket', { ticketId: currentTicketId });
 }
 
-// Broadcast real-time listener
 socket.on('adminBroadcast', (data) => {
   console.log("Broadcast received:", data);
 
-  // Normalize broadcast object
   const newBroadcast = {
     body: data.message || data.body || '',
     sent_at: data.date || data.sent_at || new Date().toISOString()
   };
 
-  // Add to array and render live
   broadcastMessages.push(newBroadcast);
   renderBroadcasts();
 });
 
-// Send broadcast
 function sendBroadcast() {
   const msgInput = document.getElementById('broadcastMessage');
   const message = msgInput.value.trim();
   if (!message) return alert('Please enter a message.');
 
-  // Emit to server for live delivery
   socket.emit('adminBroadcast', { message });
 
-  // Immediately show it locally
   const newBroadcast = {
     body: message,
     sent_at: new Date().toISOString()
@@ -227,7 +203,6 @@ renderBroadcasts();
 }
 
 
-// ───────────── TOGGLE MODE ─────────────
 let isBroadcastMode = false;
 toggleBtn.addEventListener('click', () => {
   isBroadcastMode = !isBroadcastMode;
@@ -236,7 +211,6 @@ toggleBtn.addEventListener('click', () => {
   toggleBtn.textContent = isBroadcastMode ? 'Switch to Tickets' : 'Switch to Broadcast';
 });
 
-// ───────────── UTILITIES ─────────────
 function scrollToBottom(containerId) {
   const container = document.getElementById(containerId);
   if (container) container.scrollTop = container.scrollHeight;

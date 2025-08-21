@@ -14,7 +14,6 @@ body {
   overflow: hidden;
 }
 
-/* LAYOUT */
 body {
   display: flex;
   flex-direction: row;
@@ -22,7 +21,6 @@ body {
   min-height: 100vh;
 }
 
-/* MENU */
 .menu {
   width: 18vw;
   min-width: 200px;
@@ -63,7 +61,6 @@ body {
   margin: 5px 0;
 }
 
-/* CONTENT */
 .content {
   flex-grow: 1;
   display: flex;
@@ -132,7 +129,6 @@ body {
   font-weight: 200;
 }
 
-/* FILTER BUTTON */
 .filter-button {
   margin-left: auto;
   font-size: 1.2rem;
@@ -150,7 +146,6 @@ body {
   color: #4E5C4F;
 }
 
-/* quick styling for tickets sidebar and chat box */
 .messages-container {
   display: flex;
   height: 80vh;
@@ -235,8 +230,8 @@ body {
   outline: none;
 }
 
-#broadcastMessage{
-    flex-grow: 1;
+#broadcastMessage {
+  flex-grow: 1;
   padding: 10px;
   font-size: 1rem;
   border: none;
@@ -258,7 +253,6 @@ body {
   background-color: #69806d;
 }
 
-/* RESPONSIVE MEDIA QUERIES */
 @media (max-width: 1024px) {
   .menu {
     width: 22vw;

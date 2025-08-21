@@ -9,7 +9,7 @@ let selectedCloth = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const response = await fetch(`${APP_URL}/api/shop/allclothes`); // update endpoint as needed
+    const response = await fetch(`${APP_URL}/api/shop/allclothes`);
     clothesData = await response.json();
     filteredClothes = clothesData;
 
@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // ❤️ Fix search input selector — get input element, not its container div
-    const searchInput = document.querySelector('.search-bar input'); // ❤️ changed here
+    const searchInput = document.querySelector('.search-bar input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         const searchValue = e.target.value.toLowerCase();
@@ -28,12 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           (cloth.category && cloth.category.toLowerCase().includes(searchValue))
         );
         currentPage = 1;
-        document.getElementById('sortSelect').value = ''; // ❤️ reset sort dropdown on search
+        document.getElementById('sortSelect').value = '';
         renderClothesPage();
       });
     }
 
-    // ❤️ Add sort select event listener here (after clothesData is loaded)
     document.getElementById('sortSelect').addEventListener('change', (e) => {
       const sortValue = e.target.value;
 
@@ -49,14 +47,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         sortValue === 'mustaches' ||
         sortValue === 'tops'
       ) {
-        // Filter by category ❤️
+
         filteredClothes = clothesData.filter(cloth => cloth.category === sortValue);
       } else {
-        // No sort or filter — reset filteredClothes to full clothesData
+
         filteredClothes = clothesData;
       }
 
-      currentPage = 1; // reset to first page after sorting/filtering
+      currentPage = 1; 
       renderClothesPage();
     });
 
@@ -136,7 +134,6 @@ function updateArrowOpacity() {
   }
 }
 
-// Pagination controls
 document.querySelector('.arrow-left').addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
@@ -152,7 +149,6 @@ document.querySelector('.arrow-right').addEventListener('click', () => {
   }
 });
 
-// Optionally add click-to-edit or redirect functionality on the big image
 document.querySelector('.clothes-pic-data').addEventListener('click', () => {
   if (selectedCloth) {
     localStorage.setItem('selectedCloth', JSON.stringify(selectedCloth));

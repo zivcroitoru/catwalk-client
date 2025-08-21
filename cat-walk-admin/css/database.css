@@ -22,14 +22,12 @@ body {
 }
 
 
-/*--------------menu--------------*/
 
 .menu {
     width: 369px;
     height: 100%;
     background-color: #838E84;
     border-radius: 0 30px 30px 0;
-    /* rounded on right side only */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,7 +66,6 @@ body {
 }
 
 
-/*--------------search--------------*/
 
 .search-bar {
     width: 676px;
@@ -106,7 +103,6 @@ body {
     margin-left: auto;
 }
 
-/*--------------middle--------------*/
 .content {
     display: flex;
     flex-direction: column;
@@ -158,10 +154,6 @@ body {
 
 }
 
-/*---------big cat/clothes-----------*/
-
-
-
 
 .rectangle-cat,
 .rectangle-clothes {
@@ -183,27 +175,21 @@ body {
 .user-cat {
     display: flex;
     flex-direction: column;
-    /* stack image and label vertically */
     align-items: center;
-    /* center horizontally */
     text-align: center;
     gap: 10px;
-    /* spacing between image and text */
 }
 
 .cat-pic-data {
     width: 600px;
     height: 600px;
     position: static;
-    /* remove absolute positioning */
     transform: none;
-    /* remove translate(-50%, -50%) */
     image-rendering: pixelated;
 }
 
 .catype {
     margin: 0;
-    /* optional spacing */
     font-weight: 400;
     font-size: 32px;
     color: #333;
@@ -215,20 +201,16 @@ body {
 .user-clothes {
     display: flex;
     flex-direction: column;
-    /* stack image and label vertically */
     align-items: center;
     text-align: center;
     gap: 10px;
-    /* spacing between image and label */
 }
 
 .clothes-pic-data {
     width: 600px;
     height: 600px;
     position: static;
-    /* important! remove absolute */
     transform: none;
-    /* remove translate */
     image-rendering: pixelated;
 }
 
@@ -244,35 +226,11 @@ body {
 
 
 
-/* .cat-pic-data {
-    width: 600px;
-    height: 600px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    image-rendering: pixelated;
-} */
-
-/* .clothes-pic-data {
-    width: 600px;
-    height: 600px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    image-rendering: pixelated;
-
-} */
-
-
-/*--------------grid--------------*/
 
 .grid-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 25px;
-    /* Keep horizontal spacing */
     row-gap: 0px;
     justify-items: center;
     align-items: center;
@@ -285,31 +243,24 @@ body {
     height: 100%;
     z-index: 1;
     image-rendering: pixelated;
-    /* or 2 for grid-wrapper-cats */
     margin-left: x;
 }
 
 .grid-wrapper-clothes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* 3 columns */
     column-gap: 10px;
-    /* Keep horizontal spacing */
     row-gap: 10px;
     justify-items: center;
     align-items: center;
     padding: 20px;
-    /* padding-bottom: 100px; */
     position: absolute;
     top: 0;
     margin-top: 100px;
     margin-left: 60px;
     left: 0;
-    /* width: 300px;
-    height: 300px; */
     z-index: 1;
     image-rendering: pixelated;
-    /* or 2 for grid-wrapper-cats */
     margin-left: x;
     transform: scale(1.1);
 }
@@ -332,7 +283,6 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 20px;
-    /* Keep horizontal spacing */
     row-gap: 20px;
     justify-items: center;
     align-items: center;
@@ -343,48 +293,30 @@ body {
     margin-top: 100px;
     margin-left: 60px;
     left: 0;
-    /* width: 300px;
-    height: 300px; */
     z-index: 1;
     image-rendering: pixelated;
-    /* or 2 for grid-wrapper-cats */
     margin-left: x;
 
 }
 
 .cat-card {
     width: 160px;
-    /* fixed square width */
     height: 160px;
-    /* fixed square height */
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     border-radius: 8px;
     cursor: pointer;
-    /* transition: transform 0.2s; */
     background-color: #D9D9D9;
 
 }
 
 
-/* .users-stuff-clothes{
-        gap: 200px;
-        margin-top: 50px;
-    object-fit: cover;
-}
-.users-stuff {
-    gap: 200px;
-    object-fit: cover;
-} */
 
-/*--------------pages--------------*/
 
 .pages {
     position: fixed;
-    /* bottom: 10px; */
-    /* left: 10; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -399,8 +331,6 @@ body {
 
 .pages-clothes {
     position: fixed;
-    /* bottom: 10px; */
-    /* left: 10; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -429,7 +359,6 @@ body {
 
 
 
-/*------------------- MEDIA QUERIES --------------------*/
 @media (min-height: 1400px) {
 
     .menu {
@@ -437,7 +366,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -482,16 +410,14 @@ body {
         width: 60vh;
         height: 60vh;
         margin-top: -10vh;
-        /* negative margin moves it up */
         image-rendering: pixelated;
-                transform: scale(1);
+        transform: scale(1);
 
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -501,7 +427,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -532,12 +457,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -559,16 +481,13 @@ body {
         padding: -0px;
         position: absolute;
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         top: 0vh;
         margin-top: -2vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(1.5);
     }
@@ -580,18 +499,15 @@ body {
         column-gap: 20px;
         row-gap: 20px;
         position: absolute;
-          top: 0vh;
+        top: 0vh;
         margin-top: -2vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(0.95);
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         transform: scale(1.5);
 
@@ -600,8 +516,6 @@ body {
 
     .pages {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -620,8 +534,6 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -654,14 +566,13 @@ body {
 }
 
 
-@media ( max-height: 1400px) {
+@media (max-height: 1400px) {
 
     .menu {
         width: 300px;
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -700,7 +611,6 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: 0vh;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
@@ -708,14 +618,12 @@ body {
         width: 50vh;
         height: 50vh;
         margin-top: -100px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -726,7 +634,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -756,12 +663,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -783,36 +687,30 @@ body {
         padding: -0px;
         position: absolute;
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         top: 0vh;
         margin-top: -2vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(1);
     }
 
     .grid-wrapper-clothes {
-       display: grid;
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
         padding: -0px;
         position: absolute;
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         top: 0vh;
         margin-top: -2vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(1);
 
@@ -821,8 +719,6 @@ body {
 
     .pages {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -833,15 +729,11 @@ body {
         color: #838E84;
         font-weight: bold;
         z-index: 10;
-
         transform: scale(0.91);
-
     }
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -852,7 +744,6 @@ body {
         color: #838E84;
         font-weight: bold;
         z-index: 10;
-
         transform: scale(0.91);
     }
 
@@ -878,7 +769,6 @@ body {
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -923,14 +813,12 @@ body {
         width: 500px;
         height: 500px;
         margin-top: -100px;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -940,7 +828,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 32px;
         color: #333;
@@ -970,12 +857,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -997,16 +881,13 @@ body {
         padding: -0px;
         position: absolute;
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         top: 0vh;
         margin-top: -2vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(1);
     }
@@ -1022,13 +903,10 @@ body {
         left: 0;
         margin-left: 12px;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(0.95);
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
 
     }
@@ -1036,8 +914,6 @@ body {
 
     .pages {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1048,15 +924,11 @@ body {
         color: #838E84;
         font-weight: bold;
         z-index: 10;
-
         transform: scale(0.91);
-
     }
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1085,12 +957,11 @@ body {
 }
 
 @media (max-height: 800px) {
-       .menu {
+    .menu {
         width: 300px;
         height: 100%;
         background-color: #838E84;
         border-radius: 0 30px 30px 0;
-        /* rounded on right side only */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1135,14 +1006,12 @@ body {
         width: 500px;
         height: 500px;
         margin-top: -25vh;
-        /* negative margin moves it up */
         image-rendering: pixelated;
     }
 
 
     .clothesype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 22px;
         color: #333;
@@ -1152,7 +1021,6 @@ body {
 
     .catype {
         margin: 0;
-        /* optional spacing */
         font-weight: 400;
         font-size: 25px;
         color: #333;
@@ -1182,12 +1050,9 @@ body {
         display: flex;
         transform: scale(0.8);
         flex-direction: column;
-        /* stack image and label vertically */
         align-items: center;
-        /* center horizontally */
         text-align: center;
         gap: 10px;
-        /* spacing between image and text */
     }
 
     .data-list {
@@ -1209,16 +1074,13 @@ body {
         padding: -0px;
         position: absolute;
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
         top: 0vh;
         margin-top: -12vh;
         left: 0;
         margin-left: 5vh;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(1);
     }
@@ -1233,13 +1095,10 @@ body {
         left: 0;
         margin-left: 12px;
         width: 100%;
-        /* height: 100%; */
         z-index: 2;
         transform: scale(0.95);
         justify-items: center;
-        /* center inside each cell */
         align-items: start;
-        /* <-- stick cats to the top */
         position: absolute;
 
     }
@@ -1247,8 +1106,6 @@ body {
 
     .pages {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1266,8 +1123,6 @@ body {
 
     .pages-clothes {
         position: fixed;
-        /* bottom: 10px; */
-        /* left: 10; */
         display: flex;
         align-items: center;
         justify-content: center;

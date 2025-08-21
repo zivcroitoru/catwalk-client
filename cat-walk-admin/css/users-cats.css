@@ -22,7 +22,6 @@ body {
 
 
 
-/*---------------------------------------------------------- HEADER ----------------------------------------------------- */
 header {
     position: fixed;
     top: 0;
@@ -33,7 +32,6 @@ header {
     align-items: center;
     padding-left: 20px;
     justify-content: center;
-    /* centers horizontally */
     align-items: center
 }
 
@@ -58,7 +56,7 @@ header {
 }
 
 
-/*---------------------------------------------------------------------------------------------*/
+
 
 .content {
     display: flex;
@@ -70,7 +68,6 @@ header {
 
 }
 
-/*-----------------------------big picture-----------------------------------------*/
 
 .rectangle-cat {
     width: 765px;
@@ -88,12 +85,11 @@ header {
 
 
 .cat-pic-data {
- width: 100%;        /* Make image fill its grid cell */
+ width: 100%;
   height: auto;
   image-rendering: pixelated;
     
 }
-/*---------------------------list-----------------------------*/
 
 .data-cats {
     position: relative;

@@ -15,7 +15,6 @@ const designWidth = 1920;
       if (wrapper) {
         wrapper.style.transform = `scale(${scale})`;
 
-        // Center the wrapper in the viewport
         const left = (window.innerWidth - designWidth * scale) / 2;
         const top = (window.innerHeight - designHeight * scale) / 2;
         wrapper.style.left = `${left}px`;
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    // Clear previous warning
     warning.textContent = '';
 
     if (!username || !password) {
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) {
-        // Try to parse error message from server JSON response
         let errorMsg = 'Invalid username or password.';
         try {
           const errorData = await response.json();
@@ -62,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMsg = errorData.error;
           }
         } catch {
-          // If parsing fails, keep default message
         }
 
         warning.textContent = errorMsg;
@@ -74,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (data.success) {
-        // Redirect on success
         window.location.href = 'users.html';
       } else {
         warning.textContent = data.message || 'Invalid username or password.';
