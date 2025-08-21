@@ -96,7 +96,6 @@ background: url('../../assets/ui/scroll.svg') center / 100% 100% no-repeat;
 
 /* children inherit wrapping behavior */
 .profile-info > * {
-  white-space: normal;      /* allow wrapping */
   word-break: break-word;   /* break long words if needed */
   overflow-wrap: anywhere;  /* extra safety for very long strings */
 }
