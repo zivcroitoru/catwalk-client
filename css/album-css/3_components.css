@@ -136,9 +136,9 @@ background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-rep
 
 #profileImage {
   position: absolute;
-  top: 7vw;              /* push further down */
-  right: 6vw;            /* keep shifted left from edge */
-  width: 6vw;            /* size */
+  top: 10vw;             /* pushed even more down */
+  right: 7vw;            /* adjust left offset */
+  width: 6vw;
   height: 6vw;
   border: 0.21vw solid var(--border);
   box-shadow: 0 0 0 0.1vw var(--accent);
@@ -146,6 +146,7 @@ background: url('../../assets/backgrounds/thumbnail_bg.png') center/cover no-rep
   object-position: center;
   image-rendering: pixelated;
 }
+
 
 /* ───────────── Inputs & Modals ───────────── */
 .desc-input {
