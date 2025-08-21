@@ -394,7 +394,7 @@ export function toastConfirmAddCat(
       <div style="font-size:13px; color:#333; margin-top:8px;">
         <b>${toPascalCase(variant)} (${toPascalCase(palette)})</b>
       </div>
-      <div style="font-size:12px; margin-top:6px;">Add to your collection?</div>
+      <div style="font-size:12px; margin-top:6px;">to your collection?</div>
 
       <div style="display:flex; gap:24px; justify-content:center; margin-top:20px;">
         <button id="confirmAddYes" style="padding:6px 14px;">✅ Yes</button>
