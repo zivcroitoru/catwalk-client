@@ -12,7 +12,6 @@ uploadBtn.addEventListener('click', () => {
   }
 });
 
-// ✅ NEXT button logic
 nextButton.addEventListener('click', () => {
   const spriteURL = spriteInput.value.trim();
 
@@ -21,9 +20,7 @@ nextButton.addEventListener('click', () => {
     return;
   }
 
-  // ✅ Save it to localStorage
   localStorage.setItem('spriteURL', spriteURL);
 
-  // ✅ Go to the next page (change to your actual page)
   window.location.href = 'name-new-cat.html';
 });

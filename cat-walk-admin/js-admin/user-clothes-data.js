@@ -1,8 +1,6 @@
 import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
-
-
 const urlParams = new URLSearchParams(window.location.search);
 const playerId = urlParams.get('player_id');
 const itemIndex = Number(urlParams.get('item_index') || 0);
@@ -42,7 +40,6 @@ if (!playerId || isNaN(itemIndex)) {
     });
 }
 
-// Set BACK button link
 const backButton = document.getElementById('backButton');
 if (playerId && backButton) {
   backButton.href = `chose-user.html?id=${playerId}`;

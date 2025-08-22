@@ -22,7 +22,6 @@ body {
 
 
 
-/*---------------------------------------------------------- HEADER ----------------------------------------------------- */
 header {
     position: fixed;
     top: 0;
@@ -33,7 +32,6 @@ header {
     align-items: center;
     padding-left: 20px;
     justify-content: center;
-    /* centers horizontally */
     align-items: center
 }
 
@@ -58,7 +56,6 @@ header {
 }
 
 
-/*---------------------------------------------------------------------------------------------*/
 
 .content {
     display: flex;
@@ -70,7 +67,6 @@ header {
 
 }
 
-/*-----------------------------big picture-----------------------------------------*/
 
 .rectangle-clothes {
     width: 765px;
@@ -89,13 +85,11 @@ header {
 
 .clothes-pic-data {
     width: 100%;
-    /* Make image fill its grid cell */
     height: auto;
     image-rendering: pixelated;
 
 }
 
-/*---------------------------list-----------------------------*/
 
 .data-clothes {
     position: relative;
@@ -128,12 +122,7 @@ header {
         margin-bottom: 30vh;
     }
 
-    /* #cat-images {
-        width: 30vw;
-        max-width: 550px;
-        margin-left: 0.7vw;
-        margin-top: 0.5vw;
-    } */
+
 
     .data-clothes {
         width: 30vw;

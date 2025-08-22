@@ -22,7 +22,6 @@ body {
 
 
 
-/*-----------------------HEADER----------------*/
 header {
     position: fixed;
     top: 0;
@@ -33,7 +32,6 @@ header {
     align-items: center;
     padding-left: 20px;
     justify-content: center;
-    /* centers horizontally */
     align-items: center
 }
 
@@ -58,7 +56,6 @@ header {
 }
 
 
-/*--------------middle--------------*/
 
 .content {
     display: flex;
@@ -70,7 +67,6 @@ header {
 
 }
 
-/*--------------table--------------*/
 
 .category {
     position: absolute;
@@ -86,7 +82,6 @@ header {
     display: flex;
     justify-content: center;
     gap: 0;
-    /* no gap so they touch each other */
     position: absolute;
     top: 150px;
     margin-right: 97px;
@@ -99,16 +94,12 @@ header {
 
 .toggle-btn {
     flex: 1;
-    /* each button takes equal width */
     padding: 12px 0;
     font-size: 26px;
     font-weight: 600;
     border: 0px solid #838E84;
-    /* border like figma */
     background-color: #fff;
-    /* default white */
     color: #838E84;
-    /* default green text */
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Nunito', sans-serif;
@@ -122,12 +113,10 @@ header {
 
 .toggle-btn:first-child {
     border-radius: 12px;
-    /* left rounded corners */
 }
 
 .toggle-btn:last-child {
     border-radius: 12px;
-    /* right rounded corners */
 }
 
 
@@ -213,11 +202,8 @@ header {
 .grid-wrapper-cats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* justify-items: center;
-    align-items: center; */
     padding: 20px;
     position: absolute;
-    /* background-color: aqua; */
     row-gap: 20px;
     top: -10px;
     left: 0;
@@ -228,7 +214,6 @@ header {
 
 .users-stuff {
     width: 100%;
-    /* Make image fill its grid cell */
     height: auto;
     image-rendering: pixelated;
 }
@@ -237,14 +222,9 @@ header {
 #cat-images {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* 3 columns */
-    /* 3 rows */
     margin-top: 1vh;
-    /* space between images */
-    /* background-color: aqua; */
     height: 50vh;
     width: 50vh;
-    /* or whatever fits your layout */
     margin-left: 0vh;
     gap: 20px;
 }
@@ -252,7 +232,6 @@ header {
 
 .cat-card {
     width: 25vh;
-    /* fixed square width */
     height: 25vh;
     background-color: #D9D9D9;
     text-align: center;
@@ -281,8 +260,6 @@ header {
     font-size: 14px;
 }
 
-
-/*--------------list----------------*/
 .data-list {
     position: relative;
     list-style-type: none;
@@ -302,7 +279,6 @@ header {
     margin-bottom: 0;
 }
 
-/*--------------pages--------------*/
 
 .pages {
     position: fixed;
@@ -332,7 +308,6 @@ header {
     cursor: pointer;
 }
 
-/*------------------- MEDIA QUERIES --------------------*/
 
 @media (max-height: 1500px)
 {
@@ -368,7 +343,6 @@ header {
         display: flex;
         justify-content: center;
         gap: 0;
-        /* no gap so they touch each other */
         position: absolute;
         top: 17vh;
         margin-right: 37.5vh;
@@ -382,16 +356,12 @@ header {
 
     .toggle-btn {
         flex: 1;
-        /* each button takes equal width */
         padding: 1vh 0;
         font-size: 26px;
         font-weight: 600;
         border: 0px solid #838E84;
-        /* border like figma */
         background-color: #fff;
-        /* default white */
         color: #838E84;
-        /* default green text */
         cursor: pointer;
         transition: all 0.2s ease;
         font-family: 'Nunito', sans-serif;
@@ -405,12 +375,10 @@ header {
 
     .toggle-btn:first-child {
         border-radius: 12px;
-        /* left rounded corners */
     }
 
     .toggle-btn:last-child {
         border-radius: 12px;
-        /* right rounded corners */
     }
 
     .grid-wrapper-cats {
@@ -462,7 +430,6 @@ header {
         display: flex;
         justify-content: center;
         gap: 0;
-        /* no gap so they touch each other */
         position: absolute;
         top: 20vh;
         margin-right: 34.5vh;
@@ -475,16 +442,12 @@ header {
 
     .toggle-btn {
         flex: 1;
-        /* each button takes equal width */
         padding: 1vh 0;
         font-size: vh;
         font-weight: 600;
         border: 0px solid #838E84;
-        /* border like figma */
         background-color: #fff;
-        /* default white */
         color: #838E84;
-        /* default green text */
         cursor: pointer;
         transition: all 0.2s ease;
         font-family: 'Nunito', sans-serif;
@@ -498,12 +461,10 @@ header {
 
     .toggle-btn:first-child {
         border-radius: 12px;
-        /* left rounded corners */
     }
 
     .toggle-btn:last-child {
         border-radius: 12px;
-        /* right rounded corners */
     }
 
     .grid-wrapper-cats {
@@ -559,7 +520,6 @@ header {
         display: flex;
         justify-content: center;
         gap: 0;
-        /* no gap so they touch each other */
         position: absolute;
         top: 23vh;
         margin-right: 34.5vh;
@@ -573,16 +533,12 @@ header {
 
     .toggle-btn {
         flex: 1;
-        /* each button takes equal width */
         padding: 1vh 0;
         font-size: 26px;
         font-weight: 600;
         border: 0px solid #838E84;
-        /* border like figma */
         background-color: #fff;
-        /* default white */
         color: #838E84;
-        /* default green text */
         cursor: pointer;
         transition: all 0.2s ease;
         font-family: 'Nunito', sans-serif;
@@ -596,12 +552,10 @@ header {
 
     .toggle-btn:first-child {
         border-radius: 12px;
-        /* left rounded corners */
     }
 
     .toggle-btn:last-child {
         border-radius: 12px;
-        /* right rounded corners */
     }
 
     .grid-wrapper-cats {
@@ -687,6 +641,11 @@ header {
         height: auto;
         padding: 10px;
         gap: 15px;
+    }
+        .pages {
+        margin-right: 3vw;
+        font-size: 1.4rem;
+        padding: 5px 10px;
     }
 }
 

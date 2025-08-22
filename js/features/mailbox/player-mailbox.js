@@ -1,4 +1,3 @@
-// js/features/mailbox/player-mailbox.js
 import { APP_URL } from '../../core/config.js';
 import { getAuthToken } from '../../core/auth/authentication.js';
 
@@ -135,48 +134,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function openTicket(ticketId, skipJoin = false) {
-    currentTicketId = ticketId;
-    localStorage.setItem(`lastTicketId_${userId}`, ticketId);
-    createTicketBtn.style.display = 'none';
-    chatBox.style.display = 'flex';
+async function openTicket(ticketId, skipJoin = false) {
+  currentTicketId = ticketId;
+  localStorage.setItem(`lastTicketId_${userId}`, ticketId);
+  createTicketBtn.style.display = 'none';
+  chatBox.style.display = 'flex';
 
-    if (!skipJoin) {
-      socket.emit('joinTicketRoom', { ticketId });
-    }
-
-    chatMessages.innerHTML = '';
-
-    const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
-    savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
-
-    try {
-      const res = await fetch(`${APP_URL}/api/tickets/${ticketId}`);
-      if (res.ok) {
-        const ticket = await res.json();
-
-        const msgsRes = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
-        if (msgsRes.ok) {
-          const messages = await msgsRes.json();
-          messages.forEach(msg => {
-            const label = msg.sender === 'admin' ? 'Admin' :
-              (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
-            const alreadySaved = savedMessages.some(m => m.sender === label && m.text === msg.content);
-            if (!alreadySaved) addMessage(label, msg.content);
-          });
-        }
-
-        if (ticket.status === 'closed') {
-          addMessage('System', `Ticket #${ticketId} was closed by admin.`, false);
-          sendBtn.disabled = true;
-          createTicketBtn.style.display = 'block';
-          localStorage.setItem(`ticket_${ticketId}_closed`, 'true');
-        } else {
-          sendBtn.disabled = false;
-        }
-      }
-    } catch {}
+  if (!skipJoin) {
+    socket.emit('joinTicketRoom', { ticketId });
   }
+
+  chatMessages.innerHTML = '';
+
+  const savedMessages = JSON.parse(localStorage.getItem(`ticket_${ticketId}_messages`)) || [];
+  savedMessages.forEach(msg => addMessage(msg.sender, msg.text, false));
+
+  try {
+    const res = await fetch(`${APP_URL}/api/tickets/${ticketId}`);
+    if (res.ok) {
+      const ticket = await res.json();
+
+      const msgsRes = await fetch(`${APP_URL}/api/tickets/${ticketId}/messages`);
+      if (msgsRes.ok) {
+        const messages = await msgsRes.json();
+        messages.forEach(msg => {
+          const label = msg.sender === 'admin' ? 'Admin' :
+            (msg.sender === 'user' ? (String(msg.user_id) === String(userId) ? 'You' : 'User') : msg.sender);
+          const alreadySaved = savedMessages.some(m => m.sender === label && m.text === msg.content);
+          if (!alreadySaved) addMessage(label, msg.content);
+        });
+      }
+
+      if (ticket.status === 'closed') {
+        const closedAlready = localStorage.getItem(`ticket_${ticketId}_closed`) === 'true'; 
+        if (!closedAlready) { 
+          addMessage('System', `Ticket #${ticketId} was closed by admin.`, false); 
+          localStorage.setItem(`ticket_${ticketId}_closed`, 'true'); 
+        } 
+        sendBtn.disabled = true;
+        createTicketBtn.style.display = 'block';
+      } else {
+        sendBtn.disabled = false;
+      }
+    }
+  } catch (err) {
+    console.error('Error loading ticket info:', err);
+  }
+}
 
   sendBtn.addEventListener('click', () => {
     const message = messageBox.value.trim();
@@ -203,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const label = data.sender === 'admin' ? 'Admin' : 'User';
     addMessage(label, data.content ?? data.text ?? '');
   });
+  ;
 
   socket.on('ticketClosed', ({ ticketId }) => {
     if (ticketId === currentTicketId) {
@@ -212,4 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     localStorage.setItem(`ticket_${ticketId}_closed`, 'true');
   });
+
+
+  console.log('Player mailbox client ready for user:', userId);
+
+
 });

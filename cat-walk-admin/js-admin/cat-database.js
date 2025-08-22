@@ -2,9 +2,6 @@ import { APP_URL } from "../../js/core/config.js";
 console.log('APP_URL:', APP_URL);
 
 
-
-
-
 let catsData = [];
 let filteredCats = [];
 let currentPage = 1;
@@ -37,7 +34,6 @@ function renderCatsPage() {
 
   gridWrapper.innerHTML = '';
 
-  // ADDED — handle no results
   if (filteredCats.length === 0) {
     gridWrapper.innerHTML = '<p style="color:red;">No cats found.</p>';
     pageDisplay.textContent = '0/0';
@@ -87,7 +83,6 @@ function renderCatsPage() {
   updateArrowOpacity();
 }
 
-// Added function to update arrow opacity and disable click on limits
 function updateArrowOpacity() {
   const leftArrow = document.querySelector('.arrow-left');
   const rightArrow = document.querySelector('.arrow-right');
@@ -95,22 +90,21 @@ function updateArrowOpacity() {
 
   if (currentPage <= 1) {
     leftArrow.style.opacity = '0.3';
-    leftArrow.style.pointerEvents = 'none';  // disable click
+    leftArrow.style.pointerEvents = 'none';
   } else {
     leftArrow.style.opacity = '1';
-    leftArrow.style.pointerEvents = 'auto';  // enable click
+    leftArrow.style.pointerEvents = 'auto';
   }
 
   if (currentPage >= totalPages) {
     rightArrow.style.opacity = '0.3';
-    rightArrow.style.pointerEvents = 'none'; // disable click
+    rightArrow.style.pointerEvents = 'none';
   } else {
     rightArrow.style.opacity = '1';
-    rightArrow.style.pointerEvents = 'auto';  // enable click
+    rightArrow.style.pointerEvents = 'auto';
   }
 }
 
-// Left/right pagination
 document.querySelector('.arrow-left').addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
@@ -126,7 +120,6 @@ document.querySelector('.arrow-right').addEventListener('click', () => {
   }
 });
 
-// Search input event
 document.getElementById('searchInput').addEventListener('input', (e) => {
   const searchValue = e.target.value.toLowerCase();
   filteredCats = catsData.filter(cat =>
@@ -137,7 +130,6 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderCatsPage();
 });
 
-// SORT BY select event listener
 document.getElementById('sortSelect').addEventListener('change', (e) => {
   const sortValue = e.target.value;
 
@@ -146,14 +138,13 @@ document.getElementById('sortSelect').addEventListener('change', (e) => {
   } else if (sortValue === 'name-desc') {
     filteredCats.sort((a, b) => b.template.localeCompare(a.template));
   } else {
-    // No sorting applied
   }
 
-  currentPage = 1; // reset to first page after sorting
+  currentPage = 1;
   renderCatsPage();
 });
 
-// Redirect on big cat image click
+
 document.querySelector('.cat-pic-data').addEventListener('click', () => {
   if (selectedCat) {
     localStorage.setItem('selectedCat', JSON.stringify(selectedCat));

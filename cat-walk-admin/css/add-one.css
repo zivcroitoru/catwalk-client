@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;700;900&display=swap');
 
-/* ─────────── RESET ─────────── */
 *,
 *::before,
 *::after {
@@ -27,12 +26,10 @@ body {
   display: flex;
 }
 
-/* Container for menu + content */
 body {
   display: flex;
 }
 
-/* ─────────── MENU (LEFT PANEL) ─────────── */
 .menu {
   width: 300px;
   min-width: 220px;
@@ -71,9 +68,7 @@ body {
   background-color: #ffffff;
 }
 
-/* ─────────── MAIN CONTENT ─────────── */
 .table {
-  /* flex-grow: 1; */
   width: 70vw;
   margin: 40px;
   max-width: 100%;
@@ -94,7 +89,6 @@ body {
   flex-grow: 1;
 }
 
-/* Upload rectangle */
 .rectangle {
   width: 100%;
   max-width: 1200px;
@@ -129,7 +123,6 @@ body {
   background-color: #dcdcdc;
 }
 
-/* ─────────── BUTTONS ─────────── */
 .button-container {
   display: flex;
   justify-content: center;
@@ -155,7 +148,6 @@ body {
   background-color: #2c342c;
 }
 
-/* ─────────── RESPONSIVE ─────────── */
 @media (max-width: 1200px) {
   .menu {
     width: 240px;

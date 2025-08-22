@@ -1,4 +1,4 @@
-console.log('🐱 main.js - Application entry point loading');
+console.log('main.js - Application entry point loading');
 
 // Feature imports - UI and business logic
 import { toggleShop } from './features/shop/shop.js';
@@ -40,7 +40,7 @@ function dispatch(name, detail) {
  * @param {Array} cats - User's cat collection
  */
 function onCatsReady(cats) {
-  console.log('🔧 Initializing UI components with cats data:', cats?.length || 0, 'cats');
+  console.log('Initializing UI components with cats data:', cats?.length || 0, 'cats');
   
   // Store cats globally for component access
   if (Array.isArray(cats)) window.userCats = cats;
@@ -53,7 +53,7 @@ function onCatsReady(cats) {
   bindUI();
   wireRuntimeEvents();
   
-  console.log('✅ UI initialization complete');
+  console.log('UI initialization complete');
 }
 
 /**
@@ -61,7 +61,7 @@ function onCatsReady(cats) {
  * Handles special cases like empty state interactions and toast management
  */
 function wireRuntimeEvents() {
-  console.log('⚡ Wiring runtime event handlers');
+  console.log('Wiring runtime event handlers');
 
   document.getElementById('addCatBtnEmpty')?.addEventListener('click', () => {
     document.getElementById('emptyState')?.classList.add('hidden');
@@ -80,27 +80,27 @@ function wireRuntimeEvents() {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🚀 DOM ready - starting application initialization');
+  console.log('DOM ready - starting application initialization');
   
   try {
     // Load core application data
-    console.log('📦 Loading shop data and templates...');
+    console.log('Loading shop data and templates...');
     await loadShopAndTemplates();
     
-    console.log('🐱 Loading user cats...');
+    console.log('Loading user cats...');
     const cats = await loadUserCats();
     
     // Initialize UI with loaded data
     onCatsReady(cats || window.userCats || []);
     
-    console.log('✅ Application startup complete');
+    console.log('Application startup complete');
   } catch (err) {
-    console.error('❌ Critical startup failure:', err);
+    console.error('Critical startup failure:', err);
   }
 });
 
 // Export functions to global scope for inline HTML event handlers
-console.log('🔗 Exposing functions to global scope for legacy HTML handlers');
+console.log('Exposing functions to global scope for legacy HTML handlers');
 Object.assign(window, {
   toggleShop,
   renderShopItems,
