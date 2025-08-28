@@ -9,11 +9,11 @@ if (spriteImage && spriteURL) {
 }
 
 document.querySelector('.next-button').addEventListener('click', async () => {
-  const template = document.getElementById('cat-name')?.textContent.trim();
-  const breed = document.getElementById('cat-breed')?.textContent.trim();
-  const variant = document.getElementById('cat-variant')?.textContent.trim();
-  const palette = document.getElementById('cat-pallete')?.textContent.trim();
-  const description = document.getElementById('cat-description')?.textContent.trim();
+  const template = document.getElementById('cat-name')?.value;
+  const breed = document.getElementById('cat-breed')?.value;
+  const variant = document.getElementById('cat-variant')?.value;
+  const palette = document.getElementById('cat-pallete')?.value;
+  const description = document.getElementById('cat-description')?.value;
   const sprite_url = spriteImage?.src;
 
   const catData = {
