@@ -30,8 +30,9 @@ if (!playerId || isNaN(itemIndex)) {
         <li>CATEGORY: ${item.category ?? 'N/A'}</li>
         <li>DESCRIPTION: ${item.description ?? 'N/A'}</li>
         <li>PRICE: ${item.price ?? 'N/A'} coins</li>
-        <li>CREATED AT: ${new Date(item.created_at).toLocaleDateString() ?? 'N/A'}</li>
-        <li>LAST UPDATED: ${new Date(item.last_updated_at).toLocaleDateString() ?? 'N/A'}</li>
+        <li>CREATED AT: ${item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</li>
+        <li>LAST UPDATED: ${item.last_updated_at ? new Date(item.last_updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</li>
+
       `;
     })
     .catch(err => {

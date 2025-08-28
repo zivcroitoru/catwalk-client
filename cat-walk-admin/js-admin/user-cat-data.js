@@ -31,7 +31,7 @@ if (!playerId || isNaN(catIndex)) {
         <li>BREED: ${cat.breed ?? 'N/A'}</li>
         <li>VARIANT: ${cat.variant ?? 'N/A'}</li>
         <li>PALLETE: ${cat.palette ?? 'N/A'}</li>
-        <li>BIRTHDAY: ${cat.birthdate ?? 'N/A'}</li>
+        <li>BIRTHDAY: ${cat.birthdate ? new Date(cat.birthdate).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</li>
         <li>DESCRIPTION: ${cat.description ?? 'N/A'}</li>
       `;
         })
@@ -42,6 +42,6 @@ if (!playerId || isNaN(catIndex)) {
 }
 
 const backButton = document.getElementById('backButton');
-  if (playerId && backButton) {
+if (playerId && backButton) {
     backButton.href = `chose-user.html?id=${playerId}`;
-  }
+}

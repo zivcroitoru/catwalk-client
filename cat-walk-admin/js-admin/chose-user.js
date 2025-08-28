@@ -45,7 +45,7 @@ if (playerId) {
       container.innerHTML = `
         <p>USERNAME: ${player.username}</p>
         <p>USER ID: ${player.id}</p>
-        <p>LAST LOGIN: ${new Date(player.last_logged_in).toLocaleDateString()}</p>
+        <p>LAST LOGIN: ${new Date(player.last_logged_in).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
         <p>COINS: ${player.coins}</p>
         <p>CATS: ${player.cat_count}</p>
       `;
@@ -213,6 +213,6 @@ showClothesBtn.addEventListener('click', fetchAndShowClothes);
 
 if (playerId) {
   fetchCounts();
-  fetchAndShowCats(); 
+  fetchAndShowCats();
 }
 
