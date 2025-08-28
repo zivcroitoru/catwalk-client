@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Creating table with players data');
 
   const headerRow = document.createElement('tr');
-  const columns = ['ID', 'Username', 'Coins', 'Cat Count', 'Last Login', 'GO']; 
+  const columns = ['ID', 'Username', 'Coins', 'Cat Count', 'Last Login', 'GO'];
   columns.forEach(colName => {
     const th = document.createElement('th');
     th.textContent = colName;
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
           player.username,
           player.coins,
           player.cat_count,
-          new Date(player.last_logged_in).toLocaleDateString()
+          new Date(player.last_logged_in).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
         ];
         values.forEach(value => {
           const td = document.createElement('td');
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tr.appendChild(td);
         });
 
-        
+
         const actionTd = document.createElement('td');
         actionTd.style.border = '1px solid #ccc';
         actionTd.style.padding = '8px';
@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
         button.style.cursor = 'pointer';
 
         button.addEventListener('click', () => {
-            sessionStorage.setItem("selectedPlayerId", player.id);
-           window.location.href = `chose-user.html?id=${player.id}`
+          sessionStorage.setItem("selectedPlayerId", player.id);
+          window.location.href = `chose-user.html?id=${player.id}`
         });
 
         actionTd.appendChild(button);
@@ -71,69 +71,69 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
 
-      
-searchInput.addEventListener('input', () => {
-  const filter = searchInput.value.toLowerCase().trim();
-  const rows = table.querySelectorAll('tr');
 
-  rows.forEach((row, index) => {
-    if (index === 0) return;
+      searchInput.addEventListener('input', () => {
+        const filter = searchInput.value.toLowerCase().trim();
+        const rows = table.querySelectorAll('tr');
 
-    const idCell = row.children[0];
-    const usernameCell = row.children[1];
+        rows.forEach((row, index) => {
+          if (index === 0) return;
 
-    const id = idCell.textContent.toLowerCase();
-    const username = usernameCell.textContent.toLowerCase();
+          const idCell = row.children[0];
+          const usernameCell = row.children[1];
 
-    if (id.includes(filter) || username.includes(filter)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
-});
+          const id = idCell.textContent.toLowerCase();
+          const username = usernameCell.textContent.toLowerCase();
 
-sortSelect.addEventListener('change', () => {
-  const value = sortSelect.value;
-  if (!value) return;
+          if (id.includes(filter) || username.includes(filter)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
 
-  const [column, direction] = value.split('-');
-  
-  const rows = Array.from(table.querySelectorAll('tr')).slice(1); // skip header
+      sortSelect.addEventListener('change', () => {
+        const value = sortSelect.value;
+        if (!value) return;
 
-  const columnIndexMap = {
-    id: 0,
-    username: 1,
-    coins: 2,
-    cat: 3,
-    login: 4
-  };
+        const [column, direction] = value.split('-');
 
-  const index = columnIndexMap[column];
-  if (index === undefined) return;
+        const rows = Array.from(table.querySelectorAll('tr')).slice(1); // skip header
 
-  rows.sort((a, b) => {
-    let aText = a.children[index].textContent;
-    let bText = b.children[index].textContent;
+        const columnIndexMap = {
+          id: 0,
+          username: 1,
+          coins: 2,
+          cat: 3,
+          login: 4
+        };
 
-    if (column === 'login') {
-      aText = new Date(aText).getTime();
-      bText = new Date(bText).getTime();
-    }
+        const index = columnIndexMap[column];
+        if (index === undefined) return;
 
-    if (column === 'username') {
-      if (direction === 'asc') return aText.localeCompare(bText);
-      else return bText.localeCompare(aText);
-    } else {
-      aText = Number(aText);
-      bText = Number(bText);
-      if (direction === 'asc') return aText - bText;
-      else return bText - aText;
-    }
-  });
+        rows.sort((a, b) => {
+          let aText = a.children[index].textContent;
+          let bText = b.children[index].textContent;
 
-  rows.forEach(row => table.appendChild(row));
-});
+          if (column === 'login') {
+            aText = new Date(aText).getTime();
+            bText = new Date(bText).getTime();
+          }
+
+          if (column === 'username') {
+            if (direction === 'asc') return aText.localeCompare(bText);
+            else return bText.localeCompare(aText);
+          } else {
+            aText = Number(aText);
+            bText = Number(bText);
+            if (direction === 'asc') return aText - bText;
+            else return bText - aText;
+          }
+        });
+
+        rows.forEach(row => table.appendChild(row));
+      });
 
 
     })
